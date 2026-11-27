@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 3,
-  icon: '🚑',
+  icon: 'ambulance',
   name: 'Lesson 3 - Ambulance on a Busy Road',
   modes: ['car', 'bike', 'pedestrian'],
   veh: 'car',
@@ -21,7 +21,7 @@ window.LVS.push({
     offHi: 'आपातकालीन वाहन को रोकना'
   },
   theory:
-    '<h2>Ambulance on a Busy Road</h2><p>Ambulance aa rahi hai — sirens baj rahi hain! Traffic aage panic mein hai — gaadiyan idhar udhar ghoom rahi hain. Tumhein left side pe hatt ke poora rukna hai!</p><p>Ambulance ko clear path chahiye — agar tum ruke nahi toh kisi ki jaan ja sakti hai. Turant left pe jao aur poora ruk jao jab tak ambulance na guzar jaaye!</p><p>Emergency vehicle ko rasta na dena MV Act Section 194E ke under ₹10,000 ka fine hai — traffic code mein sabse zyada!</p><h3>🚑 Yaad rakho:</h3><ul><li>Ambulance ki sirens sunte hi left pe hatt jao!</li><li>Poora ruk jao — sirf slow karna kaafi nahi hai.</li><li>Peeche waali gaadiyan swerve kar rahi hain — tum predictable raho!</li></ul>',
+    '<h2>Ambulance on a Busy Road</h2><p>Ambulance aa rahi hai — sirens baj rahi hain! Traffic aage panic mein hai — gaadiyan idhar udhar ghoom rahi hain. Tumhein left side pe hatt ke poora rukna hai!</p><p>Ambulance ko clear path chahiye — agar tum ruke nahi toh kisi ki jaan ja sakti hai. Turant left pe jao aur poora ruk jao jab tak ambulance na guzar jaaye!</p><p>Emergency vehicle ko rasta na dena MV Act Section 194E ke under ₹10,000 ka fine hai — traffic code mein sabse zyada!</p><h3> Yaad rakho:</h3><ul><li>Ambulance ki sirens sunte hi left pe hatt jao!</li><li>Poora ruk jao — sirf slow karna kaafi nahi hai.</li><li>Peeche waali gaadiyan swerve kar rahi hain — tum predictable raho!</li></ul>',
   pract: 'Pull over left and stop when you hear the ambulance siren. Do not move until it passes.',
   mode: 'practical',
   themeType: 'ambulance_priority',

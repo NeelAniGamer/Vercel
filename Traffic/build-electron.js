@@ -120,8 +120,8 @@ async function copyAssets() {
   const distDir = path.join(__dirname, 'dist');
   if (!fs.existsSync(distDir)) {fs.mkdirSync(distDir, { recursive: true });}
 
-  // 1. Copy All Screens: Driving, Dashboard, Academy, Setup, index
-  const screens = ['Driving.html', 'TrafficDashboard.html', 'Academy.html', 'TrafficSetup.html', 'index.html'];
+  // 1. Copy All Screens: Driving, Dashboard, Academy, index
+  const screens = ['Driving.html', 'TrafficDashboard.html', 'Academy.html', 'index.html'];
   screens.forEach(s => copyFileSafe(path.join(__dirname, s), path.join(distDir, s)));
 
   // 2. Copy Game Engine Scripts & Assets
@@ -168,7 +168,7 @@ async function copyAssets() {
   copyDirSafe(path.join(__dirname, 'cert-assets'), path.join(distDir, 'cert-assets'));
 
   // 4. Copy Parent Shared Web Modules so ../ references work
-  const parentFiles = ['col-router.js', 'col-ui.js', 'col-auth.js', 'col-ui.css', 'Icon.png', 'config.json'];
+  const parentFiles = ['col-router.js', 'col-ui.js', 'col-auth.js', 'col-ui.css', 'col-skeleton.css', 'Icon.png', 'config.json'];
   parentFiles.forEach(pf => {
     copyFileSafe(path.join(__dirname, '..', pf), path.join(distDir, pf));
     // Also place in dist/.. (Traffic folder level)

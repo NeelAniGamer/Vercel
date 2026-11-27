@@ -1633,13 +1633,27 @@ class Game {
           if (!window.supabaseClient || !window.colUser) {return;}
           const userId = window.colUser.id;
           if (!userId) {return;}
-          await window.supabaseClient.rpc('upsert_wallet_balance', {
+          const amt = Math.round(Math.abs(Number(amount || 0)));
+          const safeType = type === 'earn' ? 'earn' : 'deduct';
+          if (amt <= 0) {return;}
+          if (window.supabaseClient.auth && typeof window.supabaseClient.auth.getSession === 'function') {
+            const { data: sd } = await window.supabaseClient.auth.getSession();
+            if (!sd || !sd.session || !sd.session.user || sd.session.user.id !== userId) {return;}
+          }
+          const rpcRes = await window.supabaseClient.rpc('upsert_wallet_balance', {
             p_user_id: userId,
-            p_amount: Math.abs(amount),
-            p_type: type,
-            p_source: source,
+            p_amount: amt,
+            p_type: safeType,
+            p_source: String(source || 'game_event'),
             p_level_id: this.lvId || null
           });
+          if (rpcRes && rpcRes.error && window.S && Number.isFinite(window.S.wallet)) {
+            await window.supabaseClient.from('wallets').upsert({
+              user_id: userId,
+              balance: Math.max(0, Math.round(window.S.wallet)),
+              updated_at: new Date().toISOString()
+            }, { onConflict: 'user_id' });
+          }
         } catch (e) {
           console.warn('Wallet sync failed:', e);
         }
@@ -1713,7 +1727,7 @@ class Game {
                 this._gyroOffset.beta = e.beta;
                 this._gyroOffset.gamma = e.gamma;
               }, { once: true });
-              toast('Gyroscope Active! 🧭', '#34d399');
+              toast('Gyroscope Active! ', '#34d399');
             } else {
               toast('Gyroscope permission denied.', '#ef4444');
             }
@@ -1863,7 +1877,7 @@ class Game {
             if (e.key.toLowerCase() === 'm') {this.togglePhoneGps();}
              if (e.key.toLowerCase() === 'v') {
                this.firstPersonMode = !this.firstPersonMode;
-               if (typeof toast === 'function') {toast(this.firstPersonMode ? '🎥 Switched to First Person' : '🎥 Switched to Third Person', '#3498db');}
+               if (typeof toast === 'function') {toast(this.firstPersonMode ? ' Switched to First Person' : ' Switched to Third Person', '#3498db');}
              }
               if (e.key === 'Escape') {this.togglePause();}
              // T: resume a saved mid-level run (offered at level start when one exists)
@@ -2808,9 +2822,9 @@ class Game {
         if (this.cruiseControl) {
           // Snap cruise target to current speed (min 20 km/h)
           this.cruiseSpeed = Math.max(20, Math.round(Math.abs(this.speed) * 100));
-          toast('🚢 Cruise ON — ' + this.cruiseSpeed + ' km/h', '#4fc3f7');
+          toast(' Cruise ON — ' + this.cruiseSpeed + ' km/h', '#4fc3f7');
         } else {
-          toast('🚢 Cruise OFF', '#90a4ae');
+          toast(' Cruise OFF', '#90a4ae');
         }
         this._updateSpeedCtrlHUD();
       }
@@ -2824,14 +2838,14 @@ class Game {
             this.speed = Math.sign(this.speed) * maxInternal;
           }
         }
-        toast(this.speedLimiter ? ('🔒 Speed Governor ON — Capped at ' + this.speedLimitCap + ' km/h') : '🔓 Speed Governor OFF — Unlimited', this.speedLimiter ? '#00e676' : '#90a4ae');
+        toast(this.speedLimiter ? (' Speed Governor ON — Capped at ' + this.speedLimitCap + ' km/h') : ' Speed Governor OFF — Unlimited', this.speedLimiter ? '#00e676' : '#90a4ae');
         this._updateSpeedCtrlHUD();
       }
 
       setDriveMode(mode) {
         if (this.isPedestrian) {return;}
         this.driveMode = mode;
-        const icons = { ECO: '🌿', CITY: '🏙️', SPORT: '🏎️' };
+        const icons = { ECO: 'ECO', CITY: 'CITY', SPORT: 'SPORT' };
         const colors = { ECO: '#66bb6a', CITY: '#4fc3f7', SPORT: '#ef5350' };
         toast(icons[mode] + ' ' + mode + ' mode — cap ' + (this._driveModeCapMap[mode] < 999 ? this._driveModeCapMap[mode] + ' km/h' : 'unlimited'), colors[mode]);
         this._updateSpeedCtrlHUD();
@@ -2840,7 +2854,7 @@ class Game {
       adjustCruiseSpeed(delta) {
         if (this.isPedestrian) {return;}
         this.cruiseSpeed = Math.max(10, Math.min(180, this.cruiseSpeed + delta));
-        if (this.cruiseControl) {toast('🚢 Cruise → ' + this.cruiseSpeed + ' km/h', '#4fc3f7');}
+        if (this.cruiseControl) {toast(' Cruise → ' + this.cruiseSpeed + ' km/h', '#4fc3f7');}
         this._updateSpeedCtrlHUD();
       }
 
@@ -2861,7 +2875,7 @@ class Game {
           const slGov = el('sl-gov-tag');
           if (slGov) {
             if (this.speedLimiter) {
-              slGov.textContent = '🔒 ON';
+              slGov.textContent = 'LIMIT: ON';
               slGov.style.background = '#00e676';
               slGov.style.color = '#000';
               slBadge.style.borderColor = '#00e676';
@@ -2890,7 +2904,7 @@ class Game {
               this._honkChallaned = true;
               this.vio++; this.violationsLog.push('HONKED_AT_SIGNAL'); this.score -= 30; this.fine += 500;
               this._triggerPoliceStrobe(); (window.ui&&typeof window.ui.issueChallan==="function"?window.ui.issueChallan:function(){})('Honking at the Red Signal', 'Sec 190(2) MV Act', '₹500', 'Silence Is Strength — Let the Signal Do the Talking');
-              toast('📢 Honking at the Signal! ₹500 Fine — Silence Is Strength', '#ef4444', 2500);
+              toast(' Honking at the Signal! ₹500 Fine — Silence Is Strength', '#ef4444', 2500);
               hk.done = true;
             }
           }
@@ -2909,11 +2923,15 @@ class Game {
               this._triggerPoliceStrobe(); (window.ui&&typeof window.ui.issueChallan==="function"?window.ui.issueChallan:function(){})('Honking in No-Honking Zone (repeat offense)', 'Sec 190(2) MV Act', '₹2,000', 'Silence Zone Violation');
             } else {
               this.violationsLog.push('NO_HONKING_WARNING');
-              toast('⚠️ Honking in silence zone — first warning', '#f2b84b');
+              toast(' Honking in silence zone — first warning', '#f2b84b');
             }
           } else {
-              toast('📢 Beep Beep!', '#ffd54a'); 
-              sfx.play('horn'); 
+              toast(' Beep Beep!', '#ffd54a');
+              if (window.TrafficAudio && typeof window.TrafficAudio.playHonk === 'function') {
+                window.TrafficAudio.playHonk();
+              } else if (typeof sfx !== 'undefined' && sfx.play) {
+                sfx.play('horn');
+              }
           } 
       }
       _brake() {
@@ -2923,9 +2941,9 @@ class Game {
         this.speed *= brakePower;
         sfx.play('brake');
         if (fadeFactor < 0.8) {
-          toast('⚠️ Brake fade! Brakes overheating — reduced stopping power', '#ff9500');
+          toast(' Brake fade! Brakes overheating — reduced stopping power', '#ff9500');
         } else {
-          toast('🛑 Hard Deceleration Active', '#fff');
+          toast(' Hard Deceleration Active', '#fff');
         }
       }
 
@@ -3060,9 +3078,10 @@ class Game {
           const absVx = Math.abs(speedMs);
           const dynWeight = Math.min(1.0, Math.max(0.0, (absVx - 2.0) / 4.0)); // 0 at <=2m/s, 1 at >=6m/s
           this._yawRate = (yawRate + yawAccel * dt) * Math.pow(0.92, dt * 60) * dynWeight;
-          // Apply yaw rate to player rotation. The kinematic term keeps the responsive
-          // feel at low speeds and transitions seamlessly to dynamic tire forces at cruising speeds.
-          const kinFactor = (1.0 - dynWeight * 0.5);
+          // Apply yaw rate to player rotation. At >= 6 m/s (dynWeight === 1),
+          // 100% of steering flows through the Pacejka tyre model (MATH-1-3);
+          // below 6 m/s, a smooth low-speed kinematic blend keeps parking crisp.
+          const kinFactor = Math.max(0.0, 1.0 - dynWeight);
           const yawDelta = (this._yawRate * dt) + (tAmt * (this.turn || 0.08) * Math.max(0.4, 1 - Math.abs(this.speed)*0.2) * Math.sign(this.speed) * (dt * 60) * 0.5 * kinFactor);
           this.player.rotation.y += yawDelta;
           while (this.player.rotation.y > Math.PI) {this.player.rotation.y -= Math.PI * 2;}
@@ -3337,7 +3356,7 @@ class Game {
 
         const isCar = !this.isPedestrian && this.playerVehicle;
         const absSpd = Math.abs(this.speed || 0);
-        const speedKmh = absSpd * 100;
+        const speedKmh = window.TrafficUnits ? window.TrafficUnits.playerSpeedToKmh(absSpd) : absSpd * 108;
         // Key names are stored LOWERCASE — the keydown handler does
         // e.key.toLowerCase() — so the old 'ArrowUp'/'ArrowDown' checks could
         // never match and every arrow-key player got no exhaust smoke, no
@@ -3785,11 +3804,13 @@ class Game {
         this._crashPushT = 0;
 
         // ── Camera shake scaled by speed ──
-        this._camShakeAmt = Math.max(this._camShakeAmt, 0.2 + intensity * 0.6);
+        // Clamped hard: 0.2 + intensity*0.6 used to reach 0.8, which on a
+        // 360px-wide phone read as the camera leaving the car.
+        this._camShakeAmt = Math.max(this._camShakeAmt, Math.min(0.35, 0.2 + intensity * 0.6));
 
         // ── Hitstop (freeze frame) for hard impacts ──
         if (intensity > 0.5) {
-          this._hitstopTimer = 0.05 + intensity * 0.12;
+          this._hitstopTimer = 0.04 + intensity * 0.06;
         }
 
         // ── Screen flash ──
@@ -3913,7 +3934,7 @@ class Game {
       _onActualStartFailed(err) {
         console.error('[Driving] _actualStart() failed for level', ui.cur && ui.cur.id, err);
         this._hideLoading();
-        toast('⚠️ Level failed to load', '#ff3b30');
+        toast(' Level failed to load', '#ff3b30');
       }
       async _actualStart(lv) {
         // Show loading screen with level name
@@ -4057,7 +4078,7 @@ class Game {
           const rs = (typeof this._loadRun === 'function') ? this._loadRun() : null;
           if (rs) {
             this._pendingResume = rs;
-            setTimeout(() => { try { toast('💾 Saved run found — press T to resume where you left off', '#5ed4f5', 7000); } catch (e) {} }, 1200);
+            setTimeout(() => { try { toast(' Saved run found — press T to resume where you left off', '#5ed4f5', 7000); } catch (e) {} }, 1200);
           } else { this._pendingResume = null; }
         } catch (e) { this._pendingResume = null; }
         this._initViolationsLog();
@@ -4307,20 +4328,20 @@ class Game {
         const lvId = this.lvId || 1;
         const isPed = this.isPedestrian;
         if (badge) {
-          badge.textContent = isPed ? '🚶 Pedestrian Level' : '🏁 Driving Level';
+          badge.textContent = isPed ? 'Pedestrian Level' : 'Driving Level';
         }
         // Rotate through driving tips
         const tips = [
-          '💡 Always wear your seatbelt — it saves lives!',
-          '💡 Use turn signals before every lane change.',
-          '💡 Maintain at least 2 seconds of following distance.',
-          '💡 Reduce speed in school zones and residential areas.',
-          '💡 Never use your phone while driving.',
-          '💡 Yield to pedestrians at crosswalks.',
-          '💡 Check mirrors before braking or turning.',
-          '💡 Headlights are required in rain and fog.',
-          '💡 Honking in silence zones carries a ₹2,000 fine.',
-          '💡 Parallel parking requires patience and practice.',
+          ' Always wear your seatbelt — it saves lives!',
+          ' Use turn signals before every lane change.',
+          ' Maintain at least 2 seconds of following distance.',
+          ' Reduce speed in school zones and residential areas.',
+          ' Never use your phone while driving.',
+          ' Yield to pedestrians at crosswalks.',
+          ' Check mirrors before braking or turning.',
+          ' Headlights are required in rain and fog.',
+          ' Honking in silence zones carries a ₹2,000 fine.',
+          ' Parallel parking requires patience and practice.',
         ];
         const tipsEl = document.getElementById('loading-tips');
         if (tipsEl) {tipsEl.innerHTML = '<span>Pro tip:</span> ' + tips[Math.floor(Math.random() * tips.length)];}
@@ -4369,7 +4390,7 @@ class Game {
           const descEl = document.getElementById('lp-desc');
           if (descEl) {descEl.textContent = lv.ds || 'Complete the driving mission to earn rewards and unlock the next level.';}
           const iconEl = document.getElementById('lp-icon');
-          if (iconEl) {iconEl.textContent = lv.icon || '🚗';}
+          if (iconEl) { iconEl.innerHTML = window.TrafficIcons ? window.TrafficIcons.forLevel(lv) : ''; }
           const timeEl = document.getElementById('lp-time');
           if (timeEl) { const t = lv.timeLimit || 120; const m = Math.floor(t/60); const s = t%60; timeEl.textContent = m + ':' + String(s).padStart(2,'0'); }
           const bestEl = document.getElementById('lp-best');
@@ -4477,7 +4498,7 @@ class Game {
               if (btn) {btn.style.background = 'rgba(94, 212, 245, 0.5)';}
               const isParked = this.isPedestrian || Math.abs(this.speed) < 0.05;
               if (!isParked) {
-                  toast('⚠️ Keep eyes on the road!', '#e74c3c');
+                  toast(' Keep eyes on the road!', '#e74c3c');
               }
           } else {
               if (gps) {gps.classList.remove('on');}
@@ -4503,14 +4524,14 @@ class Game {
       // ── Road-sign recognition quiz (C) ──
       _showRoadSignQuiz(sign) {
         const signTypes = [
-          { q: 'What does this sign mean?', icon: '🚸', correct: 'School Zone', opts: ['School Zone', 'No Parking', 'Speed Breaker', 'Toll Ahead'] },
-          { q: 'Identify this sign:', icon: '🛑', correct: 'Stop', opts: ['Stop', 'Give Way', 'No Entry', 'One Way'] },
-          { q: 'What does this sign indicate?', icon: '⚠️', correct: 'Speed Breaker Ahead', opts: ['Speed Breaker Ahead', 'Narrow Road', 'Slippery Road', 'Falling Rocks'] },
-          { q: 'Read this road sign:', icon: '🚫', correct: 'No Entry', opts: ['No Entry', 'No Parking', 'No Horn', 'No Overtaking'] },
-          { q: 'What does this sign mean?', icon: '🛣️', correct: 'Speed Limit', opts: ['Speed Limit', 'End of Restricted Zone', 'Highway Start', 'Toll Ahead'] },
-          { q: 'Identify this sign:', icon: '🚧', correct: 'Road Work Ahead', opts: ['Road Work Ahead', 'Detour', 'Closed Road', 'Accident Zone'] },
-          { q: 'What does this sign indicate?', icon: '🏭', correct: 'Industrial Area', opts: ['Industrial Area', 'Hospital Zone', 'School Zone', 'Residential Zone'] },
-          { q: 'Read this road sign:', icon: '⛪', correct: 'Hospital Zone', opts: ['Hospital Zone', 'School Zone', 'Religious Place', 'Community Center'] },
+          { q: 'What does this sign mean?', icon: 'pedestrian', correct: 'School Zone', opts: ['School Zone', 'No Parking', 'Speed Breaker', 'Toll Ahead'] },
+          { q: 'Identify this sign:', icon: 'alert', correct: 'Stop', opts: ['Stop', 'Give Way', 'No Entry', 'One Way'] },
+          { q: 'What does this sign indicate?', icon: 'alert', correct: 'Speed Breaker Ahead', opts: ['Speed Breaker Ahead', 'Narrow Road', 'Slippery Road', 'Falling Rocks'] },
+          { q: 'Read this road sign:', icon: 'alert', correct: 'No Entry', opts: ['No Entry', 'No Parking', 'No Horn', 'No Overtaking'] },
+          { q: 'What does this sign mean?', icon: 'highway', correct: 'Speed Limit', opts: ['Speed Limit', 'End of Restricted Zone', 'Highway Start', 'Toll Ahead'] },
+          { q: 'Identify this sign:', icon: 'alert', correct: 'Road Work Ahead', opts: ['Road Work Ahead', 'Detour', 'Closed Road', 'Accident Zone'] },
+          { q: 'What does this sign indicate?', icon: 'building', correct: 'Industrial Area', opts: ['Industrial Area', 'Hospital Zone', 'School Zone', 'Residential Zone'] },
+          { q: 'Read this road sign:', icon: 'building', correct: 'Hospital Zone', opts: ['Hospital Zone', 'School Zone', 'Religious Place', 'Community Center'] },
         ];
         const pick = signTypes[Math.floor(Math.random() * signTypes.length)];
         const shuffled = pick.opts.sort(() => Math.random() - 0.5);
@@ -4521,7 +4542,7 @@ class Game {
           quiz.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a1a2e;border:3px solid #5ed4f5;border-radius:16px;padding:24px;z-index:10010;width:min(400px,85vw);box-shadow:0 8px 40px rgba(0,0,0,.7);';
           document.body.appendChild(quiz);
         }
-        quiz.innerHTML = `<div style="text-align:center;margin-bottom:16px"><div style="font-size:48px">${pick.icon}</div><div style="color:#e8e3d8;font-size:18px;margin-top:8px;font-weight:600">${pick.q}</div></div><div style="display:flex;flex-direction:column;gap:8px" id="rsq-opts"></div>`;
+        quiz.innerHTML = `<div style="text-align:center;margin-bottom:16px"><div style="display:flex;justify-content:center;color:#5ed4f5">${window.TrafficIcons ? window.TrafficIcons.resolve(pick.icon, 48) : pick.icon}</div><div style="color:#e8e3d8;font-size:18px;margin-top:8px;font-weight:600">${pick.q}</div></div><div style="display:flex;flex-direction:column;gap:8px" id="rsq-opts"></div>`;
         quiz.style.display = 'block';
         const optContainer = quiz.querySelector('#rsq-opts');
         shuffled.forEach(opt => {
@@ -4533,11 +4554,11 @@ class Game {
           btn.addEventListener('click', () => {
             quiz.style.display = 'none';
             if (opt === pick.correct) {
-              toast('✅ Correct! +50 bonus points', '#34d399');
+              toast(' Correct! +50 bonus points', '#34d399');
               this.score += 50;
               sfx.play('correct');
             } else {
-              toast(`❌ Wrong! It means: ${pick.correct}`, '#ef4444');
+              toast(` Wrong! It means: ${pick.correct}`, '#ef4444');
               this.score -= 20;
               sfx.play('error');
             }
@@ -4557,18 +4578,18 @@ class Game {
               if (this._mobileMode === 1 && isParked) {
                   if (btn) {btn.style.borderColor = '#2196F3';}
                   if (label) { label.textContent = 'GPS'; label.style.color = '#2196F3'; }
-                  toast('🗺️ GPS Navigation — Shows route to checkpoint!', '#2196F3');
+                  toast(' GPS Navigation — Shows route to checkpoint!', '#2196F3');
                   this.phoneGpsOn = true;
                   if (this.dom['phone-gps']) {this.dom['phone-gps'].classList.add('on');}
                   if (this.dom['phone-gps-btn']) {this.dom['phone-gps-btn'].style.display = 'block';}
               } else if (this._mobileMode === 2 && isParked) {
                   if (btn) {btn.style.borderColor = '#9b59b6';}
                   if (label) { label.textContent = 'Music'; label.style.color = '#9b59b6'; }
-                  toast('🎵 Background Music Enabled', '#9b59b6');
+                  toast(' Background Music Enabled', '#9b59b6');
               } else if (this._mobileMode === 0) {
                   if (btn) {btn.style.borderColor = '#e74c3c';}
                   if (label) { label.textContent = 'Distracted!'; label.style.color = '#e74c3c'; }
-                  toast('⚠️ Distracted Driving! ₹500 fine', '#e74c3c');
+                  toast(' Distracted Driving! ₹500 fine', '#e74c3c');
                   if (!this.challanFired.has('mobile_drive')) {
                       this.challanFired.add('mobile_drive');
                       
@@ -4580,7 +4601,7 @@ class Game {
                         this.vio++; this.violationsLog.push('MOBILE_USE'); this.score -= 50; this.fine += 5000;
                       } else {
                         this.violationsLog.push('MOBILE_USE_WARNING');
-                        toast('⚠️ Mobile use while driving — first warning', '#f2b84b');
+                        toast(' Mobile use while driving — first warning', '#f2b84b');
                       }
                       if (window.GameplayRecorder) {GameplayRecorder.record('MOBILE_USE', { speed: Math.round(Math.abs(this.speed) * 100), score: this.score, fine: this.fine });}
                       // No HP deduction
@@ -4588,7 +4609,7 @@ class Game {
               } else {
                   if (btn) {btn.style.borderColor = '#e74c3c';}
                   if (label) { label.textContent = 'Unsafe!'; label.style.color = '#e74c3c'; }
-                  toast('📵 Cannot use phone while driving!', '#e74c3c');
+                  toast(' Cannot use phone while driving!', '#e74c3c');
                   this._mobileMode = 0;
                   this.mobileOn = false;
               }
@@ -4624,7 +4645,7 @@ class Game {
         if (btn) {
           btn.style.borderColor = this.kidModeActive ? '#f2b84b' : '#555';
         }
-        toast(this.kidModeActive ? '👶 Kid Mode Enabled: Assistance Active!' : '🧑 Pro Mode: Assistance Disabled', this.kidModeActive ? '#f2b84b' : '#666');
+        toast(this.kidModeActive ? ' Kid Mode Enabled: Assistance Active!' : ' Pro Mode: Assistance Disabled', this.kidModeActive ? '#f2b84b' : '#666');
 
         // If we have a path, update its visibility immediately
         if (this._breadcrumbLine) {
@@ -4663,7 +4684,7 @@ class Game {
           
           const icon = document.createElement('div');
           icon.style.cssText = 'font-size:3.5rem; margin-bottom:15px;';
-          icon.textContent = '💀';
+          icon.textContent = '';
           
           const title = document.createElement('h2');
           title.style.cssText = 'color:#ff3b30; margin:0 0 15px 0; font-size:2rem; letter-spacing:1px;';
@@ -4860,8 +4881,29 @@ class Game {
             if (!sg || !sg.position) {continue;}
             const st = sg.userData && sg.userData.st;
             if (st === 'green') {continue;}
-            const d = this.player.position.distanceTo(sg.position);
-            if (d < (radius || 30)) {return true;}
+            // Measure to the junction centre, not the physical head on the far
+            // corner: on Linking Road the head is ~20m from the stop line, so a
+            // player stopped correctly at the paint was outside a head-based
+            // radius and never got credit.
+            const jx = (sg.userData && sg.userData.junctionX !== undefined) ? sg.userData.junctionX : sg.position.x;
+            const jz = (sg.userData && sg.userData.junctionZ !== undefined) ? sg.userData.junctionZ : sg.position.z;
+            const d = Math.hypot(this.player.position.x - jx, this.player.position.z - jz);
+            if (d < (radius || 45)) {return true;}
+          }
+        } catch (e) {}
+        return false;
+      }
+
+      // True when the player is within `radius` of an authored zebra crossing.
+      // Used by the crossing-yield objective so it can require a real stop at
+      // the crossing even when no pedestrian happens to be nearby.
+      _nearZebra(radius) {
+        try {
+          const probs = (this.mapCfg && this.mapCfg.roadProblems) || [];
+          for (let i = 0; i < probs.length; i++) {
+            const p = probs[i];
+            if (!p || p.kind !== 'zebra') {continue;}
+            if (Math.hypot(this.player.position.x - p.x, this.player.position.z - p.z) < (radius || 14)) {return true;}
           }
         } catch (e) {}
         return false;
@@ -4882,8 +4924,10 @@ class Game {
           let complete = false;
           switch (t.type) {
             case 'enter_vehicle':
-              // Completes once the player has climbed into any vehicle (Lessons 1/5/54 start on foot)
-              if (this._everEnteredVehicle || !this.isPedestrian) {complete = true;}
+              // These lessons start on foot, so the objective must mean it. The
+              // old `|| !this.isPedestrian` auto-completed it on every car
+              // level before the player had moved.
+              if (this._everEnteredVehicle) {complete = true;}
               break;
             case 'stop':
               if (t.target === 'stationary' && Math.abs(this.speed) < 0.05) {complete = true;}
@@ -4892,10 +4936,10 @@ class Game {
               else if (t.target === 'parking_spot' && Math.abs(this.speed) < 0.05) {complete = true;}
               else if (t.target === 'red_light' && Math.abs(this.speed) < 0.05) {complete = true;}
               // Strict variant: stopped NEAR a red signal (not just anywhere)
-              else if (t.target === 'red_signal' && Math.abs(this.speed) < 0.05 && this._nearRedSignal(30)) {
+              else if (t.target === 'red_signal' && Math.abs(this.speed) < 0.05 && this._nearRedSignal(45)) {
                 const inVeh = (!this.mapCfg || !this.mapCfg.startOutside) || this._everEnteredVehicle;
                 const atSignalArea = (this.hits >= 1) || (this.player && this.player.position.z >= -70 && this.player.position.z <= 20 && Math.abs(this.player.position.x) <= 25);
-                if (inVeh && atSignalArea) { complete = true; }
+                if (inVeh && atSignalArea) { complete = true; this._waitRedDone = true; }
               }
               else if (t.target === 'cow' && this._animalObstacle && this._animalObstacle.everWaitedNear) {complete = true;}
               else if (t.target === 'cow_moved' && this._animalObstacle && this._animalObstacle.moved) {complete = true;}
@@ -4913,7 +4957,7 @@ class Game {
               }
               // finish = the gold gate (same robustness note as destination above)
               else if (t.target === 'finish' && this.cps && this.cps.length > 0 && (this.hits >= this.cps.length || this._finishPadHit)) {complete = true;}
-              else if (t.target === 'green_light' && this._movedAfterGreen) {complete = true;}
+              else if (t.target === 'green_light' && this._crossedJunctionOnGreen) {complete = true;}
               else if (t.target === 'parking_spot' && this._reachedParking) {complete = true;}
               else if (t.target === 'market_zone' && this._reachedMarket) {complete = true;}
               else if (t.target === 'left_side' && this._reachedLeftSide) {complete = true;}
@@ -4956,7 +5000,7 @@ class Game {
                   if (inside) {
                     if (Math.abs(this.speed) > 0.22) {
                       if (!this._warnedSchoolSpeed) {
-                        toast('⚠️ School Zone Speeding! Stay under 20 km/h', '#ef4444', 2500);
+                        toast(' School Zone Speeding! Stay under 20 km/h', '#ef4444', 2500);
                         this._warnedSchoolSpeed = true;
                       }
                       this._schoolSlowDwell = 0;
@@ -4997,14 +5041,16 @@ class Game {
                   const waitRedDone = !waitRedTask || waitRedTask.done;
                   const inVeh = (!this.mapCfg || !this.mapCfg.startOutside) || this._everEnteredVehicle;
                   const pastCrossing = (this.hits >= 2) || (this.player && this.player.position.z > -10);
-                  // A real yield completes immediately with praise; the absence
-                  // path stays as a fallback so the objective can never softlock.
+                  // A real yield completes immediately with praise. The stop-at-
+                  // the-crossing latch keeps the objective completable when no
+                  // pedestrian happens to be nearby; the `pastCrossing` path
+                  // still requires the player to have slowed at a crossing.
                   if (this._yieldedToPeds && !this._yieldPraised) {
                     this._yieldPraised = true;
-                    toast('🚸 Full Crossing Yield — Family First!', '#00e676', 2500);
+                    toast(' Full Crossing Yield — Family First!', '#00e676', 2500);
                     this.score += 150;
                   }
-                  if (inVeh && waitRedDone && (this._yieldedToPeds || pastCrossing)) {
+                  if (inVeh && waitRedDone && (this._yieldedToPeds || this._stoppedAtCrossing || (pastCrossing && this._slowedNearCrossing))) {
                     complete = true;
                   }
                 }
@@ -5064,7 +5110,7 @@ class Game {
           if (complete) {
             t.done = true;
             changed = true;
-            toast('✅ ' + t.text, '#27ae60');
+            toast(' ' + t.text, '#27ae60');
             sfx.play('ok');
             // ── Story Mode mid-level beat ───────────────────────────────────
             // A beat is a film the campaign hung off this objective. It plays on
@@ -5273,7 +5319,7 @@ class Game {
           return;
         }
         this.stopPlay();
-        toast('💥 ' + (reason || 'Structural Failure!'), '#ff3b30');
+        toast(' ' + (reason || 'Structural Failure!'), '#ff3b30');
         setTimeout(() => {
           const cr = document.getElementById('crash-reason');
           const ci = document.getElementById('crash-info');
@@ -5392,10 +5438,10 @@ class Game {
           if (rv && rv.active && rv.npcAI) {
             if (!rv._rivalFinished) {
               this.score = (this.score || 0) + 500;
-              setTimeout(() => { try { toast('🏆 RIVAL BEATEN +' + 500 + ' (' + (rv.rivalName || 'Rival') + ')', '#f2b84b'); } catch (e) {} }, 1200);
+              setTimeout(() => { try { toast(' RIVAL BEATEN +' + 500 + ' (' + (rv.rivalName || 'Rival') + ')', '#f2b84b'); } catch (e) {} }, 1200);
               if (window.TrafficAudio && window.TrafficAudio.playVictory) { try { window.TrafficAudio.playVictory(); } catch (e) {} }
             } else {
-              setTimeout(() => { try { toast('😤 ' + (rv.rivalName || 'Rival') + ' finished first — rematch?', '#94a3b8'); } catch (e) {} }, 1200);
+              setTimeout(() => { try { toast(' ' + (rv.rivalName || 'Rival') + ' finished first — rematch?', '#94a3b8'); } catch (e) {} }, 1200);
             }
           }
         } catch (e) {}
@@ -5431,27 +5477,35 @@ class Game {
         const _reward = _baseRew + _noViolBonus;
         const _mm = this.missionManager;
         const _stars = this.vio === 0 ? 3 : this.vio <= 2 ? 2 : 1;
-        const _starsStr = '★'.repeat(_stars) + '☆'.repeat(3 - _stars);
+        const _starsStr = ''.repeat(_stars) + ''.repeat(3 - _stars);
         const _collN = (_mm && _mm.totalCollected) || 0;
         const _collV = (_mm && _mm.totalReward) || 0;
         const _tokEarn = Math.max(0, (S.missionTokens || 0) - ((_mm && _mm._runTokensStart) || 0));
+        const _doubleXpActive = Boolean(S.doubleXp);
+        if (_doubleXpActive) {
+          this.fs = Math.round(this.fs * 2);
+          S.doubleXp = false;
+        }
+        const _curWallet = Number.isFinite(S.wallet) ? S.wallet : 50000;
         const _totalEarned = _reward + _collV;
-        S.wallet = (Number.isFinite(S.wallet) ? S.wallet : 0) + _totalEarned;
+        S.wallet = Math.max(0, _curWallet + _totalEarned);
+        S.walletUpdatedAt = new Date().toISOString();
         if (window.WalletHistory) {WalletHistory.earn('level_reward', _totalEarned, { levelId: _lvId, levelName: (ui.cur ? ui.cur.name : ''), violations: this.vio, collectibles: _collV });}
         this._syncWalletToSupabase(_totalEarned, 'earn', 'level_reward');
         // Deduct fines from wallet
         if (this.fine > 0) {
           S.wallet = Math.max(0, S.wallet - this.fine);
+          S.walletUpdatedAt = new Date().toISOString();
           if (window.WalletHistory) {WalletHistory.deduct('fine', this.fine, { levelId: _lvId, levelName: (ui.cur ? ui.cur.name : ''), violations: this.vio });}
           this._syncWalletToSupabase(this.fine, 'deduct', 'fine');
         }
         this._syncCivicToSupabase();
         this._syncSessionToSupabase(true);
-        save();
+        save({ immediate: true });
         try { this._clearRun(); } catch (e) {}
         const _hw = document.getElementById('hwallet');
         if (_hw) {_hw.textContent = '₹' + S.wallet.toLocaleString('en-IN');}
-        this.fst = { fin: this.fine ? '₹' + this.fine : '', vio: this.vio, reward: _reward };
+        this.fst = { fin: this.fine ? '₹' + this.fine : '', fineAmt: this.fine || 0, vio: this.vio, reward: _totalEarned, doubleXpApplied: _doubleXpActive, fromDriving: true };
         // Best-run tracking for checkpoint pace fanfare (F1 juice)
         try {
           const bk = 'traffic_best_' + (_lvId || 1);
@@ -5482,7 +5536,7 @@ class Game {
           });
         } catch (e) {}
         this.stopPlay();
-        toast('🏁 Run Evaluated!', '#00c851');
+        toast(' Run Evaluated!', '#00c851');
         // Show full Reward Screen first (earnings breakdown), then quiz on Continue
         const _mco = document.createElement('div');
         _mco.id = 'reward-screen';
@@ -5490,23 +5544,23 @@ class Game {
         const _fmtT = (s) => { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
         const _row = (label, val, color) => `<div style="display:flex;justify-content:space-between;gap:16px;padding:7px 2px;border-bottom:1px solid rgba(255,255,255,0.07);font-size:0.9rem;"><span style="color:rgba(255,255,255,0.65);">${label}</span><span style="font-weight:800;color:${color || '#fff'};">${val}</span></div>`;
         _mco.innerHTML = `<div style="width:100%;max-width:430px;background:linear-gradient(160deg,#101827 0%,#0b1220 100%);border:1px solid rgba(255,213,74,0.35);border-radius:20px;padding:26px 24px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,0.7),0 0 40px rgba(255,213,74,0.12);animation:missionCompleteCard 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;max-height:92vh;overflow-y:auto;">
-          <div style="font-size:3.2rem;animation:missionCompleteStar 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;">🏆</div>
+          <div style="font-size:3.2rem;animation:missionCompleteStar 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;"></div>
           <h1 style="color:#ffd54a;font-size:1.7rem;font-family:'Bebas Neue',sans-serif;letter-spacing:0.05em;margin:6px 0 2px;text-shadow:0 4px 20px rgba(255,213,74,0.4);">LEVEL COMPLETE!</h1>
           <div style="color:#ffd54a;font-size:1.3rem;letter-spacing:0.2em;margin-bottom:2px;">${_starsStr}</div>
-          <div style="color:rgba(255,255,255,0.55);font-size:0.8rem;margin-bottom:12px;">${(ui.cur && ui.cur.name) || ('Lesson ' + _lvId)} · ⏱ ${_fmtT(this.timer)} · ${this.vio === 0 ? 'Perfect drive — zero violations!' : this.vio + ' violation' + (this.vio > 1 ? 's' : '')}</div>
+          <div style="color:rgba(255,255,255,0.55);font-size:0.8rem;margin-bottom:12px;">${(ui.cur && ui.cur.name) || ('Lesson ' + _lvId)} ·  ${_fmtT(this.timer)} · ${this.vio === 0 ? 'Perfect drive — zero violations!' : this.vio + ' violation' + (this.vio > 1 ? 's' : '')}</div>
           <div style="text-align:left;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:6px 14px;margin-bottom:12px;">
-            ${_row('🎯 Final Score', this.fs.toLocaleString('en-IN'), '#5ed4f5')}
-            ${_row('💰 Level Reward', '+₹' + _baseRew.toLocaleString('en-IN'), '#34d399')}
-            ${_row('✨ Clean-Driving Bonus', '+' + (_noViolBonus ? '₹' + _noViolBonus.toLocaleString('en-IN') : '—'), '#34d399')}
-            ${_row('⭐ Collectibles (' + _collN + ')', '+' + (_collV ? '₹' + _collV.toLocaleString('en-IN') : '—'), '#f2b84b')}
-            ${_row('🎖️ Mission Tokens', '+' + _tokEarn, '#b89bff')}
-            ${_row('🧾 Challan Fines', (this.fine > 0 ? '−₹' + this.fine.toLocaleString('en-IN') : 'None 🎉'), this.fine > 0 ? '#ef4444' : '#34d399')}
-            ${_row('👛 Wallet Balance', '₹' + S.wallet.toLocaleString('en-IN'), '#ffd54a')}
+            ${_row(' Final Score', this.fs.toLocaleString('en-IN'), '#5ed4f5')}
+            ${_row(' Level Reward', '+₹' + _baseRew.toLocaleString('en-IN'), '#34d399')}
+            ${_row(' Clean-Driving Bonus', '+' + (_noViolBonus ? '₹' + _noViolBonus.toLocaleString('en-IN') : '—'), '#34d399')}
+            ${_row(' Collectibles (' + _collN + ')', '+' + (_collV ? '₹' + _collV.toLocaleString('en-IN') : '—'), '#f2b84b')}
+            ${_row(' Mission Tokens', '+' + _tokEarn, '#b89bff')}
+            ${_row(' Challan Fines', (this.fine > 0 ? '−₹' + this.fine.toLocaleString('en-IN') : 'None '), this.fine > 0 ? '#ef4444' : '#34d399')}
+            ${_row(' Wallet Balance', '₹' + S.wallet.toLocaleString('en-IN'), '#ffd54a')}
           </div>
           <button id="reward-continue-btn" style="width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,#f2b84b,#f97316);color:#1a1005;font-size:1rem;font-weight:800;letter-spacing:0.04em;cursor:pointer;box-shadow:0 8px 24px rgba(242,184,75,0.35);">Continue to Quiz →</button>
           <div style="display:flex;gap:10px;margin-top:10px;">
             <button id="reward-replay-btn" style="flex:1;padding:10px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(255,255,255,0.06);color:#fff;font-weight:700;cursor:pointer;">↻ Replay</button>
-            <button id="reward-menu-btn" style="flex:1;padding:10px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(255,255,255,0.06);color:#fff;font-weight:700;cursor:pointer;">☰ Levels</button>
+            <button id="reward-menu-btn" style="flex:1;padding:10px;border:1px solid rgba(255,255,255,0.2);border-radius:10px;background:rgba(255,255,255,0.06);color:#fff;font-weight:700;cursor:pointer;"> Levels</button>
           </div>
         </div>`;
         document.body.appendChild(_mco);
@@ -5558,12 +5612,12 @@ class Game {
           const _newTotal = _prevTotal + this.fs;
           // Rank thresholds: Bronze (5000), Silver (15000), Gold (30000), Platinum (50000)
           const _rankTiers = [
-            { min: 0, name: 'Rookie', icon: '🔰', color: '#94a3b8' },
-            { min: 5000, name: 'Bronze', icon: '🥉', color: '#cd7f32' },
-            { min: 15000, name: 'Silver', icon: '🥈', color: '#c0c0c0' },
-            { min: 30000, name: 'Gold', icon: '🥇', color: '#ffd54a' },
-            { min: 50000, name: 'Platinum', icon: '💎', color: '#b89bff' },
-            { min: 100000, name: 'Hero', icon: '🏆', color: '#34d399' }
+            { min: 0, name: 'Rookie', icon: 'sparkles', color: '#94a3b8' },
+            { min: 5000, name: 'Bronze', icon: 'award', color: '#cd7f32' },
+            { min: 15000, name: 'Silver', icon: 'award', color: '#c0c0c0' },
+            { min: 30000, name: 'Gold', icon: 'trophy', color: '#ffd54a' },
+            { min: 50000, name: 'Platinum', icon: 'sparkles', color: '#b89bff' },
+            { min: 100000, name: 'Hero', icon: 'trophy', color: '#34d399' }
           ];
           const _getRank = (score) => {
             let rank = _rankTiers[0];
@@ -5645,7 +5699,7 @@ class Game {
         }, 25000);
       }
 
-      // 🚦 MAP CONFIGURATIONS FOR ALL MUMBAI LEVELS 🚦
+      //  MAP CONFIGURATIONS FOR ALL MUMBAI LEVELS 
       _getMapConfig(lvId) {
         if (typeof ui !== 'undefined' && ui.cur && (ui.cur.isAISynthesized || String(lvId).startsWith('ai_'))) {
           return ui.cur;
@@ -5886,7 +5940,7 @@ class Game {
 
       }
 
-      // 🚦 VEHICLE MESH BUILDERS 🚦
+      //  VEHICLE MESH BUILDERS 
       _pmesh(mode, vehType) {
         this.isPedestrian = false;
         const vt = vehType || 'car';
@@ -5896,7 +5950,7 @@ class Game {
         let vStartX = 0, vStartZ = 0, vRotY = 0;
 
         if (this._suburbanSpawn) {
-          // 🏡 Suburban Neighborhood Spawn:
+          //  Suburban Neighborhood Spawn:
           // Car is parked inside the garage at the end of the driveway
           // Player is standing in front of the household on the front walkway/porch steps
           vStartX = this._suburbanSpawn.car.x;
@@ -5975,7 +6029,7 @@ class Game {
           this.maxSpd = 0.12; this.accel = 0.06; this.turn = 0.05; this.fric = 0.88;
 
           setTimeout(() => {
-              toast('🚶 Pedestrian Mode Active: Use WASD / Arrow Keys to walk safely!', '#34d399', 6000);
+              toast(' Pedestrian Mode Active: Use WASD / Arrow Keys to walk safely!', '#34d399', 6000);
           }, 500);
         } else {
           // Build the vehicle with Academy Garage Custom Paint & Underglow
@@ -6028,7 +6082,7 @@ class Game {
                 const pName = customCarConfig.paintName || 'Custom';
                 const gName = customCarConfig.glowName || 'Neon';
                 if (typeof toast === 'function') {
-                  toast(`🏁 Academy Tuned Supercar Deployed: ${pName} with ${gName} Underglow!`, '#10b981', 6000);
+                  toast(` Academy Tuned Supercar Deployed: ${pName} with ${gName} Underglow!`, '#10b981', 6000);
                 }
               }, 1200);
             } catch(glowErr) {
@@ -6071,7 +6125,7 @@ class Game {
 
           // Player nametag above the vehicle (also marks YOUR parked car on foot)
           try {
-            const pTag = this._makeNametag('🚗 ' + username, { border: 'rgba(94,212,245,0.6)' });
+            const pTag = this._makeNametag(' ' + username, { border: 'rgba(94,212,245,0.6)' });
             if (pTag) {
               pTag.position.set(0, 3.4, 0);
               this.playerVehicle.add(pTag);
@@ -6103,7 +6157,7 @@ class Game {
             this._createVehicleBeacon();
             setTimeout(() => {
                 if (!window.Cutscene || !window.Cutscene.isActive || !window.Cutscene.isActive()) {
-                  toast('🚶 In front of household: Walk to your garage & press F to enter your car!', '#3498db', 6000);
+                  toast(' In front of household: Walk to your garage & press F to enter your car!', '#3498db', 6000);
                 }
             }, 500);
           } else {
@@ -6144,7 +6198,7 @@ class Game {
 
       _updateVehicleBeacon(dt) {}
 
-      // 🚦 INDIAN STREET ENVIRONMENT ARCHITECTURE 🚦
+      //  INDIAN STREET ENVIRONMENT ARCHITECTURE 
       _getZoneAt(x, z) {
         if (!this._anchorNodes.length) {return 'Residential';}
         let best = this._anchorNodes[0];
@@ -7646,7 +7700,7 @@ class Game {
       _resumeRunOffer() {
         if (this._pendingResume) {
           if (this._applyRun(this._pendingResume)) {
-            toast('💾 Run restored — same spot, same mission!', '#34d399');
+            toast(' Run restored — same spot, same mission!', '#34d399');
           }
           this._pendingResume = null;
         }
@@ -7767,7 +7821,7 @@ class Game {
             const pts = Math.round(this._driftScore);
             if (pts >= 15) {
               this.score = (this.score || 0) + pts;
-              toast('🏁 DRIFT +' + pts, '#5ed4f5');
+              toast(' DRIFT +' + pts, '#5ed4f5');
             }
             this._driftScore = 0; this._driftQuiet = 0;
           }
@@ -7791,7 +7845,7 @@ class Game {
             const pts = Math.round((20 + spd * 60) / 5) * 5;
             this.score = (this.score || 0) + pts;
             this._fovKick = Math.min(9, (this._fovKick || 0) + 6);
-            toast('😱 NEAR MISS +' + pts, '#f2b84b');
+            toast(' NEAR MISS +' + pts, '#f2b84b');
             if (window.TrafficAudio && window.TrafficAudio.playWhoosh) {window.TrafficAudio.playWhoosh();}
             break;
           }
@@ -7806,6 +7860,10 @@ class Game {
         this._honkChallaned = false;
         this._yieldedToPeds = false;
         this._yieldPraised = false;
+        this._waitRedDone = false;
+        this._crossedJunctionOnGreen = false;
+        this._stoppedAtCrossing = false;
+        this._slowedNearCrossing = false;
         // A STAGE map is a film set, not a level. It declares `route: []` and
         // this is the method that would otherwise substitute a hardcoded
         // five-point demo route for it — putting glowing green checkpoint pads
@@ -7936,7 +7994,7 @@ class Game {
             bCtx.fillStyle = '#ffd700';
             bCtx.font = 'bold 44px sans-serif';
             bCtx.textAlign = 'center';
-            bCtx.fillText('🏁 FINISH DESTINATION', 256, 78);
+            bCtx.fillText(' FINISH DESTINATION', 256, 78);
 
             const bTex = new THREE.CanvasTexture(bCanvas);
             const bMat = new THREE.MeshBasicMaterial({ map: bTex, side: THREE.DoubleSide });
@@ -8040,6 +8098,11 @@ class Game {
           : Object.assign({}, baseMapCfg, ui.cur || {});
         this.mapCfg = cfg;
         this._stageBuild = !!stageOverride;
+        if (!this._stageBuild && typeof window !== 'undefined' && window.SeededRunDirector) {
+          this.runDirector = new window.SeededRunDirector(this, cfg);
+        } else {
+          this.runDirector = null;
+        }
         this.roadSegments = (cfg && cfg.roads) ? cfg.roads.slice() : [];
         this.timeLimit = cfg.timeLimit || 120; // default; overridden by age-adaptive logic in _actualStart
         this.isPedestrian = (this.vehMode === 'pedestrian') || (!this.vehMode && !!cfg.isPedestrian);
@@ -8052,7 +8115,7 @@ class Game {
         // Automatically activate Speed Limiter if in a speed-restricted level
         if (cfg.hasSchool || cfg.hasHospital || cfg.isRural || cfg.speedLimit) {
           this.speedLimiter = true;
-          if (window.toast) {toast('🔒 Speed Governor Active — Capped at ' + levelSpeedLimit + ' km/h (Press L to toggle)', '#00e676', 4000);}
+          if (window.toast) {toast(' Speed Governor Active — Capped at ' + levelSpeedLimit + ' km/h (Press L to toggle)', '#00e676', 4000);}
         } else {
           this.speedLimiter = false;
         }
@@ -8114,6 +8177,24 @@ class Game {
         this._moon = new THREE.DirectionalLight(0x88aacc, cfg.isNight ? 0.6 : 0);
         this._moon.position.set(-20, 40, -30);
         this.scene.add(this._moon);
+
+        // Atmospheric SkyDome + PMREM Sky Bounce Lighting (GTA-style indirect bounce)
+        if (window.TrafficShaders && !lowPerf) {
+          this._skyDome = window.TrafficShaders.createSkyDome({
+            sunPosition: this._sun.position.clone(),
+            sunIntensity: cfg.isNight ? 0.15 : 1.1
+          });
+          if (this._skyDome) {
+            this.scene.add(this._skyDome);
+            if (this.renderCore && this.renderCore.renderer) {
+              this._envRT = window.TrafficShaders.applyEnvironmentLighting(
+                this.renderCore.renderer,
+                this.scene,
+                this._skyDome
+              );
+            }
+          }
+        }
 
         // Initialize day/night cycle
         this._streetLights = [];
@@ -9062,9 +9143,9 @@ class Game {
           sCtx.fillStyle = '#facc15'; sCtx.fillRect(0, 0, 512, 128);
           sCtx.lineWidth = 8; sCtx.strokeStyle = '#dc2626'; sCtx.strokeRect(4, 4, 504, 120);
           sCtx.fillStyle = '#1e293b'; sCtx.font = 'bold 36px sans-serif'; sCtx.textAlign = 'center';
-          sCtx.fillText('🏫 ST. XAVIER HIGH SCHOOL', 256, 48);
+          sCtx.fillText(' ST. XAVIER HIGH SCHOOL', 256, 48);
           sCtx.fillStyle = '#dc2626'; sCtx.font = 'bold 26px sans-serif';
-          sCtx.fillText('⚠️ CAUTION: SCHOOL ZONE (MAX 20 KM/H)', 256, 92);
+          sCtx.fillText(' CAUTION: SCHOOL ZONE (MAX 20 KM/H)', 256, 92);
           const schoolSignTex = new THREE.CanvasTexture(sCanvas);
           const schoolSign = new THREE.Mesh(new THREE.BoxGeometry(18, 4.2, 0.4), new THREE.MeshLambertMaterial({ map: schoolSignTex }));
           schoolSign.position.set(0, 11.5, 8.3); sGrp.add(schoolSign);
@@ -9602,6 +9683,10 @@ class Game {
       if (!this._stageBuild && !cfg.isPedestrian && window.TrafficManager) {
         if (!this.trafficManager) {
           this.trafficManager = new window.TrafficManager(this);
+          // NPC horns go through the real audio engine. Without this the
+          // manager's `audio` stays null and every NPC horn falls back to the
+          // thin UI beep in ui.js.
+          if (window.TrafficAudio) {this.trafficManager.setAudio(window.TrafficAudio);}
         }
         if (this.roadGraph) {
           // Level-authored density: Lesson 1 runs 'moderate' so the lesson
@@ -10083,7 +10168,7 @@ class Game {
           ctx.beginPath(); ctx.moveTo(64,4); ctx.lineTo(124,124); ctx.lineTo(4,124); ctx.closePath(); ctx.fill();
           ctx.strokeStyle = '#cc0000'; ctx.lineWidth = 6; ctx.stroke();
           ctx.font = 'bold 36px Arial'; ctx.fillStyle = '#000'; ctx.textAlign = 'center';
-          ctx.fillText('🚶', 64, 80);
+          ctx.fillText('', 64, 80);
           const signM = new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true });
           const sign = new THREE.Mesh(signG, signM);
           sign.position.set(baseX + side, 2.7, baseZ);
@@ -10215,7 +10300,7 @@ class Game {
             ctx.beginPath(); ctx.moveTo(64, 8); ctx.lineTo(120, 120); ctx.lineTo(8, 120); ctx.closePath(); ctx.fill();
             ctx.strokeStyle = '#d97706'; ctx.lineWidth = 6; ctx.stroke();
             ctx.font = 'bold 42px Arial'; ctx.fillStyle = '#000'; ctx.textAlign = 'center';
-            ctx.fillText('🚶', 64, 85);
+            ctx.fillText('', 64, 85);
 
             const signMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.2), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true }));
             signMesh.position.set(isV ? cr.x : cr.x + sideOffset, 2.7, isV ? cr.z + sideOffset : cr.z);
@@ -10315,7 +10400,7 @@ class Game {
           ctx.fillStyle = idx === 0 ? '#22aa44' : '#ddbb22';
           ctx.fillRect(0, 0, 256, 128);
           ctx.font = 'bold 40px Arial'; ctx.fillStyle = '#fff'; ctx.textAlign = 'center';
-          ctx.fillText(idx === 0 ? '🏷️ FASTAG' : (idx === 1 ? '💵 CASH' : '💵 CASH'), 128, 80);
+          ctx.fillText(idx === 0 ? ' FASTAG' : (idx === 1 ? ' CASH' : ' CASH'), 128, 80);
           const signG = new THREE.PlaneGeometry(3, 1.5);
           const signM = new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas) });
           const sign = new THREE.Mesh(signG, signM);
@@ -10372,7 +10457,7 @@ class Game {
         ctx.font = 'bold 24px Arial'; ctx.fillStyle = '#000'; ctx.textAlign = 'center';
         ctx.fillText('BLIND', 64, 60);
         ctx.fillText('CORNER', 64, 85);
-        ctx.fillText('📯 HONK', 64, 110);
+        ctx.fillText(' HONK', 64, 110);
         const wSignG = new THREE.PlaneGeometry(1.2, 1.2);
         const wSignM = new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true });
         const wSign = new THREE.Mesh(wSignG, wSignM);
@@ -10504,9 +10589,9 @@ class Game {
         ctx.fillStyle = '#003366';
         ctx.fillRect(0, 0, 512, 128);
         ctx.font = 'bold 36px Arial'; ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center';
-        ctx.fillText('🏥 CITY HOSPITAL', 256, 50);
+        ctx.fillText(' CITY HOSPITAL', 256, 50);
         ctx.font = '24px Arial'; ctx.fillStyle = '#ffdd00';
-        ctx.fillText('🔇 SILENCE ZONE — NO HONKING', 256, 95);
+        ctx.fillText(' SILENCE ZONE — NO HONKING', 256, 95);
         const signG = new THREE.PlaneGeometry(8, 2);
         const signM = new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas) });
         const sign = new THREE.Mesh(signG, signM);
@@ -10741,7 +10826,7 @@ class Game {
           ctx.fillStyle = legal ? '#1a3a6a' : '#cc0000';
           ctx.beginPath(); ctx.arc(64, 64, 60, 0, Math.PI * 2); ctx.fill();
           ctx.font = 'bold 72px Arial'; ctx.fillStyle = '#fff'; ctx.textAlign = 'center';
-          ctx.fillText(legal ? 'P' : '🚫', 64, 85);
+          ctx.fillText(legal ? 'P' : '', 64, 85);
           if (label) { ctx.font = 'bold 18px Arial'; ctx.fillText(label, 64, 118); }
           const signG = new THREE.PlaneGeometry(0.8, 0.8);
           const signM = new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true });
@@ -10779,7 +10864,7 @@ class Game {
           ctx3.fillStyle = '#cc0000';
           ctx3.fillRect(0, 0, 512, 128);
           ctx3.font = 'bold 32px Arial'; ctx3.fillStyle = '#fff'; ctx3.textAlign = 'center';
-          ctx3.fillText('🚫 NO PARKING WITHIN 100m OF HOSPITAL', 256, 75);
+          ctx3.fillText(' NO PARKING WITHIN 100m OF HOSPITAL', 256, 75);
           const noG = new THREE.PlaneGeometry(8, 2);
           const noM = new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas3) });
           const noSign = new THREE.Mesh(noG, noM);
@@ -10903,9 +10988,9 @@ class Game {
         ctx.fillStyle = '#2c1810';
         ctx.fillRect(0, 0, 512, 128);
         ctx.font = 'bold 40px Arial'; ctx.fillStyle = '#f5d485'; ctx.textAlign = 'center';
-        ctx.fillText('📚 PUBLIC LIBRARY', 256, 55);
+        ctx.fillText(' PUBLIC LIBRARY', 256, 55);
         ctx.font = '24px Arial'; ctx.fillStyle = '#ff8888';
-        ctx.fillText('🔇 SILENCE ZONE — NO HONKING', 256, 95);
+        ctx.fillText(' SILENCE ZONE — NO HONKING', 256, 95);
         const sG = new THREE.PlaneGeometry(6, 1.5);
         const sM = new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas) });
         const s = new THREE.Mesh(sG, sM);
@@ -11040,7 +11125,7 @@ class Game {
         const ctx = canvas.getContext('2d');
         ctx.fillStyle = '#ffaa00'; ctx.fillRect(0, 0, 256, 128);
         ctx.font = 'bold 30px Arial'; ctx.fillStyle = '#000'; ctx.textAlign = 'center';
-        ctx.fillText('🌾 VILLAGE ROAD', 128, 55);
+        ctx.fillText(' VILLAGE ROAD', 128, 55);
         ctx.font = '22px Arial';
         ctx.fillText('MAX 25 KM/H', 128, 95);
         const sign = new THREE.Mesh(
@@ -11078,7 +11163,7 @@ class Game {
           const ctx = canvas.getContext('2d');
           ctx.fillStyle = '#0044aa'; ctx.fillRect(0, 0, 256, 128);
           ctx.font = 'bold 36px Arial'; ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center';
-          ctx.fillText('ONE WAY ➔', 128, 75);
+          ctx.fillText('ONE WAY ', 128, 75);
           const sign = new THREE.Mesh(
             new THREE.PlaneGeometry(2.5, 1.25),
             new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas) })
@@ -11099,7 +11184,7 @@ class Game {
         ctx1.fillStyle = '#0055cc'; ctx1.beginPath(); ctx1.arc(64, 64, 60, 0, Math.PI*2); ctx1.fill();
         ctx1.strokeStyle = '#ffffff'; ctx1.lineWidth = 6; ctx1.stroke();
         ctx1.fillStyle = '#ffffff'; ctx1.font = 'bold 44px Arial'; ctx1.textAlign = 'center';
-        ctx1.fillText('⬅', 64, 80);
+        ctx1.fillText('', 64, 80);
         const manSign = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.2), new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(manCanvas), transparent: true }));
         manSign.position.set(sx - 8, 2.5, sz - 20); root.add(manSign);
         
@@ -11109,7 +11194,7 @@ class Game {
         ctx2.fillStyle = '#ffffff'; ctx2.beginPath(); ctx2.moveTo(64,4); ctx2.lineTo(124,124); ctx2.lineTo(4,124); ctx2.closePath(); ctx2.fill();
         ctx2.strokeStyle = '#cc0000'; ctx2.lineWidth = 8; ctx2.stroke();
         ctx2.fillStyle = '#000'; ctx2.font = 'bold 36px Arial'; ctx2.textAlign = 'center';
-        ctx2.fillText('⚠', 64, 90);
+        ctx2.fillText('', 64, 90);
         const cauSign = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 1.2), new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(cauCanvas), transparent: true }));
         cauSign.position.set(sx + 8, 2.5, sz); root.add(cauSign);
         
@@ -11120,7 +11205,7 @@ class Game {
         ctx3.strokeStyle = '#ffffff'; ctx3.lineWidth = 6; ctx3.strokeRect(4,4,248,120);
         ctx3.fillStyle = '#ffffff'; ctx3.font = 'bold 28px Arial'; ctx3.textAlign = 'center';
         ctx3.fillText('CITY CENTER', 128, 55);
-        ctx3.font = '20px Arial'; ctx3.fillText('2.5 KM ➔', 128, 90);
+        ctx3.font = '20px Arial'; ctx3.fillText('2.5 KM ', 128, 90);
         const infoSign = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 1.2), new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(infoCanvas) }));
         infoSign.position.set(sx - 8, 2.5, sz + 20); root.add(infoSign);
       }
@@ -11180,7 +11265,7 @@ class Game {
         const ctx = canvas.getContext('2d');
         ctx.fillStyle = '#ff6600'; ctx.fillRect(0, 0, 256, 128);
         ctx.font = 'bold 26px Arial'; ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center';
-        ctx.fillText('🚧 ROAD WORK', 128, 50);
+        ctx.fillText(' ROAD WORK', 128, 50);
         ctx.fillText('DETOUR AHEAD', 128, 90);
         const sign = new THREE.Mesh(new THREE.PlaneGeometry(3.0, 1.5), new THREE.MeshLambertMaterial({ map: new THREE.CanvasTexture(canvas) }));
         sign.position.set(cx - 7, 2.5, cz - 15);
@@ -11268,9 +11353,9 @@ class Game {
         sCtx.fillStyle = '#0f172a'; sCtx.fillRect(0, 0, 512, 128);
         sCtx.lineWidth = 6; sCtx.strokeStyle = '#facc15'; sCtx.strokeRect(4, 4, 504, 120);
         sCtx.fillStyle = '#facc15'; sCtx.font = 'bold 34px sans-serif'; sCtx.textAlign = 'center';
-        sCtx.fillText('⚡ MUMBAI SPEED MOTORS ⚡', 256, 48);
+        sCtx.fillText(' MUMBAI SPEED MOTORS ', 256, 48);
         sCtx.fillStyle = '#38bdf8'; sCtx.font = 'bold 22px sans-serif';
-        sCtx.fillText('🔧 24x7 AUTO WORKSHOP & SERVICE 🚗', 256, 92);
+        sCtx.fillText(' 24x7 AUTO WORKSHOP & SERVICE ', 256, 92);
         const signTex = new THREE.CanvasTexture(sCanvas);
         const signMesh = new THREE.Mesh(new THREE.BoxGeometry(gW - 1.5, 1.2, 0.1), new THREE.MeshBasicMaterial({ map: signTex }));
         signMesh.position.set(0, gH + 0.3, gD / 2 + 0.68);
@@ -11399,7 +11484,7 @@ class Game {
         hazardTex.wrapS = hazardTex.wrapT = THREE.RepeatWrapping;
         hazardTex.repeat.set(4, 1);
 
-        // Signboard texture ("ROAD CLOSED / ⛔ DO NOT ENTER")
+        // Signboard texture ("ROAD CLOSED /  DO NOT ENTER")
         const sCanvas = document.createElement('canvas');
         sCanvas.width = 256; sCanvas.height = 128;
         const sCtx = sCanvas.getContext('2d');
@@ -11414,7 +11499,7 @@ class Game {
         sCtx.textBaseline = 'middle';
         sCtx.fillText('ROAD CLOSED', 128, 45);
         sCtx.font = 'bold 22px sans-serif';
-        sCtx.fillText('⛔ DO NOT ENTER', 128, 88);
+        sCtx.fillText(' DO NOT ENTER', 128, 88);
         const signTex = new THREE.CanvasTexture(sCanvas);
 
         const barrierMat = new THREE.MeshLambertMaterial({ map: hazardTex });
@@ -11531,8 +11616,10 @@ class Game {
         const graph = this.roadGraph;
         const cfg = this.mapCfg;
         // Urban levels provide deliberate mixed-use blocks through `plots`.
-        // The graph filler below is a suburban house-and-yard generator.
-        if (cfg && cfg.themeType === 'mumbai_city') {return;}
+        // The graph filler below is a suburban house-and-yard generator: it
+        // must not run on an authored scene, or villas with lawns and mailboxes
+        // land between the level's own shops and apartments.
+        if (cfg && (cfg.themeType === 'mumbai_city' || (cfg.plots && cfg.plots.length))) {return;}
         if (!graph || !graph.buildingSlots?.length) {return;}
 
         const bMats = [
@@ -12350,6 +12437,11 @@ class Game {
 
       _buildTrafficSignals(cfg, RW) {
         if (!this.sigs) {this.sigs = [];}
+        // Per-level signal-hold state (Lesson 1 red-light lesson). Reset on
+        // every build so a retry starts the hold again.
+        this._signalHoldDone = false;
+        this._signalHoldWait = 0;
+        this._signalHoldWasActive = false;
         const roadWidth = RW || 12;
         const rwHalf = roadWidth / 2;
         const spawnedAt = new Set();
@@ -12711,7 +12803,7 @@ class Game {
         // The loop-end render covers the frame, so no extra render here.
         if (this._hitstopTimer > 0) {
           this._hitstopTimer -= dt;
-          const k = Math.max(0, this._hitstopTimer / 0.17); // 1 → 0 over the stop
+          const k = Math.max(0, this._hitstopTimer / 0.10); // 1 → 0 over the stop
           dt *= (k > 0.6) ? 0.05 : (0.05 + 0.95 * (0.6 - k) / 0.6);
         }
         this._collidedThisFrame = false;
@@ -12802,8 +12894,15 @@ class Game {
           this._updateRainAudio(this.mode === 'rain' || this.mapCfg?.hasRain);
         }
 
-        // 4. Every 15th frame: Telemetry sync
+        // 4. Every 15th frame: Telemetry sync & RunDirector macro tick
         if (tick % 15 === 0) {
+          if (this.runDirector) { this.runDirector.update(dt * 15); }
+          if (this._skyDome && this._skyDome.material && this._skyDome.material.uniforms) {
+            this._skyDome.material.uniforms.time.value = this.timer || 0;
+            if (this._sun) {
+              this._skyDome.material.uniforms.sunPosition.value.copy(this._sun.position);
+            }
+          }
           window.__TRAFFIC_TELEMETRY__ = this.getTelemetry();
         }
         if (this._blobShadow && this.player && this.player.position) {
@@ -12981,7 +13080,7 @@ class Game {
                   this.vio++; this.violationsLog.push('SAFETY_VIOLATION'); this.score -= 20; this.fine += 1000;
                 } else {
                   this.violationsLog.push('SAFETY_WARNING');
-                  toast('⚠️ Safety gear required — first reminder', '#f2b84b');
+                  toast(' Safety gear required — first reminder', '#f2b84b');
                 }
                 if (window.GameplayRecorder) {GameplayRecorder.record('SAFETY_VIOLATION', { speed: Math.round(Math.abs(this.speed) * 100), score: this.score, fine: this.fine });}
             }
@@ -13040,7 +13139,7 @@ class Game {
         const lt = !inTransition && (this.keys['arrowleft'] || this.keys['a']);
         const rt = !inTransition && (this.keys['arrowright'] || this.keys['d']);
         
-        // Per-gear acceleration multipliers 🔄 each gear feels clearly different
+        // Per-gear acceleration multipliers  each gear feels clearly different
         const gAccel = { 'D': 1.30, 'R': .55, 'N': 0, 'P': 0 };
         const mult = gAccel[this.gear] ?? 0;
         const isRev = this.gear === 'R';
@@ -13128,7 +13227,7 @@ class Game {
 
           // ── CRUISE CONTROL: auto-throttle to hold cruiseSpeed ──
           if (this.cruiseControl && !dn && this.gear === 'D') {
-            const target = this.cruiseSpeed / 100; // convert km/h → internal units
+            const target = window.TrafficUnits ? window.TrafficUnits.kmhToPlayerSpeed(this.cruiseSpeed) : (this.cruiseSpeed / 108);
             const err = target - this.speed;
             if (Math.abs(err) > 0.005) {this.speed += Math.sign(err) * Math.min(Math.abs(err), this.accel * 0.5 * dt * 60);}
           }
@@ -13136,7 +13235,7 @@ class Game {
 
           // ── SPEED LIMITER / GOVERNOR: eased cap (no snap when crossing it) ──
           if (this.speedLimiter && this.speed !== 0) {
-            const limCap = (this.speedLimitCap || 50) / 100;
+            const limCap = window.TrafficUnits ? window.TrafficUnits.kmhToPlayerSpeed(this.speedLimitCap || 50) : ((this.speedLimitCap || 50) / 108);
             const govStep = (this.accel * 2 + 0.02) * dt * 60;
             if (this.speed > limCap) {this.speed = Math.max(limCap, this.speed - govStep);}
             else if (this.speed < -limCap * 0.5) {this.speed = Math.min(-limCap * 0.5, this.speed + govStep);}
@@ -13144,7 +13243,8 @@ class Game {
 
           // ── DRIVE MODE CAP: eased the same way ──
           if (this._driveModeCapMap && this.driveMode && this.speed > 0) {
-            const modeCap = (this._driveModeCapMap[this.driveMode] || 999) / 100;
+            const rawModeKmh = this._driveModeCapMap[this.driveMode] || 999;
+            const modeCap = window.TrafficUnits ? window.TrafficUnits.kmhToPlayerSpeed(rawModeKmh) : (rawModeKmh / 108);
             if (this.speed > modeCap) {this.speed = Math.max(modeCap, this.speed - (this.accel * 2 + 0.02) * dt * 60);}
           }
 
@@ -13181,7 +13281,7 @@ class Game {
             this.boostFuel = Math.max(0, this.boostFuel - 18 * dt);
           } else if (this.keys['shift'] && !this.seatbeltOn && this.gear === 'D') {
             if (!this._seatbeltWarnCd || Date.now() - this._seatbeltWarnCd > 3000) {
-              toast('⚠️ Buckle up to boost!', '#f2b84b');
+              toast(' Buckle up to boost!', '#f2b84b');
               this._seatbeltWarnCd = Date.now();
             }
             this.boosting = false;
@@ -13229,9 +13329,9 @@ class Game {
               this.challanFired.add('no_indicator');
               if (window.GameplayRecorder) {GameplayRecorder.record('NO_INDICATOR', { speed: Math.round(Math.abs(this.speed) * 100), score: this.score });}
               this._triggerPoliceStrobe(); (window.ui&&typeof window.ui.issueChallan==="function"?window.ui.issueChallan:function(){})('Turning without Indicator', 'Sec 125 MV Act', '₹500', 'Signal Violation');
-            toast('💡 TIP: Always use indicators 30 meters before turning. It prevents 40% of lane-change accidents.', '#ffd54a');
+            toast(' TIP: Always use indicators 30 meters before turning. It prevents 40% of lane-change accidents.', '#ffd54a');
               this.vio++; this.violationsLog.push('NO_INDICATOR'); this.score -= 30; this.fine += 500;
-              toast('⚠️ Use turn signals! ₹500 fine', '#ff9500');
+              toast(' Use turn signals! ₹500 fine', '#ff9500');
               sfx.play('error');
             }
           } else {
@@ -13306,7 +13406,7 @@ class Game {
           // Pedestrian: safe on sidewalk or zebra crossing; warn only when jaywalking on active asphalt
           if (surfaceStatus.onRoad && !surfaceStatus.nearZebra) {
             if (owEl) {
-              owEl.textContent = "⚠️ JAYWALKING — Walk on the sidewalk or zebra crossing!";
+              owEl.textContent = " JAYWALKING — Walk on the sidewalk or zebra crossing!";
               owEl.classList.add('on');
             }
             this.speed *= Math.pow(0.85, dt * 60);
@@ -13318,14 +13418,14 @@ class Game {
           // Vehicle: safe on asphalt road; penalty on sidewalk or off-road
           if (surfaceStatus.onSidewalk) {
             if (owEl) {
-              owEl.textContent = "⚠️ DRIVING ON SIDEWALK — Keep vehicle on road! Fine ₹500";
+              owEl.textContent = " DRIVING ON SIDEWALK — Keep vehicle on road! Fine ₹500";
               owEl.classList.add('on');
             }
             this.speed *= Math.pow(0.7, dt * 60);
             // Safe on sidewalk without HP penalty
           } else if (surfaceStatus.offRoad && !(this.mapCfg && (this.mapCfg.useLowPolyCity || this.mapCfg.is50km || this.mapCfg.themeType === 'free_roam'))) {
             if (owEl) {
-              owEl.textContent = "⚠️ OFF ROAD — Return vehicle to road!";
+              owEl.textContent = " OFF ROAD — Return vehicle to road!";
               owEl.classList.add('on');
             }
             this.speed *= Math.pow(0.52, dt * 60);
@@ -13415,7 +13515,7 @@ class Game {
                       this.violationsLog.push('SPEED_WARNING');
                     }
                     
-                    toast('💡 TIP: Over-speeding is the #1 cause of road accidents in India. Stay within limits!', '#ff9500');
+                    toast(' TIP: Over-speeding is the #1 cause of road accidents in India. Stay within limits!', '#ff9500');
                       if (window.GameplayRecorder) {GameplayRecorder.record('SPEED_VIOLATION', { speed: Math.round(currentSpeedKmH), limit: this.mapCfg.speedLimit, score: this.score, fine: this.fine });}
                       this.player.userData.spdCooldown = 5;
                     }
@@ -13456,7 +13556,7 @@ class Game {
                 hint.style.cssText = 'position:fixed;bottom:22%;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:12px 22px;border-radius:12px;font-size:18px;z-index:10001;pointer-events:none;text-align:center;transition:opacity .4s;white-space:nowrap;';
                 document.body.appendChild(hint);
               }
-              const hints = ['⬆️ Press W or ↑ to drive', '🔄 Q/E to use turn signals', '🅿️ Press P to park', '💡 H for high beam', '📱 M for GPS'];
+              const hints = [' Press W or ↑ to drive', ' Q/E to use turn signals', ' Press P to park', ' H for high beam', ' M for GPS'];
               hint.textContent = hints[Math.floor(Math.random() * hints.length)];
               hint.style.opacity = '1';
             }
@@ -13523,17 +13623,17 @@ class Game {
                       this.score -= 25; this.fine += 1000; this.vio++; this.violationsLog.push('MOBILE_USE');
                     } else {
                       this.violationsLog.push('MOBILE_USE_WARNING');
-                      toast('⚠️ Phone use while driving — first warning', '#f2b84b');
+                      toast(' Phone use while driving — first warning', '#f2b84b');
                     }
                     if (window.GameplayRecorder) {GameplayRecorder.record('MOBILE_USE', { speed: Math.round(Math.abs(this.speed) * 100), score: this.score, fine: this.fine });}
                   }
-                  toast('📱 Phone use while driving! ₹1,000 fine', '#ef4444');
+                  toast(' Phone use while driving! ₹1,000 fine', '#ef4444');
                 };}
                 const ignBtn = document.getElementById('phone-ignore');
                 if (ignBtn) {ignBtn.onclick = () => {
                   ringEl.style.display = 'none'; ringEl.style.animation = 'none';
                   this._phoneRinging = false; this._phoneDismissed = true;
-                  toast('Good choice — ignore the phone! ✓', '#34d399');
+                  toast('Good choice — ignore the phone! ', '#34d399');
                 };}
               }
             }
@@ -13556,7 +13656,7 @@ class Game {
                       zp = document.createElement('div');
                       zp.id = 'zebra-yield-prompt';
                       zp.style.cssText = 'position:fixed;top:18%;left:50%;transform:translateX(-50%);background:rgba(239,68,68,.92);color:#fff;padding:16px 28px;border-radius:14px;font-size:22px;z-index:10003;pointer-events:none;text-align:center;animation:zebra-flash .6s ease-in-out 3;box-shadow:0 0 25px rgba(239,68,68,.5);';
-                      zp.innerHTML = '🚶 Zebra Crossing — Yield to Pedestrians! 🚶';
+                      zp.innerHTML = ' Zebra Crossing — Yield to Pedestrians! ';
                       document.body.appendChild(zp);
                     } else { zp.style.display = 'block'; zp.style.animation = 'zebra-flash .6s ease-in-out 3'; }
                     setTimeout(() => { if (zp) {zp.style.display = 'none';} }, 2500);
@@ -13599,7 +13699,7 @@ class Game {
                 }
               }
               if (oncoming) {
-                toast('⚠️ Oncoming traffic detected! Check before overtaking.', '#ef4444');
+                toast(' Oncoming traffic detected! Check before overtaking.', '#ef4444');
                 if (typeof sfx !== 'undefined' && sfx.play) {sfx.play('error');}
               }
             }
@@ -13638,13 +13738,13 @@ class Game {
               a.userData.hit = true;
               this.speed *= 0.1;
               if (typeof sfx !== 'undefined' && sfx.play) {sfx.play('brake');}
-              toast('🐄 Animal crossing! Slow down and yield!', '#ff9500');
+              toast(' Animal crossing! Slow down and yield!', '#ff9500');
             }
             // Successful yield: player stops near animal
             if (aDist < 5 && aDist > 2.5 && Math.abs(this.speed) < 0.05 && !a.userData.counted) {
               a.userData.counted = true;
               this._animalCrossCount++;
-              toast(`🐾 Animals yielded: ${this._animalCrossCount}/3`, '#34d399');
+              toast(` Animals yielded: ${this._animalCrossCount}/3`, '#34d399');
             }
           });
         }
@@ -13684,7 +13784,7 @@ class Game {
               l.userData.hit = true;
               this._litterHits++;
               this.vio++; this.violationsLog.push('LITTER_HIT'); this.score -= 15;
-              toast(`🗑️ Litter hit! -15 pts (${this._litterHits} total)`, '#ff9500');
+              toast(` Litter hit! -15 pts (${this._litterHits} total)`, '#ff9500');
               if (typeof sfx !== 'undefined' && sfx.play) {sfx.play('error');}
               if (window.GameplayRecorder) {GameplayRecorder.record('LITTER_HIT', { score: this.score });}
             }
@@ -13719,7 +13819,7 @@ class Game {
             const dist = Math.sqrt(dx * dx + dz * dz);
             if (dist < 12 && dist > 4 && !cp.triggered && !cp.cleared) {
               cp.triggered = true;
-              toast('👮 Police checkpoint — Stop your vehicle!', '#3b82f6');
+              toast(' Police checkpoint — Stop your vehicle!', '#3b82f6');
               if (typeof sfx !== 'undefined' && sfx.play) {sfx.play('horn');}
               this._policeStopActive = true;
               this._policeStopTimer = 0;
@@ -13731,7 +13831,7 @@ class Game {
                   cp.cleared = true;
                   this._policeStopActive = false;
                   this._policeStopTimer = 0;
-                  toast('✅ Checkpoint cleared! Drive safe.', '#34d399');
+                  toast(' Checkpoint cleared! Drive safe.', '#34d399');
                   this.score += 20;
                 }
               } else if (dist < 15 && this._policeStopTimer > 0.5 && Math.abs(this.speed) > 0.3) {
@@ -13743,7 +13843,7 @@ class Game {
                   if (this._triggerPoliceStrobe) {this._triggerPoliceStrobe();} (window.ui&&typeof window.ui.issueChallan==="function"?window.ui.issueChallan:function(){})('Fleeing Police Checkpoint', 'Sec 186 MV Act', '₹2,000', 'Checkpoint Evasion');
                   this.score -= 50; this.fine += 2000; this.vio++; this.violationsLog.push('CHECKPOINT_EVASION');
                 }
-                toast('🚨 You fled the checkpoint! ₹2,000 fine!', '#ef4444');
+                toast(' You fled the checkpoint! ₹2,000 fine!', '#ef4444');
                 if (window.GameplayRecorder) {GameplayRecorder.record('CHECKPOINT_EVASION', { speed: Math.round(Math.abs(this.speed) * 100), score: this.score, fine: this.fine });}
               }
             }
@@ -13760,6 +13860,42 @@ class Game {
         // surfaces as a silent console error and a frozen-looking set.
         if (!this.challanFired) { this.challanFired = new Set(); }
         let nearestSig = null, nearestDist = 9999;
+
+        // ── Level-driven signal hold (Lesson 1 red-light lesson) ──────────────
+        // A lesson about waiting at a red must actually get a red. The authored
+        // phase is a 15s cycle that starts green, so without this the player can
+        // arrive on green and `wait_red` can never complete. While the player
+        // approaches, their axis is held red; once they stop at the line and
+        // wait `waitAfterStop` seconds (or once they cross), the hold releases
+        // and the normal cycle resumes at green.
+        const _hold = this.mapCfg && this.mapCfg.signalHold;
+        let _holdActive = false;
+        let _hx = 0, _hz = 0;
+        // The axis the player is travelling on, used to pick the signal heads
+        // that actually govern them. Without this, crossing on a green would
+        // challan the player against the perpendicular red heads.
+        const _prot = (this.player && this.player.rotation) ? this.player.rotation.y : 0;
+        const _playerAxis = (Math.abs(Math.cos(_prot)) > Math.abs(Math.sin(_prot))) ? 'v' : 'h';
+        if (_hold && !this._signalHoldDone && this._everEnteredVehicle && this.player) {
+          _hx = Array.isArray(_hold.junction) ? _hold.junction[0] : (_hold.junction && _hold.junction.x) || 0;
+          _hz = Array.isArray(_hold.junction) ? _hold.junction[1] : (_hold.junction && _hold.junction.z) || 0;
+          const _p = this.player.position;
+          const _dist = Math.hypot(_p.x - _hx, _p.z - _hz);
+          const _crossOff = _hold.crossOffset !== undefined ? _hold.crossOffset : 8;
+          const _crossed = (_hold.axis === 'v') ? (_p.z >= _hz + _crossOff) : (_p.x >= _hx + _crossOff);
+          if (_crossed) {
+            this._signalHoldDone = true;
+          } else if (_dist < (_hold.approachRadius || 90)) {
+            const _stopped = Math.abs(this.speed) < 0.15 && _dist < (_hold.stopRadius || 24);
+            this._signalHoldWait = _stopped ? (this._signalHoldWait || 0) + dt : 0;
+            if (this._signalHoldWait >= (_hold.waitAfterStop || 3)) {
+              this._signalHoldDone = true;
+            } else {
+              _holdActive = true;
+            }
+          }
+        }
+
         this.sigs.forEach(sg => {
           const d = sg.userData;
           d.t = (d.t || 0) + dt;
@@ -13799,11 +13935,38 @@ class Game {
           const pr = sg.getObjectByName('p_red'), pg = sg.getObjectByName('p_green');
           if (pr) {pr.material.color.setHex(d.st === 'red' ? 0x1a0505 : 0xff3b30);}
           if (pg) {pg.material.color.setHex(d.st === 'red' ? 0x00e676 : 0x051a08);}
+
+          // Held red for the player's approach (see the hold block above).
+          // Applied after the normal phase so it wins for this frame.
+          if (_holdActive && sg.userData && sg.userData.axis === _hold.axis) {
+            const hjx = sg.userData.junctionX !== undefined ? sg.userData.junctionX : sg.position.x;
+            const hjz = sg.userData.junctionZ !== undefined ? sg.userData.junctionZ : sg.position.z;
+            if (Math.hypot(hjx - _hx, hjz - _hz) < 8) {
+              d.st = 'red';
+              sg.state = 'red';
+              if (r) {r.material.color.setHex(0xff3b30); if (r.material.emissive) {r.material.emissive.setHex(0xff2222);}}
+              if (y) {y.material.color.setHex(0x1a1605); if (y.material.emissive) {y.material.emissive.setHex(0x000000);}}
+              if (g) {g.material.color.setHex(0x051a08); if (g.material.emissive) {g.material.emissive.setHex(0x000000);}}
+              if (r2) {r2.material.color.setHex(0xff3b30); if (r2.material.emissive) {r2.material.emissive.setHex(0xff2222);}}
+              if (y2) {y2.material.color.setHex(0x1a1605); if (y2.material.emissive) {y2.material.emissive.setHex(0x000000);}}
+              if (g2) {g2.material.color.setHex(0x051a08); if (g2.material.emissive) {g2.material.emissive.setHex(0x000000);}}
+              if (pr) {pr.material.color.setHex(0x1a0505);}
+              if (pg) {pg.material.color.setHex(0x00e676);}
+            }
+          }
           // Reset challan flag when signal turns green
           if (d.st === 'green' && prev !== 'green') {this.challanFired.delete(sg.uuid);}
           // Challan ONCE per red phase per signal
           const dist = this.player.position.distanceTo(sg.position);
-          if (d.st === 'red' && dist < 6.5 && Math.abs(this.speed) > .18 && !this.challanFired.has(sg.uuid)) {
+          // Red-light enforcement is measured to the junction box, not the
+          // physical head on the far corner: the head can be 20m from the stop
+          // line on a wide road, so the old 6.5m radius only fired once the
+          // player was already through the junction.
+          const jx = sg.userData.junctionX !== undefined ? sg.userData.junctionX : sg.position.x;
+          const jz = sg.userData.junctionZ !== undefined ? sg.userData.junctionZ : sg.position.z;
+          const junctionDist = Math.hypot(this.player.position.x - jx, this.player.position.z - jz);
+          const challanRadius = (sg.userData.roadWidth || 12) / 2;
+          if (!this.isPedestrian && d.st === 'red' && sg.userData.axis === _playerAxis && junctionDist < challanRadius && Math.abs(this.speed) > .18 && !this.challanFired.has(sg.uuid)) {
             this.challanFired.add(sg.uuid);
             
             // Check cumulative rules engine
@@ -13815,12 +13978,47 @@ class Game {
             } else {
               // First offense - warning
               this.violationsLog.push('RED_LIGHT_WARNING');
-              toast('⚠️ Red light violation — first warning', '#f2b84b');
+              toast(' Red light violation — first warning', '#f2b84b');
             }
           }
           // Track nearest signal for HUD
           if (dist < nearestDist) { nearestDist = dist; nearestSig = sg; }
         });
+
+        // Release the hold on the green phase, so the light the player has been
+        // waiting for is the next thing they see.
+        if (_hold && this._signalHoldWasActive && !_holdActive) {
+          this.sigs.forEach(sg => {
+            if (!sg.userData || sg.userData.axis !== _hold.axis) {return;}
+            const hjx = sg.userData.junctionX !== undefined ? sg.userData.junctionX : sg.position.x;
+            const hjz = sg.userData.junctionZ !== undefined ? sg.userData.junctionZ : sg.position.z;
+            if (Math.hypot(hjx - _hx, hjz - _hz) < 8) {
+              sg.userData.t = sg.userData.phaseOffset || 0;
+            }
+          });
+        }
+        this._signalHoldWasActive = _holdActive;
+
+        // Latch "crossed the junction on green after waiting at the red" for
+        // the `green_light` objective. `_movedAfterGreen` was true on any
+        // movement during any green, including before the junction.
+        if (this._waitRedDone && !this.isPedestrian && this.player) {
+          const prot = this.player.rotation ? this.player.rotation.y : 0;
+          const vertical = Math.abs(Math.cos(prot)) > Math.abs(Math.sin(prot));
+          for (const sg of this.sigs) {
+            if (!sg.userData || sg.userData.st !== 'green') {continue;}
+            const axis = sg.userData.axis;
+            if (vertical && axis !== 'v') {continue;}
+            if (!vertical && axis !== 'h') {continue;}
+            const jx = sg.userData.junctionX !== undefined ? sg.userData.junctionX : sg.position.x;
+            const jz = sg.userData.junctionZ !== undefined ? sg.userData.junctionZ : sg.position.z;
+            const r = (sg.userData.roadWidth || 12) / 2 + 4;
+            if (Math.hypot(this.player.position.x - jx, this.player.position.z - jz) < r && Math.abs(this.speed) > 0.05) {
+              this._crossedJunctionOnGreen = true;
+            }
+          }
+        }
+
         // Update signal proximity indicator
         const si = this.dom['sig-ind'];
         if (si) {
@@ -13864,10 +14062,9 @@ class Game {
         this._lodFrame = (this._lodFrame || 0) + 1;
         if (!force && this._lodFrame % 10 !== 0) {return;} // ~6x/sec for smooth responsive LOD updates
         const px = this.player.position.x, pz = this.player.position.z;
-        const STATIC_GROUPS = {
-          'block-fill': 1, 'plot-buildings': 1, 'story-sets': 1, 'story-stage': 1,
-          'breadcrumb-flow': 1, 'SuburbanNeighborhoodScenery': 1, 'mumbai-district': 1,
-          'road-network': 1, 'sidewalk-network': 1, 'road-problems': 1
+        const ALWAYS_VISIBLE_GROUPS = {
+          'story-stage': 1, 'breadcrumb-flow': 1,
+          'road-network': 1, 'sidewalk-network': 1
         };
 
         if (!this._lodChildren || force || this._lodFrame % 120 === 0) {
@@ -13889,7 +14086,7 @@ class Game {
             }
           });
         }
-        const effectiveDist = Math.max(350, (this.renderDistance || (this._isMobile ? 260 : 520)) * lodMult);
+        const effectiveDist = Math.max(240, (this.renderDistance || (this._isMobile ? 240 : 500)) * lodMult);
         const visDistSq = effectiveDist * effectiveDist;
         const nearDistSq = 65 * 65;   // Tier 1: Full detail, shadows on fine props up to 65m
         const midDistSq = 160 * 160;  // Tier 2: Mid detail, minor shadows off, all street vendors, cars, props visible up to 160m
@@ -13899,7 +14096,7 @@ class Game {
         for (let i = 0; i < len; i++) {
           const child = this._lodChildren[i];
           if (!child || !child.position) {continue;}
-          if (child.name && (STATIC_GROUPS[child.name] || child.name.startsWith('mumbai_chunk_'))) {
+          if (child.name && ALWAYS_VISIBLE_GROUPS[child.name]) {
             if (!child.visible) {child.visible = true;}
             continue;
           }
@@ -14219,10 +14416,10 @@ class Game {
                     this._crashPushT = 0;
                     this._crashPushX = 0;
                     this._crashPushZ = 0;
-                    this._camShakeAmt = Math.max(this._camShakeAmt, 0.4);
+                    this._camShakeAmt = Math.max(this._camShakeAmt, 0.3);
 
                     if (window.TrafficAudio) {window.TrafficAudio.playCrash(1.2);}
-                    toast('💥 Contact with traffic!', '#ef4444', 2000);
+                    toast(' Contact with traffic!', '#ef4444', 2000);
                     this.violationsLog.push('TRAFFIC_COLLISION');
                     if (window.GameplayRecorder) {GameplayRecorder.record('TRAFFIC_HIT', { score: this.score });}
                   }
@@ -14289,9 +14486,13 @@ class Game {
             if (n.userData._stuckTimer > 5) {
               // Instead of spamming horn every frame, honk once with a strict 14s cooldown
               const nowSec = this.timer || 0;
-              if (nowSec - (n.userData._lastHonkTime || 0) > 14 && window.sfx && window.sfx.play) {
+              if (nowSec - (n.userData._lastHonkTime || 0) > 14) {
                 n.userData._lastHonkTime = nowSec;
-                window.sfx.play('horn');
+                if (window.TrafficAudio && typeof window.TrafficAudio.playHonk === 'function') {
+                  window.TrafficAudio.playHonk();
+                } else if (window.sfx && window.sfx.play) {
+                  window.sfx.play('horn');
+                }
               }
               // Genuinely stuck (not just briefly waiting at a light) for 7+ seconds —
               // attempt one emergency lane nudge to route around whatever's blocking, rather
@@ -14669,8 +14870,12 @@ class Game {
                   n.userData._stoppedTime = (n.userData._stoppedTime || 0) + dt;
                   // Honk more aggressively when player blocks (every 2s vs 3s)
                   const honkThreshold = isBlockedByPlayer ? 2 : 3;
-                  if (n.userData._stoppedTime > honkThreshold && Math.random() < (isBlockedByPlayer ? 0.03 : 0.02) && window.sfx) {
-                    window.sfx.play('horn');
+                  if (n.userData._stoppedTime > honkThreshold && Math.random() < (isBlockedByPlayer ? 0.03 : 0.02)) {
+                    if (window.TrafficAudio && typeof window.TrafficAudio.playHonk === 'function') {
+                      window.TrafficAudio.playHonk();
+                    } else if (window.sfx && window.sfx.play) {
+                      window.sfx.play('horn');
+                    }
                     n.userData._stoppedTime = 0;
                   }
                 } else {
@@ -14929,7 +15134,7 @@ class Game {
             
             // Check if player cleared the way
             if (ambDz > 0 && Math.abs(this.player.position.x) > 3.2 && !this.ms.passed) {
-              this.ms.passed = true; this.score += 100; toast('✅ Ambulance Cleared!', '#00c851');
+              this.ms.passed = true; this.score += 100; toast(' Ambulance Cleared!', '#00c851');
             }
             
             // Check if player is blocking the ambulance (Ambulance is right behind player)
@@ -14954,7 +15159,7 @@ class Game {
               // Pedestrian hit by vehicle - instant failure
               this.hp = 0;
               this._showIRLDeathPopup(n.userData.npcType || 'Vehicle');
-              toast('🚨 HIT BY VEHICLE!', '#ff3b30');
+              toast(' HIT BY VEHICLE!', '#ff3b30');
             } else {
               // Vehicle collision — enhanced crash impact system
               const impactSpeed = Math.abs(this.speed);
@@ -14964,7 +15169,7 @@ class Game {
               this._applyCrashImpact(n.position, impactSpeed);
               if(window.sfx) {window.sfx.play('error');}
               if (this.player) {this._spawnSkidMark(this.player.position.x, this.player.position.z, this.player.rotation.y, impactSpeed * 3);}
-              toast('💥 Collision! ' + (impactSpeed > 0.6 ? 'SEVERE' : 'Minor') + ' Impact', '#ff3b30');
+              toast(' Collision! ' + (impactSpeed > 0.6 ? 'SEVERE' : 'Minor') + ' Impact', '#ff3b30');
               this._collidedThisFrame = true;
               this._lastCollisionType = n.userData.npcType || '';
               if (window.GameplayRecorder) {GameplayRecorder.record('COLLISION', { speed: Math.round(impactSpeed * 100), npcType: n.userData.npcType, score: this.score, impactIntensity: Math.round(impactSpeed * 100) });}
@@ -14978,11 +15183,15 @@ class Game {
                 flash.style.opacity = '0.35';
                 setTimeout(() => { flash.style.opacity = '0'; }, 300);
                 // Aggressive honk SFX
-                if (typeof sfx !== 'undefined' && sfx.play) {sfx.play('horn');}
+                if (window.TrafficAudio && typeof window.TrafficAudio.playHonk === 'function') {
+                  window.TrafficAudio.playHonk();
+                } else if (typeof sfx !== 'undefined' && sfx.play) {
+                  sfx.play('horn');
+                }
                 // NPC flashes (tint red briefly)
                 const origColor = n.material?.color?.getHex();
                 if (n.material) { n.material.emissive?.setHex(0xff0000); setTimeout(() => { n.material.emissive?.setHex(0x000000); }, 1500); }
-                toast('😠 Road rage! NPC is angry!', '#ef4444');
+                toast(' Road rage! NPC is angry!', '#ef4444');
                 this.score -= 10;
               }
             }
@@ -15008,7 +15217,7 @@ class Game {
                 n.userData.spd *= 0.7;
                 // Visual feedback
                 if (Math.random() < 0.1) {
-                  toast('⚠️ Pedestrian nearly hit!', '#ff9500');
+                  toast(' Pedestrian nearly hit!', '#ff9500');
                 }
               }
             });
@@ -15060,6 +15269,15 @@ class Game {
         // level); the absence fallback in _checkTasks prevents softlocks.
         if (!this.isPedestrian && this._nearbyPedCount > 0 && Math.abs(this.speed) < 0.25 && this._everEnteredVehicle) {
           this._yieldedToPeds = true;
+        }
+        // Stopped at an authored zebra (with or without a pedestrian present).
+        if (!this.isPedestrian && this._everEnteredVehicle && Math.abs(this.speed) < 0.25 && this._nearZebra(14)) {
+          this._stoppedAtCrossing = true;
+        }
+        // Slowed near any pedestrian or crossing, so levels without an authored
+        // zebra can still complete their yield objective without softlocking.
+        if (!this.isPedestrian && this._everEnteredVehicle && Math.abs(this.speed) < 0.6 && (this._nearbyPedCount > 0 || this._nearZebra(20))) {
+          this._slowedNearCrossing = true;
         }
         
         // Despawn far pedestrians (Phase 7: hide instead of destroy, reuse later)
@@ -15226,7 +15444,7 @@ class Game {
             if (!this.isPedestrian && pSpd > 1.2 && (!this._spawnInvulnerable || this._spawnInvulnerable <= 0)) {
               this.speed = 0;
               this.hp = 0;
-              toast('💥 HIT PEDESTRIAN! INSTANT FAILURE!', '#ff3b30');
+              toast(' HIT PEDESTRIAN! INSTANT FAILURE!', '#ff3b30');
               this._uh();
               this._go('Hit Pedestrian');
               break;
@@ -15268,7 +15486,7 @@ class Game {
               // moves the animal along the road. It used to be animated here
               // as a second, sideways rAF loop, so the cow was driven by two
               // competing motions at once.
-              toast('🐄 The cow has moved along', '#8bc34a');
+              toast(' The cow has moved along', '#8bc34a');
             }
           } else {
             this._nearAnimalStoppedSince = null;
@@ -15432,9 +15650,9 @@ class Game {
                 this._camShakeAmt = Math.max(this._camShakeAmt, 0.35);
                 if (window.TrafficAudio) {window.TrafficAudio.playCrash(1.2);}
                 if (ud.isVehicle) {
-                  toast('💥 Vehicle Collision!', '#ef4444', 2500);
+                  toast(' Vehicle Collision!', '#ef4444', 2500);
                 } else {
-                  toast('🚧 Structure Collision!', '#ef4444', 2500);
+                  toast(' Structure Collision!', '#ef4444', 2500);
                 }
                 if (window.GameplayRecorder) {GameplayRecorder.record('COLLISION_HIT', { score: this.score });}
               }
@@ -15448,7 +15666,7 @@ class Game {
                     this.score -= 50;
                     this.fine += 500;
                     this._triggerPoliceStrobe(); (window.ui&&typeof window.ui.issueChallan==="function"?window.ui.issueChallan:function(){})('Splashed water on pedestrians', 'Sec 184 MV Act', '₹500', 'Reckless Driving');
-            toast('💦 Splashed Water! Too Fast!', '#ff3b30');
+            toast(' Splashed Water! Too Fast!', '#ff3b30');
             sfx.play('error');
             if (window.GameplayRecorder) {GameplayRecorder.record('SPLASH', { score: this.score, fine: this.fine });}
                     // Splash particle burst
@@ -15466,7 +15684,7 @@ class Game {
                     if (Math.abs(this.speed) > 0.4) {
                         // Scrub, don't snap: rate-limited like the governor
                         this.speed = Math.max(0.4, this.speed - (this.accel * 2 + 0.02) * dt * 60 * 3);
-                        toast('⚠️ Slow down on speed breakers!', '#ff9500');
+                        toast(' Slow down on speed breakers!', '#ff9500');
                         sfx.play('error');
                     } else {
                         this.playerVehicle.position.y = 0.2;
@@ -15559,7 +15777,7 @@ class Game {
             hits++;
             // F4 respawn anchor: last cleared checkpoint (heading preserved)
             this._lastCpPos = { x: cp.position.x, z: cp.position.z, rotY: this.player ? this.player.rotation.y : 0 };
-            const toastMsg = (cp.userData && cp.userData.isFinish) ? '🏁 DESTINATION REACHED!' : `✅ ${cp.userData.desc || 'Checkpoint Passed!'}`;
+            const toastMsg = (cp.userData && cp.userData.isFinish) ? ' DESTINATION REACHED!' : ` ${cp.userData.desc || 'Checkpoint Passed!'}`;
             toast(toastMsg, '#00e676');
             // F1 pace fanfare: split time vs your best run on this level
             try {
@@ -15573,7 +15791,7 @@ class Game {
                 const d = (this.timer || 0) - best.splits[si];
                 const sign = d <= 0 ? '−' : '+';
                 const mag = Math.abs(d).toFixed(1);
-                toast((d <= 0 ? '⚡ ' : '🐢 ') + sign + mag + 's vs best pace', d <= 0 ? '#00e676' : '#f2b84b');
+                toast((d <= 0 ? ' ' : ' ') + sign + mag + 's vs best pace', d <= 0 ? '#00e676' : '#f2b84b');
               }
             } catch (e) {}
             if (window.TrafficAudio && window.TrafficAudio.playCheckpoint) {
@@ -15627,9 +15845,9 @@ class Game {
               if (daDist) daDist.textContent = `${dist}m`;
 
               if (activeCp.userData && activeCp.userData.isFinish) {
-                if (dal) dal.textContent = '🏁 Finish: Sharma General Stores';
+                if (dal) dal.textContent = ' Finish: Sharma General Stores';
               } else if (activeCp.userData && activeCp.userData.desc) {
-                const turnPrefix = Math.abs(deg) < 25 ? '⬆️ Straight: ' : deg > 0 ? '➡️ Turn Right: ' : '⬅️ Turn Left: ';
+                const turnPrefix = Math.abs(deg) < 25 ? ' Straight: ' : deg > 0 ? ' Turn Right: ' : ' Turn Left: ';
                 if (dal) dal.textContent = turnPrefix + activeCp.userData.desc;
               } else {
                 const turnText = Math.abs(deg) < 25 ? 'Go Straight' : deg > 0 ? 'Turn Right' : 'Turn Left';
@@ -15910,7 +16128,7 @@ class Game {
               this._grip = rain ? vs.grip * 0.3 : vs.grip;
               this.setGear('D');
               this.speed = 0;
-              toast(this.seatbeltOn ? '🚗 Entered +10% Speed Bonus!' : '🚗 Entered Vehicle! (Gear: Drive)', this.seatbeltOn ? '#27ae60' : '#00c851');
+              toast(this.seatbeltOn ? ' Entered +10% Speed Bonus!' : ' Entered Vehicle! (Gear: Drive)', this.seatbeltOn ? '#27ae60' : '#00c851');
             }
           }
         } else {
@@ -16225,7 +16443,10 @@ class Game {
               const margin = 5;
               for (let i = 0; i < this.obstacles.length; i++) {
                 const ob = this.obstacles[i];
+                // Traffic NPCs are excluded: they move, so a raycast against
+                // them makes the chase cam snap in and out as cars pass.
                 if (!ob || !ob.position || ob === this.playerVehicle || ob === this.playerCharacter || ob === this.player) {continue;}
+                if (ob.userData && ob.userData.isTrafficNpc) {continue;}
                 const odx = ob.position.x - _pp.x, odz = ob.position.z - _pp.z;
                 if (odx * odx + odz * odz < (rayLen + margin) * (rayLen + margin)) {_nearObs.push(ob);}
               }
@@ -16493,10 +16714,10 @@ class Game {
             const isDone = !!t.done;
             const text = t.text || t.label || t.id;
             if (isDone) {
-              tasksHtml += `<div style="color:#00e676;display:flex;align-items:center;gap:6px;"><span>✔</span> <span style="text-decoration:line-through;opacity:0.75;">${text}</span></div>`;
+              tasksHtml += `<div style="color:#00e676;display:flex;align-items:center;gap:6px;"><span></span> <span style="text-decoration:line-through;opacity:0.75;">${text}</span></div>`;
             } else if (!firstUndoneFound) {
               firstUndoneFound = true;
-              tasksHtml += `<div style="color:#38bdf8;font-weight:700;display:flex;align-items:center;gap:6px;"><span>➔</span> <span>${text}</span></div>`;
+              tasksHtml += `<div style="color:#38bdf8;font-weight:700;display:flex;align-items:center;gap:6px;"><span></span> <span>${text}</span></div>`;
             } else {
               tasksHtml += `<div style="color:#94a3b8;opacity:0.6;display:flex;align-items:center;gap:6px;"><span>○</span> <span>${text}</span></div>`;
             }
@@ -16527,10 +16748,10 @@ class Game {
         const hits = this.hits || 0;
         const totalCps = (this.cps && this.cps.length) ? this.cps.length : 1;
 
-        const step1Html = isCar ? '<span style="color:#00e676;">✔ Step 1: In Vehicle [F]</span>' : '<span style="color:#facc15;font-weight:700;">➔ Step 1: Press [F] to enter Car</span>';
-        const step2Html = (isCar && !isGreen) ? '<span style="color:#facc15;font-weight:700;">➔ Step 2: Stop at Red Signal & Wait</span>' : (isGreen ? '<span style="color:#00e676;">✔ Step 2: Signal Green</span>' : '<span style="color:#64748b;">Step 2: Red Signal</span>');
+        const step1Html = isCar ? '<span style="color:#00e676;"> Step 1: In Vehicle [F]</span>' : '<span style="color:#facc15;font-weight:700;"> Step 1: Press [F] to enter Car</span>';
+        const step2Html = (isCar && !isGreen) ? '<span style="color:#facc15;font-weight:700;"> Step 2: Stop at Red Signal & Wait</span>' : (isGreen ? '<span style="color:#00e676;"> Step 2: Signal Green</span>' : '<span style="color:#64748b;">Step 2: Red Signal</span>');
         const step3Html = (isCar && isGreen)
-          ? `<span style="color:#38bdf8;font-weight:700;">➔ Step 3: Drive to Destination (${distToGoal}m) [${hits}/${totalCps}]</span>`
+          ? `<span style="color:#38bdf8;font-weight:700;"> Step 3: Drive to Destination (${distToGoal}m) [${hits}/${totalCps}]</span>`
           : `<span style="color:#64748b;">Step 3: Reach Destination</span>`;
 
         const stepMarkup = `
@@ -16579,14 +16800,14 @@ class Game {
         if (k > speedLimitKmh) {
           warnMsg = `
             <div style="background:rgba(220, 38, 38, 0.95); border:2px solid #fca5a5; border-radius:30px; padding:10px 22px; color:#ffffff; font-weight:800; font-size:0.95rem; letter-spacing:0.5px; box-shadow:0 10px 30px rgba(220, 38, 38, 0.6); display:flex; align-items:center; gap:8px;">
-              <span style="font-size:1.2rem;">⚠️</span>
+              <span style="font-size:1.2rem;"></span>
               <span>OVERSPEEDING (${k}/${speedLimitKmh} KM/H) — PRESS <kbd style="background:#fff; color:#b91c1c; padding:2px 8px; border-radius:5px; font-weight:900; box-shadow:0 2px 0 #991b1b; font-family:'Space Mono', monospace; font-size:0.9rem;">L</kbd> TO LIMIT</span>
             </div>
           `;
         } else if (k > 50 && Math.abs(this.player.rotation.y - (this.lastRotY || this.player.rotation.y)) > 0.06) {
           warnMsg = `
             <div style="background:rgba(245, 158, 11, 0.95); border:2px solid #fde68a; border-radius:30px; padding:8px 20px; color:#0f172a; font-weight:800; font-size:0.92rem; letter-spacing:0.5px; box-shadow:0 8px 24px rgba(245, 158, 11, 0.5); display:flex; align-items:center; gap:8px;">
-              <span style="font-size:1.2rem;">⚠️</span>
+              <span style="font-size:1.2rem;"></span>
               <span>SHARP CORNER — SLOW DOWN</span>
             </div>
           `;
@@ -16617,7 +16838,7 @@ class Game {
               if (dist < 8.5) {
                 const enterHintHtml = `
                   <div style="background:linear-gradient(135deg, rgba(13, 19, 31, 0.95), rgba(21, 29, 45, 0.95)); border:2px solid #f59e0b; border-radius:30px; padding:10px 22px; color:#ffffff; font-weight:800; font-size:0.98rem; letter-spacing:0.4px; box-shadow:0 12px 32px rgba(0, 0, 0, 0.8), 0 0 20px rgba(245, 158, 11, 0.35); display:flex; align-items:center; gap:10px;">
-                    <span style="font-size:1.3rem;">🚗</span>
+                    <span style="font-size:1.3rem;"></span>
                     <span>PRESS <kbd style="background:linear-gradient(180deg, #f59e0b, #d97706); color:#070a14; padding:3px 10px; border-radius:6px; font-weight:900; box-shadow:0 3px 0 #92400e; margin:0 4px; font-family:'Space Mono', monospace; font-size:0.95rem;">F</kbd> TO ENTER CAR</span>
                   </div>
                 `;
@@ -16678,7 +16899,7 @@ class Game {
             const slGov = document.getElementById('sl-gov-tag');
             if (slGov) {
               if (this.speedLimiter) {
-                slGov.textContent = '🔒 ON';
+                slGov.textContent = 'LIMIT: ON';
                 slGov.style.background = '#00e676';
                 slGov.style.color = '#000';
                 slBadge.style.borderColor = '#00e676';
@@ -16772,7 +16993,7 @@ class Game {
             htmr.textContent = Math.floor(rem / 60) + ':' + ((rem % 60) < 10 ? '0' : '') + (rem % 60);
             if (rem <= 15) { htmr.style.color = '#ff3b30'; } else { htmr.style.color = ''; }
         }
-        if (rem <= 0 && this.playing) { this._go("Structural Failure"); toast('⏰ Time Up!', '#ff3b30'); return; }
+        if (rem <= 0 && this.playing) { this._go("Structural Failure"); toast(' Time Up!', '#ff3b30'); return; }
         const hfin = this.dom['hfin']; if (hfin && this.fine > 0) {hfin.textContent = '₹' + this.fine;}
         // ── Day/Night clock HUD ──
         if (this.dayNightCycle || this.mapCfg.isNight) {
@@ -16789,7 +17010,7 @@ class Game {
             const dnIconEl = this.dom['dn-icon'];
             if (dnTimeEl) {dnTimeEl.textContent = timeStr;}
             const sunElev = Math.max(0, Math.sin(tod * Math.PI * 2 - Math.PI / 2));
-            if (dnIconEl) {dnIconEl.textContent = sunElev > 0.3 ? '☀️' : sunElev > 0.05 ? (tod < 0.5 ? '🌅' : '🌇') : '🌙';}
+            if (dnIconEl) {dnIconEl.textContent = sunElev > 0.3 ? '' : sunElev > 0.05 ? (tod < 0.5 ? '' : '') : '';}
             if (sunElev > 0.05 && sunElev < 0.3) {
               dnClock.style.background = tod < 0.5 ? 'rgba(255,170,100,0.92)' : 'rgba(220,100,50,0.92)';
             } else {
@@ -16949,7 +17170,7 @@ class Game {
           ctx.fillStyle = '#fff';
           ctx.font = 'bold 9px monospace';
           ctx.textAlign = 'center';
-          ctx.fillText('✦', wx(dest.x), wz(dest.z) + 3);
+          ctx.fillText('', wx(dest.x), wz(dest.z) + 3);
         }
 
         // ── NPC vehicles ──
@@ -17327,7 +17548,7 @@ class Game {
       if(!btn || typeof JSZip === "undefined") { alert("Zip library loading, please wait."); return; }
       
       const origText = btn.innerHTML;
-      btn.innerHTML = "&#9203; Zipping... (Make sure to run via local server for this to work!)";
+      btn.innerHTML = "Zipping... (Make sure to run via local server for this to work!)";
       btn.style.pointerEvents = "none";
       
       try {
@@ -17378,11 +17599,11 @@ class Game {
         document.body.removeChild(a);
         setTimeout(() => URL.revokeObjectURL(url), 1000);
         
-        btn.innerHTML = "&#9989; Downloaded!";
+        btn.innerHTML = "Downloaded!";
         setTimeout(() => { btn.innerHTML = origText; btn.style.pointerEvents = "auto"; }, 3000);
       } catch(e) {
         console.error(e);
-        btn.innerHTML = "&#10060; Error!";
+        btn.innerHTML = "Error!";
         setTimeout(() => { btn.innerHTML = origText; btn.style.pointerEvents = "auto"; }, 3000);
       }
     };

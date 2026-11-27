@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 28,
-  icon: '🅿️',
+  icon: 'parking',
   name: 'Lesson 28 - Parking Rules!',
   modes: ['pedestrian', 'car', 'bike'],
   col: '#3498db',
@@ -16,7 +16,7 @@ window.LVS.push({
     offHi: 'अवैध पार्किंग'
   },
   theory:
-    '<h2>Parking Rules!</h2><p>Shopping area ke paas park karna hai — lekin paas mein fire hydrant hai aur no-parking zone hai. Legal parking thoda door hai!</p><p>Fire hydrant ke paas kabhi mat park karo — emergency mein fire brigade ko access chahiye! No-parking zone mein park karna ₹500-₹2000 ka fine hai. Blue "P" sign wala zone mein park karo — bilkul safe!</p><h3>🅿️ Kya karna hai?</h3><ul><li>Fire hydrant ke paas MAT park karo!</li><li>No-parking zone MAT use karo!</li><li>Blue "P" parking zone mein park karo.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Illegal parking MV Act Section 122 ke under hai — ₹500 se ₹2000 tak ka fine!</p>',
+    '<h2>Parking Rules!</h2><p>Shopping area ke paas park karna hai — lekin paas mein fire hydrant hai aur no-parking zone hai. Legal parking thoda door hai!</p><p>Fire hydrant ke paas kabhi mat park karo — emergency mein fire brigade ko access chahiye! No-parking zone mein park karna ₹500-₹2000 ka fine hai. Blue "P" sign wala zone mein park karo — bilkul safe!</p><h3> Kya karna hai?</h3><ul><li>Fire hydrant ke paas MAT park karo!</li><li>No-parking zone MAT use karo!</li><li>Blue "P" parking zone mein park karo.</li></ul><h3> Kanoon kya kehta hai?</h3><p>Illegal parking MV Act Section 122 ke under hai — ₹500 se ₹2000 tak ka fine!</p>',
   pract: 'Drive past the hydrant and no-parking zone. Park in the designated parking zone. Walk to your destination.',
   mode: 'practical',
   themeType: 'parking_rules',

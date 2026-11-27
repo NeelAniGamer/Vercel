@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 38,
-  icon: '🎉',
+  icon: 'trophy',
   name: 'Lesson 38 - Festival Traffic!',
   modes: ['car', 'bike'],
   col: '#e74c3c',
@@ -16,7 +16,7 @@ window.LVS.push({
     offHi: 'त्योहारी यातायात उल्लंघन'
   },
   theory:
-    '<h2>Festival Traffic!</h2><p>Tyohaar ka julus road pe aa raha hai — road blocked hai! Diversion signs hain lekin log idhar udhar bhaag rahe hain!</p><p>Festival traffic mein bahut patience chahiye. Procession ko priority do. Diversion follow karo. Log suddenly road pe aa sakte hain — hamesha ready raho!</p><h3>🎉 Kya karna hai?</h3><ul><li>Procession ko priority do — unka raasta chhodo!</li><li>Diversion sign follow karo.</li><li>Crowd ke beech extremely slow chalao.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Festival traffic ka violation MV Act Section 117 ke under illegal hai — ₹1000 se ₹5000 tak ka fine!</p>',
+    '<h2>Festival Traffic!</h2><p>Tyohaar ka julus road pe aa raha hai — road blocked hai! Diversion signs hain lekin log idhar udhar bhaag rahe hain!</p><p>Festival traffic mein bahut patience chahiye. Procession ko priority do. Diversion follow karo. Log suddenly road pe aa sakte hain — hamesha ready raho!</p><h3> Kya karna hai?</h3><ul><li>Procession ko priority do — unka raasta chhodo!</li><li>Diversion sign follow karo.</li><li>Crowd ke beech extremely slow chalao.</li></ul><h3> Kanoon kya kehta hai?</h3><p>Festival traffic ka violation MV Act Section 117 ke under illegal hai — ₹1000 se ₹5000 tak ka fine!</p>',
   pract: 'Yield to the procession. Follow the diversion route. Drive extremely slowly through the crowd. Reach your destination.',
   mode: 'practical',
   themeType: 'festival',

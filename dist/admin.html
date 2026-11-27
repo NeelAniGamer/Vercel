@@ -10,7 +10,7 @@
     <title>Admin Command Center | Class Of Learners</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" onload="this.onload=null;this.rel='stylesheet'" /><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" /></noscript>
 
     <link rel="stylesheet" href="col-ui.css?v=1782446126.5715783" />
   <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
@@ -837,6 +837,17 @@
         background: #b91c1c !important;
         color: #ffffff !important;
       }
+    
+
+  .btn-danger-outline { color: #f87171 !important; border-color: rgba(248, 113, 113, 0.45) !important; }
+  .msk-danger { background: #b91c1c !important; color: #ffffff !important; }
+  body.lm .tab-btn.active, body.lm .btn-action, body.lm .brand-tag { color: #0369a1 !important; }
+  body.lm .btn-danger-outline { color: #b91c1c !important; border-color: rgba(185, 28, 28, 0.4) !important; }
+  body.lm .msk-danger { background: #b91c1c !important; color: #ffffff !important; }
+    
+body.lm .nav-brand span { color: #0369a1 !important; }
+    
+body.lm .fb span { color: #0369a1 !important; }
     </style>
 
     <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/admin" />
@@ -930,7 +941,7 @@
     <!-- LOCK SCREEN -->
     <div class="lock-screen" id="lockScreen">
       <div class="lock-box" id="lockBoxContent">
-        <img src="Class.png" alt="Class Of Learners Logo" style="height: 56px; margin: 0 auto 20px; object-fit: contain; display: block" width="56" height="56" />
+        <img src="Class.png" alt="Class Of Learners Logo" style="height: 56px; margin: 0 auto 20px; object-fit: contain; display: block" width="56" height="56" decoding="async" />
         <h2>System Terminal</h2>
         <p>Please authenticate with administrator credentials to access system controls.</p>
         <button class="gbtn" onclick="if (window.openGlobalLogin) window.openGlobalLogin()">
@@ -956,7 +967,7 @@
     <!-- NAVBAR -->
     <nav class="top-nav">
       <a href="/" class="nav-brand">
-        <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="32" height="32" />
+        <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="32" height="32" loading="lazy" decoding="async" />
         <span class="mono">C:\COL\ADMIN&gt;</span>
       </a>
       <div class="nav-links">
@@ -1497,7 +1508,7 @@
             <div class="fb-bot">
               <span class="fb-meta-info">${dateStr}</span>
               <div style="display:flex; gap:8px; align-items:center;">
-                ${hasEmail ? `<a href="mailto:${encodeURIComponent(author)}?subject=${encodeURIComponent('Regarding Class of Learners Feedback #' + String(fb.id).slice(-8))}" class="btn-action" style="padding: 4px 10px; font-size: 0.78rem; text-decoration:none">Reply ✉</a>` : ''}
+                ${hasEmail ? `<a href="mailto:${encodeURIComponent(author)}?subject=${encodeURIComponent('Regarding Class of Learners Feedback #' + String(fb.id).slice(-8))}" class="btn-action" style="padding: 4px 10px; font-size: 0.78rem; text-decoration:none; display:inline-flex; align-items:center; gap:5px;">Reply <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></a>` : ''}
                 <button class="btn-danger-outline" style="padding: 4px 10px; font-size: 0.78rem" onclick="deleteFb('${fb.id}')">Drop Log</button>
               </div>
             </div>

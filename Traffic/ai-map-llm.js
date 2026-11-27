@@ -172,7 +172,7 @@
         isAIGenerated: true,
         hasAIDirector: true,
         name: name,
-        icon: hasSchool ? '🏫' : '🏙️',
+        icon: hasSchool ? '' : '',
         veh: options.veh || 'car',
         modes: ['car', 'bike'],
         isSuburbanNeighborhood: true,
@@ -371,7 +371,7 @@
       // Floating guard nametag (Mr. Shinde on duty)
       try {
         if (this.game && typeof this.game._makeNametag === 'function') {
-          const tag = this.game._makeNametag('🚸 Shinde', { border: 'rgba(250,204,21,0.6)' });
+          const tag = this.game._makeNametag(' Shinde', { border: 'rgba(250,204,21,0.6)' });
           if (tag) { tag.position.set(0, 2.6, 0); guardGroup.add(tag); }
         }
       } catch (e) {}
@@ -520,12 +520,12 @@
         if (shouldRaisePaddle && !this.guard.isRaised) {
           this.guard.isRaised = true;
           this.logCoT(`Guard raised STOP sign: Holding traffic for St. Xavier student crossing.`);
-          if (_win.toast) {_win.toast('🛑 CROSSING GUARD: STOP! School children crossing!', '#ef4444', 3500);}
+          if (_win.toast) {_win.toast(' CROSSING GUARD: STOP! School children crossing!', '#ef4444', 3500);}
           if (_win.TrafficAudio && _win.TrafficAudio.playWhistle) {_win.TrafficAudio.playWhistle();}
         } else if (!shouldRaisePaddle && this.guard.isRaised) {
           this.guard.isRaised = false;
           this.logCoT(`Guard lowered STOP sign: Crosswalk clear, safe to resume 20 km/h.`);
-          if (_win.toast) {_win.toast('✅ Guard: Road clear! Drive slowly.', '#34d399', 2500);}
+          if (_win.toast) {_win.toast(' Guard: Road clear! Drive slowly.', '#34d399', 2500);}
         }
 
         // Evaluate Driver Stop Compliance
@@ -605,7 +605,7 @@
       const _win = typeof window !== 'undefined' ? window : {};
       if (eventName === 'dismissal_bell') {
         this.dismissalTriggered = true;
-        if (_win.toast) {_win.toast('🔔 SCHOOL BELL RANG: St. Xavier dismissal active! Students approaching crosswalk.', '#f59e0b', 4000);}
+        if (_win.toast) {_win.toast(' SCHOOL BELL RANG: St. Xavier dismissal active! Students approaching crosswalk.', '#f59e0b', 4000);}
         // Dispatch children in staggered waves
         this.children.forEach((c, idx) => {
           setTimeout(() => {
@@ -613,14 +613,14 @@
           }, idx * 600);
         });
       } else if (eventName === 'cattle_crossing') {
-        if (_win.toast) {_win.toast('🐄 ROAD HAZARD: Sacred cattle on road verge! Do not honk (Silence Zone).', '#f59e0b', 3000);}
+        if (_win.toast) {_win.toast(' ROAD HAZARD: Sacred cattle on road verge! Do not honk (Silence Zone).', '#f59e0b', 3000);}
         this.logCoT(`Cattle alert active. Enforcing Silence Zone (no horn) rules.`);
       } else if (eventName === 'ambulance_emergency') {
-        if (_win.toast) {_win.toast('🚑 EMERGENCY DISPATCH: Ambulance approaching! Clear the right lane immediately!', '#ef4444', 4000);}
+        if (_win.toast) {_win.toast(' EMERGENCY DISPATCH: Ambulance approaching! Clear the right lane immediately!', '#ef4444', 4000);}
         if (_win.TrafficAudio && _win.TrafficAudio.playSiren) {_win.TrafficAudio.playSiren();}
         this.logCoT(`Emergency ambulance dispatched: Evaluating player lane change (Sec 194E).`);
       } else if (eventName === 'monsoon_puddle') {
-        if (_win.toast) {_win.toast('🌧️ WEATHER: Wet asphalt road conditions. Stopping distance increased by 30%!', '#38bdf8', 3000);}
+        if (_win.toast) {_win.toast(' WEATHER: Wet asphalt road conditions. Stopping distance increased by 30%!', '#38bdf8', 3000);}
         this.logCoT(`Surface friction set to wet asphalt (f=0.32). SSD recalculated.`);
       }
     }
@@ -640,7 +640,7 @@
       // Floating Trigger Button
       const btn = document.createElement('div');
       btn.id = 'ai-map-inspector-btn';
-      btn.innerHTML = `<span>🧠 AI Director</span>`;
+      btn.innerHTML = `<span> AI Director</span>`;
       btn.style.cssText = `
         position: fixed;
         bottom: 85px;
@@ -692,19 +692,19 @@
       panel.innerHTML = `
         <div style="padding: 14px 16px; background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;">
           <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 1.2rem;">🧠</span>
+            <span style="font-size: 1.2rem;"></span>
             <div>
               <div style="font-weight: 800; font-size: 0.92rem; color: #38bdf8;">Urban AI Level Director</div>
               <div style="font-size: 0.68rem; color: #94a3b8;">Real-Time Spatial & Behavioral Engine</div>
             </div>
           </div>
-          <button id="ai-inspector-close" style="background: none; border: none; color: #94a3b8; font-size: 1.2rem; cursor: pointer;">✕</button>
+          <button id="ai-inspector-close" style="background: none; border: none; color: #94a3b8; font-size: 1.2rem; cursor: pointer;"></button>
         </div>
 
         <div style="padding: 14px 16px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 14px;">
           <!-- Telemetry Card -->
           <div style="background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 12px;">
-            <div style="font-size: 0.72rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; margin-bottom: 8px;">📊 Live Spatial & Safety Telemetry</div>
+            <div style="font-size: 0.72rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; margin-bottom: 8px;"> Live Spatial & Safety Telemetry</div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.78rem;">
               <div>
                 <div style="color: #64748b; font-size: 0.68rem;">GOVERNING RULE</div>
@@ -727,18 +727,18 @@
 
           <!-- Dynamic Event Trigger Buttons -->
           <div>
-            <div style="font-size: 0.72rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; margin-bottom: 8px;">⚡ Trigger AI Live Events</div>
+            <div style="font-size: 0.72rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; margin-bottom: 8px;"> Trigger AI Live Events</div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-              <button class="ai-event-btn" onclick="window.TrafficMapAI && window.TrafficMapAI.director && window.TrafficMapAI.director.triggerEvent('dismissal_bell')" style="padding: 8px; background: #1e293b; border: 1px solid #f59e0b; border-radius: 8px; color: #f59e0b; font-size: 0.74rem; font-weight: 700; cursor: pointer;">🔔 Ring Dismissal</button>
-              <button class="ai-event-btn" onclick="window.TrafficMapAI && window.TrafficMapAI.director && window.TrafficMapAI.director.triggerEvent('cattle_crossing')" style="padding: 8px; background: #1e293b; border: 1px solid #38bdf8; border-radius: 8px; color: #38bdf8; font-size: 0.74rem; font-weight: 700; cursor: pointer;">🐄 Add Cattle Alert</button>
-              <button class="ai-event-btn" onclick="window.TrafficMapAI && window.TrafficMapAI.director && window.TrafficMapAI.director.triggerEvent('ambulance_emergency')" style="padding: 8px; background: #1e293b; border: 1px solid #ef4444; border-radius: 8px; color: #ef4444; font-size: 0.74rem; font-weight: 700; cursor: pointer;">🚑 Siren Yield</button>
-              <button class="ai-event-btn" onclick="window.TrafficMapAI && window.TrafficMapAI.director && window.TrafficMapAI.director.triggerEvent('monsoon_puddle')" style="padding: 8px; background: #1e293b; border: 1px solid #a855f7; border-radius: 8px; color: #a855f7; font-size: 0.74rem; font-weight: 700; cursor: pointer;">🌧️ Wet Asphalt</button>
+              <button class="ai-event-btn" onclick="window.TrafficMapAI && window.TrafficMapAI.director && window.TrafficMapAI.director.triggerEvent('dismissal_bell')" style="padding: 8px; background: #1e293b; border: 1px solid #f59e0b; border-radius: 8px; color: #f59e0b; font-size: 0.74rem; font-weight: 700; cursor: pointer;"> Ring Dismissal</button>
+              <button class="ai-event-btn" onclick="window.TrafficMapAI && window.TrafficMapAI.director && window.TrafficMapAI.director.triggerEvent('cattle_crossing')" style="padding: 8px; background: #1e293b; border: 1px solid #38bdf8; border-radius: 8px; color: #38bdf8; font-size: 0.74rem; font-weight: 700; cursor: pointer;"> Add Cattle Alert</button>
+              <button class="ai-event-btn" onclick="window.TrafficMapAI && window.TrafficMapAI.director && window.TrafficMapAI.director.triggerEvent('ambulance_emergency')" style="padding: 8px; background: #1e293b; border: 1px solid #ef4444; border-radius: 8px; color: #ef4444; font-size: 0.74rem; font-weight: 700; cursor: pointer;"> Siren Yield</button>
+              <button class="ai-event-btn" onclick="window.TrafficMapAI && window.TrafficMapAI.director && window.TrafficMapAI.director.triggerEvent('monsoon_puddle')" style="padding: 8px; background: #1e293b; border: 1px solid #a855f7; border-radius: 8px; color: #a855f7; font-size: 0.74rem; font-weight: 700; cursor: pointer;"> Wet Asphalt</button>
             </div>
           </div>
 
           <!-- Chain-of-Thought Stream -->
           <div style="flex: 1;">
-            <div style="font-size: 0.72rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; margin-bottom: 8px;">💬 AI Chain-of-Thought Log</div>
+            <div style="font-size: 0.72rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; margin-bottom: 8px;"> AI Chain-of-Thought Log</div>
             <div id="ai-cot-stream" style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 10px; font-family: monospace; font-size: 0.68rem; color: #94a3b8; max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
               <div>[SYSTEM] Initializing Urban AI Level Director...</div>
             </div>
@@ -768,7 +768,7 @@
         ssdEl.textContent = `${ssd} m`;
       }
       if (guardEl) {
-        guardEl.textContent = this.guardPaddleRaised ? 'STOP RAISED 🛑' : 'LOWERED ✅';
+        guardEl.textContent = this.guardPaddleRaised ? 'STOP RAISED ' : 'LOWERED ';
         guardEl.style.color = this.guardPaddleRaised ? '#ef4444' : '#34d399';
       }
       if (crossingEl) {

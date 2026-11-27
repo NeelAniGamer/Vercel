@@ -170,7 +170,7 @@ export class MessengerPlanet {
         lat: 0,
         lon: 0,
         color: 0x3b82f6,
-        icon: '🏤',
+        icon: 'building',
         dialogue: "Good day, Messenger! The island's letters and packages depend on your swift footsteps. Ready for your route?",
         builder: () => this.buildPostOffice()
       },
@@ -182,7 +182,7 @@ export class MessengerPlanet {
         lat: -30,
         lon: 75,
         color: 0xf59e0b,
-        icon: '🥖',
+        icon: 'sparkles',
         dialogue: "Ah, wunderbar! The freshly ground flour arrived just in time for the evening cinnamon rolls. Thank you, Courier!",
         builder: () => this.buildWindmill()
       },
@@ -194,7 +194,7 @@ export class MessengerPlanet {
         lat: 42,
         lon: 55,
         color: 0xef4444,
-        icon: '🏮',
+        icon: 'sparkles',
         dialogue: "Ahoy there, young runner! The fog was rolling in, but this package brings a beam of warm sunshine. Stellar work!",
         builder: () => this.buildLighthouse()
       },
@@ -206,7 +206,7 @@ export class MessengerPlanet {
         lat: 55,
         lon: -80,
         color: 0x8b5cf6,
-        icon: '🔭',
+        icon: 'eye',
         dialogue: "Incredible! The quartz optical prism is intact without a scratch. Tonight we chart the Andromeda rings!",
         builder: () => this.buildObservatory()
       },
@@ -218,7 +218,7 @@ export class MessengerPlanet {
         lat: -22,
         lon: -50,
         color: 0x06b6d4,
-        icon: '🏄',
+        icon: 'sparkles',
         dialogue: "Totally righteous, Messenger! You zipped across the entire ocean shore like a sea breeze. High five!",
         builder: () => this.buildBeachCove()
       },
@@ -230,7 +230,7 @@ export class MessengerPlanet {
         lat: -12,
         lon: -135,
         color: 0xec4899,
-        icon: '🌸',
+        icon: 'sparkles',
         dialogue: "Oh, what a delight! The rare lavender seeds have arrived safely. My garden will bloom with wonderful colors!",
         builder: () => this.buildFlowerCottage()
       },
@@ -242,7 +242,7 @@ export class MessengerPlanet {
         lat: 25,
         lon: -160,
         color: 0x10b981,
-        icon: '🕰️',
+        icon: 'clock',
         dialogue: "Splendid punctuality! A thriving town thrives on prompt couriers. You do our planet proud!",
         builder: () => this.buildClocktower()
       }

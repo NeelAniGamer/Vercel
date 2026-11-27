@@ -12,7 +12,7 @@
   const VIOLATION_DATABASE = {
     RED_LIGHT_VIOLATION: {
       title: 'Red Light Violation',
-      icon: '🚦',
+      icon: 'signal',
       section: 'MVA Section 184 (Dangerous Driving)',
       fine: '₹1,000 – ₹5,000',
       penaltyPoints: 2,
@@ -20,7 +20,7 @@
     },
     NO_HONKING: {
       title: 'Silence Zone Honking',
-      icon: '🔇',
+      icon: 'volumeX',
       section: 'MVA Section 194E (Silence Zone Violation)',
       fine: '₹1,000',
       penaltyPoints: 1,
@@ -28,7 +28,7 @@
     },
     MOBILE_USE: {
       title: 'Mobile Phone Distraction',
-      icon: '📱',
+      icon: 'smartphone',
       section: 'MVA Section 184(c) (Handheld Device Use)',
       fine: '₹1,500 – ₹5,000',
       penaltyPoints: 3,
@@ -36,7 +36,7 @@
     },
     SAFETY_VIOLATION: {
       title: 'Safety Gear Omission',
-      icon: '🪖',
+      icon: 'sparkles',
       section: 'MVA Section 129 / 194D (Helmet & Seatbelt Rules)',
       fine: '₹1,000 + 3-month license suspension',
       penaltyPoints: 2,
@@ -44,7 +44,7 @@
     },
     NO_INDICATOR: {
       title: 'Failure to Signal',
-      icon: '💡',
+      icon: 'sparkles',
       section: 'MVA Section 177 (General Traffic Rules)',
       fine: '₹500',
       penaltyPoints: 1,
@@ -52,7 +52,7 @@
     },
     SPEED_VIOLATION: {
       title: 'Overspeeding',
-      icon: '⚡',
+      icon: 'zap',
       section: 'MVA Section 183 (Speed Violation)',
       fine: '₹1,000 – ₹2,000',
       penaltyPoints: 2,
@@ -60,7 +60,7 @@
     },
     LITTER_HIT: {
       title: 'Road Hazard Collision',
-      icon: '🚯',
+      icon: 'sparkles',
       section: 'MVA Section 184 / Municipal Solid Waste Rules',
       fine: '₹500',
       penaltyPoints: 1,
@@ -68,7 +68,7 @@
     },
     CHECKPOINT_EVASION: {
       title: 'Evading Police Checkpoint',
-      icon: '👮',
+      icon: 'shield',
       section: 'MVA Section 179 (Disobedience of Lawful Orders)',
       fine: '₹2,000 + Possible Arrest',
       penaltyPoints: 4,
@@ -76,7 +76,7 @@
     },
     WRONG_SIDE: {
       title: 'Wrong-Way Driving',
-      icon: '⛔',
+      icon: 'alert',
       section: 'MVA Section 184 (Endangering Public Safety)',
       fine: '₹5,000',
       penaltyPoints: 3,
@@ -84,7 +84,7 @@
     },
     PEDESTRIAN_HAZARD: {
       title: 'Pedestrian Near-Miss',
-      icon: '🚶',
+      icon: 'pedestrian',
       section: 'MVA Section 177 / Zebra Crossing Priority',
       fine: '₹1,000',
       penaltyPoints: 2,
@@ -411,7 +411,7 @@
       const toast = document.createElement('div')
       toast.className = 'cyber-flag-toast'
       toast.innerHTML = `
-        <div class="cft-icon">🚩</div>
+        <div class="cft-icon"></div>
         <div class="cft-body">
           <div class="cft-tag">TELEMETRY FLAG CAPTURED (+${task.xp} XP)</div>
           <div class="cft-flag">${task.flag}</div>
@@ -431,7 +431,7 @@
     showViolationCard(violationType) {
       const info = VIOLATION_DATABASE[violationType] || {
         title: 'Traffic Rule Violation',
-        icon: '⚠️',
+        icon: 'alert',
         section: 'Motor Vehicles Act (General Traffic Rules)',
         fine: '₹500 – ₹1,000',
         penaltyPoints: 1,
@@ -446,12 +446,12 @@
       card.className = 'violation-feedback-card'
       card.innerHTML = `
         <div class="vfc-header">
-          <div class="vfc-icon">${info.icon}</div>
+          <div class="vfc-icon">${window.TrafficIcons ? window.TrafficIcons.resolve(info.icon, 22) : ""}</div>
           <div class="vfc-title-wrap">
             <div class="vfc-type">TRAFFIC VIOLATION DETECTED</div>
             <div class="vfc-title">${info.title}</div>
           </div>
-          <button class="vfc-close" onclick="this.closest('#sz-violation-card').remove()">✕</button>
+          <button class="vfc-close" onclick="this.closest('#sz-violation-card').remove()"></button>
         </div>
         <div class="vfc-details">
           <div class="vfc-row">
@@ -463,12 +463,12 @@
             <span class="vfc-val vfc-fine">${info.fine}</span>
           </div>
           <div class="vfc-tip-box">
-            <span class="vfc-tip-icon">💡</span>
+            <span class="vfc-tip-icon"></span>
             <span class="vfc-tip-txt">${info.tip}</span>
           </div>
         </div>
         <div class="vfc-footer">
-          <button class="vfc-ack-btn" onclick="this.closest('#sz-violation-card').remove()">Got It ✓</button>
+          <button class="vfc-ack-btn" onclick="this.closest('#sz-violation-card').remove()">Got It </button>
         </div>
       `
       document.body.appendChild(card)
@@ -528,7 +528,7 @@
           const isDone = t.completed
           const isCurrent = !isDone && (idx === 0 || this.tasks[idx - 1].completed)
           const stateClass = isDone ? 'task-done' : isCurrent ? 'task-current' : 'task-pending'
-          const stateIcon = isDone ? '✅' : isCurrent ? '▶️' : '🔒'
+          const stateIcon = isDone ? '' : isCurrent ? '▶️' : ''
 
           return `
           <div class="task-row ${stateClass}">

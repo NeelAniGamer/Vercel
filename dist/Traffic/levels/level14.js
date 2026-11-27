@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 14,
-  icon: '🌙',
+  icon: 'moon',
   name: 'Lesson 14 - Night Crossing',
   modes: ['car', 'bike', 'pedestrian'],
   col: '#e74c3c',

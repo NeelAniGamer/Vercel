@@ -21,7 +21,6 @@ const nonIndexableRoutes = new Set([
   '/sitemap',
   '/Traffic/GamePage',
   '/Traffic/TrafficDashboard',
-  '/Traffic/TrafficSetup',
   '/verify'
 ])
 

@@ -8,7 +8,7 @@
     <title>CastFlow | Premium Casting</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="../col-skeleton.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Work+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Work+Sans:wght@300;400;600&display=swap" onload="this.onload=null;this.rel='stylesheet'" /><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Work+Sans:wght@300;400;600&display=swap" /></noscript>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="../col-mobile.css">
     <!-- Lucide Icons -->
@@ -29,6 +29,13 @@
     <meta name="twitter:title" content="CastFlow | Premium Casting" />
     <meta name="twitter:description" content="CastFlow — stream your laptop display to an Android TV, tablet, or secondary monitor over local Wi-Fi." />
     <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/og/castflow.jpg" />
+  
+    <style>
+
+      .nav-btn, .glass-btn.secondary { color: #1d4ed8 !important; }
+      .glass-btn.primary { background: #1d4ed8 !important; background-color: #1d4ed8 !important; color: #ffffff !important; }
+      .glass-btn.primary span { color: #ffffff !important; }
+    </style>
   </head>
 <body>
 <div class="loader col-skeleton-screen sk-theme-teal sk-force-dark" id="loader" role="status" aria-busy="true" aria-label="Loading CastFlow Receiver Studio">
@@ -125,7 +132,7 @@
                         <p class="version-note" id="apk-version">Checking latest version…</p>
                     </div>
                     <div class="hero-visual">
-                        <img src="hero.png" alt="CastFlow app casting a phone screen to a TV" class="hero-shot">
+                        <img src="hero.png" alt="CastFlow app casting a phone screen to a TV" class="hero-shot" decoding="async">
                         <div class="hero-mockup glass-card">
                             <p>Scan to Connect</p>
                             <!-- QR Code placeholder -->

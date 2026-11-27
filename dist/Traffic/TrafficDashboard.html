@@ -20,7 +20,7 @@
     <title>Traffic Academy - Dashboard</title>
     <link rel="icon" type="image/png" href="../Icon.png" />
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;1,400&family=Space+Mono&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;1,400&family=Space+Mono&family=Instrument+Serif:ital@0;1&display=swap" />
     <script defer src="libs/html2pdf.bundle.min.js"></script>
     <script defer src="libs/chart.umd.min.js"></script>
     <script defer src="traffic-charts.js"></script>
@@ -43,28 +43,36 @@
 
         <script defer src="../col-router.js"></script>
     <link rel="stylesheet" href="../col-ui.css" />
+  <link rel="stylesheet" href="../col-skeleton.css" />
   <link rel="stylesheet" href="traffic-mobile.css" />
+    <script defer src="db-config.js"></script>
+    <script defer src="icons.js"></script>
+    <script defer src="wallet-history.js"></script>
+    <script defer src="progress-tracker.js"></script>
     <script defer src="../col-ui.js"></script>
     <script defer src="../col-auth.js"></script>
+    <script defer src="settings-modal.js"></script>
+    <script defer src="dashboard-actions.js"></script>
 
     <style>
       :root {
-        --bg: var(--void);
-        --card: rgba(17, 24, 39, 0.85);
-        --text: var(--ink);
-        --border: var(--line);
-        --hover: rgba(255, 255, 255, 0.06);
+        --bg: #0b1120;
+        --card: #111827;
+        --panel: #1e293b;
+        --text: #f8fafc;
+        --border: rgba(148, 163, 184, 0.22);
+        --hover: rgba(148, 163, 184, 0.1);
 
-        --muted: var(--dim);
-        --muted2: #727a8d;
+        --muted: #94a3b8;
+        --muted2: #64748b;
 
-        --accent: var(--signal);
-        --signal: var(--ion);
-        --green: #34d399;
+        --accent: #f59e0b;
+        --signal: #38bdf8;
+        --green: #10b981;
         --red: #ef4444;
-        --teal: #00f0cc;
+        --teal: #14b8a6;
         --yellow: #d97706;
-        --plasma: #b89bff;
+        --plasma: #a78bfa;
         --r: 16px;
         --r-sm: 12px;
         --r-md: 20px;
@@ -78,19 +86,20 @@
       }
 
       body.lm {
-        --bg: #f3f2eb;
+        --bg: #f8fafc;
         --card: #ffffff;
-        --text: #111827;
-        --border: #e2e8f0;
+        --panel: #f1f5f9;
+        --text: #0f172a;
+        --border: #cbd5e1;
         --hover: #f1f5f9;
-        --muted: #64748b;
-        --muted2: #94a3b8;
-        --accent: #d97706;
+        --muted: #475569;
+        --muted2: #64748b;
+        --accent: #b45309;
         --signal: #0369a1;
-        --green: #34d399;
-        --teal: #00f0cc;
-        --yellow: #d97706;
-        --plasma: #b89bff;
+        --green: #047857;
+        --teal: #0d9488;
+        --yellow: #b45309;
+        --plasma: #6d28d9;
       }
 
 
@@ -286,94 +295,128 @@
 
 
       .dashboard-container {
-        max-width: 1440px;
-        margin: 100px auto 40px;
-        padding: 0 24px;
+        max-width: 1280px;
+        margin: 88px auto 96px;
+        padding: 0 20px;
       }
 
-
-      .hero-license {
-        background: linear-gradient(145deg, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.8));
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-top: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 32px;
-        padding: 48px;
+      .dash-auth-gate {
+        max-width: 540px;
+        margin: 80px auto;
+        padding: 40px 32px;
+        border-radius: 20px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.18);
+        text-align: center;
+      }
+      .dash-auth-gate-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        margin: 0 auto 18px;
+        background: rgba(217,119,6,0.14);
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .dash-auth-gate h2 {
+        margin: 0 0 10px;
+        font-family: 'Lora', serif;
+        font-size: 1.75rem;
+        color: var(--text);
+      }
+      .dash-auth-gate p {
+        margin: 0 0 24px;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: var(--muted);
+      }
+      .dash-gate-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .dash-next-step {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--accent);
+        border-radius: 16px;
+        padding: 18px 22px;
+        margin-bottom: 24px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 40px;
-        margin-bottom: 32px;
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .dash-next-eyebrow { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+      .dash-next-title { font-size: 1.05rem; font-weight: 700; color: var(--text); margin-top: 3px; }
+      .dash-next-sub { font-size: 0.85rem; color: var(--muted); margin-top: 2px; }
+      .dash-btn-primary { padding: 11px 22px; border-radius: 10px; border: none; background: var(--accent); color: #ffffff; font-weight: 700; font-size: 0.9rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+      .dash-btn-secondary { padding: 11px 20px; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: var(--text); font-weight: 700; font-size: 0.9rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+
+      .hero-license {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 36px 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 32px;
+        margin-bottom: 24px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
         position: relative;
         overflow: hidden;
-      }
-
-      .hero-license::before {
-        content: '';
-        position: absolute;
-        top: -50%; left: -20%;
-        width: 150%; height: 150%;
-        background: radial-gradient(circle at center, rgba(242, 184, 75, 0.15) 0%, transparent 60%);
-        pointer-events: none;
-      }
-      .hero-license::after {
-        content: '';
-        position: absolute;
-        right: 0; bottom: 0;
-        width: 300px; height: 300px;
-        background: radial-gradient(circle at bottom right, rgba(94, 212, 245, 0.15) 0%, transparent 70%);
-        pointer-events: none;
       }
 
       .hero-license .hologram-strip {
         position: absolute;
         top: 0; left: 0; right: 0;
-        height: 2px;
-        background: linear-gradient(90deg, transparent, rgba(242, 184, 75, 0.6), rgba(0, 240, 204, 0.5), transparent);
+        height: 3px;
+        background: linear-gradient(90deg, var(--accent), var(--teal), var(--signal));
         pointer-events: none;
       }
 
       .license-left {
         display: flex;
         align-items: center;
-        gap: 30px;
+        gap: 24px;
         z-index: 1;
       }
       .hero-avatar {
-        width: 110px;
-        height: 110px;
-        border-radius: 28px;
+        width: 96px;
+        height: 96px;
+        border-radius: 22px;
         background: linear-gradient(135deg, var(--accent), #f59e0b);
-        color: #000;
+        color: #ffffff;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2.5rem;
+        font-size: 2.2rem;
         font-weight: 800;
         overflow: hidden;
-        border: 4px solid rgba(255,255,255,0.2);
-        box-shadow: 0 12px 32px rgba(217, 119, 6, 0.4), inset 0 -4px 12px rgba(0,0,0,0.2);
+        border: 2px solid var(--border);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
       }
       .hero-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: inherit; }
 
       .license-info h1 {
         font-family: 'Lora', serif;
-        font-size: 3rem;
+        font-size: clamp(1.75rem, 3.2vw, 2.5rem);
         margin: 0;
-        color: #fff;
-        text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        color: var(--text);
       }
       .license-id {
         font-family: 'Space Mono', monospace;
-
         color: var(--muted);
         font-weight: 700;
-        font-size: 0.95rem;
-        opacity: 0.95;
-        margin-top: 8px;
-        letter-spacing: 0.1em;
+        font-size: 0.9rem;
+        margin-top: 6px;
+        letter-spacing: 0.06em;
       }
 
       .license-right {
@@ -381,62 +424,57 @@
         z-index: 1;
       }
       .license-score-label {
-        font-size: 0.85rem;
+        font-size: 0.78rem;
         text-transform: uppercase;
-        letter-spacing: 0.15em;
-        color: var(--muted2);
+        letter-spacing: 0.12em;
+        color: var(--muted);
         font-weight: 700;
       }
       .license-score-val {
-        font-size: 4rem;
+        font-size: clamp(2.4rem, 4vw, 3.4rem);
         font-weight: 800;
-        background: linear-gradient(to right, #fcd34d, #f59e0b);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        line-height: 1;
+        color: var(--accent);
+        line-height: 1.05;
         display: block;
-        margin: 8px 0 12px 0;
-        filter: drop-shadow(0 4px 12px rgba(245,158,11,0.3));
+        margin: 6px 0 10px 0;
       }
       .license-tier {
-        background: linear-gradient(135deg, rgba(184, 159, 255, 0.15), rgba(184, 159, 255, 0.05));
+        background: rgba(124, 58, 237, 0.12);
         color: var(--plasma);
-        padding: 8px 18px;
-        border-radius: 24px;
+        padding: 6px 16px;
+        border-radius: 20px;
         font-weight: 700;
-        font-size: 0.95rem;
-        border: 1px solid rgba(184, 159, 255, 0.3);
-        box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+        font-size: 0.88rem;
+        border: 1px solid rgba(124, 58, 237, 0.28);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
       }
-
 
       .bento-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        grid-auto-rows: minmax(200px, auto);
-        gap: 20px;
-        margin-bottom: 48px;
+        grid-auto-rows: minmax(170px, auto);
+        gap: 18px;
+        margin-bottom: 40px;
       }
 
       .bento-card {
-        background: rgba(30, 41, 59, 0.4);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        border-radius: 28px;
-        padding: 28px;
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 24px;
+        transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 10px 30px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
         min-height: 0;
       }
       .bento-card:hover {
-        transform: translateY(-6px) scale(1.01);
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 20px 40px rgba(0, 0, 0, 0.4);
-        border-color: rgba(255,255,255,0.15);
-        background: rgba(30, 41, 59, 0.6);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
+        border-color: var(--accent);
       }
 
       .bento-card.wide { grid-column: span 2; }
@@ -447,14 +485,14 @@
         font-weight: 700;
         color: var(--muted);
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 12px;
+        letter-spacing: 0.06em;
+        margin-bottom: 10px;
         display: flex;
         align-items: center;
         gap: 8px;
       }
       .bento-value {
-        font-size: 1.8rem;
+        font-size: 1.65rem;
         font-weight: 700;
         color: var(--text);
       }
@@ -467,15 +505,13 @@
 
       .trophy-room {
         text-align: center;
-        margin-top: 80px;
+        margin-top: 64px;
       }
       .trophy-title {
         font-family: 'Lora', serif;
-        font-size: 2.5rem;
-        margin-bottom: 40px;
-        background: linear-gradient(to right, #fff, #94a3b8);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        font-size: 2.2rem;
+        margin-bottom: 32px;
+        color: var(--text);
       }
 
       .cert-stage {
@@ -836,23 +872,23 @@
         display: flex;
         gap: 6px;
         margin-bottom: 20px;
-        background: rgba(255,255,255,0.03);
+        background: var(--panel);
         padding: 5px;
         border-radius: 14px;
-        border: 1px solid rgba(255,255,255,0.06);
+        border: 1px solid var(--border);
       }
       .lb-tab {
         flex: 1;
-        padding: 11px 6px;
+        padding: 11px 8px;
         border: 1px solid transparent;
         background: transparent;
         color: var(--muted);
-        font-size: 0.78rem;
+        font-size: 0.82rem;
         font-weight: 700;
         letter-spacing: 0.02em;
         border-radius: 10px;
         cursor: pointer;
-        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: all 0.2s ease;
         font-family: inherit;
         display: flex;
         align-items: center;
@@ -860,14 +896,18 @@
         gap: 6px;
       }
       .lb-tab.active {
-        background: linear-gradient(135deg, rgba(94, 212, 245, 0.14), rgba(242, 184, 75, 0.1));
-        color: #fff;
-        border-color: rgba(94, 212, 245, 0.35);
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        background: var(--accent);
+        color: #ffffff;
+        border-color: var(--accent);
+        box-shadow: 0 4px 12px rgba(217, 119, 6, 0.28);
       }
       .lb-tab:hover:not(.active) {
         color: var(--text);
-        background: rgba(255,255,255,0.06);
+        background: var(--hover);
+      }
+      .leaderboard-row.flash-highlight {
+        outline: 2px solid var(--accent);
+        box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.25);
       }
       .lb-tab-icon {
         font-size: 0.95rem;
@@ -1489,8 +1529,42 @@
     <meta name="robots" content="noindex, nofollow" />
   </head>
   <body>
+<div class="loader col-skeleton-screen sk-theme-amber" id="loader" role="status" aria-busy="true" aria-label="Loading Driver Dashboard">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+    <div class="sk-traffic-topbar" aria-hidden="true">
+    <div class="sk-pill sk-shimmer-accent" style="width: 142px; height: 20px;"></div>
+    <div class="sk-pill sk-shimmer" style="width: 240px; height: 10px;"></div>
+    <div style="display:flex;gap:10px;align-items:center;"><div class="sk-circle sk-shimmer" style="width:32px;height:32px;"></div><div class="sk-pill sk-shimmer" style="width:76px;height:16px;"></div></div>
+  </div>
+  <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 28px;">
+    <div class="sk-user-banner">
+      <div class="sk-circle sk-shimmer-accent" style="width:68px;height:68px;"></div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-width:160px;"><div class="sk-title-bar sk-shimmer" style="width:200px;height:26px;"></div><div class="sk-pill sk-shimmer-accent" style="width:110px;height:18px;"></div></div>
+      <div class="sk-circle sk-shimmer-accent" style="width:64px;height:64px;"></div>
+    </div>
+    <div class="sk-kpi-row">
+      <div class="sk-card"><div class="sk-pill sk-shimmer" style="width:84px;height:12px;"></div><div class="sk-title-bar sk-shimmer-accent" style="width:74px;height:28px;"></div></div>
+      <div class="sk-card"><div class="sk-pill sk-shimmer" style="width:92px;height:12px;"></div><div class="sk-title-bar sk-shimmer" style="width:82px;height:28px;"></div></div>
+      <div class="sk-card"><div class="sk-pill sk-shimmer" style="width:78px;height:12px;"></div><div class="sk-title-bar sk-shimmer" style="width:68px;height:28px;"></div></div>
+      <div class="sk-card"><div class="sk-pill sk-shimmer" style="width:88px;height:12px;"></div><div class="sk-title-bar sk-shimmer" style="width:76px;height:28px;"></div></div>
+    </div>
+    <div class="sk-table-card">
+      <div class="sk-table-row"><div class="sk-circle sk-shimmer-accent" style="width:26px;height:26px;"></div><div class="sk-lede-line sk-shimmer" style="width:60%;"></div><div class="sk-pill sk-shimmer" style="width:68px;height:18px;"></div><div class="sk-lede-line sk-shimmer" style="width:48px;"></div><div class="sk-pill sk-shimmer-accent" style="width:68px;height:22px;"></div></div>
+      <div class="sk-table-row"><div class="sk-circle sk-shimmer" style="width:26px;height:26px;"></div><div class="sk-lede-line sk-shimmer" style="width:52%;"></div><div class="sk-pill sk-shimmer" style="width:68px;height:18px;"></div><div class="sk-lede-line sk-shimmer" style="width:48px;"></div><div class="sk-pill sk-shimmer" style="width:68px;height:22px;"></div></div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>Traffic</span> &middot; Driver Analytics</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
+
     <div class="top-bar">
-      <div class="brand" onclick="window.location.href = 'Academy.html'">Traffic Academy</div>
+      <div class="brand" data-dash-action="go-academy">Traffic Academy</div>
 
       <div class="global-progress-wrap">
         <div class="progress-labels">
@@ -1504,13 +1578,13 @@
       </div>
 
       <div class="top-bar-actions">
-        <div class="profile-compact" onclick="toggleMenu()" title="Account settings">
+        <div class="profile-compact" data-dash-action="toggle-menu" title="Account settings">
           <div class="avatar-sm" id="avatar-sm"></div>
           <span class="profile-name-sm" id="top-name">Driver</span>
         </div>
 
         <div class="menu-container">
-          <button class="btn-menu" onclick="toggleMenu()" aria-label="Account menu" title="Account Menu">
+          <button type="button" class="btn-menu" data-dash-action="toggle-menu" aria-label="Account menu" title="Account Menu">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <line x1="4" y1="7" x2="20" y2="7"></line>
               <line x1="4" y1="12" x2="20" y2="12"></line>
@@ -1518,21 +1592,33 @@
             </svg>
           </button>
           <div class="dropdown" id="action-menu">
-            <div class="dropdown-item" id="menu-sign-in-item" onclick="handleDashSignIn()" style="display:none;">🔑 Sign In</div>
-            <div class="dropdown-item" id="menu-edit-item" onclick="openEditModal()">✏️ Edit Profile</div>
-            <div class="dropdown-item" onclick="resetProgressFromDashboard()">🗑️ Reset Progress</div>
-            <div class="dropdown-item danger" id="menu-sign-out-item" onclick="logoutAndClear()">🚪 Sign Out</div>
+            <div class="dropdown-item" id="menu-sign-in-item" data-dash-action="sign-in" style="display:none;"><span data-icon="lock" data-icon-size="15"></span> Sign In</div>
+            <div class="dropdown-item" id="menu-edit-item" data-dash-action="edit-profile"><span data-icon="user" data-icon-size="15"></span> Edit Profile</div>
+            <div class="dropdown-item" data-dash-action="open-settings"><span data-icon="settings" data-icon-size="15"></span> Preferences &amp; Graphics</div>
+            <div class="dropdown-item" data-dash-action="reset-progress"><span data-icon="reset" data-icon-size="15"></span> Reset Progress</div>
+            <div class="dropdown-item danger" id="menu-sign-out-item" data-dash-action="sign-out"><span data-icon="lock" data-icon-size="15"></span> Sign Out</div>
           </div>
         </div>
 
-        <div class="hz-toggle" onclick="hzToggle()">
+        <div class="hz-toggle" data-dash-action="theme" title="Toggle Light/Dark Theme">
           <div class="hz-orb"></div>
         </div>
       </div>
     </div>
 
-    <div class="dashboard-container">
+    <div id="dash-auth-gate" class="dash-auth-gate" style="display:none;">
+      <div class="dash-auth-gate-icon"><span data-icon="lock" data-icon-size="28"></span></div>
+      <h2>Sign In Required</h2>
+      <p id="dash-auth-gate-msg">Your Driver Dashboard, XP history, badges, and certificates are private to your account. Sign in with Google or Email to access your progress on any device.</p>
+      <div class="dash-gate-actions">
+        <button type="button" class="dash-btn-primary" data-dash-action="sign-in">Sign In to Continue</button>
+        <button type="button" class="dash-btn-secondary" data-dash-action="go-academy">Back to Academy</button>
+      </div>
+    </div>
+
+    <div class="dashboard-container" id="dashboard-container">
       <div id="tab-profile" class="main-tab-view active" style="transition: opacity 0.3s ease;">
+        <div id="dash-next-step" class="dash-next-step" style="display:none;"></div>
             <div class="hero-license">
         <div class="hologram-strip" aria-hidden="true"></div>
         <div class="license-left">
@@ -1547,28 +1633,28 @@
           <div class="license-score-label">Total Experience</div>
           <div class="license-score-val" id="h-score">0</div>
           <div class="license-tier" id="h-tier">Civic Score</div>
-          <button class="share-btn share-copy" id="btn-share-profile" onclick="shareProfile()" style="margin-top:16px;padding:8px 16px;font-size:0.8rem;border-radius:20px;">
-            &#128279; Share Profile
+          <button type="button" class="share-btn share-copy" id="btn-share-profile" data-dash-action="share-profile" style="margin-top:16px;padding:8px 16px;font-size:0.8rem;border-radius:20px;">
+            <span data-icon="link" data-icon-size="14"></span> Share Certificate
           </button>
         </div>
       </div>
 
             <div class="bento-grid">
         <div class="bento-card accent-gold">
-          <div class="bento-label" style="color: var(--accent);"><span aria-hidden="true">🚗</span> Vehicle</div>
+          <div class="bento-label" style="color: var(--accent);"><span data-icon="car" data-icon-size="15"></span> Vehicle</div>
           <div class="bento-value" id="s-veh">-</div>
         </div>
         <div class="bento-card accent-plasma">
-          <div class="bento-label" style="color: var(--plasma);"><span aria-hidden="true">🎂</span> Age Group</div>
+          <div class="bento-label" style="color: var(--plasma);"><span data-icon="user" data-icon-size="15"></span> Age Group</div>
           <div class="bento-value" id="s-age">-</div>
         </div>
         <div class="bento-card accent-cyan">
-          <div class="bento-label" style="color: var(--signal);"><span aria-hidden="true">🌐</span> Language</div>
+          <div class="bento-label" style="color: var(--signal);"><span data-icon="globe" data-icon-size="15"></span> Language</div>
           <div class="bento-value" id="s-lang">-</div>
         </div>
         <div class="bento-card wide accent-teal">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <div class="bento-label" style="color: var(--teal); margin:0;"><span aria-hidden="true">📈</span> Performance Trends</div>
+            <div class="bento-label" style="color: var(--teal); margin:0;"><span data-icon="chart" data-icon-size="15"></span> Performance Trends</div>
           </div>
           <div style="display: flex; gap: 24px;">
              <div style="flex:1">
@@ -1578,8 +1664,8 @@
                  <svg width="100%" height="100%" preserveAspectRatio="none" style="position:absolute; bottom:0;">
                    <defs>
                      <linearGradient id="scoreGrad" x1="0" y1="0" x2="0" y2="1">
-                       <stop offset="0%" stop-color="rgba(0, 240, 204, 0.4)" />
-                       <stop offset="100%" stop-color="rgba(0, 240, 204, 0)" />
+                       <stop offset="0%" stop-color="rgba(20, 184, 166, 0.35)" />
+                       <stop offset="100%" stop-color="rgba(20, 184, 166, 0)" />
                      </linearGradient>
                    </defs>
                    <path id="score-svg-path" d="M0,80 L100,80" fill="url(#scoreGrad)" stroke="var(--teal)" stroke-width="2" vector-effect="non-scaling-stroke" />
@@ -1587,24 +1673,28 @@
                </div>
              </div>
              <div style="flex:1">
-               <div style="font-size:0.65rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px;">Civic Balance</div>
-               <div class="trend-val civic-val" id="ui-civic-val">₹0</div>
+               <div style="font-size:0.65rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:4px;">Career Wallet</div>
+               <div class="trend-val civic-val" id="ui-civic-val">₹50,000</div>
+               <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:6px; font-size:0.75rem; color:var(--muted);">
+                 <span>Tokens: <strong id="ui-tokens-val" style="color:var(--plasma);">0</strong></span>
+                 <span>Civic: <strong id="ui-civic-pts" style="color:var(--green);">0 pts</strong></span>
+               </div>
                <div class="trend-chart-container">
                  <svg width="100%" height="100%" preserveAspectRatio="none" style="position:absolute; bottom:0;">
                    <defs>
                      <linearGradient id="civicGrad" x1="0" y1="0" x2="0" y2="1">
-                       <stop offset="0%" stop-color="rgba(242, 184, 75, 0.4)" />
-                       <stop offset="100%" stop-color="rgba(242, 184, 75, 0)" />
+                       <stop offset="0%" stop-color="rgba(245, 158, 11, 0.35)" />
+                       <stop offset="100%" stop-color="rgba(245, 158, 11, 0)" />
                      </linearGradient>
                    </defs>
-                   <path id="civic-svg-path" d="M0,80 L100,80" fill="url(#civicGrad)" stroke="var(--signal)" stroke-width="2" vector-effect="non-scaling-stroke" />
+                   <path id="civic-svg-path" d="M0,80 L100,80" fill="url(#civicGrad)" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke" />
                  </svg>
                </div>
              </div>
           </div>
         </div>
         <div class="bento-card tall accent-green">
-          <div class="bento-label" style="color: var(--green); margin-bottom: 24px;"><span aria-hidden="true">🎯</span> Module Progress</div>
+          <div class="bento-label" style="color: var(--green); margin-bottom: 24px;"><span data-icon="target" data-icon-size="15"></span> Module Progress</div>
           <div style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
             <div style="position:relative; width: 140px; height: 140px;">
               <svg class="svg-progress" viewBox="0 0 100 100" width="140" height="140">
@@ -1612,30 +1702,40 @@
                 <circle class="svg-progress-bar" id="module-svg-bar" cx="50" cy="50" r="45"></circle>
               </svg>
               <div style="position:absolute; top:0; left:0; right:0; bottom:0; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                <div id="cert-progress-pct" style="font-size:1.5rem; font-weight:800; line-height:1; text-shadow:0 0 12px rgba(255,255,255,0.3);">0%</div>
-                <div id="cert-progress-text" style="font-size:0.6rem; color:var(--muted); margin-top:4px; text-transform:uppercase; letter-spacing:0.05em;">Start!</div>
+                <div id="cert-progress-pct" style="font-size:1.5rem; font-weight:800; line-height:1;">0%</div>
+                <div id="cert-progress-text" style="font-size:0.65rem; color:var(--muted); margin-top:4px; text-transform:uppercase; letter-spacing:0.05em;">Start</div>
               </div>
             </div>
-            <div id="s-prog" style="margin-top:24px; font-size:1.5rem; font-weight:700; color:var(--text);">0/<span id="s-prog-total">53</span></div>
+            <div id="s-prog" style="margin-top:24px; font-size:1.5rem; font-weight:700; color:var(--text);">0/<span id="s-prog-total">54</span></div>
             <div style="font-size:0.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-top:4px;">Completed</div>
           </div>
         </div>
         <div class="bento-card wide accent-plasma">
-          <div class="bento-label" style="color: var(--plasma);"><span aria-hidden="true">✨</span> Recent Achievements</div>
+          <div class="bento-label" style="color: var(--plasma);"><span data-icon="medal" data-icon-size="15"></span> Recent Achievements</div>
           <div id="achievement-list" class="achievements-grid">
-            <div class="badge-empty" style="grid-column: 1 / -1;">No badges yet. Complete more modules to earn them!</div>
+            <div class="badge-empty" style="grid-column: 1 / -1;">No badges yet. Complete lessons to earn them.</div>
+          </div>
+        </div>
+        <div class="bento-card wide accent-gold">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+            <div class="bento-label" style="color: var(--accent); margin:0;"><span data-icon="wallet" data-icon-size="15"></span> Wallet &amp; Rewards Ledger</div>
+            <div id="dash-boosts-bar" style="display:flex; gap:6px; flex-wrap:wrap; font-size:0.74rem;"></div>
+          </div>
+          <div id="dash-wallet-summary" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; margin-bottom:14px;"></div>
+          <div id="dash-wallet-ledger" style="display:flex; flex-direction:column; gap:8px;">
+            <div class="badge-empty">No wallet transactions yet. Complete a lesson or driving mission to earn rewards.</div>
           </div>
         </div>
       </div>
 
             <div class="trophy-room">
-        <h2 class="trophy-title">The Trophy Room</h2>
+        <h2 class="trophy-title">Certificate &amp; Credentials</h2>
         <div class="cert-stage" id="cert-wrapper">
           <div class="crt" id="cert">
             <div style="display: flex; justify-content: space-between; align-items: center; width: 100%">
               <div style="display: flex; gap: 14px; align-items: center">
-                <img loading="lazy" src="mumbai-police-logo.png" style="height: 65px; object-fit: contain" alt="Mumbai Police" onerror="this.style.display='none'" />
-                <img loading="lazy" src="cert-assets/cert_logo_2.png" style="height: 65px; object-fit: contain" alt="Sneh Asha" onerror="this.style.display='none'" />
+                <img loading="lazy" src="mumbai-police-logo.png" style="height: 65px; object-fit: contain" alt="Mumbai Police" decoding="async" />
+                <img loading="lazy" src="cert-assets/cert_logo_2.png" style="height: 65px; object-fit: contain" alt="Sneh Asha" decoding="async" />
               </div>
             </div>
             <div style="font-weight: 600; letter-spacing: 0.1em; color: #7c7968; text-transform: uppercase; font-size: 1.2rem; margin-top: 20px">Certificate of Completion</div>
@@ -1643,7 +1743,7 @@
             <div class="crt-body" style="margin-top: 32px">This document certifies that</div>
             <div class="crt-course" id="cert-name">DRIVER</div>
             <div class="crt-body" style="margin-bottom: 40px">
-              has successfully completed the comprehensive traffic regulations and virtual operations training program, demonstrating mastery across 15 real-world compliance scenarios.
+              has completed the Traffic Academy road regulations and virtual driving program across Mumbai road safety scenarios.
             </div>
             <div style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%; margin-top: auto; padding-top: 24px; border-top: 1px solid #e0dfd7; text-align: left">
               <div class="crt-meta" style="color: #2c2b25">
@@ -1662,53 +1762,53 @@
           </div>
         </div>
 
-        <div id="no-cert-msg" style="display: none; padding: 40px; text-align: center; background: rgba(255, 255, 255, 0.1); border-radius: 24px; margin: 20px auto; max-width: 600px; border: 1px solid var(--border);">
-          <h3 style="margin-top: 0; color: var(--muted)">Certificate Locked</h3>
-          <p>Complete all <span data-level-total>53</span> lessons to unlock your Traffic Hero Certification.</p>
+        <div id="no-cert-msg" style="display: none; padding: 32px; text-align: center; background: var(--card); border-radius: 20px; margin: 20px auto; max-width: 600px; border: 1px solid var(--border);">
+          <h3 style="margin-top: 0; color: var(--text)">Certificate Locked</h3>
+          <p style="color: var(--muted);">Complete all <span data-level-total>54</span> lessons to unlock your Traffic Hero Certification.</p>
         </div>
 
-        <button class="btn-reward" id="btn-dl-cert" onclick="dlCert()">🎓 Download Certificate</button>
+        <button type="button" class="btn-reward" id="btn-dl-cert" data-dash-action="dl-cert">Download Certificate</button>
 
 <div id="share-bar" class="share-bar" style="display: none;">
-          <button class="share-btn share-wa" onclick="shareWhatsApp()">&#128172; WhatsApp</button>
-          <button class="share-btn share-ig" onclick="shareInstagram()">&#128247; Instagram</button>
-          <button class="share-btn share-copy" onclick="copyCertLink()">&#128279; Copy Link</button>
+          <button type="button" class="share-btn share-wa" data-dash-action="share-wa">WhatsApp</button>
+          <button type="button" class="share-btn share-ig" data-dash-action="share-ig">Instagram</button>
+          <button type="button" class="share-btn share-copy" data-dash-action="copy-cert">Copy Link</button>
         </div>
       </div>
 
             <div class="dashboard-section" style="margin-top: 40px;">
-        <h2 class="section-title" style="font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">🏆 Certificate Gallery</h2>
+        <h2 class="section-title" style="font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;"><span data-icon="medal" data-icon-size="22"></span> Certificate Gallery</h2>
         <div id="cert-gallery" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 20px;">
                   </div>
         <div id="no-certs-msg" style="text-align: center; padding: 40px; color: var(--muted); display: none;">
-          <p>Complete all 4 modes of all 5 levels in a module to earn a certificate.</p>
+          <p>Complete lessons in a module to earn your first certificate.</p>
         </div>
       </div>
       </div>
       <div id="tab-leaderboards" class="main-tab-view" style="display: none; opacity: 0; transition: opacity 0.3s ease;">
-            <div class="dashboard-section" style="margin-top: 48px;">
-        <h2 class="section-title" style="font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 12px;">📊 Leaderboards</h2>
+            <div class="dashboard-section" style="margin-top: 24px;">
+        <h2 class="section-title" style="font-size: 1.5rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;"><span data-icon="trophy" data-icon-size="22"></span> Leaderboards</h2>
 
           <div class="lb-search-bar-row">
             <div class="lb-search-input-wrap">
-              <span class="lb-search-icon">🔍</span>
-              <input type="text" id="lb-player-search" placeholder="Search Players By Username..." oninput="_debouncedSearch()" autocomplete="off">
-              <button class="lb-search-clear" id="lb-player-search-clear" onclick="clearLbPlayerSearch()" style="display:none;" title="Clear Search">✕</button>
+              <span class="lb-search-icon" data-icon="user" data-icon-size="16"></span>
+              <input type="text" id="lb-player-search" placeholder="Search Players By Username..." autocomplete="off">
+              <button type="button" class="lb-search-clear" id="lb-player-search-clear" data-dash-action="clear-player-search" style="display:none;" title="Clear Search">&times;</button>
             </div>
             <div class="lb-search-input-wrap">
-              <span class="lb-search-icon">📚</span>
-              <input type="text" id="lb-level-search" placeholder="Search Driving Levels..." oninput="searchLevels()" autocomplete="off">
-              <button class="lb-search-clear" id="lb-level-search-clear" onclick="clearLbLevelSearch()" style="display:none;" title="Clear Search">✕</button>
+              <span class="lb-search-icon" data-icon="book" data-icon-size="16"></span>
+              <input type="text" id="lb-level-search" placeholder="Search Driving Levels..." autocomplete="off">
+              <button type="button" class="lb-search-clear" id="lb-level-search-clear" data-dash-action="clear-level-search" style="display:none;" title="Clear Search">&times;</button>
             </div>
           </div>
           <div id="lb-search-results" style="display: none; margin-bottom: 20px;"></div>
 
           <div class="lb-container-card">
             <div class="lb-tabs" role="tablist" aria-label="Leaderboard Categories">
-              <button class="lb-tab active" id="lb-tab-xp" data-board="xp" role="tab" aria-selected="true" aria-controls="lb-panel-xp" onclick="switchLbTab('xp')"><span class="lb-tab-icon">🌍</span> Global XP</button>
-              <button class="lb-tab" id="lb-tab-modules" data-board="modules" role="tab" aria-selected="false" aria-controls="lb-panel-modules" onclick="switchLbTab('modules')"><span class="lb-tab-icon">✅</span> Modules</button>
-              <button class="lb-tab" id="lb-tab-civic" data-board="civic" role="tab" aria-selected="false" aria-controls="lb-panel-civic" onclick="switchLbTab('civic')"><span class="lb-tab-icon">💰</span> Wallet</button>
-              <button class="lb-tab" id="lb-tab-badges" data-board="badges" role="tab" aria-selected="false" aria-controls="lb-panel-badges" onclick="switchLbTab('badges')"><span class="lb-tab-icon">🎖️</span> Badges</button>
+              <button type="button" class="lb-tab active" id="lb-tab-xp" data-board="xp" data-dash-action="lb-tab" role="tab" aria-selected="true" aria-controls="lb-panel-xp"><span class="lb-tab-icon" data-icon="globe" data-icon-size="15"></span> Global XP</button>
+              <button type="button" class="lb-tab" id="lb-tab-modules" data-board="modules" data-dash-action="lb-tab" role="tab" aria-selected="false" aria-controls="lb-panel-modules"><span class="lb-tab-icon" data-icon="check" data-icon-size="15"></span> Modules</button>
+              <button type="button" class="lb-tab" id="lb-tab-civic" data-board="civic" data-dash-action="lb-tab" role="tab" aria-selected="false" aria-controls="lb-panel-civic"><span class="lb-tab-icon" data-icon="wallet" data-icon-size="15"></span> Wallet</button>
+              <button type="button" class="lb-tab" id="lb-tab-badges" data-board="badges" data-dash-action="lb-tab" role="tab" aria-selected="false" aria-controls="lb-panel-badges"><span class="lb-tab-icon" data-icon="medal" data-icon-size="15"></span> Badges</button>
             </div>
 
             <div id="lb-podium-xp" class="lb-podium" style="display:none;"></div>
@@ -1723,7 +1823,7 @@
 
             <div class="lb-stats-header">
               <div class="total-players"><span class="dot"></span> <span id="lb-total-count">Loading...</span></div>
-              <div style="display:flex;gap:12px;align-items:center;"><span id="lb-updated-at" style="font-size:0.7rem;color:var(--muted);"></span><div>Top Performers</div></div>
+              <div style="display:flex;gap:12px;align-items:center;"><span id="lb-updated-at" style="font-size:0.75rem;color:var(--muted);"></span><div>Top Performers</div></div>
             </div>
 
             <div id="lb-panel-xp" class="lb-panel" role="tabpanel" aria-labelledby="lb-tab-xp">
@@ -1741,13 +1841,13 @@
           </div>
       </div>
       </div>
-        <nav class="bottom-nav" aria-label="Main Navigation">
-      <button id="nav-btn-profile" class="nav-btn active" onclick="switchMainTab('profile')">
-        <span class="nav-icon" aria-hidden="true">👤</span>
+        <nav class="bottom-nav" id="bottom-nav" aria-label="Main Navigation">
+      <button type="button" id="nav-btn-profile" class="nav-btn active" data-dash-action="main-tab" data-tab="profile">
+        <span class="nav-icon" data-icon="user" data-icon-size="18" aria-hidden="true"></span>
         <span class="nav-text">Profile</span>
       </button>
-      <button id="nav-btn-leaderboards" class="nav-btn" onclick="switchMainTab('leaderboards')">
-        <span class="nav-icon" aria-hidden="true">🏆</span>
+      <button type="button" id="nav-btn-leaderboards" class="nav-btn" data-dash-action="main-tab" data-tab="leaderboards">
+        <span class="nav-icon" data-icon="trophy" data-icon-size="18" aria-hidden="true"></span>
         <span class="nav-text">Leaderboard</span>
       </button>
     </nav>
@@ -1775,44 +1875,35 @@
           </select>
         </div>
         <div class="modal-actions">
-          <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
-          <button class="btn-save" onclick="saveEditModal()">Save Changes</button>
+          <button type="button" class="btn-cancel" data-dash-action="close-edit">Cancel</button>
+          <button type="button" class="btn-save" data-dash-action="save-edit">Save Changes</button>
         </div>
       </div>
     </div>
 
     <script>
       const _urlParams = new URLSearchParams(window.location.search)
-      const _uidParam = _urlParams.get('uid')
-      const _studentIdParam = _urlParams.get('studentId')
-      const _userParam = _urlParams.get('user')
-      let _isReadOnlyMode = !!(_uidParam || _studentIdParam || _userParam)
-      let _resolvedUserId = _uidParam
+      const _certParam = _urlParams.get('cert')
+      // Cross-user ?uid= / ?studentId= / ?user= snooping is intentionally disabled:
+      // every player dashboard requires an authenticated session matching the owner.
+      if (!_certParam && (_urlParams.get('uid') || _urlParams.get('studentId') || _urlParams.get('user'))) {
+        try { window.history.replaceState({}, '', window.location.pathname) } catch (_e) {}
+      }
+      const _isReadOnlyMode = Boolean(_certParam)
 
       // Escape display names before they touch innerHTML. Names come from the
-      // database, so they are untrusted. Declared at page scope because both
-      // the leaderboard renderer and the player/level search functions need it;
-      // it used to be declared inside loadLeaderboard(), where searchPlayerLb
-      // could not see it and every search fell into the catch-all error branch.
+      // database, so they are untrusted.
       function escLb(s) {
         return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
       }
 
-      // Canonical level count, generated from levels/*.js by
-      // tools/gen-level-catalog.js. Replaces the hardcoded "/52" literals.
-      // Read through a getter rather than captured once, so the value is always
-      // current even if the catalogue script loads late.
       const LEVEL_TOTAL = (typeof window.LEVEL_CATALOG === 'undefined' || !window.LEVEL_CATALOG)
-        ? 53
+        ? 54
         : window.LEVEL_CATALOG.numberedTotal
 
-      let S = {}
-      try {
-        const raw = localStorage.getItem('mth4')
-        if (raw) S = JSON.parse(raw)
-      } catch (e) {}
+      let S = window.ProgressTracker ? window.ProgressTracker.readLocalState() : {}
+      window.S = S
 
-// Static "all N lessons" copy has to match the generated catalogue.
       document.querySelectorAll('[data-level-total]').forEach(el => { el.textContent = String(LEVEL_TOTAL) })
 
       let tUser = {}
@@ -1821,11 +1912,19 @@
         if (raw) tUser = JSON.parse(raw)
       } catch (e) {}
 
-      const _certParam = _urlParams.get('cert')
       let _syncedCertId = null
 
       async function _initSupabase() {
         if (window.supabaseClient) return window.supabaseClient
+        if (window.ColDbConfig && typeof window.ColDbConfig.createClient === 'function') {
+          try {
+            const client = await window.ColDbConfig.createClient()
+            if (client) {
+              window.supabaseClient = client
+              return client
+            }
+          } catch (_e) {}
+        }
         try {
           const res = await fetch('config.json?t=' + Date.now())
           const cfg = await res.json()
@@ -1841,68 +1940,21 @@
 
       async function _loadCloudProgress(userId) {
         const client = await _initSupabase()
-        if (!client) return null
-        try {
-          const [progressRes, badgesRes, walletRes] = await Promise.all([
-            client.from('game_progress').select('level_id, score, completed_at, stars, completed').eq('user_id', userId),
-            client.from('badges').select('badge_type').eq('user_id', userId),
-            client.from('wallets').select('balance').eq('user_id', userId).maybeSingle()
-          ])
-          const progress = progressRes.data
-          const badges = badgesRes.data
-          const wallet = walletRes.data
-
-          if (progress && progress.length > 0) {
-            const comp = {}
-            const scenario2d = { total: 0 }
-            progress.forEach(p => {
-              if (p.level_id.startsWith('s') && !isNaN(parseInt(p.level_id.replace('s', '')))) {
-                scenario2d[`${p.level_id}_done`] = true
-                scenario2d[`${p.level_id}_stars`] = p.stars || 0
-                if (p.completed) scenario2d.total++
-              } else {
-                comp[p.level_id] = { score: p.score, time: new Date(p.completed_at || Date.now()).getTime() }
-              }
-            })
-            return {
-              comp,
-              scenario2d,
-              badges: badges ? badges.map(b => b.badge_type) : [],
-              total: Object.keys(comp).length,
-              wallet: wallet?.balance ?? 50000
-            }
-          }
-        } catch (err) {
-          console.warn('Cloud load failed:', err)
-        }
-        return null
+        if (!client || !userId || !window.ProgressTracker) return null
+        return window.ProgressTracker.syncWithCloud(client, userId)
       }
 
       async function _syncCloudToLocal(userId) {
-        const cloudS = await _loadCloudProgress(userId)
-        if (!cloudS) return false
-
-        const cloudHasData = cloudS.total > 0 || (cloudS.badges && cloudS.badges.length > 0) || cloudS.wallet !== 50000
-        const localHasData = S.total > 0 || (S.badges && S.badges.length > 0) || S.wallet !== 50000
-
-        if (cloudHasData && !localHasData) {
-          S = { ...S, ...cloudS }
-          try { localStorage.setItem('mth4', JSON.stringify(S)) } catch (e) {}
-          toast('☁️ Cloud Data Auto-Restored!', '#5ED4F5')
-          if (window.ui && window.ui.init) ui.init()
-          return true
-        } else if (cloudHasData && localHasData) {
-          const isDifferent = cloudS.total !== S.total ||
-            (cloudS.badges && S.badges && cloudS.badges.length !== S.badges.length) ||
-            Object.keys(cloudS.comp || {}).length !== Object.keys(S.comp || {}).length
-
-          if (isDifferent) {
-            injectConflictModal(cloudS)
-            document.getElementById('conflictMo').style.display = 'flex'
-            return true
-          }
+        if (!userId || !window.ProgressTracker) return false
+        const client = await _initSupabase()
+        if (!client) return false
+        const before = JSON.stringify(S || {})
+        const merged = await window.ProgressTracker.syncWithCloud(client, userId)
+        if (merged) {
+          S = merged
+          window.S = merged
         }
-        return false
+        return JSON.stringify(S || {}) !== before
       }
 
       async function _loadSharedCertificate(id) {
@@ -1916,77 +1968,29 @@
       async function _syncOwnCertificate(name, completedCount, scoreTotal) {
         if (completedCount < LEVEL_TOTAL) return null
         const client = await _initSupabase()
-        if (!client || !window.colUser || !window.colUser.id) {
-          console.warn('Certificate Sync failed: User not logged in or Supabase client missing.')
-          return null
-        }
+        if (!client || !window.colUser || !window.colUser.id) return null
         try {
           const { data, error } = await client.from('certificates').upsert(
             { user_id: window.colUser.id, display_name: name, modules_completed: completedCount, total_modules: LEVEL_TOTAL, score: scoreTotal, updated_at: new Date().toISOString() },
             { onConflict: 'user_id' }
           ).select().maybeSingle()
-          if (error) {
-            console.error('Supabase Upsert Error for Certificate:', error)
-            return null
-          }
+          if (error || !data) return null
           localStorage.setItem('own_cert_id', data.id)
           return data.id
         } catch (e) {
-          console.error('Certificate Sync Exception:', e)
           return null
         }
       }
 
-
       async function _syncDashboardProgress() {
         const client = await _initSupabase()
         if (!client || !window.colUser || !window.colUser.id) return
-        try {
-          const completedCount = S.comp ? Object.keys(S.comp).filter(k => S.comp[k] && S.comp[k].score > 0).length : 0
-          const badgeCount = S.badges ? S.badges.length : 0
-          const googleMeta = (window.colUser && window.colUser.user_metadata) || {}
-          const googleAvatarUrl = googleMeta.avatar_url || googleMeta.picture || googleMeta.avatar || null
-          await client.from('user_profiles').upsert({
-            user_id: window.colUser.id,
-            display_name: tUser.name || S.name || googleMeta.full_name || null,
-            username: tUser.username || S.username || null,
-            total_score: S.total || 0,
-            modules_completed: completedCount,
-            badges_count: badgeCount,
-            preferred_vehicle: tUser.vehicle || S.vehicle || null,
-            ...(S.studentId ? { student_id: S.studentId } : {}),
-            ...(googleAvatarUrl ? { avatar_url: googleAvatarUrl } : {}),
-            updated_at: new Date().toISOString()
-          }, { onConflict: 'user_id' }).catch(() => {})
-
-          if (S.badges && S.badges.length > 0) {
-            try {
-              const { data: existing } = await client.from('badges').select('badge_type').eq('user_id', window.colUser.id)
-              const existingTypes = new Set((existing || []).map(b => b.badge_type))
-              const newBadges = S.badges.filter(b => !existingTypes.has(b))
-              if (newBadges.length > 0) {
-                await client.from('badges').insert(newBadges.map(b => ({ user_id: window.colUser.id, badge_type: b }))).catch(() => {})
-              }
-            } catch (e) { console.warn('Badge sync failed:', e) }
-          }
-
-          const walletBal = S.wallet || 0
-          if (walletBal > 0) {
-            try {
-              await client.from('wallets').upsert({ user_id: window.colUser.id, balance: walletBal }, { onConflict: 'user_id' }).catch(() => {})
-            } catch (e) { console.warn('Wallet sync failed:', e) }
-          }
-        } catch (e) { console.warn('Dashboard sync exception:', e) }
+        if (window.ProgressTracker) {
+          const merged = await window.ProgressTracker.syncWithCloud(client, window.colUser.id)
+          if (merged) { S = merged; window.S = merged }
+        }
       }
 
-
-      // Single source for every learner's leaderboard-safe display data.
-      //
-      // This is the only path that may read other users. `user_profiles` is
-      // own-row only, so querying it for rankings silently returns just the
-      // caller's row; never fall back to it. The RPC is SECURITY DEFINER so
-      // rankings work while the table stays locked down, and it is granted to
-      // `authenticated` only, so an anonymous caller gets nothing.
       async function _fetchProfileDirectory(client, options = {}) {
         if (!client) return []
         const limit = Math.min(Math.max(Number(options.limit) || 100, 1), 500)
@@ -2003,165 +2007,153 @@
         return Array.isArray(data) ? data : []
       }
 
-      async function _resolveProfileUrl() {
-        if (_resolvedUserId) return _resolvedUserId
+      function renderNextStepBanner() {
+        const host = document.getElementById('dash-next-step')
+        if (!host || !window.ProgressTracker || !window.LEVEL_CATALOG) return
+        const rec = window.ProgressTracker.getNextRecommendedLevel(window.LEVEL_CATALOG.levels, S)
+        if (!rec || !rec.level) {
+          host.style.display = 'none'
+          return
+        }
+        const lv = rec.level
+        const ico = window.TrafficIcons ? window.TrafficIcons.svg('compass', 18) : ''
+        const goIco = window.TrafficIcons ? window.TrafficIcons.svg('arrowRight', 15) : ''
+        host.innerHTML =
+          '<div class="dash-next-copy">' +
+            '<div class="dash-next-kicker">' + ico + ' What To Do Next</div>' +
+            '<div class="dash-next-title">Lesson ' + escLb(lv.id) + ': ' + escLb(lv.name) + '</div>' +
+            '<div class="dash-next-sub">' + escLb(rec.reason || lv.desc || 'Continue your driving mastery path.') + '</div>' +
+          '</div>' +
+          '<button type="button" class="dash-btn-primary" data-dash-action="open-lesson" data-lid="' + escLb(lv.id) + '">' +
+            'Open Lesson ' + goIco +
+          '</button>'
+        host.style.display = 'flex'
+      }
+
+      async function getVerifiedSessionUser() {
         const client = await _initSupabase()
         if (!client) return null
         try {
-          if (_studentIdParam) {
-            // Resolved by a narrow RPC: student_id is not selectable by API roles.
-            const { data: sid } = await client.rpc('resolve_user_id_by_student_id', { p_student_id: String(_studentIdParam) })
-            if (sid) { _resolvedUserId = sid; return sid }
+          const { data } = await client.auth.getSession()
+          const sessionUser = data && data.session ? data.session.user : null
+          if (sessionUser && sessionUser.id) {
+            const meta = sessionUser.user_metadata || {}
+            const verified = {
+              id: sessionUser.id,
+              email: sessionUser.email || '',
+              name: meta.full_name || meta.name || (sessionUser.email ? sessionUser.email.split('@')[0] : 'Driver'),
+              picture: meta.avatar_url || meta.picture || '',
+              user_metadata: meta,
+              isCached: false
+            }
+            window.colUser = verified
+            return verified
           }
-          if (_userParam) {
-            const uname = _userParam.startsWith('@') ? _userParam : '@' + _userParam
-            const dirRows = await _fetchProfileDirectory(client, { search: uname, limit: 20 })
-            const dirHit = (dirRows || []).find(r => r.username && r.username.toLowerCase() === uname.toLowerCase())
-            if (dirHit && dirHit.user_id) { _resolvedUserId = dirHit.user_id; return dirHit.user_id }
-          }
-        } catch (e) { console.warn('Profile URL resolve failed:', e) }
+        } catch (_e) {}
         return null
       }
 
+      async function enforceDashboardAuth() {
+        const gate = document.getElementById('dash-auth-gate')
+        const container = document.getElementById('dashboard-container')
+        const nav = document.getElementById('bottom-nav')
+        if (_certParam) {
+          if (gate) gate.style.display = 'none'
+          if (container) container.style.display = 'block'
+          if (nav) nav.style.display = 'none'
+          return null
+        }
+        const user = await getVerifiedSessionUser()
+        if (!user) {
+          if (gate) gate.style.display = 'block'
+          if (container) container.style.display = 'none'
+          if (nav) nav.style.display = 'none'
+          updateDashboardAuthMenu()
+          return null
+        }
+        if (gate) gate.style.display = 'none'
+        if (container) container.style.display = 'block'
+        if (nav) nav.style.display = 'flex'
+        updateDashboardAuthMenu()
+        return user
+      }
+
       async function renderDashboardUI() {
-        if (_isReadOnlyMode) {
+        const user = await enforceDashboardAuth()
+        if (!user && !_certParam) return
 
-            const resolvedId = await _resolveProfileUrl()
-            const targetId = resolvedId || _uidParam
-            const client = await _initSupabase();
-            if (client && targetId) {
-
-              // Another learner's row is only readable through the
-              // leaderboard-safe projection. Age, role, student_id and email
-              // are not exposed to other accounts.
-              const upData = await _fetchProfileDirectory(client, { limit: 500 })
-              const row = (upData || []).find(r => r.user_id === targetId)
-              if (row) {
-                tUser.name = row.display_name || 'Driver';
-                tUser.username = row.username || '';
-                tUser.vehicle = row.preferred_vehicle || 'Car';
-                if (!_isReadOnlyMode) {tUser.age = tUser.age || 18;}
-                tUser.language = row.language || 'en';
-                S.total = row.total_score || 0
-                if (!_isReadOnlyMode) {S.studentId = window.colUser && window.colUser.studentId}
-              }
-              if (!tUser.name || tUser.name === 'Driver' || !tUser.username) {
-                // `profiles` is own-row only now, so this is just a fallback for
-                // the caller's own legacy profile row.
-                const { data } = await client.from('profiles').select('username, full_name').eq('id', targetId).maybeSingle();
-                if (data) {
-                  if (!tUser.name || tUser.name === 'Driver') tUser.name = data.full_name || 'Driver';
-                  if (!tUser.username) tUser.username = data.username || '';
-                }
-              }
-            }
-
-            const menuContainer = document.querySelector('.menu-container');
-            if (menuContainer) menuContainer.style.display = 'none';
-            const topActions = document.querySelector('.top-bar-actions');
-            if (topActions && !document.getElementById('ro-badge')) {
-              topActions.insertAdjacentHTML('afterbegin', '<div id="ro-badge" style="background: rgba(255,255,255,0.1); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; color: var(--muted); margin-right: 12px; border: 1px solid var(--border);">Read-Only Mode</div>');
-            }
-            document.title = (tUser.name || 'Driver') + "'s Profile | Traffic Hero";
-        } else {
-
-          _syncDashboardProgress()
+        if (user && !_certParam) {
+          S = window.ProgressTracker ? window.ProgressTracker.readLocalState() : S
+          window.S = S
+          renderNextStepBanner()
         }
 
+        const meta = (user && user.user_metadata) || {}
+        const displayName = tUser.name || S.name || meta.full_name || (user && user.name) || 'Driver'
+        const userInitials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'DR'
 
-        if (_isReadOnlyMode) {
-          const shareBtn = document.getElementById('btn-share-profile')
-          if (shareBtn) shareBtn.style.display = 'none'
-        }
-
-        const displayName = tUser.name || S.name || 'Driver'
-        const userInitials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
-
-        // Build the avatar with DOM calls rather than an innerHTML string.
-        // displayName can be another learner's display_name in read-only mode,
-        // so it must never reach an attribute or an inline JS string.
         ;[document.getElementById('avatar-sm'), document.getElementById('hero-avatar')].forEach(el => {
-          if (!el) return;
-          el.textContent = userInitials;
-          // Live session first (Google PFP); never stale snapshots or other accounts
-          const userPhoto = (_isReadOnlyMode && tUser.picture) || (window.colUser && (window.colUser.picture || (window.colUser.user_metadata && window.colUser.user_metadata.avatar_url))) || null
-          if (!userPhoto) return;
-          let safeSrc = userPhoto;
+          if (!el) return
+          el.textContent = userInitials
+          const userPhoto = (user && (user.picture || meta.avatar_url || meta.picture)) || null
+          if (!userPhoto) return
+          let safeSrc = userPhoto
           if (typeof window.colGetSafeImageUrl === 'function') {
-            safeSrc = window.colGetSafeImageUrl(userPhoto);
+            safeSrc = window.colGetSafeImageUrl(userPhoto)
           } else if (!/^(https?:|data:image\/|blob:)/i.test(String(userPhoto))) {
-            return;
+            return
           }
-          const img = document.createElement('img');
-          img.alt = displayName;
-          img.referrerPolicy = 'no-referrer';
-          img.addEventListener('error', () => { img.remove(); });
-          img.src = safeSrc;
-          el.appendChild(img);
+          const img = document.createElement('img')
+          img.alt = displayName
+          img.referrerPolicy = 'no-referrer'
+          img.addEventListener('error', () => { img.remove() })
+          img.src = safeSrc
+          el.appendChild(img)
         })
 
         document.getElementById('top-name').innerText = displayName
         document.getElementById('h-name').innerText = displayName
 
-        const displayUsername = tUser.username || S.username || (!_isReadOnlyMode && window.colUser && window.colUser.user_metadata && window.colUser.user_metadata.username) || '';
-        const hUsername = document.getElementById('h-username');
+        const displayUsername = tUser.username || S.username || meta.username || ''
+        const hUsername = document.getElementById('h-username')
         if (hUsername && displayUsername) {
-          hUsername.innerText = displayUsername.startsWith('@') ? displayUsername : '@' + displayUsername;
-          hUsername.style.display = 'block';
+          hUsername.innerText = displayUsername.startsWith('@') ? displayUsername : '@' + displayUsername
+          hUsername.style.display = 'block'
         }
 
-        const role = (tUser.role || S.role || 'student')
-        const rawId = S.studentId || (window.colUser?.id ? window.colUser.id.substring(0, 8).toUpperCase() : '') || 'NEW'
+        const rawId = S.studentId || (user && user.id ? user.id.substring(0, 8).toUpperCase() : '') || 'NEW'
         document.getElementById('h-id').innerText = 'ID: STU-' + rawId.replace('STU-', '')
-
-
-        if (_isReadOnlyMode && _resolvedUserId) {
-          try {
-            const client = await _initSupabase()
-            if (client) {
-              // The view counter is the owner's private metric; the increment
-              // still runs, but the total is only read for one's own row.
-              if (window.colUser && window.colUser.id === _resolvedUserId) {
-                const { data: vp } = await client.from('user_profiles').select('profile_views').eq('user_id', _resolvedUserId).maybeSingle()
-                if (vp && vp.profile_views) {
-                  const viewBadge = document.createElement('div')
-                  viewBadge.style.cssText = 'margin-top:8px;font-size:0.8rem;color:var(--muted);font-weight:600;'
-                  viewBadge.textContent = '👁️ ' + vp.profile_views + ' profile view' + (vp.profile_views !== 1 ? 's' : '')
-                  document.getElementById('h-id').after(viewBadge)
-                }
-              } else {
-                await client.rpc('increment_profile_views', { target_user_id: _resolvedUserId }).catch(() => {})
-              }
-            }
-          } catch (e) {}
-        }
 
         document.getElementById('s-veh').innerText = tUser.vehicle || S.vehicle || 'Car'
         const ageVal = tUser.age || S.age || 18
         const ageLabels = { child: '8-12 (Kids)', teen: '13-17 (Teens)', young: '18-25 (Young)', adult: '26-50 (Adult)', senior: '51+ (Senior)' }
         const ageBracket = ageVal <= 12 ? 'child' : ageVal <= 17 ? 'teen' : ageVal <= 25 ? 'young' : ageVal <= 50 ? 'adult' : 'senior'
-        document.getElementById('s-age').innerText = ageLabels[ageBracket] || '18'
-        document.getElementById('s-lang').innerText = (tUser.language || S.language || 'en') === 'hi' ? 'हिंदी' : 'English'
-        document.getElementById('h-score').innerText = (S.total || 0).toLocaleString()
+        document.getElementById('s-age').innerText = ageLabels[ageBracket] || '18-25 (Young)'
+        document.getElementById('s-lang').innerText = (tUser.language || S.language || 'en') === 'hi' ? 'Hindi' : 'English'
+        const totalXP = window.ProgressTracker ? window.ProgressTracker.computeTotalXP(S) : (S.total || 0)
+        document.getElementById('h-score').innerText = totalXP.toLocaleString()
 
         const civicScore = S.civicScore || 0
         const civicTiers = [
-          { at: 500, label: 'Platinum Citizen', emoji: '🌟' },
-          { at: 250, label: 'Gold Citizen', emoji: '🏆' },
-          { at: 100, label: 'Silver Citizen', emoji: '🥈' },
-          { at: 25, label: 'Bronze Citizen', emoji: '🥉' },
-          { at: 0, label: 'Civic Score', emoji: '🌱' }
+          { at: 500, label: 'Platinum Citizen', icon: 'crown' },
+          { at: 250, label: 'Gold Citizen', icon: 'trophy' },
+          { at: 100, label: 'Silver Citizen', icon: 'medal' },
+          { at: 25, label: 'Bronze Citizen', icon: 'shield' },
+          { at: 0, label: 'Civic Score', icon: 'shield' }
         ]
         const civicTier = civicTiers.find((t) => civicScore >= t.at)
-        document.getElementById('h-tier').innerText = `${civicTier.emoji} ${civicTier.label}`
+        const tierEl = document.getElementById('h-tier')
+        if (tierEl) {
+          const ico = window.TrafficIcons ? window.TrafficIcons.svg(civicTier.icon, 14) : ''
+          tierEl.innerHTML = ico + '<span>' + escLb(civicTier.label) + '</span>'
+        }
 
-        let completed = 0
-        if (S.comp) completed = Object.keys(S.comp).filter((k) => S.comp[k] && S.comp[k].score > 0).length
+        const completed = window.ProgressTracker ? window.ProgressTracker.computeCompletedCount(S) : _getCompleted()
         document.getElementById('s-prog').innerText = `${completed}/${LEVEL_TOTAL}`
         const progTotalEl = document.getElementById('s-prog-total')
         if (progTotalEl) progTotalEl.textContent = String(LEVEL_TOTAL)
 
-        const progressPct = Math.round((completed / LEVEL_TOTAL) * 100)
+        const progressPct = Math.min(100, Math.round((completed / LEVEL_TOTAL) * 100))
         document.getElementById('global-fill').style.width = progressPct + '%'
         document.getElementById('global-pct').innerText = progressPct + '%'
 
@@ -2170,19 +2162,18 @@
           window.TrafficCharts.createProgressRing(certProgressCanvas, progressPct, { cutout: '70%' })
         }
         document.getElementById('cert-progress-pct').textContent = progressPct + '%'
-        document.getElementById('cert-progress-text').textContent = completed >= LEVEL_TOTAL ? 'Unlocked!' : (completed > 0 ? 'Learning...' : 'Start!')
-
+        document.getElementById('cert-progress-text').textContent = completed >= LEVEL_TOTAL ? 'Unlocked' : (completed > 0 ? 'In Progress' : 'Start')
 
         const modulePctText = document.getElementById('cert-progress-pct')
         const moduleStatusText = document.getElementById('cert-progress-text')
         const moduleFractionText = document.getElementById('s-prog')
         const moduleBar = document.getElementById('module-svg-bar')
         if (modulePctText) modulePctText.textContent = progressPct + '%'
-        if (moduleStatusText) moduleStatusText.textContent = completed >= LEVEL_TOTAL ? 'Unlocked!' : (completed > 0 ? 'Learning...' : 'Start!')
+        if (moduleStatusText) moduleStatusText.textContent = completed >= LEVEL_TOTAL ? 'Unlocked' : (completed > 0 ? 'In Progress' : 'Start')
         if (moduleFractionText) moduleFractionText.textContent = completed + '/' + LEVEL_TOTAL
         if (moduleBar) {
-          const offset = 283 - (283 * progressPct) / 100;
-          setTimeout(() => moduleBar.style.strokeDashoffset = offset, 100);
+          const offset = 283 - (283 * progressPct) / 100
+          setTimeout(() => { moduleBar.style.strokeDashoffset = offset }, 100)
         }
 
         const completions = S.comp
@@ -2193,8 +2184,77 @@
 
         const uiScoreVal = document.getElementById('ui-score-val')
         const uiCivicVal = document.getElementById('ui-civic-val')
-        if (uiScoreVal) uiScoreVal.textContent = (S.total || 0).toLocaleString()
-        if (uiCivicVal) uiCivicVal.textContent = '₹' + civicScore.toLocaleString()
+        const uiTokensVal = document.getElementById('ui-tokens-val')
+        const uiCivicPts = document.getElementById('ui-civic-pts')
+        const walletBal = Number.isFinite(S.wallet) ? Number(S.wallet) : 50000
+        const tokensBal = Number.isFinite(S.missionTokens) ? Number(S.missionTokens) : 0
+        if (uiScoreVal) uiScoreVal.textContent = totalXP.toLocaleString()
+        if (uiCivicVal) uiCivicVal.textContent = '₹' + walletBal.toLocaleString('en-IN')
+        if (uiTokensVal) uiTokensVal.textContent = tokensBal.toLocaleString('en-IN')
+        if (uiCivicPts) uiCivicPts.textContent = civicScore.toLocaleString('en-IN') + ' pts'
+
+        const boostsBar = document.getElementById('dash-boosts-bar')
+        if (boostsBar) {
+          const pills = []
+          const stDays = (S.streak && S.streak.current) || 0
+          const freezes = ((S.streak && S.streak.freezes) || 0) + (S.streakShield || 0)
+          pills.push(`<span style="padding:4px 10px;border-radius:99px;border:1px solid var(--border);background:var(--panel);font-weight:700;">Streak: ${stDays}d</span>`)
+          pills.push(`<span style="padding:4px 10px;border-radius:99px;border:1px solid var(--border);background:var(--panel);font-weight:700;">Freezes: ${freezes}</span>`)
+          if (S.doubleXp) {
+            pills.push(`<span style="padding:4px 10px;border-radius:99px;border:1px solid rgba(56,189,248,0.4);background:rgba(56,189,248,0.14);color:var(--signal);font-weight:700;">2x XP Ready</span>`)
+          }
+          boostsBar.innerHTML = pills.join('')
+        }
+
+        const walletSummaryEl = document.getElementById('dash-wallet-summary')
+        const ledgerEl = document.getElementById('dash-wallet-ledger')
+        if (window.WalletHistory) {
+          if (Array.isArray(S.walletHistory) && S.walletHistory.length > 0 && window.WalletHistory.getAll().length === 0) {
+            window.WalletHistory.replaceAll(S.walletHistory)
+          }
+          const sum = window.WalletHistory.getSummary()
+          if (walletSummaryEl) {
+            walletSummaryEl.innerHTML = `
+              <div style="padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--panel);">
+                <div style="font-size:0.68rem;color:var(--muted);text-transform:uppercase;font-weight:700;">Rewards Earned</div>
+                <div style="font-size:1rem;font-weight:800;color:var(--green);margin-top:2px;">+₹${sum.totalEarned.toLocaleString('en-IN')}</div>
+              </div>
+              <div style="padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--panel);">
+                <div style="font-size:0.68rem;color:var(--muted);text-transform:uppercase;font-weight:700;">Fines Deducted</div>
+                <div style="font-size:1rem;font-weight:800;color:var(--red);margin-top:2px;">-₹${sum.totalDeducted.toLocaleString('en-IN')}</div>
+              </div>
+              <div style="padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--panel);">
+                <div style="font-size:0.68rem;color:var(--muted);text-transform:uppercase;font-weight:700;">Owned Cosmetics</div>
+                <div style="font-size:1rem;font-weight:800;color:var(--plasma);margin-top:2px;">${Object.keys(S.shopOwned || {}).length} Items</div>
+              </div>
+            `
+          }
+          const recentTx = window.WalletHistory.getAll().slice(-8).reverse()
+          if (ledgerEl) {
+            if (recentTx.length === 0) {
+              ledgerEl.innerHTML = '<div class="badge-empty">No wallet transactions yet. Complete a lesson or driving mission to earn rewards.</div>'
+            } else {
+              ledgerEl.innerHTML = recentTx.map((tx) => {
+                const info = window.WalletHistory.getCategoryInfo(tx.category)
+                const isCredit = tx.type === 'earn' || tx.type === 'token_earn'
+                const sign = isCredit ? '+' : '-'
+                const color = isCredit ? 'var(--green)' : 'var(--red)'
+                const amtText = sign + window.WalletHistory.formatAmount(tx.amount, tx.currency)
+                const ico = window.TrafficIcons ? window.TrafficIcons.svg(info.icon || 'wallet', 15) : ''
+                return `<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--panel);">
+                  <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+                    <span style="display:inline-flex;color:var(--accent);flex-shrink:0;">${ico}</span>
+                    <div style="min-width:0;">
+                      <div style="font-size:0.84rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escLb(info.label)}</div>
+                      <div style="font-size:0.72rem;color:var(--muted);">${escLb(window.WalletHistory.formatTime(tx.timestamp))}</div>
+                    </div>
+                  </div>
+                  <div style="font-size:0.88rem;font-weight:800;color:${color};white-space:nowrap;">${escLb(amtText)}</div>
+                </div>`
+              }).join('')
+            }
+          }
+        }
 
         if (completions.length > 0) {
           let runningScore = 0
@@ -2211,133 +2271,80 @@
         const badgeList = document.getElementById('achievement-list')
         if (S.badges && S.badges.length > 0) {
           const recentBadges = [...S.badges].reverse().slice(0, 6)
+          const medalIco = window.TrafficIcons ? window.TrafficIcons.svg('medal', 22) : ''
           badgeList.innerHTML = recentBadges.map(b => {
-            const formatted = b.replace(/_/g, ' ')
+            const formatted = escLb(String(b).replace(/_/g, ' '))
             return `<div class="badge-card">
-              <div class="badge-icon">🏅</div>
+              <div class="badge-icon">${medalIco}</div>
               <div class="badge-name">${formatted}</div>
             </div>`
           }).join('')
         }
 
         document.getElementById('cert-name').innerText = displayName.toUpperCase()
-        document.getElementById('cert-score').innerText = S.total || 0
+        document.getElementById('cert-score').innerText = totalXP
         document.getElementById('cert-date').innerText = new Date().toLocaleDateString()
-        const _certRefId = S.studentId || (window.colUser?.id || '').substring(0, 8).toUpperCase() || 'UNKNOWN'
+        const _certRefId = S.studentId || (user && user.id ? user.id.substring(0, 8).toUpperCase() : '') || 'UNKNOWN'
         document.getElementById('cert-ref').innerText = 'TH-' + _certRefId.replace('STU-', '')
 
         const certWrapper = document.getElementById('cert-wrapper')
         const noCertMsg = document.getElementById('no-cert-msg')
         const shareBar = document.getElementById('share-bar')
         const dlBtn = document.getElementById('btn-dl-cert')
-        const _done = _getCompleted()
+        const _done = completed
 
         if (_done >= LEVEL_TOTAL) {
           certWrapper.style.filter = 'none'
           certWrapper.style.opacity = '1'
           shareBar.style.display = 'flex'
           noCertMsg.style.display = 'none'
+          dlBtn.style.display = 'block'
           try {
             const cachedId = localStorage.getItem('own_cert_id')
             if (cachedId) _syncedCertId = cachedId
-            _syncOwnCertificate(displayName, _done, S.total || 0).then(id => { if (id) _syncedCertId = id })
+            _syncOwnCertificate(displayName, _done, totalXP).then(id => { if (id) _syncedCertId = id })
           } catch (e) {}
         } else {
           const blurPx = ((LEVEL_TOTAL - _done) / LEVEL_TOTAL * 5).toFixed(1)
           certWrapper.style.filter = `grayscale(1) blur(${blurPx}px)`
           certWrapper.style.opacity = (0.55 + (_done / LEVEL_TOTAL) * 0.45).toFixed(2)
           noCertMsg.style.display = 'block'
-          noCertMsg.querySelector('p').innerText = `Complete all ${LEVEL_TOTAL} lessons to unlock your certificate. (${_done}/${LEVEL_TOTAL} done)`
+          noCertMsg.querySelector('p').innerText = `Complete all ${LEVEL_TOTAL} lessons to unlock your certificate (${_done}/${LEVEL_TOTAL} done).`
           dlBtn.style.display = 'none'
         }
       }
-      renderDashboardUI();
 
       function drawSvgTrend(pathId, data) {
-        const path = document.getElementById(pathId);
-        if (!path || data.length < 2) return;
-        const minVal = Math.min(...data);
-        const maxVal = Math.max(...data);
-        const range = maxVal - minVal || 1;
+        const path = document.getElementById(pathId)
+        if (!path || data.length < 2) return
+        const minVal = Math.min(...data)
+        const maxVal = Math.max(...data)
+        const range = maxVal - minVal || 1
         const pts = data.map((val, i) => {
-          const x = (i / (data.length - 1)) * 100;
-          const y = 80 - ((val - minVal) / range) * 70;
-          return `${x},${y}`;
-        });
-        path.setAttribute('d', `M0,80 L${pts.join(' L')} L100,80`);
+          const x = (i / (data.length - 1)) * 100
+          const y = 80 - ((val - minVal) / range) * 70
+          return `${x},${y}`
+        })
+        path.setAttribute('d', `M0,80 L${pts.join(' L')} L100,80`)
       }
 
       window.addEventListener('col-auth-changed', async (e) => {
         const user = e.detail && e.detail.user ? e.detail.user : window.colUser
-
-        if (user) {
-          const meta = user.user_metadata || {}
-          const googleAvatar = user.picture || meta.avatar_url || meta.picture || meta.avatar || null
-          const name = user.name || meta.full_name || 'Driver'
-          const fName = name.split(' ')[0]
-
-          const navBtn = document.getElementById('nav-sign-in-btn')
-          const navProf = document.getElementById('navUserProfile')
-          if (navBtn && navProf) {
-            navBtn.style.display = 'none'
-            navProf.style.display = 'flex'
-            document.getElementById('navUserName').innerText = fName
-            const pfp = document.getElementById('navUserPfp')
-            const ini = document.getElementById('navUserInitials')
-            if (googleAvatar && pfp && ini) {
-              pfp.src = googleAvatar
-              pfp.setAttribute('referrerpolicy', 'no-referrer')
-              pfp.style.display = 'block'
-              ini.style.display = 'none'
-            } else if (ini) {
-              ini.innerText = fName.charAt(0).toUpperCase()
-              ini.style.display = 'flex'
-              if (pfp) pfp.style.display = 'none'
-            }
-          }
-
-          const acadBtn = document.getElementById('academy-sign-in-btn')
-          const acadProf = document.getElementById('trafficUserProfile')
-          if (acadBtn) acadBtn.style.display = 'none'
-          if (acadProf) {
-            acadProf.style.display = 'flex'
-            acadProf.onclick = () => (window.location.href = 'TrafficDashboard.html')
-          }
-          const acadName = document.getElementById('trafficUserName')
-          if (acadName) acadName.textContent = fName
-          const acadPfp = document.getElementById('trafficUserPfp')
-          const acadIni = document.getElementById('trafficUserInitials')
-          if (googleAvatar && acadPfp && acadIni) {
-            acadPfp.src = googleAvatar
-            acadPfp.setAttribute('referrerpolicy', 'no-referrer')
-            acadPfp.style.display = 'block'
-            acadIni.style.display = 'none'
-          } else if (acadIni) {
-            acadIni.textContent = fName.charAt(0).toUpperCase()
-            acadIni.style.display = 'flex'
-            if (acadPfp) acadPfp.style.display = 'none'
-          }
-
-          if (!_isReadOnlyMode) {
-            renderDashboardUI()
-          }
-
-          const oldSStr2 = JSON.stringify(S)
+        if (user && user.id && !user.isCached) {
           await _syncCloudToLocal(user.id)
-          if (JSON.stringify(S) !== oldSStr2) window.location.reload()
+          await renderDashboardUI()
+          loadCertificateGallery()
+          loadLeaderboard()
         } else {
-          const acadBtn = document.getElementById('academy-sign-in-btn')
-          const acadProf = document.getElementById('trafficUserProfile')
-          if (acadBtn) acadBtn.style.display = 'block'
-          if (acadProf) acadProf.style.display = 'none'
+          await enforceDashboardAuth()
         }
-        updateDashboardAuthMenu()
-      });
-;(async () => {
-        if (window.colUser && window.colUser.id) {
-          const oldSStr = JSON.stringify(S)
-          await _syncCloudToLocal(window.colUser.id)
-          if (JSON.stringify(S) !== oldSStr) window.location.reload()
+      })
+
+      ;(async () => {
+        const user = await enforceDashboardAuth()
+        if (user && user.id) {
+          await _syncCloudToLocal(user.id)
+          await renderDashboardUI()
         }
         updateDashboardAuthMenu()
       })()
@@ -2350,12 +2357,12 @@
         } else if (typeof window.openLogin === 'function') {
           window.openLogin()
         } else {
-          window.location.href = 'TrafficSetup.html'
+          window.location.href = 'Academy.html?signin=1'
         }
       }
 
       function updateDashboardAuthMenu() {
-        const isAuth = !!(window.colUser && window.colUser.id)
+        const isAuth = !!(window.colUser && window.colUser.id && !window.colUser.isCached)
         const signInItem = document.getElementById('menu-sign-in-item')
         const signOutItem = document.getElementById('menu-sign-out-item')
         const editItem = document.getElementById('menu-edit-item')
@@ -2367,12 +2374,12 @@
       window.addEventListener('DOMContentLoaded', updateDashboardAuthMenu)
 
       function toggleMenu() { document.getElementById('action-menu').classList.toggle('show') }
-      window.onclick = (e) => {
-        if (!e.target.closest('.menu-container')) {
-          document.getElementById('action-menu').classList.remove('show')
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest || !e.target.closest('.menu-container')) {
+          const m = document.getElementById('action-menu')
+          if (m) m.classList.remove('show')
         }
-      }
-
+      })
 
       let _searchDebounce = null
       function _debouncedSearch() { clearTimeout(_searchDebounce); _searchDebounce = setTimeout(searchPlayerLb, 300) }
@@ -2412,40 +2419,35 @@
           const exact = (searchRows || []).find(r => (r.username && r.username.toLowerCase() === uname.toLowerCase()) || (r.username && r.username.toLowerCase() === cleanName.toLowerCase()))
           const result = exact || (searchRows || [])[0]
           if (!result) {
-            resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);background:rgba(255,255,255,0.03);border-radius:12px;">Player Not Found. Try A Different Username.</div>'
+            resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);background:var(--card);border:1px solid var(--border);border-radius:12px;">Player not found. Try a different username.</div>'
             return
           }
           const displayUname = result.username ? (result.username.startsWith('@') ? result.username : '@' + result.username) : uname
-          const baseUrl = 'TrafficDashboard.html?user=' + encodeURIComponent(displayUname)
-          const name = escLb(result.display_name || 'Unknown')
-          const initial = escLb((result.display_name || result.username || 'U').charAt(0).toUpperCase())
+          const name = escLb(result.display_name || 'Learner')
+          const initial = escLb((result.display_name || result.username || 'L').charAt(0).toUpperCase())
           const photo = result.avatar_url || null
           const avatarHtml = photo
-            ? `<img src="${escLb(photo)}" alt="${name}" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" onerror="this.style.display='none'; this.parentElement.textContent='${initial}';">`
+            ? `<img src="${escLb(photo)}" alt="${name}" referrerpolicy="no-referrer" class="lb-search-avatar-img" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" loading="lazy" decoding="async">`
             : initial
 
-          resultsEl.innerHTML = `<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all 0.2s;" onclick="window.open('${baseUrl}','_blank')" onmouseover="this.style.borderColor='rgba(94,212,245,0.4)'" onmouseout="this.style.borderColor='var(--border)'">
-            <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--signal),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;font-size:1.2rem;overflow:hidden;">${avatarHtml}</div>
+          resultsEl.innerHTML = `<div class="dash-search-player-card">
+            <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--signal),var(--accent));display:flex;align-items:center;justify-content:center;font-weight:800;color:#0f172a;font-size:1.2rem;overflow:hidden;">${avatarHtml}</div>
             <div style="flex:1;min-width:0;">
               <div style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${name}</div>
               <div style="color:var(--signal);font-size:0.85rem;">${escLb(displayUname)}</div>
             </div>
             <div style="text-align:right;flex-shrink:0;">
-              <div style="font-size:1.2rem;font-weight:800;">${(result.total_score||0).toLocaleString()} XP</div>
-              <div style="font-size:0.7rem;color:var(--muted);">${result.modules_completed||0}/${LEVEL_TOTAL} Lessons · ${result.badges_count||0} Badges</div>
+              <div style="font-size:1.15rem;font-weight:800;">${(result.total_score || 0).toLocaleString()} XP</div>
+              <div style="font-size:0.75rem;color:var(--muted);">${result.modules_completed || 0}/${LEVEL_TOTAL} Lessons &middot; ${result.badges_count || 0} Badges</div>
             </div>
           </div>`
+          const img = resultsEl.querySelector('.lb-search-avatar-img')
+          if (img) img.addEventListener('error', () => { img.replaceWith(document.createTextNode(initial)) })
         } catch (e) {
-          resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);background:rgba(255,255,255,0.03);border-radius:12px;">Connection Issue. Make Sure You Are Signed In.</div>'
+          resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);background:var(--card);border:1px solid var(--border);border-radius:12px;">Sign in to search learners.</div>'
         }
       }
 
-
-
-
-      // Real lesson titles, generated from levels/*.js by tools/gen-level-catalog.js.
-      // The previous hand-written list was fabricated (it called lesson 1 "Free
-      // Roam" when levels/level1.js is "Red Light Patience") and stopped at 20.
       const _LEVEL_NAMES = (window.LEVEL_CATALOG && window.LEVEL_CATALOG.levels) || []
       function searchLevels() {
         const q = document.getElementById('lb-level-search').value.trim().toLowerCase()
@@ -2455,40 +2457,34 @@
         if (!q) { resultsEl.style.display = 'none'; return }
         resultsEl.style.display = 'block'
         try {
-          const matches = _LEVEL_NAMES.filter(lv => {
-            const searchStr = (lv.name + ' ' + lv.desc).toLowerCase()
-            return searchStr.includes(q)
-          })
+          const matches = _LEVEL_NAMES.filter(lv => (lv.name + ' ' + lv.desc).toLowerCase().includes(q))
           if (matches.length === 0) {
-            resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);background:rgba(255,255,255,0.03);border-radius:12px;">No Levels Match That Search.</div>'
+            resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);background:var(--card);border:1px solid var(--border);border-radius:12px;">No levels match that search.</div>'
             return
           }
           resultsEl.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;">' + matches.map(lv => {
             const isDone = S.comp && S.comp[lv.id] && S.comp[lv.id].score > 0
-            return `<div style="background:var(--card);border:1px solid ${isDone?'rgba(52,211,153,0.3)':'var(--border)'};border-radius:12px;padding:14px;cursor:pointer;transition:all 0.2s;" onclick="window.location.href='Academy.html?screen=levels&lv=${lv.id}'" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+            const lvIcon = window.TrafficIcons ? window.TrafficIcons.forLevel(lv, 18) : ''
+            return `<button type="button" class="dash-level-search-card" data-dash-action="open-lesson" data-lid="${escLb(lv.id)}" style="text-align:left;background:var(--card);border:1px solid ${isDone ? 'rgba(16,185,129,0.4)' : 'var(--border)'};border-radius:12px;padding:14px;cursor:pointer;color:var(--text);">
               <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-                <span style="font-size:1.3rem;">${escLb(lv.icon)}</span>
-                <span style="font-size:0.7rem;padding:2px 8px;border-radius:20px;background:${isDone?'rgba(52,211,153,0.15);color:var(--green)':'rgba(255,255,255,0.06);color:var(--muted)'};font-weight:700;">${isDone?'\u2713 Done':'Lesson '+lv.id}</span>
+                <span style="display:inline-flex;align-items:center;color:var(--signal);">${lvIcon}</span>
+                <span style="font-size:0.7rem;padding:2px 8px;border-radius:20px;background:${isDone ? 'rgba(16,185,129,0.14);color:var(--green)' : 'rgba(148,163,184,0.14);color:var(--muted)'};font-weight:700;">${isDone ? 'Done' : 'Lesson ' + escLb(lv.id)}</span>
               </div>
               <div style="font-weight:700;font-size:0.9rem;margin-bottom:4px;">${escLb(lv.name)}</div>
               <div style="font-size:0.75rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escLb(lv.desc)}</div>
-            </div>`
+            </button>`
           }).join('') + '</div>'
         } catch (e) {
-          resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);">Search Error.</div>'
+          resultsEl.innerHTML = '<div style="padding:16px;text-align:center;color:var(--muted);">Search error.</div>'
         }
       }
-
 
       let _edUsernameCheckTimeout = null
       async function checkUsernameAvail(username) {
         const statusEl = document.getElementById('ed-username-status')
         if (!statusEl) return
         username = username.trim()
-        if (!username || username.length < 3) {
-          statusEl.textContent = ''
-          return
-        }
+        if (!username || username.length < 3) { statusEl.textContent = ''; return }
         if (!username.startsWith('@')) username = '@' + username
         statusEl.textContent = 'Checking...'
         statusEl.style.color = 'var(--muted)'
@@ -2496,7 +2492,7 @@
         _edUsernameCheckTimeout = setTimeout(async () => {
           try {
             if (!window.supabaseClient) {
-              statusEl.textContent = '✓ Accepted (offline)'
+              statusEl.textContent = 'Accepted (offline)'
               statusEl.style.color = 'var(--green)'
               return
             }
@@ -2504,24 +2500,14 @@
             const takenRows = await _fetchProfileDirectory(window.supabaseClient, { search: uname, limit: 25 })
             const upData = (takenRows || []).find(r => r.username && r.username.toLowerCase() === uname.toLowerCase())
             if (upData && window.colUser && upData.user_id !== window.colUser.id) {
-              statusEl.textContent = '✕ Already Taken'
+              statusEl.textContent = 'Already taken'
               statusEl.style.color = 'var(--red)'
               return
             }
-            const { data: pData } = await window.supabaseClient
-              .from('profiles')
-              .select('id')
-              .eq('username', uname)
-              .maybeSingle()
-            if (pData && window.colUser && pData.id !== window.colUser.id) {
-              statusEl.textContent = '✕ Already Taken'
-              statusEl.style.color = 'var(--red)'
-              return
-            }
-            statusEl.textContent = '✓ Available!'
+            statusEl.textContent = 'Available'
             statusEl.style.color = 'var(--green)'
           } catch (e) {
-            statusEl.textContent = '✓ Accepted'
+            statusEl.textContent = 'Accepted'
             statusEl.style.color = 'var(--green)'
           }
         }, 500)
@@ -2537,31 +2523,30 @@
         document.getElementById('action-menu').classList.remove('show')
       }
       function closeEditModal() { document.getElementById('edit-modal').classList.remove('show') }
-      function saveEditModal() {
+      async function saveEditModal() {
         const name = document.getElementById('ed-name').value.trim()
-        let usernameInput = document.getElementById('ed-username').value.trim()
-        const age = parseInt(document.getElementById('ed-age').value) || 18
+        const age = parseInt(document.getElementById('ed-age').value, 10) || 18
         const vehicle = document.getElementById('ed-vehicle').value
         if (name) {
           tUser.name = name; tUser.age = age; tUser.vehicle = vehicle
           S.name = name; S.age = age; S.vehicle = vehicle
-
-          if (usernameInput) {
-            if (!usernameInput.startsWith('@')) usernameInput = '@' + usernameInput;
-            tUser.username = usernameInput;
-            S.username = usernameInput;
-            if (window.supabaseClient && window.colUser) {
-              window.supabaseClient.auth.updateUser({
-                data: { username: usernameInput }
-              }).catch(console.error);
-            }
-          }
-
           localStorage.setItem('traffic_local_user', JSON.stringify(tUser))
-          localStorage.setItem('th-save', JSON.stringify(S))
-          if (window.save) window.save()
-
-          setTimeout(() => window.location.reload(), 300)
+          if (window.ProgressTracker) {
+            window.ProgressTracker.updateSettings({ displayName: name, age, vehicle })
+          }
+          const client = await _initSupabase()
+          if (client && window.colUser && window.colUser.id) {
+            await client.from('user_profiles').upsert({
+              user_id: window.colUser.id,
+              display_name: name,
+              age: age,
+              preferred_vehicle: vehicle,
+              updated_at: new Date().toISOString()
+            }, { onConflict: 'user_id' })
+          }
+          closeEditModal()
+          await renderDashboardUI()
+          toast('Profile updated', '#10b981')
         }
       }
 
@@ -2644,56 +2629,61 @@
       }
 
       function logoutAndClear() {
-        localStorage.removeItem('trafficSetupComplete');
-        localStorage.removeItem('traffic_local_user');
-        localStorage.removeItem('col_active_local_user');
-        if (window.colClearActiveLocalUser) window.colClearActiveLocalUser();
-        if (window.colDoLogout) window.colDoLogout();
-        else if (window.doLogout) window.doLogout();
-        window.location.href = 'Academy.html';
+        localStorage.removeItem('traffic_local_user')
+        localStorage.removeItem('col_active_local_user')
+        localStorage.removeItem('mth4')
+        localStorage.removeItem('traffic_save')
+        localStorage.removeItem('th-save')
+        if (window.colClearActiveLocalUser) window.colClearActiveLocalUser()
+        if (window.colDoLogout) window.colDoLogout()
+        else if (window.doLogout) window.doLogout()
+        window.location.href = 'Academy.html'
       }
 
       function resetProgressFromDashboard() {
-        if (confirm('⚠️ Reset ALL progress? This cannot be undone!')) {
-          localStorage.removeItem('traffic_local_user'); localStorage.removeItem('trafficSetupComplete'); localStorage.removeItem('col_user')
+        if (confirm('Reset all local progress on this device?')) {
+          localStorage.removeItem('traffic_local_user')
+          localStorage.removeItem('mth4')
+          localStorage.removeItem('traffic_save')
+          localStorage.removeItem('th-save')
           window.location.href = 'Academy.html'
         }
       }
 
       function hzInit() {
-        var isLight = false;
-        try { isLight = localStorage.getItem('theme') === 'light'; } catch (e) {}
-        document.documentElement.classList.toggle('lm', isLight);
-        document.body.classList.toggle('lm', isLight);
-        hzSync();
+        var isLight = false
+        try { isLight = localStorage.getItem('theme') === 'light' } catch (e) {}
+        document.documentElement.classList.toggle('lm', isLight)
+        document.body.classList.toggle('lm', isLight)
+        hzSync()
       }
       function hzSync() {
-        var el = document.querySelector('.hz-toggle');
-        if (!el) return;
-        if (document.documentElement.classList.contains('lm') || document.body.classList.contains('lm')) { el.classList.remove('night'); }
-        else { el.classList.add('night'); }
+        var el = document.querySelector('.hz-toggle')
+        if (!el) return
+        if (document.documentElement.classList.contains('lm') || document.body.classList.contains('lm')) { el.classList.remove('night') }
+        else { el.classList.add('night') }
       }
       function hzToggle() {
-        var isLight = !document.documentElement.classList.contains('lm');
-        document.documentElement.classList.toggle('lm', isLight);
-        document.body.classList.toggle('lm', isLight);
-        try { localStorage.setItem('theme', isLight ? 'light' : 'dark'); } catch (e) {}
-        hzSync();
+        var isLight = !document.documentElement.classList.contains('lm')
+        document.documentElement.classList.toggle('lm', isLight)
+        document.body.classList.toggle('lm', isLight)
+        try { localStorage.setItem('theme', isLight ? 'light' : 'dark') } catch (e) {}
+        hzSync()
       }
-      hzInit();
+      hzInit()
 
       function toast(msg, color) {
-        const t = document.createElement('div');
-        t.style.cssText = `position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:${color||'#34d399'};color:#000;padding:12px 24px;border-radius:30px;font-weight:700;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.3);animation:toastIn 0.3s ease-out;`;
-        t.textContent = msg;
+        const t = document.createElement('div')
+        t.style.cssText = `position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:${color || '#10b981'};color:#0f172a;padding:12px 24px;border-radius:30px;font-weight:700;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.3);animation:toastIn 0.3s ease-out;`
+        t.textContent = msg
         if (!document.getElementById('toast-style')) {
-          const s = document.createElement('style');
-          s.id = 'toast-style';
-          s.textContent = '@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}';
-          document.head.appendChild(s);
+          const s = document.createElement('style')
+          s.id = 'toast-style'
+          s.textContent = '@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}'
+          document.head.appendChild(s)
         }
-        document.body.appendChild(t);
-        setTimeout(() => { t.style.animation = 'toastIn 0.3s ease-out reverse'; setTimeout(() => t.remove(), 300); }, 3000);
+        document.body.appendChild(t)
+        setTimeout(() => { t.style.animation = 'toastIn 0.3s ease-out reverse'; setTimeout(() => t.remove(), 300) }, 3000)
       }
 
       let _conflictReturnFocus = null
@@ -2717,8 +2707,9 @@
 
         const cSt = getStats(cloudS)
         const lSt = getStats(S)
-
         _conflictReturnFocus = document.activeElement
+        const cloudIco = window.TrafficIcons ? window.TrafficIcons.svg('database', 16) : ''
+        const localIco = window.TrafficIcons ? window.TrafficIcons.svg('user', 16) : ''
 
         const mo = document.createElement('div')
         mo.className = 'modal-overlay show'
@@ -2734,34 +2725,31 @@
             </div>
             <div class="conflict-save-options">
               <div class="conflict-save-card cloud">
-                <div class="title"><span aria-hidden="true">☁️</span> Cloud Save</div>
+                <div class="title">${cloudIco} Cloud Save</div>
                 <div class="stat">Levels Completed: <b>${cSt.lvls}</b></div>
                 <div class="stat">Wallet: <b>₹${cSt.wlt.toLocaleString()}</b></div>
                 <div class="stat">Badges: <b>${cSt.bdg}</b></div>
                 <div class="last-played">Last Played:<br/>${cSt.dateStr}</div>
-                <button class="btn-choose" onclick="resolveConflict('cloud')">Download This</button>
+                <button type="button" class="btn-choose" data-dash-action="resolve-conflict" data-choice="cloud">Download This</button>
               </div>
               <div class="conflict-save-card local">
-                <div class="title"><span aria-hidden="true">📱</span> Local Save</div>
+                <div class="title">${localIco} Local Save</div>
                 <div class="stat">Levels Completed: <b>${lSt.lvls}</b></div>
                 <div class="stat">Wallet: <b>₹${lSt.wlt.toLocaleString()}</b></div>
                 <div class="stat">Badges: <b>${lSt.bdg}</b></div>
                 <div class="last-played">Last Played:<br/>${lSt.dateStr}</div>
-                <button class="btn-choose" onclick="resolveConflict('local')">Keep This (Overwrite Cloud)</button>
+                <button type="button" class="btn-choose" data-dash-action="resolve-conflict" data-choice="local">Keep This (Overwrite Cloud)</button>
               </div>
             </div>
           </div>
         `
         document.body.appendChild(mo)
-
         const firstBtn = mo.querySelector('.btn-choose')
         if (firstBtn) firstBtn.focus()
-
         mo.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') resolveConflict('local')
         })
       }
-
 
       window.resolveConflict = function (choice) {
         const modal = document.getElementById('conflictMo')
@@ -2775,18 +2763,17 @@
           const cloudS = window.__pendingCloudS
           if (cloudS) {
             S = cloudS
-            try {
-              localStorage.setItem('mth4', JSON.stringify(S))
-            } catch (e) {}
-            if (window.ui && window.ui.init) ui.init()
-            toast('☁️ Cloud Data Restored!', '#5ED4F5')
+            if (window.ProgressTracker) window.ProgressTracker.writeLocalState(S)
+            toast('Cloud Data Restored', '#0284c7')
           }
         } else {
-          try { localStorage.setItem('mth4', JSON.stringify(S)) } catch (e) {}
-          toast('⬆️ Local Data Synced to Cloud!', '#F2B84B')
+          if (window.ProgressTracker) window.ProgressTracker.writeLocalState(S)
+          toast('Local Data Synced to Cloud', '#d97706')
         }
+        renderDashboardUI()
       }
-;(async function () {
+
+      ;(async function () {
         if (!_certParam) return
         const cert = await _loadSharedCertificate(_certParam)
         ;[document.querySelector('.hero-license'), document.querySelector('.bento-grid'), document.getElementById('btn-dl-cert'), document.getElementById('share-bar')].forEach(el => { if (el) el.style.display = 'none' })
@@ -2799,11 +2786,11 @@
         document.getElementById('cert-name').innerText = (cert.display_name || '').toUpperCase()
         document.getElementById('cert-score').innerText = (cert.score || 0).toLocaleString()
         document.getElementById('cert-date').innerText = new Date(cert.issued_at).toLocaleDateString()
-      })();
+      })()
 
       async function loadCertificateGallery() {
-        const targetUserId = _isReadOnlyMode ? _uidParam : (window.colUser && window.colUser.id);
-        if (!window.supabaseClient || !targetUserId) return;
+        const targetUserId = window.colUser && window.colUser.id
+        if (!window.supabaseClient || !targetUserId) return
         const gallery = document.getElementById('cert-gallery')
         if (!gallery) return
 
@@ -2818,19 +2805,22 @@
             gallery.innerHTML = certs.map(c => `
               <div class="cert-gallery-card">
                 <div class="logos">
-                  <img loading="lazy" src="mumbai-police-logo.png" onerror="this.style.display='none'" alt="Mumbai Police">
-                  <img loading="lazy" src="cert-assets/cert_logo_2.png" onerror="this.style.display='none'" alt="Sneh Asha">
+                  <img loading="lazy" src="mumbai-police-logo.png" alt="Mumbai Police" decoding="async">
+                  <img loading="lazy" src="cert-assets/cert_logo_2.png" alt="Sneh Asha" decoding="async">
                 </div>
                 <div class="kicker">Certificate of Completion</div>
-                <div class="module-name">${c.module_name || 'Traffic Hero'}</div>
+                <div class="module-name">${escLb(c.module_name || 'Traffic Hero')}</div>
                 <div class="issued">Issued: ${new Date(c.issued_at).toLocaleDateString()}</div>
                 <div class="score">Score: ${(c.score || 0).toLocaleString()}</div>
                 <div class="footer">
-                  <div class="ref">Ref: ${c.id.slice(0,8).toUpperCase()}</div>
-                  <button class="btn-share" onclick="shareCertificate('${c.id}')" aria-label="Share this certificate">Share</button>
+                  <div class="ref">Ref: ${escLb(c.id.slice(0, 8).toUpperCase())}</div>
+                  <button type="button" class="btn-share" data-dash-action="share-cert" data-cert-id="${escLb(c.id)}" aria-label="Share this certificate">Share</button>
                 </div>
               </div>
             `).join('')
+            gallery.querySelectorAll('img').forEach(img => {
+              img.addEventListener('error', () => { img.style.display = 'none' })
+            })
           } else {
             gallery.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">No certificates yet. Complete all lessons to earn your first!</div>'
           }
@@ -2840,35 +2830,29 @@
       }
 
       function switchMainTab(tabId) {
+        const searchResults = document.getElementById('lb-search-results')
+        if (searchResults && tabId !== 'leaderboards') searchResults.style.display = 'none'
 
-        const searchResults = document.getElementById('lb-search-results');
-        if (searchResults && tabId !== 'leaderboards') searchResults.style.display = 'none';
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'))
+        const activeBtn = document.getElementById('nav-btn-' + tabId)
+        if (activeBtn) activeBtn.classList.add('active')
 
-        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-        const activeBtn = document.getElementById('nav-btn-' + tabId);
-        if (activeBtn) activeBtn.classList.add('active');
-
-
-        const views = document.querySelectorAll('.main-tab-view');
+        const views = document.querySelectorAll('.main-tab-view')
         views.forEach(view => {
           if (view.id === 'tab-' + tabId) {
-            view.style.display = 'block';
-
-            setTimeout(() => view.style.opacity = '1', 10);
+            view.style.display = 'block'
+            setTimeout(() => { view.style.opacity = '1' }, 10)
           } else {
-            view.style.opacity = '0';
+            view.style.opacity = '0'
             setTimeout(() => {
-              if (view.style.opacity === '0') view.style.display = 'none';
-            }, 300);
+              if (view.style.opacity === '0') view.style.display = 'none'
+            }, 300)
           }
-        });
-
-
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        })
+        window.scrollTo({ top: 0, behavior: 'smooth' })
       }
 
       function switchLbTab(board) {
-
         const sr = document.getElementById('lb-search-results')
         if (sr) sr.style.display = 'none'
         document.querySelectorAll('.lb-tab').forEach(t => {
@@ -2877,15 +2861,15 @@
           t.setAttribute('aria-selected', active)
         })
 
-        document.querySelectorAll('.lb-panel').forEach(p => p.style.display = 'none')
+        document.querySelectorAll('.lb-panel').forEach(p => { p.style.display = 'none' })
         const panel = document.getElementById('lb-panel-' + board)
         if (panel) panel.style.display = 'block'
 
-        document.querySelectorAll('.lb-podium').forEach(p => p.style.display = 'none')
+        document.querySelectorAll('.lb-podium').forEach(p => { p.style.display = 'none' })
         const podium = document.getElementById('lb-podium-' + board)
         if (podium && podium.children.length > 0) podium.style.display = 'flex'
 
-        document.querySelectorAll('.lb-your-rank').forEach(p => p.style.display = 'none')
+        document.querySelectorAll('.lb-your-rank').forEach(p => { p.style.display = 'none' })
         const yr = document.getElementById('lb-your-rank-' + board)
         if (yr && yr.innerHTML.trim()) yr.style.display = 'flex'
 
@@ -2900,8 +2884,14 @@
 
       async function loadLeaderboard() {
         const boards = ['xp', 'modules', 'civic', 'badges']
-        const crowns = { xp: '🌍', modules: '✅', civic: '💰', badges: '🎖️' }
-        let currentUserId = (window.colUser && window.colUser.id) ? window.colUser.id : null
+        const svgIcon = (name, size) => window.TrafficIcons ? window.TrafficIcons.svg(name, size) : ''
+        const crowns = {
+          xp: svgIcon('globe', 18),
+          modules: svgIcon('check', 18),
+          civic: svgIcon('wallet', 18),
+          badges: svgIcon('medal', 18)
+        }
+        const currentUserId = (window.colUser && window.colUser.id) ? window.colUser.id : null
 
         boards.forEach(board => {
           const el = document.getElementById('leaderboard-' + board)
@@ -2910,14 +2900,12 @@
 
         let attempts = 0
         while (!window.supabaseClient && attempts < 12) {
-          await new Promise(r => setTimeout(r, 500))
+          await new Promise(r => setTimeout(r, 400))
           attempts++
         }
 
-        const EMPTY_MSG = '<div style="padding:32px 20px;text-align:center;color:var(--muted);font-size:0.9rem;background:rgba(255,255,255,0.02);border-radius:16px;border:1px dashed rgba(255,255,255,0.08);margin:12px 0;"><div style="font-size:2rem;margin-bottom:8px;">🚀</div><div style="font-weight:700;color:var(--text);margin-bottom:4px;">No Data Yet</div>Be The First To Earn This Spot!</div>'
-        const ERROR_MSG = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.85rem;">Unable To Load. Check Connection.<br><button onclick="loadLeaderboard()" style="margin-top:12px;padding:8px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:var(--text);font-weight:700;cursor:pointer;">↻ Retry</button></div>'
-        const AUTH_MSG  = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.85rem;">Sign In To View The Leaderboard.<br><button onclick="handleDashSignIn()" style="margin-top:12px;padding:8px 18px;border-radius:8px;border:none;background:var(--signal);color:#000;font-weight:700;cursor:pointer;">Sign In</button></div>'
-        const OFFLINE_MSG = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.85rem;">Leaderboard Service Unreachable.<br><button onclick="loadLeaderboard()" style="margin-top:12px;padding:8px 18px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.06);color:var(--text);font-weight:700;cursor:pointer;">↻ Retry</button></div>'
+        const EMPTY_MSG = '<div style="padding:32px 20px;text-align:center;color:var(--muted);font-size:0.9rem;background:var(--card);border-radius:16px;border:1px dashed var(--border);margin:12px 0;"><div style="margin-bottom:8px;color:var(--signal);">' + svgIcon('trophy', 28) + '</div><div style="font-weight:700;color:var(--text);margin-bottom:4px;">No Standings Yet</div>Complete a lesson to appear on the board.</div>'
+        const OFFLINE_MSG = '<div style="padding:24px;text-align:center;color:var(--muted);font-size:0.85rem;">Leaderboard service unreachable.<br><button type="button" data-dash-action="reload-lb" style="margin-top:12px;padding:8px 18px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-weight:700;cursor:pointer;">Retry</button></div>'
 
         if (!window.supabaseClient) {
           boards.forEach(b => { const el = document.getElementById('leaderboard-' + b); if (el) el.innerHTML = OFFLINE_MSG })
@@ -2934,7 +2922,7 @@
           const container = document.getElementById(containerId)
           if (!container) return
           if (!users || users.length === 0) {
-            container.innerHTML = EMPTY_MSG;
+            container.innerHTML = EMPTY_MSG
             const podiumEl = document.getElementById('lb-podium-' + board)
             if (podiumEl) podiumEl.style.display = 'none'
             const yourRankEl = document.getElementById('lb-your-rank-' + board)
@@ -2949,7 +2937,6 @@
             return
           }
 
-          // Dense ranks: tied scores share a rank (1, 2, 2, 4…)
           const kf = (typeof keyOf === 'function') ? keyOf : (() => 0)
           let _dr = 0, _lk = null
           const ranks = users.map(u => { const k = kf(u); if (_lk === null || k !== _lk) { _dr++; _lk = k } return _dr })
@@ -2957,29 +2944,26 @@
           const podiumEl = document.getElementById('lb-podium-' + board)
           if (podiumEl) {
             if (users.length >= 1) {
-              // Explicit [user, place] pairs: display order is 2nd, 1st, 3rd,
-              // but colors/medals must follow the PLACE (old code tinted by
-              // display index, so a lone #1 got a silver avatar).
               const places = users.length >= 3
                 ? [[users[1], 2], [users[0], 1], [users[2], 3]]
                 : users.length >= 2
                   ? [[users[1], 2], [users[0], 1]]
                   : [[users[0], 1]]
               const placeStyle = {
-                1: { cls: 'first', medal: '🥇', g1: '#fbbf24', g2: '#f59e0b' },
-                2: { cls: 'second', medal: '🥈', g1: '#94a3b8', g2: '#64748b' },
-                3: { cls: 'third', medal: '🥉', g1: '#d97706', g2: '#b45309' }
+                1: { cls: 'first', medal: '#1 Gold', g1: '#fbbf24', g2: '#d97706' },
+                2: { cls: 'second', medal: '#2 Silver', g1: '#94a3b8', g2: '#64748b' },
+                3: { cls: 'third', medal: '#3 Bronze', g1: '#d97706', g2: '#92400e' }
               }
               podiumEl.innerHTML = places.map(([u, place], idx) => {
                 const st = placeStyle[place]
-                const name = escLb(profileMap[u.user_id] || u.display_name || u.username || 'Anon')
+                const name = escLb(profileMap[u.user_id] || u.display_name || u.username || 'Learner')
                 const score = metric(u)
                 const initial = escLb(name.charAt(0).toUpperCase())
                 const photo = avatarMap[u.user_id] || (u.user_id === currentUserId && window.colUser && window.colUser.picture ? window.colUser.picture : null)
                 const avatarHtml = photo
-                  ? `<img src="${escLb(photo)}" alt="${name}" referrerpolicy="no-referrer" onerror="this.style.display='none'; this.parentElement.textContent='${initial}';">`
+                  ? `<img src="${escLb(photo)}" alt="${name}" referrerpolicy="no-referrer" data-initial="${initial}" loading="lazy" decoding="async">`
                   : initial
-                return `<div class="podium-spot ${st.cls}" style="animation-delay:${(idx * 0.12).toFixed(2)}s">
+                return `<div class="podium-spot ${st.cls}" style="animation-delay:${(idx * 0.1).toFixed(2)}s">
                   <div class="podium-avatar" style="background: linear-gradient(135deg, ${st.g1}, ${st.g2})">
                     ${avatarHtml}
                   </div>
@@ -2988,12 +2972,17 @@
                   <div class="podium-base">${st.medal}</div>
                 </div>`
               }).join('')
+              podiumEl.querySelectorAll('img[data-initial]').forEach(img => {
+                img.addEventListener('error', () => {
+                  const fallback = img.getAttribute('data-initial') || 'L'
+                  img.replaceWith(document.createTextNode(fallback))
+                })
+              })
               podiumEl.style.display = 'flex'
             } else {
               podiumEl.style.display = 'none'
             }
           }
-
 
           const yourRankEl = document.getElementById('lb-your-rank-' + board)
           if (yourRankEl && currentUserId) {
@@ -3002,15 +2991,18 @@
               const you = users[youIdx]
               const yourRank = ranks[youIdx]
               const totalPlayers = users.length
-              const percentile = totalPlayers > 1 ? Math.round(((totalPlayers - yourRank) / (totalPlayers - 1)) * 100) : 100
+              const pctLabel = window.ProgressTracker
+                ? window.ProgressTracker.formatLeaderboardPercentile(yourRank, totalPlayers)
+                : (yourRank === 1 ? '#1 Overall' : `Top ${Math.max(1, Math.round((yourRank / totalPlayers) * 100))}%`)
               const name = escLb(profileMap[you.user_id] || you.display_name || 'You')
               yourRankEl.innerHTML = `
                 <div class="your-rank-num">#${yourRank}</div>
                 <div class="your-rank-info">
-                  <div class="your-rank-label">Your Rank</div>
-                  <div class="your-rank-detail">${name} · ${metric(you)}</div>
+                  <div class="your-rank-label">Your Standing</div>
+                  <div class="your-rank-detail">${name} &middot; ${metric(you)}</div>
                 </div>
-                <div class="your-rank-percentile">Top ${100 - percentile}%</div>
+                <div class="your-rank-percentile">${escLb(pctLabel)}</div>
+                <button type="button" class="dash-btn-secondary" data-dash-action="jump-my-rank" data-board="${escLb(board)}" style="padding:7px 12px;font-size:0.75rem;border-radius:10px;">Jump to Rank</button>
               `
               yourRankEl.style.display = 'flex'
             } else {
@@ -3018,16 +3010,15 @@
             }
           } else if (yourRankEl) {
             yourRankEl.innerHTML = `
-              <div class="your-rank-num" style="background:rgba(255,255,255,0.08);color:var(--text);box-shadow:none;">?</div>
+              <div class="your-rank-num" style="background:rgba(148,163,184,0.16);color:var(--text);box-shadow:none;">?</div>
               <div class="your-rank-info">
-                <div class="your-rank-label">Your Rank</div>
-                <div class="your-rank-detail">Sign In To Track Your Standing</div>
+                <div class="your-rank-label">Your Standing</div>
+                <div class="your-rank-detail">Sign in to track your rank</div>
               </div>
-              <button onclick="handleDashSignIn()" style="font-size:0.75rem; color:#000; font-weight:700; background:var(--signal); border:none; padding:6px 14px; border-radius:20px; cursor:pointer;">Sign In</button>
+              <button type="button" data-dash-action="sign-in" style="font-size:0.75rem; color:#0f172a; font-weight:700; background:var(--signal); border:none; padding:6px 14px; border-radius:20px; cursor:pointer;">Sign In</button>
             `
             yourRankEl.style.display = 'flex'
           }
-
 
           const totalEl = document.getElementById('lb-total-count')
           if (totalEl) {
@@ -3039,33 +3030,28 @@
             totalEl.textContent = count === 1 ? '1 Player' : count + ' Players'
           }
 
-
           const storageKey = 'lb_ranks_' + (currentUserId || 'anon') + '_' + board
           let prevRanks = {}
           let hasPrevData = false
           try {
             const stored = localStorage.getItem(storageKey)
             if (stored) { prevRanks = JSON.parse(stored); hasPrevData = true }
-          } catch(e) {}
+          } catch (e) {}
 
           const currentRanks = {}
           users.forEach((u, i) => { if (u.user_id) currentRanks[u.user_id] = ranks[i] })
-          try {
-            localStorage.setItem(storageKey, JSON.stringify(currentRanks))
-          } catch(e) {}
-
+          try { localStorage.setItem(storageKey, JSON.stringify(currentRanks)) } catch (e) {}
 
           function tierBadge(rank) {
-            if (rank === 1) return '<span class="tier-badge gold">👑 Gold</span>'
-            if (rank === 2) return '<span class="tier-badge silver">🥈 Silver</span>'
-            if (rank === 3) return '<span class="tier-badge bronze">🥉 Bronze</span>'
+            if (rank === 1) return `<span class="tier-badge gold">${svgIcon('crown', 12)} Gold</span>`
+            if (rank === 2) return `<span class="tier-badge silver">${svgIcon('medal', 12)} Silver</span>`
+            if (rank === 3) return `<span class="tier-badge bronze">${svgIcon('shield', 12)} Bronze</span>`
             return ''
           }
 
-
-          const rows = users.slice(0).map((u, i) => {
+          const rows = users.map((u, i) => {
             const isYou = u.user_id && u.user_id === currentUserId
-            const displayUsername = escLb(profileMap[u.user_id] || u.display_name || u.username || u.full_name || 'Anonymous')
+            const displayUsername = escLb(profileMap[u.user_id] || u.display_name || u.username || 'Learner')
             const curRank = ranks[i]
             const prevRank = u.user_id ? prevRanks[u.user_id] : null
             let rankChangeHtml = ''
@@ -3075,20 +3061,20 @@
               if (delta > 0) {
                 rowClass += ' rank-up'
                 const displayNum = delta > 9 ? '+9' : delta
-                rankChangeHtml = `<div class="rank-change up" title="Up ${delta} place${delta > 1 ? 's' : ''}">▲${displayNum !== delta ? displayNum : (delta > 1 ? delta : '')}</div>`
+                rankChangeHtml = `<div class="rank-change up" title="Up ${delta} place${delta > 1 ? 's' : ''}">+${displayNum}</div>`
               } else if (delta < 0) {
                 rowClass += ' rank-down'
                 const absDelta = Math.abs(delta)
-                const displayNum = absDelta > 9 ? '+9' : absDelta
-                rankChangeHtml = `<div class="rank-change down" title="Down ${absDelta} place${absDelta > 1 ? 's' : ''}">▼${displayNum !== absDelta ? displayNum : (absDelta > 1 ? absDelta : '')}</div>`
+                const displayNum = absDelta > 9 ? '9+' : absDelta
+                rankChangeHtml = `<div class="rank-change down" title="Down ${absDelta} place${absDelta > 1 ? 's' : ''}">-${displayNum}</div>`
               } else {
-                rankChangeHtml = `<div class="rank-change same" title="No change">●</div>`
+                rankChangeHtml = `<div class="rank-change same" title="No change">&bull;</div>`
               }
             } else if (hasPrevData && curRank <= 20) {
               rowClass += ' new-entry-row'
               rankChangeHtml = `<div class="rank-change new-entry" title="New to leaderboard">New</div>`
             }
-            return `<div class="leaderboard-row${rowClass}" data-rank="${curRank}" data-user-id="${u.user_id || ''}">
+            return `<div class="leaderboard-row${rowClass}" data-rank="${curRank}" data-user-id="${escLb(u.user_id || '')}">
               <div class="rank"><span class="rank-num" data-target="${curRank}">${curRank}</span></div>
               ${rankChangeHtml}
               <div class="who">
@@ -3099,238 +3085,139 @@
             </div>`
           }).join('')
           container.innerHTML = rows
-
           _animateRanks(container)
         }
 
-
-
         const _activeRankIntervals = []
         function _animateRanks(container) {
-
           _activeRankIntervals.forEach(id => clearInterval(id))
           _activeRankIntervals.length = 0
           const nums = container.querySelectorAll('.rank-num')
           nums.forEach((el, idx) => {
-            const target = parseInt(el.getAttribute('data-target')) || (idx + 1)
-            const delay = 120 + idx * 80
-            el.textContent = '—'
+            const target = parseInt(el.getAttribute('data-target'), 10) || (idx + 1)
+            const delay = Math.min(360, 80 + idx * 35)
+            el.textContent = String(target)
             setTimeout(() => {
               if (!el.isConnected) return
               el.classList.add('counting')
-              let current = 0
-              const step = Math.max(1, Math.floor(target / 6))
-              const interval = setInterval(() => {
-                if (!el.isConnected) { clearInterval(interval); return }
-                current += step
-                if (current >= target) {
-                  current = target
-                  clearInterval(interval)
-                  el.classList.remove('counting')
-                }
-                el.textContent = current
-              }, 40)
-              _activeRankIntervals.push(interval)
+              setTimeout(() => { if (el.isConnected) el.classList.remove('counting') }, 220)
             }, delay)
           })
         }
-
-
         window._animateLeaderboardRanks = _animateRanks
 
-        let certsByScore = null
-        let wallets = null
-        let allBadges = null
-        let allUserIds = new Set()
-
-        if (currentUserId) allUserIds.add(currentUserId)
-
-        // 1. Certificates
+        // Primary unified RPC (`get_full_leaderboard`): returns every active user,
+        // never hides users once certificates exist, and omits PII.
+        let unifiedRows = null
         try {
-          const { data } = await window.supabaseClient
-            .from('certificates')
-            .select('user_id, display_name, score, modules_completed')
-            .order('score', { ascending: false })
-            .limit(500)
-          certsByScore = data || []
-          certsByScore.forEach(d => {
-            if (d.user_id) {
-              allUserIds.add(d.user_id)
-              if (d.display_name && !profileMap[d.user_id]) profileMap[d.user_id] = d.display_name
-            }
-          })
-        } catch (e) { console.warn('Leaderboard XP fetch failed:', e); certsByScore = [] }
-
-        // 2. Directory profiles
-        const dirProfiles = await _fetchProfileDirectory(window.supabaseClient, { limit: 500 })
-        if (dirProfiles && dirProfiles.length > 0) {
-          dirProfiles.forEach(p => {
-            if (p.user_id) {
-              allUserIds.add(p.user_id)
-              const name = p.display_name || (p.username ? (p.username.startsWith('@') ? p.username : '@' + p.username) : null)
-              if (name && !profileMap[p.user_id]) profileMap[p.user_id] = name
-              if (p.avatar_url && !avatarMap[p.user_id]) avatarMap[p.user_id] = p.avatar_url
-            }
-          })
-        }
-
-        // If no certificates in database, fall back to directory profiles for XP & Modules
-        if (!certsByScore || certsByScore.length === 0) {
-          if (dirProfiles && dirProfiles.length > 0) {
-            certsByScore = dirProfiles.map(u => ({
-              user_id: u.user_id,
-              display_name: u.display_name || u.username || 'Learner',
-              score: u.total_score || 0,
-              modules_completed: u.modules_completed || 0
-            }))
-            certsByScore.forEach(d => { if (d.user_id) allUserIds.add(d.user_id) })
+          const { data: fullData, error: fullErr } = await window.supabaseClient.rpc('get_full_leaderboard', { p_limit: 200 })
+          if (!fullErr && Array.isArray(fullData) && fullData.length > 0) {
+            unifiedRows = fullData
           }
-        }
+        } catch (_e) {}
 
-        // 3. Wallets (Try hardened get_leaderboard_wallets RPC first, fallback to direct query)
-        try {
-          let wData = null, wErr = null
-          const rpcRes = await window.supabaseClient.rpc('get_leaderboard_wallets', { p_limit: 500 })
-          if (!rpcRes.error && rpcRes.data) {
-            wData = rpcRes.data
-          } else {
-            const queryRes = await window.supabaseClient
-              .from('wallets')
-              .select('user_id, balance')
-              .order('balance', { ascending: false })
+        if (unifiedRows) {
+          unifiedRows.forEach(r => {
+            if (!r.user_id) return
+            const label = r.display_name || (r.username ? (r.username.startsWith('@') ? r.username : '@' + r.username) : 'Learner')
+            profileMap[r.user_id] = label
+            if (r.avatar_url && !avatarMap[r.user_id]) avatarMap[r.user_id] = r.avatar_url
+          })
+          const byXp = [...unifiedRows].sort((a, b) => (Number(b.total_score) || 0) - (Number(a.total_score) || 0))
+          const byModules = [...unifiedRows].sort((a, b) => (Number(b.modules_completed) || 0) - (Number(a.modules_completed) || 0) || (Number(b.total_score) || 0) - (Number(a.total_score) || 0))
+          const byCivic = [...unifiedRows].sort((a, b) => (Number(b.wallet_balance) || 0) - (Number(a.wallet_balance) || 0) || (Number(b.total_score) || 0) - (Number(a.total_score) || 0))
+          const byBadges = [...unifiedRows].sort((a, b) => (Number(b.badges_count) || 0) - (Number(a.badges_count) || 0) || (Number(b.total_score) || 0) - (Number(a.total_score) || 0))
+
+          renderBoard('leaderboard-xp', 'xp', byXp, u => `${(Number(u.total_score) || 0).toLocaleString()} XP`, u => Number(u.total_score) || 0)
+          renderBoard('leaderboard-modules', 'modules', byModules, u => `${Number(u.modules_completed) || 0} / ${LEVEL_TOTAL} Lessons`, u => Number(u.modules_completed) || 0)
+          renderBoard('leaderboard-civic', 'civic', byCivic, u => `₹${(Number(u.wallet_balance) || 0).toLocaleString()}`, u => Number(u.wallet_balance) || 0)
+          renderBoard('leaderboard-badges', 'badges', byBadges, u => `${Number(u.badges_count) || 0} ${Number(u.badges_count) === 1 ? 'Badge' : 'Badges'}`, u => Number(u.badges_count) || 0)
+        } else {
+          // Fallback: always merge certificates + directory + wallets + badges by user_id
+          const mergedByUid = new Map()
+          function ensureRec(uid) {
+            if (!uid) return null
+            if (!mergedByUid.has(uid)) {
+              mergedByUid.set(uid, { user_id: uid, display_name: 'Learner', total_score: 0, modules_completed: 0, wallet_balance: 0, badges_count: 0 })
+            }
+            return mergedByUid.get(uid)
+          }
+
+          if (currentUserId) {
+            const selfRec = ensureRec(currentUserId)
+            selfRec.display_name = tUser.name || S.name || 'You'
+            selfRec.total_score = window.ProgressTracker ? window.ProgressTracker.computeTotalXP(S) : (S.total || 0)
+            selfRec.modules_completed = window.ProgressTracker ? window.ProgressTracker.computeCompletedCount(S) : _getCompleted()
+            selfRec.wallet_balance = Number.isFinite(S.wallet) ? Number(S.wallet) : 50000
+            selfRec.badges_count = Array.isArray(S.badges) ? S.badges.length : 0
+          }
+
+          try {
+            const { data: certData } = await window.supabaseClient
+              .from('certificates')
+              .select('user_id, display_name, score, modules_completed')
               .limit(500)
-            wData = queryRes.data
-            wErr = queryRes.error
-          }
-          if (wErr) { console.warn('Leaderboard wallets query error:', wErr); wallets = [] }
-          else {
-            wallets = wData || []
-            wallets.forEach(d => { if (d.user_id) allUserIds.add(d.user_id) })
-          }
-        } catch (e) { console.warn('Leaderboard wallets fetch failed:', e); wallets = [] }
+            ;(certData || []).forEach(c => {
+              const rec = ensureRec(c.user_id)
+              if (!rec) return
+              if (c.display_name) {
+                rec.display_name = c.display_name
+                if (!profileMap[c.user_id]) profileMap[c.user_id] = c.display_name
+              }
+              rec.total_score = Math.max(rec.total_score, Number(c.score || 0))
+              rec.modules_completed = Math.max(rec.modules_completed, Number(c.modules_completed || 0))
+            })
+          } catch (_e) {}
 
-        // 4. Badges
-        try {
-          const { data: bData, error: bErr } = await window.supabaseClient
-            .from('badges')
-            .select('user_id, badge_type')
-          if (bErr) { console.warn('Leaderboard badges query error:', bErr); allBadges = [] }
-          else {
-            allBadges = bData || []
-            allBadges.forEach(d => { if (d.user_id) allUserIds.add(d.user_id) })
-          }
-        } catch (e) { console.warn('Leaderboard badges fetch failed:', e); allBadges = [] }
-
-        if (!allBadges || allBadges.length === 0) {
-          try {
-            const { data: pbData } = await window.supabaseClient
-              .from('player_badges')
-              .select('user_id, badge_id')
-            if (pbData && pbData.length > 0) {
-              allBadges = pbData.map(b => ({ user_id: b.user_id, badge_type: b.badge_id }))
-              allBadges.forEach(d => { if (d.user_id) allUserIds.add(d.user_id) })
+          const dirProfiles = await _fetchProfileDirectory(window.supabaseClient, { limit: 500 })
+          ;(dirProfiles || []).forEach(p => {
+            const rec = ensureRec(p.user_id)
+            if (!rec) return
+            const name = p.display_name || (p.username ? (p.username.startsWith('@') ? p.username : '@' + p.username) : null)
+            if (name) {
+              rec.display_name = name
+              profileMap[p.user_id] = name
             }
-          } catch (e) {}
-        }
-
-        if (currentUserId && window.colUser && window.colUser.picture) {
-          avatarMap[currentUserId] = window.colUser.picture
-        }
-
-        // Render XP & Modules
-        if (certsByScore && certsByScore.length > 0) {
-          renderBoard('leaderboard-xp', 'xp', certsByScore, u => `${(u.score || 0).toLocaleString()} XP`, u => (u.score || 0))
-          const byModules = [...certsByScore].sort((a, b) => (b.modules_completed || 0) - (a.modules_completed || 0))
-          renderBoard('leaderboard-modules', 'modules', byModules, u => `${u.modules_completed || 0} / ${LEVEL_TOTAL} Lessons`, u => (u.modules_completed || 0))
-        } else {
-          renderBoard('leaderboard-xp', 'xp', [], u => '0 XP', u => 0)
-          renderBoard('leaderboard-modules', 'modules', [], u => '0 Modules', u => 0)
-        }
-
-        // Render Civic / Wallet
-        if (wallets && wallets.length > 0) {
-          const walletsNamed = wallets.map(w => ({ ...w, display_name: profileMap[w.user_id] || 'Learner' }))
-          renderBoard('leaderboard-civic', 'civic', walletsNamed, u => `₹${(u.balance || 0).toLocaleString()}`, u => (u.balance || 0))
-        } else {
-          renderBoard('leaderboard-civic', 'civic', [], u => '₹0', u => 0)
-        }
-
-        // Helper for milestone badges estimation from completed modules
-        function estimateMilestoneBadges(modulesCompleted) {
-          let count = 0
-          const mc = Number(modulesCompleted) || 0
-          if (mc >= 10) count++
-          if (mc >= 20) count++
-          if (mc >= 30) count++
-          if (mc >= 40) count++
-          if (mc >= LEVEL_TOTAL) count += 2 // level_52 and traffic_hero
-          return count
-        }
-
-        // Render Badges
-        const badgeCounts = {}
-        if (allBadges && allBadges.length > 0) {
-          allBadges.forEach(b => {
-            if (b.user_id) badgeCounts[b.user_id] = (badgeCounts[b.user_id] || 0) + 1
+            if (p.avatar_url && !avatarMap[p.user_id]) avatarMap[p.user_id] = p.avatar_url
+            rec.total_score = Math.max(rec.total_score, Number(p.total_score || 0))
+            rec.modules_completed = Math.max(rec.modules_completed, Number(p.modules_completed || 0))
+            rec.badges_count = Math.max(rec.badges_count, Number(p.badges_count || 0))
           })
-        }
 
-        allUserIds.forEach(uid => {
-          let count = badgeCounts[uid] || 0
-          const prof = (dirProfiles || []).find(p => p.user_id === uid)
-          if (prof && typeof prof.badges_count === 'number') {
-            count = Math.max(count, prof.badges_count)
-          }
-          const cert = (certsByScore || []).find(c => c.user_id === uid)
-          if (cert && cert.modules_completed) {
-            count = Math.max(count, estimateMilestoneBadges(cert.modules_completed))
-          }
-          if (currentUserId && uid === currentUserId && S && Array.isArray(S.badges)) {
-            count = Math.max(count, S.badges.length)
-          }
-          badgeCounts[uid] = count
-        })
-
-        if (currentUserId) {
-          const localBadgesCount = (S && Array.isArray(S.badges)) ? S.badges.length : 0
-          badgeCounts[currentUserId] = Math.max(badgeCounts[currentUserId] || 0, localBadgesCount)
-          allUserIds.add(currentUserId)
-        }
-
-        const badgeUsers = Array.from(allUserIds).map(uid => {
-          const prof = (dirProfiles || []).find(p => p.user_id === uid)
-          const cert = (certsByScore || []).find(c => c.user_id === uid)
-          const name = profileMap[uid] || (prof ? (prof.display_name || prof.username) : null) || (cert ? cert.display_name : null) || (uid === currentUserId ? (tUser.name || 'You') : 'Learner')
-          const count = badgeCounts[uid] || 0
-          const score = (prof && prof.total_score) || (cert && cert.score) || (uid === currentUserId ? S.total : 0) || 0
-          return {
-            user_id: uid,
-            display_name: name,
-            badge_count: count,
-            score: score
-          }
-        }).sort((a, b) => {
-          if (b.badge_count !== a.badge_count) return b.badge_count - a.badge_count
-          return b.score - a.score
-        })
-
-        if (badgeUsers.length > 0) {
-          renderBoard('leaderboard-badges', 'badges', badgeUsers, u => `${u.badge_count} ${u.badge_count === 1 ? 'Badge' : 'Badges'}`, u => u.badge_count)
-        } else {
-          renderBoard('leaderboard-badges', 'badges', [], u => '0 Badges', u => 0)
-        }
-
-        if (window._lbUpdatedAt) {
           try {
-            const stamp = document.getElementById('lb-updated-at')
-            if (stamp) stamp.textContent = 'Updated ' + new Date(window._lbUpdatedAt).toLocaleTimeString()
-          } catch (e) {}
-        }
-        window._lbUpdatedAt = Date.now()
+            const rpcRes = await window.supabaseClient.rpc('get_leaderboard_wallets', { p_limit: 500 })
+            const wData = (!rpcRes.error && rpcRes.data)
+              ? rpcRes.data
+              : ((await window.supabaseClient.from('wallets').select('user_id, balance').limit(500)).data || [])
+            ;(wData || []).forEach(w => {
+              const rec = ensureRec(w.user_id)
+              if (rec) rec.wallet_balance = Math.max(rec.wallet_balance, Number(w.balance || 0))
+            })
+          } catch (_e) {}
 
-        // Scope podiums + your-rank cards to the active tab on first paint.
-        // (renderBoard shows each board's extras; without this, all 4 podiums
-        // stack vertically until the user clicks a tab — the reported bug.)
+          try {
+            const { data: bData } = await window.supabaseClient.from('badges').select('user_id')
+            const bMap = {}
+            ;(bData || []).forEach(b => { if (b.user_id) bMap[b.user_id] = (bMap[b.user_id] || 0) + 1 })
+            Object.keys(bMap).forEach(uid => {
+              const rec = ensureRec(uid)
+              if (rec) rec.badges_count = Math.max(rec.badges_count, bMap[uid])
+            })
+          } catch (_e) {}
+
+          const allList = Array.from(mergedByUid.values())
+          renderBoard('leaderboard-xp', 'xp', [...allList].sort((a, b) => b.total_score - a.total_score), u => `${u.total_score.toLocaleString()} XP`, u => u.total_score)
+          renderBoard('leaderboard-modules', 'modules', [...allList].sort((a, b) => b.modules_completed - a.modules_completed || b.total_score - a.total_score), u => `${u.modules_completed} / ${LEVEL_TOTAL} Lessons`, u => u.modules_completed)
+          renderBoard('leaderboard-civic', 'civic', [...allList].sort((a, b) => b.wallet_balance - a.wallet_balance || b.total_score - a.total_score), u => `₹${u.wallet_balance.toLocaleString()}`, u => u.wallet_balance)
+          renderBoard('leaderboard-badges', 'badges', [...allList].sort((a, b) => b.badges_count - a.badges_count || b.total_score - a.total_score), u => `${u.badges_count} ${u.badges_count === 1 ? 'Badge' : 'Badges'}`, u => u.badges_count)
+        }
+
+        window._lbUpdatedAt = Date.now()
+        try {
+          const stamp = document.getElementById('lb-updated-at')
+          if (stamp) stamp.textContent = 'Updated ' + new Date(window._lbUpdatedAt).toLocaleTimeString()
+        } catch (e) {}
+
         try {
           const activeTab = document.querySelector('.lb-tab.active')
           const activeBoard = activeTab ? activeTab.dataset.board : 'xp'
@@ -3338,35 +3225,24 @@
         } catch (e) {}
       }
 
-
       setTimeout(() => {
         loadCertificateGallery()
         loadLeaderboard()
-      }, 1000)
+      }, 600)
 
       function shareCertificate(certId) {
         const url = `${window.location.origin}${window.location.pathname}?cert=${certId}`
-        navigator.clipboard.writeText(url).then(() => toast('Link copied!', '#5ed4f5'))
+        navigator.clipboard.writeText(url).then(() => toast('Certificate link copied', '#0284c7'))
       }
 
-      function shareProfile() {
-        const baseUrl = window.location.origin + window.location.pathname
-
-        const username = tUser.username || S.username || null
-        const studentId = S.studentId || window.colUser?.uid || null
-        let url
-        if (username) {
-          const uname = username.startsWith('@') ? username : '@' + username
-          url = baseUrl + '?user=' + encodeURIComponent(uname)
-        } else if (studentId) {
-          url = baseUrl + '?studentId=' + encodeURIComponent(studentId)
-        } else if (window.colUser && window.colUser.id) {
-          url = baseUrl + '?uid=' + window.colUser.id
-        } else {
-          toast('Sign in to share your profile!', '#ff4444')
+      async function shareProfile() {
+        const certUrl = await getCertUrl()
+        if (certUrl) {
+          navigator.clipboard.writeText(certUrl).then(() => toast('Verified certificate link copied', '#0284c7'))
           return
         }
-        navigator.clipboard.writeText(url).then(() => toast('Profile link copied! 🎉', '#5ed4f5'))
+        const academyUrl = `${window.location.origin}${window.location.pathname.replace(/TrafficDashboard\.html$/i, 'Academy.html')}`
+        navigator.clipboard.writeText(academyUrl).then(() => toast('Academy invite link copied (complete all lessons for a certificate link)', '#0284c7'))
       }
 
 

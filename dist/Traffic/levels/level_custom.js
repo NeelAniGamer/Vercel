@@ -5,7 +5,7 @@ window.LVS = window.LVS.filter(l => l.id !== 'custom' && l.id !== 'custom_downto
 
 window.LVS.push({
   id: 'custom',
-  icon: '🏡',
+  icon: 'home',
   name: 'Free Roam - Suburban Avenue & Villas',
   modes: ['car', 'bike', 'supercar_white', 'sports_cyan', 'bus_green', 'auto', 'pedestrian'],
   col: '#2ecc71',
@@ -44,7 +44,7 @@ window.LVS.push({
 
 window.LVS.push({
   id: 'custom_downtown',
-  icon: '🏙️',
+  icon: 'city',
   name: 'Dense Downtown & Residential Hub',
   modes: ['car', 'bike', 'auto', 'bus', 'truck'],
   col: '#00f0cc',

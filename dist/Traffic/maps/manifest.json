@@ -1,0 +1,635 @@
+{
+  "version": 1,
+  "generatedAt": "2026-11-26T18:46:11.374Z",
+  "chunkSize": 100,
+  "totalMaps": 57,
+  "maps": {
+    "1": {
+      "file": "level_1.json",
+      "checksum": "29004e30b85e733c",
+      "stats": {
+        "roads": 6,
+        "buildings": 95,
+        "streetlights": 60,
+        "trees": 0,
+        "chunks": 16
+      }
+    },
+    "2": {
+      "file": "level_2.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "3": {
+      "file": "level_3.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "4": {
+      "file": "level_4.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "5": {
+      "file": "level_5.json",
+      "checksum": "8b4399afe9f58d4d",
+      "stats": {
+        "roads": 18,
+        "buildings": 407,
+        "streetlights": 336,
+        "trees": 0,
+        "chunks": 94
+      }
+    },
+    "6": {
+      "file": "level_6.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "7": {
+      "file": "level_7.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "8": {
+      "file": "level_8.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "9": {
+      "file": "level_9.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "10": {
+      "file": "level_10.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "11": {
+      "file": "level_11.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "12": {
+      "file": "level_12.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "13": {
+      "file": "level_13.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "14": {
+      "file": "level_14.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "15": {
+      "file": "level_15.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "16": {
+      "file": "level_16.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "17": {
+      "file": "level_17.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "18": {
+      "file": "level_18.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "19": {
+      "file": "level_19.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "20": {
+      "file": "level_20.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "21": {
+      "file": "level_21.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "22": {
+      "file": "level_22.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "23": {
+      "file": "level_23.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "24": {
+      "file": "level_24.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "25": {
+      "file": "level_25.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "26": {
+      "file": "level_26.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "27": {
+      "file": "level_27.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "28": {
+      "file": "level_28.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "29": {
+      "file": "level_29.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "30": {
+      "file": "level_30.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "31": {
+      "file": "level_31.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "32": {
+      "file": "level_32.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "33": {
+      "file": "level_33.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "34": {
+      "file": "level_34.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "35": {
+      "file": "level_35.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "36": {
+      "file": "level_36.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "37": {
+      "file": "level_37.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "38": {
+      "file": "level_38.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "39": {
+      "file": "level_39.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "40": {
+      "file": "level_40.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "41": {
+      "file": "level_41.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "42": {
+      "file": "level_42.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "43": {
+      "file": "level_43.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "44": {
+      "file": "level_44.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "45": {
+      "file": "level_45.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "46": {
+      "file": "level_46.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "47": {
+      "file": "level_47.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "48": {
+      "file": "level_48.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "49": {
+      "file": "level_49.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "50": {
+      "file": "level_50.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "51": {
+      "file": "level_51.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "52": {
+      "file": "level_52.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "53": {
+      "file": "level_53.json",
+      "checksum": "8748e3085809c4ee",
+      "stats": {
+        "roads": 1,
+        "buildings": 32,
+        "streetlights": 24,
+        "trees": 0,
+        "chunks": 12
+      }
+    },
+    "54": {
+      "file": "level_54.json",
+      "checksum": "6108bf936fba622d",
+      "stats": {
+        "roads": 1,
+        "buildings": 16,
+        "streetlights": 12,
+        "trees": 0,
+        "chunks": 8
+      }
+    },
+    "99": {
+      "file": "level_99.json",
+      "checksum": "e05683789650700f",
+      "stats": {
+        "roads": 18,
+        "buildings": 410,
+        "streetlights": 576,
+        "trees": 0,
+        "chunks": 96
+      }
+    },
+    "custom": {
+      "file": "level_custom.json",
+      "checksum": "64927357b8f9682c",
+      "stats": {
+        "roads": 1,
+        "buildings": 18,
+        "streetlights": 14,
+        "trees": 0,
+        "chunks": 8
+      }
+    },
+    "custom_downtown": {
+      "file": "level_custom_downtown.json",
+      "checksum": "aa14ddc2133071ff",
+      "stats": {
+        "roads": 6,
+        "buildings": 194,
+        "streetlights": 192,
+        "trees": 0,
+        "chunks": 54
+      }
+    }
+  }
+}

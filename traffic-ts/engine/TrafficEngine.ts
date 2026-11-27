@@ -229,7 +229,7 @@ export class TrafficEngine {
           title: `Overspeeding (${speedKmh} km/h in ${this.speedLimit} zone)`,
           fine: fineAmt,
           timestamp: Date.now(),
-          icon: '⚡'
+          icon: 'SPD'
         };
         this.recentViolation = v;
         if (this.onViolation) this.onViolation(v);

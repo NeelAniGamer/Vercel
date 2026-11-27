@@ -214,11 +214,11 @@ function createMenu() {
           }
         },
         {
-          label: "\u{1F6E0}\uFE0F Vehicle Customizer",
+          label: "Vehicle & Settings",
           accelerator: "F5",
           click: () => {
-            if (isDev) mainWindow?.loadURL("http://localhost:5173/TrafficSetup.html");
-            else mainWindow?.loadFile(path.join(__dirname, "..", "dist", "TrafficSetup.html"));
+            if (isDev) mainWindow?.loadURL("http://localhost:5173/Academy.html?settings=1");
+            else mainWindow?.loadFile(path.join(__dirname, "..", "dist", "Academy.html"), { query: { settings: "1" } });
           }
         }
       ]

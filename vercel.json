@@ -49,7 +49,7 @@
       ]
     },
     {
-      "source": "/Traffic/:page(TrafficDashboard|TrafficSetup|GamePage|lod_test)",
+      "source": "/Traffic/:page(TrafficDashboard|GamePage)",
       "headers": [
         {
           "key": "X-Robots-Tag",
@@ -218,6 +218,16 @@
     {
       "source": "/engine",
       "destination": "/solar",
+      "permanent": true
+    },
+    {
+      "source": "/Traffic/TrafficSetup",
+      "destination": "/Traffic/Academy",
+      "permanent": true
+    },
+    {
+      "source": "/Traffic/TrafficSetup.html",
+      "destination": "/Traffic/Academy.html",
       "permanent": true
     }
   ],

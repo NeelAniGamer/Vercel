@@ -130,7 +130,7 @@ const server = http.createServer((req, res) => {
         <body>
           <h1 style="color:#f2b84b;">404 Not Found</h1>
           <p>The requested file does not exist.</p>
-          <a href="/hub" style="color:#5ed4f5;margin-top:16px;">🚗 Open Tuning Hub</a>
+          <a href="/hub" style="color:#5ed4f5;margin-top:16px;">Open Tuning Hub</a>
           <a href="/home" style="color:#8891aa;margin-top:8px;">Open Home</a>
         </body>
       </html>
@@ -154,9 +154,9 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`====================================================`);
   console.log(`Class Of Learners Local Server Active!`);
-  console.log(`🏛️ 3D HQ & Tuning Hub: http://localhost:${PORT}/hub`);
-  console.log(`🚗 3D Driving Simulator: http://localhost:${PORT}/Traffic/Driving.html`);
-  console.log(`🚀 3D Zoom Experience:   http://localhost:${PORT}/home-zoom`);
-  console.log(`🏠 Classic Home:         http://localhost:${PORT}/home`);
+  console.log(` 3D HQ & Tuning Hub: http://localhost:${PORT}/hub`);
+  console.log(` 3D Driving Simulator: http://localhost:${PORT}/Traffic/Driving.html`);
+  console.log(` 3D Zoom Experience:   http://localhost:${PORT}/home-zoom`);
+  console.log(` Classic Home:         http://localhost:${PORT}/home`);
   console.log(`====================================================`);
 });

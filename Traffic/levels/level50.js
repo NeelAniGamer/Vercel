@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 50,
-  icon: '🏆',
+  icon: 'trophy',
   name: 'Lesson 50 - Grand Mastery!',
   modes: ['car', 'bike'],
   col: '#f1c40f',
@@ -16,7 +16,7 @@ window.LVS.push({
     offHi: 'अनेक उल्लंघन'
   },
   theory:
-    '<h2>Grand Mastery!</h2><p>Grand Mastery ka waqt! 49 levels ka sab kuch tumhare saamne hai — rain, night, fog, highway, mountain, village, construction — sab ek saath!</p><p>Yeh test tumhe poora master driver banayega. Har cheez apply karo — rules, patience, observation, skill. Agar yeh pass kar liya toh tum real Indian road ke liye ready ho!</p><h3>🏆 Kya karna hai?</h3><ul><li>Sab weather conditions handle karo.</li><li>Har vehicle type ka respect karo.</li><li>Har road type pe safe driving karo.</li><li>Sab rules follow karo — ek bhi mat chhodo!</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Sab MV Act sections applicable — violations pe ₹500 se ₹10000 tak ka fine!</p>',
+    '<h2>Grand Mastery!</h2><p>Grand Mastery ka waqt! 49 levels ka sab kuch tumhare saamne hai — rain, night, fog, highway, mountain, village, construction — sab ek saath!</p><p>Yeh test tumhe poora master driver banayega. Har cheez apply karo — rules, patience, observation, skill. Agar yeh pass kar liya toh tum real Indian road ke liye ready ho!</p><h3> Kya karna hai?</h3><ul><li>Sab weather conditions handle karo.</li><li>Har vehicle type ka respect karo.</li><li>Har road type pe safe driving karo.</li><li>Sab rules follow karo — ek bhi mat chhodo!</li></ul><h3> Kanoon kya kehta hai?</h3><p>Sab MV Act sections applicable — violations pe ₹500 se ₹10000 tak ka fine!</p>',
   pract: 'Complete the ultimate test. Apply every skill from all previous levels. Stay calm, stay safe, stay respectful.',
   mode: 'practical',
   themeType: 'grand_test',

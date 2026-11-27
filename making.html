@@ -92,7 +92,8 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" /></noscript>
 
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
   <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
@@ -142,7 +143,7 @@
         --line: rgba(255, 255, 255, 0.08);
         --lineb: rgba(255, 255, 255, 0.16);
         --ink: #e8e3d8;
-        --dim: #8891aa;
+        --dim: #94a3b8;
         --signal: #f2b84b;
         --ion: #5ed4f5;
         --teal: #00f0cc;
@@ -339,151 +340,267 @@
       .bg-orb-2 { width: 650px; height: 650px; top: 35%; right: -150px; background: var(--ion); }
       .bg-orb-3 { width: 500px; height: 500px; bottom: 10%; left: 15%; background: var(--plasma); }
 
-      /* Top Navigation */
-      .top-nav {
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        height: 72px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        padding: 0 32px !important;
-        z-index: 900 !important;
-        background: var(--nav) !important;
-        backdrop-filter: blur(24px) !important;
-        -webkit-backdrop-filter: blur(24px) !important;
-        border-bottom: 1px solid var(--line) !important;
-        flex-wrap: nowrap !important;
-        gap: 20px !important;
-        transition: background 0.3s var(--ease), border-color 0.3s var(--ease);
-      }
-      .nav-brand {
-        display: flex !important;
-        align-items: center !important;
-        gap: 12px !important;
-        font-weight: 700 !important;
-        font-size: 1.05rem !important;
-        flex-shrink: 0 !important;
-      }
-      .brand-logo { border-radius: 12px; }
-      .nav-links {
-        display: flex !important;
-        align-items: center !important;
-        gap: 16px !important;
-        flex-wrap: nowrap !important;
-      }
-      .nav-link {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.92rem;
-        font-weight: 500;
-        color: var(--dim);
-        padding: 8px 12px;
-        border-radius: 10px;
-        transition: color 0.2s, background 0.2s;
-      }
-      .nav-link svg { width: 16px; height: 16px; }
-      .nav-link:hover, .nav-link.act {
-        color: var(--ink);
-        background: rgba(255, 255, 255, 0.05);
-      }
-      body.lm .nav-link:hover, body.lm .nav-link.act {
-        background: rgba(0, 0, 0, 0.05);
-      }
-      .nav-link.act {
-        color: var(--signal);
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
       }
 
-      /* Dropdown */
-      .dropdown { position: relative; }
-      .dropdown-btn {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.92rem;
-        font-weight: 500;
-        color: var(--dim);
-        padding: 8px 12px;
-        border-radius: 10px;
-        transition: color 0.2s;
+      /* Engineering Pipeline & Flagship Architecture Sections */
+      .mk-section {
+        margin-top: 72px;
       }
-      .dropdown-btn:hover { color: var(--ink); }
-      .dropdown-content {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        min-width: 210px;
-        background: var(--panel);
-        border: 1px solid var(--lineb);
-        border-radius: 14px;
-        padding: 8px;
-        box-shadow: 0 16px 40px rgba(0,0,0,0.4);
-        z-index: 1000;
-      }
-      .dropdown.active .dropdown-content { display: block; }
-      .dropdown-content-inner a {
+      .mk-sec-head {
         display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 28px;
+      }
+      .mk-eyebrow {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: var(--signal);
+        margin-bottom: 8px;
+        display: inline-flex;
         align-items: center;
         gap: 10px;
-        padding: 10px 14px;
-        border-radius: 8px;
-        font-size: 0.88rem;
-        color: var(--dim);
-        transition: all 0.2s;
       }
-      .dropdown-content-inner a:hover {
-        background: rgba(255, 255, 255, 0.06);
+      .mk-eyebrow::before {
+        content: '';
+        width: 18px;
+        height: 1px;
+        background: var(--signal);
+      }
+      .mk-sec-title {
+        font-family: var(--serif);
+        font-size: clamp(1.9rem, 3.6vw, 2.75rem);
+        font-weight: 400;
+        line-height: 1.12;
         color: var(--ink);
       }
-
-      /* Theme & Auth Buttons */
-      .nav-actions {
-        display: flex !important;
-        align-items: center !important;
-        gap: 14px !important;
-        flex-shrink: 0 !important;
-        flex-wrap: nowrap !important;
+      .mk-sec-title em {
+        font-style: italic;
+        color: var(--signal);
       }
-      .hz-toggle {
-        width: 44px;
-        height: 24px;
-        background: rgba(255, 255, 255, 0.12);
-        border-radius: 12px;
+      .mk-sec-sub {
+        color: var(--dim);
+        font-size: 0.95rem;
+        max-width: 52ch;
+      }
+      .pipeline-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+      }
+      .pipe-card {
+        background: var(--panel-glass);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 26px 22px;
         position: relative;
-        cursor: pointer;
-        padding: 2px;
-        transition: background 0.3s;
+        overflow: hidden;
+        transition: transform 0.3s var(--ease), border-color 0.3s;
       }
-      .hz-orb {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background: var(--signal);
-        transition: transform 0.3s var(--spring);
+      .pipe-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--lineb);
       }
-      body.lm .hz-orb { transform: translateX(20px); background: #3b82f6; }
-      .nav-dl-btn {
-        padding: 8px 16px;
-        background: var(--lineb);
+      .pipe-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+      .pipe-num {
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--signal);
+        background: rgba(242, 184, 75, 0.1);
+        border: 1px solid rgba(242, 184, 75, 0.25);
+        padding: 3px 10px;
+        border-radius: 999px;
+      }
+      .pipe-ico {
+        width: 34px;
+        height: 34px;
         border-radius: 10px;
-        font-size: 0.88rem;
-        font-weight: 600;
-        transition: background 0.2s;
-      }
-      .nav-dl-btn:hover { background: rgba(255, 255, 255, 0.22); }
-      .mmb {
-        display: none;
-        width: 40px;
-        height: 40px;
+        background: rgba(94, 212, 245, 0.1);
+        border: 1px solid rgba(94, 212, 245, 0.22);
+        color: var(--ion);
+        display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--ink);
       }
-      .mmb svg { width: 24px; height: 24px; stroke: currentColor; }
+      .pipe-ico svg { width: 17px; height: 17px; }
+      .pipe-card h3 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 8px;
+      }
+      .pipe-card p {
+        font-size: 0.88rem;
+        color: var(--dim);
+        line-height: 1.62;
+      }
+
+      .arch-apps-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+      .arch-app-card {
+        background: var(--panel-glass);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 26px 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 16px;
+        transition: transform 0.3s var(--ease), border-color 0.3s, box-shadow 0.3s;
+      }
+      .arch-app-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--lineb);
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+      }
+      .arch-app-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .arch-app-ico {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: rgba(242, 184, 75, 0.1);
+        border: 1px solid rgba(242, 184, 75, 0.24);
+        color: var(--signal);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .arch-app-ico svg { width: 20px; height: 20px; }
+      .arch-app-cat {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ion);
+      }
+      .arch-app-card h3 {
+        font-size: 1.12rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin: 8px 0 6px;
+      }
+      .arch-app-card p {
+        font-size: 0.88rem;
+        color: var(--dim);
+        line-height: 1.62;
+      }
+      .arch-app-stack {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .arch-pill {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        padding: 3px 9px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--line);
+        color: var(--dim);
+      }
+      .arch-launch {
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--signal);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding-top: 10px;
+        border-top: 1px solid var(--line);
+      }
+      .arch-launch:hover { text-decoration: underline; }
+
+      .mk-timeline {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+      }
+      .tl-card {
+        background: var(--panel-glass);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 26px 24px;
+      }
+      .tl-year {
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--em);
+        margin-bottom: 8px;
+        letter-spacing: 0.12em;
+      }
+      .tl-card h3 {
+        font-size: 1.08rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 8px;
+      }
+      .tl-card p {
+        font-size: 0.88rem;
+        color: var(--dim);
+        line-height: 1.62;
+      }
+
+      body.lm .pipe-card,
+      body.lm .arch-app-card,
+      body.lm .tl-card {
+        background: #ffffff !important;
+        border-color: rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+      }
+      body.lm .arch-pill {
+        background: rgba(15, 23, 42, 0.04);
+        border-color: rgba(15, 23, 42, 0.1);
+        color: #334155;
+      }
+      body.lm .pipe-num,
+      body.lm .arch-launch,
+      body.lm .mk-eyebrow {
+        color: #b45309;
+      }
+      body.lm .arch-app-cat {
+        color: #0369a1;
+      }
+
+      @media (max-width: 1024px) {
+        .pipeline-grid { grid-template-columns: repeat(2, 1fr); }
+        .arch-apps-grid { grid-template-columns: repeat(2, 1fr); }
+        .mk-timeline { grid-template-columns: 1fr; }
+      }
+      @media (max-width: 640px) {
+        .pipeline-grid, .arch-apps-grid { grid-template-columns: 1fr; }
+      }
 
       /* Main Container */
       .main-wrapper {
@@ -702,6 +819,20 @@
       html.lm .filter-pill.active span,
       body.lm .filter-pill.active span {
         background: rgba(0, 0, 0, 0.25);
+        color: #ffffff !important;
+      }
+      body.lm .card-badge,
+      body.lm .section-heading,
+      body.lm .step-num,
+      body.lm .step-text strong {
+        color: color-mix(in srgb, var(--card-accent, #92400e) 46%, #0f172a) !important;
+      }
+      body.lm .code-header .code-prompt,
+      body.lm .code-header .code-lang {
+        color: color-mix(in srgb, var(--card-accent, #f2b84b) 35%, #ffffff) !important;
+      }
+      body.lm .btn-ask-ai, body.lm .btn-ask-ai span {
+        background: #92400e !important;
         color: #ffffff !important;
       }
       .search-box {
@@ -1292,28 +1423,6 @@
         border-color: var(--lineb);
       }
 
-      /* Footer */
-      .sf {
-        margin-top: 100px;
-        border-top: 1px solid var(--line);
-        padding: 40px 0;
-      }
-      .fi {
-        max-width: 1240px;
-        margin: 0 auto;
-        padding: 0 24px;
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 20px;
-      }
-      .fb { font-weight: 700; font-size: 1.1rem; }
-      .fl { display: flex; gap: 20px; }
-      .fl a { color: var(--dim); font-size: 0.9rem; transition: color 0.2s; }
-      .fl a:hover { color: var(--ink); }
-      .fc { color: var(--dim); font-size: 0.85rem; width: 100%; text-align: center; margin-top: 12px; }
-
       /* Responsive Rules */
       @media (max-width: 992px) {
         .bento-card { grid-column: span 12; }
@@ -1321,9 +1430,6 @@
         .stats-deck { grid-template-columns: repeat(2, 1fr); }
       }
       @media (max-width: 900px) {
-        .top-nav .nav-links { display: none !important; }
-        .top-nav .nav-dl-btn { display: none !important; }
-        .mmb { display: flex !important; }
         .main-wrapper { padding-top: 96px; padding-bottom: 120px; }
         .control-bar { flex-direction: column; align-items: stretch; }
         .search-box { max-width: 100%; }
@@ -1420,6 +1526,14 @@
           justify-content: center;
         }
       }
+    
+
+      .code-prompt, .code-lang, body.lm .code-prompt, body.lm .code-lang { color: #e2e8f0 !important; }
+      .code-box span[style*="136, 145, 170"], .bento-card span[style*="136, 145, 170"] { color: #cbd5e1 !important; }
+      .bento-card .card-badge, .bento-card .step-num { color: color-mix(in srgb, var(--card-accent, #93c5fd) 55%, #ffffff) !important; }
+      body.lm .bento-card .card-badge, body.lm .bento-card .step-num { color: color-mix(in srgb, var(--card-accent, #92400e) 40%, #0f172a) !important; }
+    
+body.lm #doubtAsk, body.lm .doubt-ask, body.lm .doubt-ask span { color: #ffffff !important; }
     </style>
 
     <script defer src="col-router.js"></script>
@@ -1511,7 +1625,7 @@
         <a href="making" class="nav-link act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>Making</a>
         <div class="dropdown" id="projDD">
           <button class="dropdown-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>Projects <span class="darr">&#9660;</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>Projects 
           </button>
           <div class="dropdown-content">
             <div class="dropdown-content-inner">
@@ -1591,8 +1705,166 @@
           <div class="stat-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
           </div>
-          <div class="stat-num">6</div>
-          <div class="stat-label">Shipped Real-Time Apps</div>
+          <div class="stat-num">16</div>
+          <div class="stat-label">Shipped Interactive Apps</div>
+        </div>
+      </section>
+
+      <!-- Engineering Pipeline -->
+      <section class="mk-section" aria-label="Engineering Workflow">
+        <div class="mk-sec-head">
+          <div>
+            <div class="mk-eyebrow">Engineering Workflow</div>
+            <h2 class="mk-sec-title">How Every Build Goes From Idea to <em>Shipped</em>.</h2>
+          </div>
+          <p class="mk-sec-sub">Every app in Class Of Learners is engineered for zero-dependency offline resilience, 60 FPS WebGL/Canvas rendering, and automated build verification.</p>
+        </div>
+        <div class="pipeline-grid">
+          <article class="pipe-card">
+            <div class="pipe-top">
+              <span class="pipe-num">01</span>
+              <span class="pipe-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
+            </div>
+            <h3>First-Principles Architecture</h3>
+            <p>No bloated runtime frameworks where plain WebGL, Canvas, or HTML/JS runs faster. Shared navigation, auth, and theming live in lean global modules.</p>
+          </article>
+          <article class="pipe-card">
+            <div class="pipe-top">
+              <span class="pipe-num">02</span>
+              <span class="pipe-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/></svg></span>
+            </div>
+            <h3>Local-First AI &amp; Compute</h3>
+            <p>Webcam hand tracking, SQLite typing vaults, and Ollama coding workflows keep data on the user's own hardware with zero API latency or tracking.</p>
+          </article>
+          <article class="pipe-card">
+            <div class="pipe-top">
+              <span class="pipe-num">03</span>
+              <span class="pipe-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+            </div>
+            <h3>Multi-Target Packaging</h3>
+            <p>Core web builds compile into Vercel edge trees, Electron desktop apps, PyInstaller Windows installers, Debian packages, and signed Android APKs.</p>
+          </article>
+          <article class="pipe-card">
+            <div class="pipe-top">
+              <span class="pipe-num">04</span>
+              <span class="pipe-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></span>
+            </div>
+            <h3>Automated Build Gates</h3>
+            <p>Every deploy runs level linters, career dataset checks, SEO validation, security regression guards, and headless Playwright smoke verification.</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- Flagship Builds Architecture -->
+      <section class="mk-section" aria-label="Inside Our Flagship Builds">
+        <div class="mk-sec-head">
+          <div>
+            <div class="mk-eyebrow">System Blueprints</div>
+            <h2 class="mk-sec-title">Inside Our <em>Flagship Builds</em>.</h2>
+          </div>
+          <p class="mk-sec-sub">A technical look under the hood at the engines, physics loops, and data systems powering our core applications.</p>
+        </div>
+        <div class="arch-apps-grid">
+          <article class="arch-app-card">
+            <div>
+              <div class="arch-app-head">
+                <div class="arch-app-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="6" width="22" height="12" rx="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><path d="M5 6l2-3h10l2 3"/></svg></div>
+                <span class="arch-app-cat">3D Simulation &middot; 57 Levels</span>
+              </div>
+              <h3>Mumbai Traffic Driving Academy</h3>
+              <p>Real-time Three.js city simulation with esbuild-bundled React HUD, custom NPC vehicle/pedestrian AI, RTO rule evaluators, and Sarvam AI voice prompts.</p>
+            </div>
+            <div>
+              <div class="arch-app-stack" style="margin-bottom:12px;"><span class="arch-pill">Three.js</span><span class="arch-pill">React / esbuild</span><span class="arch-pill">Electron</span></div>
+              <a href="Traffic/Driving" class="arch-launch">Open Driving Sim <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            </div>
+          </article>
+
+          <article class="arch-app-card">
+            <div>
+              <div class="arch-app-head">
+                <div class="arch-app-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></div>
+                <span class="arch-app-cat">Cross-Platform &middot; 200+ Levels</span>
+              </div>
+              <h3>Advanced Typing Instructor 1.4</h3>
+              <p>Python pywebview + SQLite desktop core paired with WebAudio synthesized mechanical switches, LAN WebSocket multiplayer, and Capacitor Android APK parity.</p>
+            </div>
+            <div>
+              <div class="arch-app-stack" style="margin-bottom:12px;"><span class="arch-pill">Python / SQLite</span><span class="arch-pill">WebAudio</span><span class="arch-pill">Capacitor APK</span></div>
+              <a href="ati" class="arch-launch">Explore ATI 1.4 <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            </div>
+          </article>
+
+          <article class="arch-app-card">
+            <div>
+              <div class="arch-app-head">
+                <div class="arch-app-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2"/></svg></div>
+                <span class="arch-app-cat">Astrophysics &middot; WebGL</span>
+              </div>
+              <h3>Solar System Engine V3.3</h3>
+              <p>Keplerian orbital solver with real-time solar illumination, variable time-warp physics, procedural asteroid belts, and interactive planetary telemetry.</p>
+            </div>
+            <div>
+              <div class="arch-app-stack" style="margin-bottom:12px;"><span class="arch-pill">Three.js</span><span class="arch-pill">GLSL Shaders</span><span class="arch-pill">Kepler Math</span></div>
+              <a href="solar" class="arch-launch">Launch Solar Engine <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            </div>
+          </article>
+
+          <article class="arch-app-card">
+            <div>
+              <div class="arch-app-head">
+                <div class="arch-app-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+                <span class="arch-app-cat">Geospatial &middot; 178 Countries</span>
+              </div>
+              <h3>Terra3D World Atlas</h3>
+              <p>Interactive 3D Earth globe featuring Rayleigh atmospheric scattering shaders, live solar day/night lighting, and structured country knowledge datasets.</p>
+            </div>
+            <div>
+              <div class="arch-app-stack" style="margin-bottom:12px;"><span class="arch-pill">WebGL</span><span class="arch-pill">Rayleigh Shader</span><span class="arch-pill">GeoJSON</span></div>
+              <a href="Terra3D/" class="arch-launch">Explore Terra3D <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            </div>
+          </article>
+
+          <article class="arch-app-card">
+            <div>
+              <div class="arch-app-head">
+                <div class="arch-app-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 11V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2"/><path d="M14 10V4a2 2 0 0 0-2-2 2 2 0 0 0-2 2v6"/><path d="M10 10.5V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></div>
+                <span class="arch-app-cat">Computer Vision &middot; 60 FPS</span>
+              </div>
+              <h3>Perceptus Flow</h3>
+              <p>On-device MediaPipe 21-joint hand landmark tracking running in Web Workers with EMA smoothing, air-drawing canvas, and WebSocket desktop control.</p>
+            </div>
+            <div>
+              <div class="arch-app-stack" style="margin-bottom:12px;"><span class="arch-pill">MediaPipe WASM</span><span class="arch-pill">Web Workers</span><span class="arch-pill">WebSockets</span></div>
+              <a href="gesture" class="arch-launch">Open Perceptus <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            </div>
+          </article>
+
+          <article class="arch-app-card">
+            <div>
+              <div class="arch-app-head">
+                <div class="arch-app-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
+                <span class="arch-app-cat">Guidance &middot; Data Engine</span>
+              </div>
+              <h3>Career Compass &amp; Civic Suite</h3>
+              <p>Multi-region career explorer with transparent quiz scoring, paired with PBKDF2-secured QR Studio Matrix, CastFlow wireless DeX, and SQL/MVA labs.</p>
+            </div>
+            <div>
+              <div class="arch-app-stack" style="margin-bottom:12px;"><span class="arch-pill">Scoring Engine</span><span class="arch-pill">PBKDF2 Crypto</span><span class="arch-pill">Kotlin / Ktor</span></div>
+              <a href="Career" class="arch-launch">Open Career Compass <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Stack & Playbooks Header -->
+      <section class="mk-section" aria-label="Studio Stack and Playbooks" style="margin-bottom: 24px;">
+        <div class="mk-sec-head" style="margin-bottom: 20px;">
+          <div>
+            <div class="mk-eyebrow">Tooling &amp; Setup Playbooks</div>
+            <h2 class="mk-sec-title">The 15-Tool <em>Studio Stack</em>.</h2>
+          </div>
+          <p class="mk-sec-sub">Filter by category or search any command below to replicate our exact local AI, cloud hosting, and mobile build setup.</p>
         </div>
       </section>
 
@@ -1624,7 +1896,7 @@
           <div>
             <div class="card-header">
               <div class="card-identity">
-                <div class="card-icon"><img src="assets/logos/ollama.svg" alt="Ollama" class="invert-on-light" width="28" height="28" fetchpriority="high" decoding="async" /></div>
+                <div class="card-icon"><img src="assets/logos/ollama.svg" alt="Ollama" class="invert-on-light" width="28" height="28" fetchpriority="high" decoding="async" loading="lazy" /></div>
                 <div class="card-title-group">
                   <h2>Claude Code Powered By Ollama</h2>
                   <span class="card-badge">Local Terminal Coding Agent</span>
@@ -2461,7 +2733,7 @@ webView.loadUrl("https://advancedlogiclabs.dpdns.org");</code>
         </article>
 
         <!-- 11. GitHub -->
-        <article class="bento-card" data-category="tools" style="--card-accent: #6e5494;">
+        <article class="bento-card" data-category="tools" style="--card-accent: #a78bfa;">
           <div class="card-accent-bar"></div>
           <div>
             <div class="card-header">
@@ -2831,6 +3103,32 @@ response = requests.post(url, json=payload, headers=headers)</code>
         <p>Try another tool name or reset the category filter.</p>
         <button class="empty-reset" id="emptyReset" type="button">Reset Filters</button>
       </div>
+
+      <section class="mk-section" aria-label="Studio Engineering Timeline">
+        <div class="mk-sec-head">
+          <div>
+            <div class="mk-eyebrow">Milestones</div>
+            <h2 class="mk-sec-title">From Classroom Lab to <em>Global Edge</em>.</h2>
+          </div>
+        </div>
+        <div class="mk-timeline">
+          <article class="tl-card">
+            <div class="tl-year">2024 &middot; ORIGIN</div>
+            <h3>School Lab Prototypes</h3>
+            <p>Started in Mumbai with desktop Python typing drills and orbital physics experiments built between classes on modest school hardware.</p>
+          </article>
+          <article class="tl-card">
+            <div class="tl-year">2025 &middot; EXPANSION</div>
+            <h3>3D Engines &amp; Sneh Asha</h3>
+            <p>Shipped Traffic Driving Academy, Terra3D Atlas, Perceptus Flow hand tracking, and launched Sneh Asha for zero-cost offline learning.</p>
+          </article>
+          <article class="tl-card">
+            <div class="tl-year">2026 &middot; PLATFORM</div>
+            <h3>Unified Ecosystem &amp; Verification</h3>
+            <p>Unified 16 interactive tools with Supabase Auth, Android APK parity, automated SEO/security gates, and clean VisionOS-inspired UI.</p>
+          </article>
+        </div>
+      </section>
 
       <section class="mk-doubt" aria-label="Projects Doubt Solver">
         <div class="mk-doubt-badge">

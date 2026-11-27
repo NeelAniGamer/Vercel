@@ -160,6 +160,7 @@
   </script>
   <script defer src="../col-router.js"></script>
   <link rel="stylesheet" href="../col-ui.css" />
+  <link rel="stylesheet" href="../col-skeleton.css" />
   <link rel="stylesheet" href="traffic-mobile.css" />
   <script defer src="../col-ui.js"></script>
   <script defer src="../col-auth.js"></script>
@@ -171,8 +172,9 @@
   <link rel="stylesheet" href="traffic-charts.css" />
   <link rel="stylesheet" href="welcome-back.css" />
   <link rel="stylesheet" href="animations.css" />
+  <link rel="stylesheet" href="loading-screen.css?v=20261127_v1" />
   <link rel="stylesheet" href="customizer-studio.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" onload="this.onload=null;this.rel='stylesheet'" /><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" /></noscript>
   <style>
     :root {
       --bg: #070a14;
@@ -1869,7 +1871,7 @@
     }
 
     .theory-rich-content li::before {
-      content: '✓';
+      content: 'OK';
       color: var(--signal, #f2b84b);
       font-weight: 800;
       position: absolute;
@@ -4587,7 +4589,7 @@
     }
 
     #kid-steer::after {
-      content: '🎯';
+      content: '';
       font-size: 3rem;
       position: absolute;
       top: 50%;
@@ -4691,7 +4693,7 @@
     }
 
     .kid-locked::after {
-      content: '🔒';
+      content: 'LOCK'; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.06em;
       position: absolute;
       top: 50%;
       left: 50%;
@@ -6595,7 +6597,7 @@
 
   
     /* =================================================================== */
-    /* 🌟 MASTER HUD, POPUP & CIVIC DOCKING STYLING OVERRIDES 🌟 */
+    /*  MASTER HUD, POPUP & CIVIC DOCKING STYLING OVERRIDES  */
     /* =================================================================== */
 
 
@@ -7431,6 +7433,35 @@
 </head>
 
 <body class="lm">
+<div class="loader col-skeleton-screen sk-theme-amber" id="loader" role="status" aria-busy="true" aria-label="Loading Mumbai Traffic Driving Simulator">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+    <div class="sk-road-cockpit" aria-hidden="true">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+      <div style="display:flex;gap:8px;align-items:center;"><div class="sk-pill sk-shimmer-accent" style="width:128px;height:34px;"></div><div class="sk-pill sk-shimmer" style="width:94px;height:34px;"></div><div class="sk-pill sk-shimmer" style="width:82px;height:34px;"></div></div>
+      <div style="display:flex;gap:8px;"><div class="sk-pill sk-shimmer-accent" style="width:88px;height:30px;"></div><div class="sk-pill sk-shimmer" style="width:68px;height:30px;"></div></div>
+    </div>
+    <div class="sk-road-horizon">
+      <div class="sk-road-lane"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;">
+      <div class="sk-circle sk-shimmer" style="width: 108px; height: 108px;"></div>
+      <div style="display:flex;gap:12px;align-items:flex-end;">
+        <div class="sk-circle sk-shimmer-accent" style="width: 58px; height: 58px;"></div>
+        <div class="sk-circle sk-shimmer" style="width: 58px; height: 58px;"></div>
+        <div class="sk-circle sk-shimmer-accent" style="width: 96px; height: 96px;"></div>
+      </div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>Driving 3D</span> &middot; Physics Simulator</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
+
     <h1 class="sr-only">Mumbai Traffic Driving Simulator | Learn Mumbai Traffic Rules</h1>
     <p class="sr-only">Practice Mumbai traffic rules, road signs, intersections, speed limits, pedestrian safety, and traffic law in a guided 3D driving simulator.</p>
   
@@ -7472,7 +7503,7 @@
       <line x1="12" y1="18" x2="12.01" y2="18"></line>
     </svg>
     <h2 style="font-family: var(--sans); font-size: 1.5rem; margin-bottom: 10px;">Rotate For Best View</h2>
-    <p style="font-family: var(--sans); color: var(--dim);">Landscape recommended — tap below to keep playing in portrait.</p>
+    <p style="font-family: var(--sans); color: var(--dim);">Landscape works best; tap below to keep playing in portrait.</p>
     <button onclick="document.getElementById('landscape-enforcer').style.display='none'" style="margin-top:16px;padding:12px 28px;border-radius:12px;border:1px solid var(--signal);background:transparent;color:var(--ink);font-weight:700;cursor:pointer;">Continue In Portrait</button>
   </div>
 
@@ -7506,7 +7537,7 @@
           transition: transform 0.05s ease-out;
           opacity: 0.8;
         "></div>
-    <div style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:0.55rem;color:rgba(255,255,255,0.5);pointer-events:none;white-space:nowrap;font-family:Inter,sans-serif;">👁 LOOK</div>
+    <div style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:0.55rem;color:rgba(255,255,255,0.5);pointer-events:none;white-space:nowrap;font-family:Inter,sans-serif;"> LOOK</div>
   </div>
 
   <!-- ═══════════════════════════════════════════════════════════════ -->
@@ -7538,36 +7569,42 @@
 
   <!-- AI Synthesizer, Mobile Pause & Render Distance HUD Buttons -->
   <div id="hud-ai-synth-btn" onclick="openAISceneSynthesizerModal()" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:calc(env(safe-area-inset-right,0px) + 195px);z-index:10000;padding:6px 14px;background:linear-gradient(135deg,rgba(16,185,129,0.25),rgba(59,130,246,0.25));border:1.5px solid rgba(52,211,153,0.55);border-radius:20px;display:flex;align-items:center;justify-content:center;color:#34d399;font-family:'Inter',sans-serif;font-size:0.75rem;font-weight:700;pointer-events:auto;cursor:pointer;backdrop-filter:blur(8px);user-select:none;-webkit-user-select:none;box-shadow:0 4px 14px rgba(16,185,129,0.3);transition:all 0.2s ease;">
-    ✨ <span style="margin-left:5px;">AI City</span>
+     <span style="margin-left:5px;">AI City</span>
   </div>
   <div id="hud-rd-btn" onclick="cycleGlobalRenderDistance()" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:calc(env(safe-area-inset-right,0px) + 112px);z-index:10000;padding:6px 12px;background:rgba(13,19,31,0.75);border:1.5px solid rgba(94,212,245,0.4);border-radius:20px;display:flex;align-items:center;justify-content:center;color:#5ed4f5;font-family:'Inter',sans-serif;font-size:0.75rem;font-weight:700;pointer-events:auto;cursor:pointer;backdrop-filter:blur(6px);user-select:none;-webkit-user-select:none;box-shadow:0 4px 12px rgba(0,0,0,0.5);">
-    🔭 <span id="hud-rd-text" style="margin-left:4px;">150m</span>
+     <span id="hud-rd-text" style="margin-left:4px;">150m</span>
   </div>
   <div id="mobile-pause-btn" style="position:fixed;top:calc(env(safe-area-inset-top,0px) + 8px);right:calc(env(safe-area-inset-right,0px) + 60px);z-index:10000;width:44px;height:44px;background:rgba(0,0,0,0.4);border:2px solid rgba(255,255,255,0.2);border-radius:50%;display:none;align-items:center;justify-content:center;pointer-events:auto;cursor:pointer;backdrop-filter:blur(4px);">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
   </div>
 
   
-  <div id="loading-screen" style="display:none;">
-    <div class="ls-logo">Mumbai Traffic Hero</div>
-    <h2 id="loading-level-name">Loading...</h2>
-    <div class="ls-level-badge" id="loading-level-badge">🏁 Driving Level</div>
-    <div class="ls-progress-wrap">
-      <div class="ls-progress-header">
-        <div id="loading-status">Initializing assets...</div>
-        <div id="loading-pct">0%</div>
+  <div id="col-loading-screen" style="display:none;" role="status" aria-live="polite">
+    <div class="col-ls-card">
+      <div class="col-ls-brand">
+        <span class="col-ls-logo">Mumbai Traffic Hero</span>
+        <span class="col-ls-badge" id="col-ls-badge">3D Simulator</span>
       </div>
-      <div id="loading-bar-container">
-        <div id="loading-bar"></div>
+      <h2 class="col-ls-title" id="col-ls-title">Preparing City &amp; Physics...</h2>
+      <div class="col-ls-stages" aria-label="Loading stages">
+        <div class="col-ls-stage is-active">Engine</div>
+        <div class="col-ls-stage">3D Assets</div>
+        <div class="col-ls-stage">Map</div>
+        <div class="col-ls-stage">Shaders</div>
+        <div class="col-ls-stage">Ready</div>
       </div>
-    </div>
-    <div class="ls-tips" id="loading-tips"></div>
-    <div class="ls-dots">
-      <div class="ls-dot active"></div>
-      <div class="ls-dot"></div>
-      <div class="ls-dot"></div>
-      <div class="ls-dot"></div>
-      <div class="ls-dot"></div>
+      <div class="col-ls-bar-head">
+        <span id="col-ls-status">Initializing WebGL2 &amp; physics...</span>
+        <span id="col-ls-pct">0%</span>
+      </div>
+      <div class="col-ls-track">
+        <div id="col-ls-fill"></div>
+      </div>
+      <div class="col-ls-tip" id="col-ls-tip"></div>
+      <div class="col-ls-error" id="col-ls-error">
+        <div id="col-ls-error-msg"></div>
+        <button type="button" class="col-ls-retry" id="col-ls-retry">Retry Load</button>
+      </div>
     </div>
   </div>
 
@@ -7577,7 +7614,7 @@
       <div class="lp-hero">
         <div class="lp-hero-level" id="lp-level-num">Level 1</div>
         <div class="lp-hero-diff" id="lp-diff-dots"></div>
-        <div class="lp-hero-icon" id="lp-icon">🚗</div>
+        <div class="lp-hero-icon" id="lp-icon">LEVEL</div>
       </div>
       <div class="lp-body">
         <div class="lp-name" id="lp-name">Level Name</div>
@@ -7607,11 +7644,11 @@
   <div id="gc"><canvas id="3c" style="touch-action:none;"></canvas></div>
   <div id="swipe-look-hint"
     style="position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.6); color:#fff; padding:8px 16px; border-radius:20px; font-size:0.85rem; pointer-events:none; z-index:var(--z-hud); display:none; font-family:Inter,sans-serif; backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.15); transition:opacity 0.5s;">
-    👆 Swipe empty area to look around
+     Swipe empty area to look around
   </div>
   <div id="desktop-camera-hint"
     style="position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.6); color:#fff; padding:8px 16px; border-radius:20px; font-size:0.85rem; pointer-events:none; z-index:var(--z-hud); display:none; font-family:Inter,sans-serif; backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.15); transition:opacity 0.5s;">
-    🖱️ Right-click + drag to look around  •  Click canvas to enter first person
+     Right-click + drag to look around  •  Click canvas to enter first person
   </div>
   
   <!-- ═══════════════════════════════════════════════════════════════ -->
@@ -7679,7 +7716,7 @@
     </div>
     <div id="challan-summary-box" onclick="window.ui && window.ui.openChallanHistoryModal && window.ui.openChallanHistoryModal()">
       <div class="csb-left">
-        <span class="csb-icon">🚨</span>
+        <span class="csb-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>
         <div class="csb-info">
           <span class="csb-title" id="csb-title">E-Challan Notice</span>
           <span class="csb-sub" id="csb-sub">1 Violation (₹500)</span>
@@ -7692,13 +7729,13 @@
   <div id="gyro-calibrate-overlay">
     <div class="gc-ring"></div>
     <div class="gc-title">Hold your phone naturally</div>
-    <div class="gc-sub">Keep it still for a moment — calibrating steering…</div>
+    <div class="gc-sub">Hold the phone still for a moment while steering calibrates…</div>
   </div>
 
   <div id="rotate-device-overlay">
-    <div class="rd-icon">📱</div>
+    <div class="rd-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg></div>
     <div class="rd-title">Turn your phone sideways</div>
-    <div class="rd-sub">Landscape Recommended — Portrait Play Fully Supported</div>
+    <div class="rd-sub">Landscape works best; portrait mode is also supported</div>
     <button id="rotate-continue-btn" style="margin-top:8px;padding:12px 28px;border-radius:12px;border:1px solid #5ed4f5;background:rgba(94,212,245,0.12);color:#fff;font-weight:700;font-size:0.9rem;cursor:pointer;min-height:48px;">Continue In Portrait</button>
   </div>
 
@@ -7726,21 +7763,21 @@
     
     <div id="pause-tab-settings" class="pause-panel" style="display:none; flex-direction:column; gap:16px; width:90%; max-width:320px;">
       <div style="display:flex; flex-direction:column; gap:8px;">
-        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);">🔊 Master Volume</label>
+        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);"> Master Volume</label>
         <div style="display:flex; align-items:center; gap:12px;">
           <input type="range" id="pause-volume" min="0" max="100" value="70" oninput="pauseSetVolume(this.value)" style="flex:1; height:6px; border-radius:3px; background:rgba(255,255,255,0.2); outline:none; -webkit-appearance:none; cursor:pointer;">
           <span id="pause-volume-val" style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:700; color:#fff; min-width:36px; text-align:right;">70%</span>
         </div>
       </div>
       <div style="display:flex; flex-direction:column; gap:8px;">
-        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);">🎯 Controls & Camera Sensitivity</label>
+        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);"> Controls & Camera Sensitivity</label>
         <div style="display:flex; align-items:center; gap:12px;">
           <input type="range" id="pause-sensitivity" min="20" max="200" step="5" value="100" oninput="pauseSetSensitivity(this.value)" style="flex:1; height:6px; border-radius:3px; background:rgba(255,255,255,0.2); outline:none; -webkit-appearance:none; cursor:pointer;">
           <span id="pause-sensitivity-val" style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:700; color:#fff; min-width:36px; text-align:right;">100%</span>
         </div>
       </div>
       <div style="display:flex; flex-direction:column; gap:8px;">
-        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);">🖥️ Graphics Quality</label>
+        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);"> Graphics Quality</label>
         <div id="pause-quality-btns" style="display:flex; gap:4px; background:rgba(255,255,255,0.1); border-radius:8px; padding:4px;">
           <button class="qbtn" data-q="LOW" onclick="pauseSetQuality('LOW')" style="flex:1; font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:600; padding:8px 4px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">Low</button>
           <button class="qbtn" data-q="MED" onclick="pauseSetQuality('MED')" style="flex:1; font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:600; padding:8px 4px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">Med</button>
@@ -7749,7 +7786,7 @@
         </div>
       </div>
       <div style="display:flex; flex-direction:column; gap:8px;">
-        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);">🔭 Render Distance (Active Scene De-load)</label>
+        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);"> Render Distance (Active Scene De-load)</label>
         <div id="pause-render-dist-btns" style="display:flex; gap:4px; background:rgba(255,255,255,0.1); border-radius:8px; padding:4px;">
           <button class="rdbtn" data-rd="80" onclick="pauseSetRenderDistance(80)" style="flex:1; font-family:'Inter',sans-serif; font-size:0.72rem; font-weight:600; padding:8px 2px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">80m</button>
           <button class="rdbtn" data-rd="150" onclick="pauseSetRenderDistance(150)" style="flex:1; font-family:'Inter',sans-serif; font-size:0.72rem; font-weight:600; padding:8px 2px; border:none; border-radius:6px; background:transparent; color:rgba(255,255,255,0.6); cursor:pointer; transition:all 0.2s;">150m</button>
@@ -7758,29 +7795,29 @@
         </div>
       </div>
       <div style="display:flex; flex-direction:column; gap:8px;">
-        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);">🌙 Night Mode</label>
+        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);"> Night Mode</label>
         <div style="display:flex; align-items:center; gap:12px;">
           <button id="pause-night-toggle" onclick="pauseToggleNight()" style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; padding:8px 16px; border:none; border-radius:8px; background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); cursor:pointer; min-height:40px; transition:all 0.2s;">Off</button>
         </div>
       </div>
       <div style="display:flex; flex-direction:column; gap:8px;">
-        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);">📱 Gyroscope</label>
+        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);"> Gyroscope</label>
         <div style="display:flex; align-items:center; gap:12px;">
           <button id="pause-gyro-toggle" onclick="pauseToggleGyro()" style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; padding:8px 16px; border:none; border-radius:8px; background:rgba(255,255,255,0.1); color:rgba(255,255,255,0.7); cursor:pointer; min-height:40px; transition:all 0.2s;">Off</button>
           <button onclick="pauseCalibrateGyro()" style="font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:500; padding:6px 12px; border:none; border-radius:6px; background:rgba(94,212,245,0.2); color:#5ed4f5; cursor:pointer; min-height:36px; transition:all 0.2s;">Calibrate</button>
         </div>
       </div>
       <div style="display:flex; flex-direction:column; gap:8px;">
-        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);">🔊 Ambient Sound</label>
+        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);"> Ambient Sound</label>
         <div style="display:flex; align-items:center; gap:12px;">
           <input type="range" id="pause-amb-volume" min="0" max="100" value="70" oninput="pauseSetAmbVolume(this.value)" style="flex:1; height:6px; border-radius:3px; background:rgba(255,255,255,0.2); outline:none; -webkit-appearance:none; cursor:pointer;">
           <span id="pause-amb-volume-val" style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:700; color:#fff; min-width:36px; text-align:right;">70%</span>
         </div>
       </div>
       <div style="display:flex; flex-direction:column; gap:8px; margin-top:6px;">
-        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);">🎭 Character & Skins</label>
+        <label style="font-family:'Inter',sans-serif; font-size:0.85rem; font-weight:600; color:rgba(255,255,255,0.8);"> Character & Skins</label>
         <button onclick="if(window.openCustomize){ pauseToggle(); window.openCustomize(); }" style="display:flex; align-items:center; justify-content:center; gap:8px; background:linear-gradient(135deg, rgba(242,184,75,0.2) 0%, rgba(94,212,245,0.15) 100%); border:1px solid rgba(242,184,75,0.45); color:#f2b84b; font-family:'Inter',sans-serif; font-size:0.88rem; font-weight:700; padding:12px 16px; border-radius:12px; cursor:pointer; box-shadow:0 4px 14px rgba(242,184,75,0.2); transition:all 0.2s;">
-          ✨ Open Character Studio
+           Open Character Studio
         </button>
       </div>
       <button onclick="pauseTab('main')" style="margin-top:10px; font-family:'Inter',sans-serif; font-size:0.92rem; font-weight:600; padding:10px 20px; border:1px solid rgba(255,255,255,0.25); border-radius:10px; background:rgba(255,255,255,0.1); color:#fff; cursor:pointer; min-height:42px; transition:all 0.2s; width:100%; display:flex; align-items:center; justify-content:center; gap:8px;">
@@ -7807,11 +7844,11 @@
       </div>
       <div style="font-family:'Inter',sans-serif; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:rgba(255,255,255,0.5); margin-top:8px; margin-bottom:4px;">Mobile Controls</div>
       <div style="display:grid; grid-template-columns:auto 1fr; gap:6px 16px; font-family:'Inter',sans-serif; font-size:0.85rem;">
-        <span style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">🛞</span><span style="color:rgba(255,255,255,0.8);">Steering Wheel — Drag to steer</span>
-        <span style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">🟢</span><span style="color:rgba(255,255,255,0.8);">Gas Pedal — Hold to accelerate</span>
-        <span style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">🔴</span><span style="color:rgba(255,255,255,0.8);">Brake Pedal — Hold to brake</span>
-        <span style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">👆</span><span style="color:rgba(255,255,255,0.8);">Screen Drag — Camera look</span>
-        <span style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;">📱</span><span style="color:rgba(255,255,255,0.8);">Shake — Gyro steering</span>
+        <span style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;"></span><span style="color:rgba(255,255,255,0.8);">Steering Wheel — Drag to steer</span>
+        <span style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;"></span><span style="color:rgba(255,255,255,0.8);">Gas Pedal — Hold to accelerate</span>
+        <span style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;"></span><span style="color:rgba(255,255,255,0.8);">Brake Pedal — Hold to brake</span>
+        <span style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;"></span><span style="color:rgba(255,255,255,0.8);">Screen Drag — Camera look</span>
+        <span style="background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px; font-weight:700; color:#fff; text-align:center;"></span><span style="color:rgba(255,255,255,0.8);">Shake — Gyro steering</span>
       </div>
       <button onclick="pauseTab('main')" style="margin-top:14px; font-family:'Inter',sans-serif; font-size:0.92rem; font-weight:600; padding:10px 20px; border:1px solid rgba(255,255,255,0.25); border-radius:10px; background:rgba(255,255,255,0.1); color:#fff; cursor:pointer; min-height:42px; transition:all 0.2s; width:100%; display:flex; align-items:center; justify-content:center; gap:8px;">
         ← Back to Pause Menu
@@ -7850,7 +7887,7 @@
   <div id="hud-settings-sheet" role="dialog" aria-label="Drive Settings">
     <div class="hss-head">
       <span>Drive Settings</span>
-      <button class="hss-close" onclick="window.ui &amp;&amp; window.ui._hudToggleSettings(false)" aria-label="Close">&#10005;</button>
+      <button class="hss-close" onclick="window.ui &amp;&amp; window.ui._hudToggleSettings(false)" aria-label="Close"></button>
     </div>
     <div class="hss-row">
       <div id="btn-mobile" class="civic-btn" onclick="window.game &amp;&amp; window.game.toggleMobile(this)">
@@ -7904,10 +7941,10 @@
     <div id="sind-dist" style="color: var(--muted); font-size: 0.85rem">--m</div>
   </div>
   <div id="dn-clock">
-    <span id="dn-icon">☀️</span>
+    <span id="dn-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2"/></svg></span>
     <span id="dn-time">12:00</span>
   </div>
-  <div id="ow">⚠️ OFF ROAD - Return to road!</div>
+  <div id="ow"> OFF ROAD - Return to road!</div>
 
   <div id="da">
     <div class="da-arrow-icon" id="da-arrow-container">
@@ -7925,7 +7962,7 @@
   </div>
 
   <div id="phone-gps">
-    <button id="phone-gps-close">✕</button>
+    <button id="phone-gps-close" aria-label="Close GPS">Close</button>
     <div id="phone-gps-compass">
       <div id="phone-gps-arrow">
         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#5ed4f5" stroke-width="2.5"
@@ -7943,14 +7980,14 @@
   <div id="cockpit-drive-cluster">
     <div id="speed-ctrl" style="display:flex; flex-direction:column; gap:5px; width:100%; padding:0; background:transparent; border:none; box-shadow:none;">
       <div class="sc-row">
-        <button class="sc-btn" id="sc-cruise">🚢 CRUISE<span class="sc-badge" id="sc-badge-cruise"></span></button>
-        <button class="sc-btn" id="sc-limit">🔒 LIMIT<span class="sc-badge" id="sc-badge-limit"></span></button>
+        <button class="sc-btn" id="sc-cruise"> CRUISE<span class="sc-badge" id="sc-badge-cruise"></span></button>
+        <button class="sc-btn" id="sc-limit"> LIMIT<span class="sc-badge" id="sc-badge-limit"></span></button>
       </div>
       <div class="sc-row">
         <button class="sc-btn sc-adj" id="sc-minus">−</button>
-        <button class="sc-btn" id="sc-eco">🌿 ECO</button>
-        <button class="sc-btn sc-active" id="sc-city">🏙 CITY</button>
-        <button class="sc-btn" id="sc-sport">🏎 SPORT</button>
+        <button class="sc-btn" id="sc-eco"> ECO</button>
+        <button class="sc-btn sc-active" id="sc-city"> CITY</button>
+        <button class="sc-btn" id="sc-sport"> SPORT</button>
         <button class="sc-btn sc-adj" id="sc-plus">+</button>
       </div>
     </div>
@@ -7979,9 +8016,9 @@
       </div>
     </div>
     <div style="display: flex; gap: 16px">
-      <div class="db" id="abb">🛑</div>
-      <div class="db" id="tu">⬆️</div>
-      <div class="db" id="abh">📢</div>
+      <div class="db" id="abb" title="Brake"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><rect x="9" y="9" width="6" height="6"/></svg></div>
+      <div class="db" id="tu" title="Accelerate"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
+      <div class="db" id="abh" title="Horn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></div>
     </div>
   </div>
 
@@ -8001,8 +8038,8 @@
       <div style="background: #b02a37; color: white; padding: 24px 20px; display: flex; align-items: center; gap: 16px">
         <div
           style="background: #fff; color: #b02a37; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.6rem">
-          ⚠️
-        </div>
+          
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
         <div style="text-align: left">
           <div style="font-size: 1.2rem; font-weight: 700">Critical Accident Report</div>
           <div style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.8); margin-top: 2px">Simulation Terminated</div>
@@ -8104,12 +8141,12 @@
     <div class="gta-intro-card">
       <div class="gta-intro-top-row">
         <div class="gta-module-tag" id="gta-intro-module">MODULE 1 • ANDHERI JUNCTION</div>
-        <div class="gta-reward-tag" id="gta-intro-reward">💰 +₹1,500</div>
+        <div class="gta-reward-tag" id="gta-intro-reward"> +₹1,500</div>
       </div>
       <h2 class="gta-mission-title" id="gta-intro-title">MISSION: SIGNAL BASICS</h2>
       
       <div class="gta-dialogue-box">
-        <div class="gta-avatar" id="gta-intro-avatar">👮</div>
+        <div class="gta-avatar" id="gta-intro-avatar" style="font-size:14px;font-weight:800;letter-spacing:.05em">MTP</div>
         <div class="gta-speech">
           <div class="gta-speaker" id="gta-speaker-name">Constable Patil (Traffic Police)</div>
           <div class="gta-line" id="gta-speaker-line">"Solid white line ke peechhe ruk jao. Pedestrians pehle, tum baad mein."</div>
@@ -8119,11 +8156,11 @@
       <div class="gta-objectives-section">
         <div class="gta-obj-heading">MISSION OBJECTIVES</div>
         <div class="gta-obj-item" id="gta-obj-primary-box">
-          <span class="gta-obj-bullet">🎯</span>
+          <span class="gta-obj-bullet"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg></span>
           <span class="gta-obj-text" id="gta-obj-primary">Wait at red light behind stop line. Let all pedestrians cross fully.</span>
         </div>
         <div class="gta-obj-item secondary" id="gta-obj-secondary-box">
-          <span class="gta-obj-bullet">⏱️</span>
+          <span class="gta-obj-bullet"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
           <span class="gta-obj-text" id="gta-obj-secondary">Follow road lanes and traffic signals.</span>
         </div>
       </div>
@@ -8135,7 +8172,7 @@
         <button class="gta-btn-replay" id="gta-btn-replay" type="button"
                 onclick="window.replayStoryIntro && window.replayStoryIntro()"
                 style="display:none;">
-          <span>&#9654;</span> Replay Intro
+          <span>Replay Intro</span>
         </button>
         <button class="gta-btn-start" id="gta-btn-start" onclick="window.dismissGtaMissionIntro()">
           <span>START MISSION</span>
@@ -8159,7 +8196,7 @@
       <div class="fs-legend-item"><div class="fs-legend-dot" style="background:#4caf50"></div> Parks</div>
       <div class="fs-legend-item"><div class="fs-legend-dot" style="background:#1565c0"></div> Bus Stop</div>
     </div>
-    <button id="fs-map-close">✕ CLOSE MAP</button>
+    <button id="fs-map-close">CLOSE MAP</button>
   </div>
 
   <div id="compass-strip" style="
@@ -8171,7 +8208,7 @@
         padding: 6px 16px; color: #fff; font-family: var(--sans, sans-serif);
         font-size: 0.8rem; font-weight: 700; white-space: nowrap;">
     <span id="compass-heading">N</span>
-    <span id="compass-arrow" style="display:inline-block; transition: transform 0.2s;">➤</span>
+    <span id="compass-arrow" style="display:inline-block; transition: transform 0.2s;"></span>
     <span id="compass-dist" style="opacity: 0.7; font-weight: 600;"></span>
   </div>
 
@@ -8328,14 +8365,14 @@
             ui.showBadges()
           "
         style="width: 100%; font-size: 1rem; padding: 12px; margin-bottom: 16px; background: #4a90e2; color: var(--ink); font-weight: 700">
-        🎖️ View Badges
+         View Badges
       </button>
       <button class="btn" onclick="
             document.getElementById('profile-dlg').style.display = 'none'
             ui.showCert()
           "
         style="width: 100%; font-size: 1rem; padding: 12px; margin-bottom: 16px; background: #ffc107; color: #1f3b5e; font-weight: 700">
-        🎓 View Certificate
+         View Certificate
       </button>
 
       <div style="display: flex; gap: 12px">
@@ -8365,7 +8402,7 @@
               font-size: 1.3rem;
               box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
             ">
-          🚨
+          
         </div>
         <div style="text-align: left">
           <div style="font-size: 1.15rem; font-weight: 800; color: #ffffff; letter-spacing: 0.5px">MUMBAI TRAFFIC POLICE</div>
@@ -8387,7 +8424,7 @@
         </div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px">
           <span style="color: #94a3b8; font-weight: 600; font-size: 0.9rem">Location</span>
-          <span style="font-weight: 700; color: #f8fafc; font-size: 0.92rem" id="cloc">📍 Andheri West</span>
+          <span style="font-weight: 700; color: #f8fafc; font-size: 0.92rem" id="cloc"> Andheri West</span>
         </div>
 
         <div style="border-top: 1px dashed rgba(255,255,255,0.15); margin-bottom: 20px"></div>
@@ -8416,9 +8453,9 @@
           style="font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; font-weight: 600">
           Sponsored By</div>
         <div style="display: flex; justify-content: center; gap: 16px; align-items: center">
-          <img loading="lazy" id="cert-logo-1" src="mumbai-police-logo.png" style="height: 24px; opacity: 0.7" />
+          <img loading="lazy" id="cert-logo-1" src="mumbai-police-logo.png" style="height: 24px; opacity: 0.7" decoding="async" />
           <div style="width: 1px; height: 16px; background: #ccc"></div>
-          <img loading="lazy" id="cert-logo-2" src="cert-assets/cert_logo_2.png" style="height: 24px; opacity: 0.7" />
+          <img loading="lazy" id="cert-logo-2" src="cert-assets/cert_logo_2.png" style="height: 24px; opacity: 0.7" decoding="async" />
         </div>
       </div>
     </div>
@@ -8439,7 +8476,7 @@
 
       <button class="nav-login-btn" onclick="
             window.gameDifficulty = window.gameDifficulty === 'Hard' ? 'Easy' : 'Hard'
-            this.innerHTML = window.gameDifficulty === 'Hard' ? '🔴 Hard Mode' : '🟢 Easy Mode'
+            this.textContent = window.gameDifficulty === 'Hard' ? 'Hard Mode' : 'Easy Mode'
           " style="
             background: #fff;
             border: 1px solid var(--border);
@@ -8450,11 +8487,11 @@
             font-size: 0.95rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
           " id="btn-diff">
-        🟢 Easy Mode
+         Easy Mode
       </button>
       <button class="nav-login-btn" onclick="
             window.gameWeather = window.gameWeather === 'Rain' ? 'Clear' : 'Rain'
-            this.innerHTML = window.gameWeather === 'Rain' ? '🌧️ Rain' : '☀️ Clear'
+            this.textContent = window.gameWeather === 'Rain' ? 'Rain' : 'Clear'
           " style="
             background: #fff;
             border: 1px solid var(--border);
@@ -8465,7 +8502,7 @@
             font-size: 0.95rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
           " id="btn-weather">
-        ☀️ Clear
+         Clear
       </button>
       <button class="nav-login-btn" id="btn-rd-start" onclick="cycleGlobalRenderDistance()" style="
             background: #fff;
@@ -8477,7 +8514,7 @@
             font-size: 0.95rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
           ">
-        🔭 Render: 150m
+         Render: 150m
       </button>
 
       <button class="nav-login-btn" id="btn-char-start" onclick="window.openCustomize && window.openCustomize()" style="
@@ -8494,7 +8531,7 @@
             align-items: center;
             gap: 6px;
           ">
-        🎭 Character
+         Character
       </button>
 
       <button class="nav-login-btn" id="btn-garage-start" onclick="window.openCustomize && window.openCustomize()" style="
@@ -8511,7 +8548,7 @@
             align-items: center;
             gap: 6px;
           ">
-        🔧 3D Garage
+         3D Garage
       </button>
 
       <div class="nav-user-profile" id="navUserProfile" data-preserve-click="true" onclick="ui.showProfile()" style="
@@ -8550,7 +8587,7 @@
           <div style="display: flex; align-items: center; gap: 12px">
             <img loading="lazy" id="cert-logo-3" src="mumbai-police-logo.png"
               style="height: 60px; width: auto; object-fit: contain" alt="Mumbai Police"
-              onerror="this.style.display = 'none'" />
+              onerror="this.style.display = 'none'" decoding="async" />
             <div
               style="font-weight: 700; letter-spacing: 0.05em; color: var(--muted); text-align: left; line-height: 1.2">
               MUMBAI<br />TRAFFIC POLICE</div>
@@ -8559,7 +8596,7 @@
           <div style="display: flex; align-items: center; gap: 12px">
             <img loading="lazy" id="cert-logo-4" src="cert-assets/cert_logo_2.png"
               style="height: 60px; width: auto; object-fit: contain" alt="Sneh Asha"
-              onerror="this.style.display = 'none'" />
+              onerror="this.style.display = 'none'" decoding="async" />
             <div
               style="font-weight: 700; letter-spacing: 0.05em; color: var(--muted); text-align: left; line-height: 1.2">
               SNEH ASHA</div>
@@ -8570,7 +8607,7 @@
           Proudly Sponsored By</div>
       </div>
       <div style="text-align: center">
-        <div style="font-size: 6rem; margin-bottom: 20px; text-shadow: 0 12px 24px rgba(0, 0, 0, 0.1)">🚦🏙️🚗</div>
+        <div style="font-size: 6rem; margin-bottom: 20px; text-shadow: 0 12px 24px rgba(0, 0, 0, 0.1)"></div>
         <div class="st" style="text-align: center">Mumbai Traffic Hero Academy — Loading Level...</div>
         <div class="su" style="max-width: 700px; margin-left: auto; margin-right: auto; text-align: center">
           Welcome to the premier driving simulation! Complete 15 rigorous real-world scenarios designed by the Mumbai
@@ -8585,7 +8622,7 @@
           <button class="btn btn-g mobile-dl"
             style="border-color: var(--signal); color: var(--signal); font-size: 1.1rem; padding: 12px 32px"
             onclick="window.location.href = '../COL.apk'">
-            📱 Download Android App
+             Download Android App
           </button>
         </div>
       </div>
@@ -8604,15 +8641,15 @@
       <div style="display: flex; gap: 12px; align-items: center">
         <button class="btn btn-g" onclick="openAISceneSynthesizerModal()"
           style="padding: 8px 18px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px; background: linear-gradient(135deg, rgba(16,185,129,0.25), rgba(59,130,246,0.25)); border: 1.5px solid rgba(52,211,153,0.55); color: #34d399; font-weight: 700;">
-          ✨ AI City Synthesizer
+           AI City Synthesizer
         </button>
         <button class="btn btn-g" onclick="ui.showProfile()"
           style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap">
-          👤 Profile
+           Profile
         </button>
         <div id="pchip" class="btn btn-g"
           style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap">
-          0/52 ✅
+          0/52 
         </div>
       </div>
     </div>
@@ -8632,7 +8669,7 @@
       <div style="display: flex; gap: 12px; align-items: center">
         <button class="btn btn-g" onclick="ui.showProfile()"
           style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px">
-          👤 Profile
+           Profile
         </button>
         <div class="btn"
           style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px"
@@ -8664,7 +8701,7 @@
       </button>
       <button class="btn btn-g" onclick="ui.showProfile()"
         style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px">
-        👤 Profile
+         Profile
       </button>
     </div>
     <div class="qw">
@@ -8683,7 +8720,7 @@
       <div class="rcard" id="rcard"></div>
       <div class="bdx" id="rbdg"></div>
       <div class="rbts">
-        <button class="btn btn-g" onclick="ui.showProfile()">👤 Profile</button>
+        <button class="btn btn-g" onclick="ui.showProfile()"> Profile</button>
         <button class="btn btn-g" onclick="ui.showLevels()">Modules</button>
         <button class="btn btn-p" id="rnxt" onclick="ui.goNext()">Next Module →</button>
       </div>
@@ -8702,7 +8739,7 @@
       <h2 style="font-size: 1.4rem; margin: 0">Driver Profile</h2>
       <button class="btn btn-g" onclick="ui.showProfile()"
         style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px">
-        👤 Profile
+         Profile
       </button>
     </div>
     <div class="lw">
@@ -8726,11 +8763,11 @@
       <div style="display: flex; gap: 12px; align-items: center">
         <button class="btn btn-g" onclick="ui.showProfile()"
           style="padding: 8px 20px; font-size: 0.95rem; white-space: nowrap; display: flex; align-items: center; justify-content: center; gap: 6px">
-          👤 Profile
+           Profile
         </button>
         <button class="btn btn-p" id="cdownload" onclick="ui.dlCert()"
           style="padding: 8px 20px; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; gap: 6px">
-          📥 Download PDF
+           Download PDF
         </button>
       </div>
     </div>
@@ -8745,9 +8782,9 @@
                 Partnered With</div>
             </div>
             <img loading="lazy" id="cert-logo-5" src="mumbai-police-logo.png" style="height: 75px; object-fit: contain"
-              alt="Logo 1" onerror="this.style.display = 'none'" />
+              alt="Logo 1" onerror="this.style.display = 'none'" decoding="async" />
             <img loading="lazy" id="cert-logo-6" src="cert-assets/cert_logo_2.png" style="height: 75px; object-fit: contain"
-              alt="Logo 2" onerror="this.style.display = 'none'" />
+              alt="Logo 2" onerror="this.style.display = 'none'" decoding="async" />
           </div>
         </div>
 
@@ -8760,8 +8797,8 @@
         <div class="crt-body" id="cert-doc-text" style="margin-top: 32px">This document certifies that</div>
         <div class="crt-course" id="cname">DRIVER</div>
         <div class="crt-body" style="margin-bottom: 60px">
-          has successfully completed the comprehensive traffic regulations and virtual operations training program,
-          demonstrating mastery across 15 real-world compliance scenarios.
+          has completed the Traffic Academy road regulations and virtual driving program,
+          showing mastery across 15 practical road compliance scenarios.
         </div>
 
         <div
@@ -8883,11 +8920,18 @@
       }, 500);
     })();
   </script>
+  <script defer src="icons.js"></script>
+  <script defer src="loading-screen.js?v=20261127_v1"></script>
+  <script defer src="units-bridge.js?v=20261127_v1"></script>
+  <script defer src="run-director.js?v=20261127_v1"></script>
+  <script defer src="map-loader.js?v=20261127_v1"></script>
+  <script defer src="graphics-shaders.js?v=20261127_v1"></script>
   <script defer src="pools.js?v=20260831_v9"></script>
   <script defer src="road-graph.js?v=20260831_v9"></script>
   <script defer src="render_core.js?v=20260831_v9"></script>
   <script defer src="safezone-ui.js?v=20260831_v9"></script>
-  <script defer src="world-streamer.js?v=20260831_v9"></script>
+  <script defer src="optimization.js?v=20261127_v1"></script>
+  <script defer src="world-streamer.optimized.js?v=20261127_v1"></script>
   <script defer src="mission-manager.js?v=20260831_v9"></script>
   <script defer src="gameplay-recorder.js?v=20260831_v9"></script>
   <script defer src="task-manager.js?v=20260831_v9"></script>
@@ -8934,17 +8978,17 @@
   <div id="kid-pedals">
     <div class="kid-btn go-btn" id="kid-go-btn">▶</div>
     <div class="kid-btn stop-btn" id="kid-stop-btn">■</div>
-    <div class="kid-btn horn-btn" id="kid-horn-btn">📢</div>
+    <div class="kid-btn horn-btn" id="kid-horn-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg></div>
   </div>
   <div id="kid-indicators">
     <div class="kid-btn kid-left-btn" id="kid-left-btn">◀</div>
     <div class="kid-btn kid-right-btn" id="kid-right-btn">▶</div>
-    <div class="kid-btn kid-headlight-btn" id="kid-headlight-btn">💡</div>
+    <div class="kid-btn kid-headlight-btn" id="kid-headlight-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></div>
   </div>
   <div id="kid-hearts"></div>
   <div id="kid-level-name"></div>
   <div id="kid-task-bar">
-    <div class="task-emoji" id="kid-task-emoji">🚗</div>
+    <div class="task-emoji" id="kid-task-emoji" style="font-size:0.85rem;font-weight:800">TASK</div>
     <div class="task-text" id="kid-task-text">Driving...</div>
     <div class="task-progress" id="kid-task-progress"></div>
   </div>
@@ -8955,33 +8999,33 @@
     <div class="go-text">GO!</div>
   </div>
   <div id="kid-tutorial">
-    <div class="tut-emoji" id="kid-tut-emoji">🚗</div>
+    <div class="tut-emoji" id="kid-tut-emoji" style="font-size:0.95rem;font-weight:800">GUIDE</div>
     <div class="tut-text" id="kid-tut-text">Turn the wheel to drive!</div>
-    <div class="tut-arrow" id="kid-tut-arrow" style="display:none">👉</div>
-    <button class="kid-btn tut-ok" id="kid-tut-ok" onclick="window._kidDismissTutorial()">OK! 👍</button>
+    <div class="tut-arrow" id="kid-tut-arrow" style="display:none"></div>
+    <button class="kid-btn tut-ok" id="kid-tut-ok" onclick="window._kidDismissTutorial()">OK! </button>
   </div>
-  <div id="kid-hand">👆</div>
+  <div id="kid-hand" style="font-size:0.85rem;font-weight:800">TAP</div>
   <div id="kid-intro">
     <div class="intro-level" id="kid-intro-level">Level 1</div>
-    <div class="intro-emoji" id="kid-intro-emoji">🚗</div>
+    <div class="intro-emoji" id="kid-intro-emoji" style="font-size:1rem;font-weight:800">READY</div>
     <div class="intro-text" id="kid-intro-text">Let's learn to drive!</div>
     <div class="intro-progress" id="kid-intro-dots"></div>
   </div>
   <div id="kid-celebrate">
-    <div class="cel-stars" id="kid-cel-stars">⭐⭐⭐</div>
+    <div class="cel-stars" id="kid-cel-stars">3 / 3 STARS</div>
     <div class="cel-text" id="kid-cel-text">Amazing!</div>
     <div class="cel-sub" id="kid-cel-sub">You did it!</div>
-    <button class="kid-btn cel-ok" id="kid-cel-ok" onclick="window._kidDismissCelebrate()">Next Level! 🚀</button>
+    <button class="kid-btn cel-ok" id="kid-cel-ok" onclick="window._kidDismissCelebrate()">Next Level! </button>
   </div>
   <div id="kid-crash">
-    <div class="crash-emoji">😮</div>
+    <div class="crash-emoji"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
     <div class="crash-text">Oops!</div>
     <div class="crash-sub" id="kid-crash-sub">Be careful next time!</div>
-    <button class="kid-btn crash-retry" onclick="window._kidRetry()">Try Again! 💪</button>
-    <button class="kid-btn crash-home" onclick="window._kidGoHome()">Home 🏠</button>
+    <button class="kid-btn crash-retry" onclick="window._kidRetry()">Try Again! </button>
+    <button class="kid-btn crash-home" onclick="window._kidGoHome()">Home </button>
   </div>
-  <div id="kid-offroad">⚠️ Stay on the road!</div>
-  <div id="kid-unlock-toast">🆕 New control unlocked!</div>
+  <div id="kid-offroad"> Stay on the road!</div>
+  <div id="kid-unlock-toast"> New control unlocked!</div>
 
   <script>
     
@@ -9031,7 +9075,7 @@
 
 
       document.querySelectorAll('#ss .pls .btn-p').forEach(btn => {
-        btn.textContent = '🎮 PLAY!';
+        btn.textContent = ' PLAY!';
       });
 
 
@@ -9193,7 +9237,7 @@
         const full = Math.round(pct * count);
         let html = '';
         for (let i = 0; i < count; i++) {
-          html += i < full ? '❤️' : '🖤';
+          html += i < full ? '' : '';
         }
         hearts.innerHTML = html;
       };
@@ -9201,7 +9245,7 @@
 
       window._kidUpdateLevelName = function (name) {
         const el = $('kid-level-name');
-        if (el) el.textContent = '🏁 ' + name;
+        if (el) el.textContent = ' ' + name;
       };
 
 
@@ -9215,7 +9259,7 @@
         var total = 5;
         var filled = Math.round((progress / 100) * total);
         for (var i = 0; i < total; i++) {
-          stars += '<span class="star ' + (i < filled ? 'filled' : '') + '">⭐</span>';
+          stars += '<span class="star ' + (i < filled ? 'filled' : '') + '"></span>';
         }
         const progEl = $('kid-task-progress');
         if (progEl) progEl.innerHTML = stars;
@@ -9224,16 +9268,16 @@
 
       window._kidShowTutorial = function (emoji, text, arrowDir, targetBtnId) {
         const emoEl = $('kid-tut-emoji');
-        if (emoEl) emoEl.textContent = emoji || '🚗';
+        if (emoEl) emoEl.textContent = emoji || '';
         const txtEl = $('kid-tut-text');
         if (txtEl) txtEl.textContent = text || 'Turn the wheel to drive!';
         const arrow = $('kid-tut-arrow');
         if (arrow) {
           if (arrowDir === 'left') {
-            arrow.textContent = '👈';
+            arrow.textContent = '';
             arrow.style.display = 'block';
           } else if (arrowDir === 'right') {
-            arrow.textContent = '👉';
+            arrow.textContent = '';
             arrow.style.display = 'block';
           } else {
             arrow.style.display = 'none';
@@ -9263,10 +9307,10 @@
 
 
       var _introSteps = [
-        { emoji: '🖐️', text: 'Use left and right buttons to steer!' },
-        { emoji: '⛽', text: 'Press the green pedal to go!' },
-        { emoji: '🛑', text: 'Press red to stop — you\'ll need it!' },
-        { emoji: '🏁', text: 'Follow checkpoints to the finish!' }
+        { emoji: 'SPARKLES', text: 'Use left and right buttons to steer!' },
+        { emoji: 'SPARKLES', text: 'Press the green pedal to go!' },
+        { emoji: 'ALERT', text: 'Press red to stop — you\'ll need it!' },
+        { emoji: 'FLAG', text: 'Follow checkpoints to the finish!' }
       ];
 
       window._kidShowIntro = function (lvNum, lvName, isFirstPlay, cb) {
@@ -9281,7 +9325,7 @@
           var maxSteps = tier === 'child' ? 2 : tier === 'teen' ? 3 : _introSteps.length;
           var steps = _introSteps.slice(0, maxSteps);
           var step = 0;
-          introLevel.textContent = 'Welcome! 🎉';
+          introLevel.textContent = 'Welcome! ';
           dots.innerHTML = '';
           for (var d = 0; d < steps.length; d++) {
             var dot = document.createElement('div');
@@ -9306,7 +9350,7 @@
         } else {
 
           introLevel.textContent = 'Level ' + lvNum;
-          introEmoji.textContent = lvNum <= 3 ? '🚗' : lvNum <= 6 ? '🚦' : lvNum <= 9 ? '🏙️' : '🌙';
+          introEmoji.textContent = 'LVL ' + lvNum;
           introText.textContent = lvName || 'Let\'s go!';
           dots.innerHTML = '';
           intro.style.display = 'flex';
@@ -9320,7 +9364,7 @@
 
 
       window._kidShowCelebrate = function (stars, text, sub) {
-        $('kid-cel-stars').textContent = stars || '⭐⭐⭐';
+        $('kid-cel-stars').textContent = stars || '';
         $('kid-cel-text').textContent = text || 'Amazing!';
         $('kid-cel-sub').textContent = sub || 'You did it!';
         $('kid-celebrate').style.display = 'flex';
@@ -9449,7 +9493,7 @@
               const overlays = document.querySelectorAll('div[style*="z-index:9998"]');
               overlays.forEach(el => el.remove());
 
-              window._kidShowCelebrate('⭐⭐⭐', 'Amazing!', 'You did it!');
+              window._kidShowCelebrate('3 / 3 Stars', 'Amazing!', 'You did it!');
             }, 100);
           } else {
             _kidOrigComplete();
@@ -9487,7 +9531,7 @@
                 setTimeout(function () {
                   var firstTask = window.game.tasks && window.game.tasks.find(function (t) { return !t.done; });
                   if (firstTask) {
-                    window._kidShowTutorial('🖐️', 'Tap the arrows to steer!', 'right', 'kid-steer');
+                    window._kidShowTutorial('STEER', 'Tap the arrows to steer!', 'right', 'kid-steer');
                     setTimeout(function () { window._kidDismissTutorial(); }, 4000);
                   }
                 }, 300);
@@ -9495,10 +9539,10 @@
                 const tutStage = parseInt(localStorage.getItem('kid_tutorial_stage') || '1', 10);
                 if (lvNum >= 2 && lvNum <= 5 && lvNum > tutStage) {
                   const tips = {
-                    2: { emoji: '💡', text: 'Use Q/E for turn signals!', dir: 'left', target: 'kid-left-btn' },
-                    3: { emoji: '💡', text: 'Press H for high beam!', dir: 'right', target: 'kid-headlight-btn' },
-                    4: { emoji: '💡', text: 'Press P to park & earn points!', dir: 'right', target: 'kid-stop-btn' },
-                    5: { emoji: '💡', text: 'Follow the GPS arrows!', dir: 'right', target: null },
+                    2: { emoji: 'TIP', text: 'Use Q/E for turn signals!', dir: 'left', target: 'kid-left-btn' },
+                    3: { emoji: 'TIP', text: 'Press H for high beam!', dir: 'right', target: 'kid-headlight-btn' },
+                    4: { emoji: 'TIP', text: 'Press P to park & earn points!', dir: 'right', target: 'kid-stop-btn' },
+                    5: { emoji: 'TIP', text: 'Follow the GPS arrows!', dir: 'right', target: null },
                   };
                   const tip = tips[lvNum];
                   if (tip) {
@@ -9540,9 +9584,9 @@
             else if (lvNum > 6) curTier = 3;
             else if (lvNum > 3) curTier = 2;
             if (curTier > prevTier && prevTier > 0) {
-              const unlockMsgs = { 2: '🆕 Brake unlocked!', 3: '🆕 Horn unlocked!', 4: '🆕 Indicators & lights unlocked!' };
+              const unlockMsgs = { 2: ' Brake unlocked!', 3: ' Horn unlocked!', 4: ' Indicators & lights unlocked!' };
               const toast = $('kid-unlock-toast');
-              toast.textContent = unlockMsgs[curTier] || '🆕 New control!';
+              toast.textContent = unlockMsgs[curTier] || ' New control!';
               toast.style.display = 'block';
               setTimeout(() => { toast.style.display = 'none'; }, 3000);
             }
@@ -9557,16 +9601,16 @@
               if (headBtn) headBtn.classList.remove('kid-locked');
             }
             const taskMap = {
-              'stop': { 'red_light': ['🚦', 'Wait for green light!', 'kid-stop-btn'], 'stationary': ['🛑', 'Stop the car!', 'kid-stop-btn'], 'walking_speed': ['🐢', 'Drive slowly!', 'kid-go-btn'], 'parking_zone': ['🅿️', 'Park here!', 'kid-go-btn'], 'parking_spot': ['🅿️', 'Park here!', 'kid-go-btn'] },
-              'reach': { 'destination': ['🏁', 'Drive to the end!', 'kid-go-btn'], 'green_light': ['🟢', 'Go when green!', 'kid-go-btn'], 'parking_spot': ['🅿️', 'Find parking!', 'kid-go-btn'], 'market_zone': ['🏪', 'Go to market!', 'kid-go-btn'], 'left_side': ['👈', 'Move left!', 'kid-steer'], 'left_lane': ['👈', 'Use left lane!', 'kid-steer'], 'main_road': ['🛣️', 'Get on main road!', 'kid-go-btn'], 'forward_space': ['⬆️', 'Keep going!', 'kid-go-btn'], 'away_gate': ['🚪', 'Drive to exit!', 'kid-go-btn'] },
-              'avoid': { 'honk': ['🤫', 'No honking!', ''], 'speed_zone': ['🐢', 'Drive slowly!', 'kid-go-btn'], 'speed_night': ['🌙', 'Slow at night!', 'kid-go-btn'], 'speed_puddle': ['💧', 'Avoid puddles!', 'kid-steer'], 'speed_hospital': ['🏥', 'Slow near hospital!', 'kid-go-btn'], 'pedestrian': ['🚶', 'Watch for people!', ''], 'collision': ['🚗', 'Don\'t crash!', ''], 'ambulance': ['🚑', 'Let ambulance pass!', ''] },
-              'toggle': { 'seatbelt': ['🔒', 'Buckle up!', ''], 'indicator': ['➡️', 'Use indicator!', 'kid-left-btn'], 'headlights': ['💡', 'Turn on lights!', 'kid-headlight-btn'], 'hazards': ['⚠️', 'Turn on hazard lights!', 'kid-left-btn'] }
+              'stop': { 'red_light': ['', 'Wait for green light!', 'kid-stop-btn'], 'stationary': ['', 'Stop the car!', 'kid-stop-btn'], 'walking_speed': ['', 'Drive slowly!', 'kid-go-btn'], 'parking_zone': ['', 'Park here!', 'kid-go-btn'], 'parking_spot': ['', 'Park here!', 'kid-go-btn'] },
+              'reach': { 'destination': ['', 'Drive to the end!', 'kid-go-btn'], 'green_light': ['', 'Go when green!', 'kid-go-btn'], 'parking_spot': ['', 'Find parking!', 'kid-go-btn'], 'market_zone': ['', 'Go to market!', 'kid-go-btn'], 'left_side': ['', 'Move left!', 'kid-steer'], 'left_lane': ['', 'Use left lane!', 'kid-steer'], 'main_road': ['', 'Get on main road!', 'kid-go-btn'], 'forward_space': ['', 'Keep going!', 'kid-go-btn'], 'away_gate': ['', 'Drive to exit!', 'kid-go-btn'] },
+              'avoid': { 'honk': ['', 'No honking!', ''], 'speed_zone': ['', 'Drive slowly!', 'kid-go-btn'], 'speed_night': ['', 'Slow at night!', 'kid-go-btn'], 'speed_puddle': ['', 'Avoid puddles!', 'kid-steer'], 'speed_hospital': ['', 'Slow near hospital!', 'kid-go-btn'], 'pedestrian': ['', 'Watch for people!', ''], 'collision': ['', 'Don\'t crash!', ''], 'ambulance': ['', 'Let ambulance pass!', ''] },
+              'toggle': { 'seatbelt': ['', 'Buckle up!', ''], 'indicator': ['', 'Use indicator!', 'kid-left-btn'], 'headlights': ['', 'Turn on lights!', 'kid-headlight-btn'], 'hazards': ['', 'Turn on hazard lights!', 'kid-left-btn'] }
             };
             const firstTask = window.game.tasks && window.game.tasks.find(t => !t.done);
 
             if (firstTask && !(isFirstPlay && lvNum === 1)) {
               const tm = taskMap[firstTask.type] && taskMap[firstTask.type][firstTask.target];
-              const emoji = tm ? tm[0] : '🚗';
+              const emoji = tm ? tm[0] : '';
               const text = tm ? tm[1] : firstTask.text;
               const btnId = tm ? tm[2] : '';
               window._kidShowTutorial(emoji, text, '', btnId);
@@ -9598,7 +9642,7 @@
                 var tm = taskMap[next.type] && taskMap[next.type][next.target];
                 window._kidUpdateTask(tm ? tm[1] : next.text, pct, tm ? tm[0] : null);
               } else {
-                window._kidUpdateTask('All done!', 100, '🎉');
+                window._kidUpdateTask('All done!', 100, '');
               }
             };
 
@@ -9816,7 +9860,7 @@
         b.style.fontWeight = isActive ? '700' : '600';
       });
       const startBtn = document.getElementById('btn-rd-start');
-      if (startBtn) startBtn.innerHTML = '🔭 Render: ' + d + 'm';
+      if (startBtn) startBtn.innerHTML = ' Render: ' + d + 'm';
       const hudText = document.getElementById('hud-rd-text');
       if (hudText) hudText.textContent = d + 'm';
       if (window.game && window.game.setRenderDistance) {
@@ -9994,18 +10038,18 @@
           <h2 class="studio-title">Character & Skins Studio</h2>
         </div>
         <div class="studio-header-actions">
-          <button class="studio-close-btn" onclick="document.getElementById('customize-modal').style.display='none'" title="Close Studio">✕</button>
+          <button class="studio-close-btn" onclick="document.getElementById('customize-modal').style.display='none'" title="Close Studio"></button>
         </div>
       </div>
 
       <!-- Mode Switcher (Stylized 3D vs Minecraft) -->
       <div class="studio-mode-switcher">
         <button id="mode-stylized" class="studio-mode-btn active" onclick="window._setCharMode('stylized')">
-          <span class="mode-btn-icon">👤</span>
+          <span class="mode-btn-icon"></span>
           <span class="mode-btn-text">3D Stylized Hero</span>
         </button>
         <button id="mode-minecraft" class="studio-mode-btn mc-mode" onclick="window._setCharMode('minecraft')">
-          <span class="mode-btn-icon">🟩</span>
+          <span class="mode-btn-icon"></span>
           <span class="mode-btn-text">Minecraft Character</span>
         </button>
       </div>
@@ -10017,8 +10061,8 @@
           <div class="studio-canvas-wrap">
             <canvas id="customize-preview" width="340" height="460"></canvas>
             <div style="position:absolute; top:10px; right:10px; display:flex; gap:6px; z-index:10;">
-              <button id="studio-autorotate-btn" class="studio-icon-btn" onclick="window._toggleAutoRotatePreview()" style="background:rgba(0,0,0,0.65); backdrop-filter:blur(6px); border-radius:10px; padding:4px 8px; font-size:0.72rem; color:#fff; border:1px solid rgba(255,255,255,0.15);" title="Toggle 360° Auto Rotation">🔄 Spin</button>
-              <button class="studio-icon-btn" onclick="window._resetPreviewRotation()" style="background:rgba(0,0,0,0.65); backdrop-filter:blur(6px); border-radius:10px; padding:4px 8px; font-size:0.72rem; color:#fff; border:1px solid rgba(255,255,255,0.15);" title="Reset to Front Angle">🎯 Front</button>
+              <button id="studio-autorotate-btn" class="studio-icon-btn" onclick="window._toggleAutoRotatePreview()" style="background:rgba(0,0,0,0.65); backdrop-filter:blur(6px); border-radius:10px; padding:4px 8px; font-size:0.72rem; color:#fff; border:1px solid rgba(255,255,255,0.15);" title="Toggle 360° Auto Rotation"> Spin</button>
+              <button class="studio-icon-btn" onclick="window._resetPreviewRotation()" style="background:rgba(0,0,0,0.65); backdrop-filter:blur(6px); border-radius:10px; padding:4px 8px; font-size:0.72rem; color:#fff; border:1px solid rgba(255,255,255,0.15);" title="Reset to Front Angle"> Front</button>
             </div>
             <div class="studio-hint-pill">Drag to Rotate 360°</div>
           </div>
@@ -10029,10 +10073,10 @@
             <div class="studio-controls-row">
               <span class="studio-controls-label">Camera</span>
               <div class="studio-btn-group">
-                <button id="cam-full" class="studio-icon-btn active" onclick="window._setStudioCamera('full')" title="Full Body View">🧍 Full</button>
-                <button id="cam-face" class="studio-icon-btn" onclick="window._setStudioCamera('face')" title="Close-Up Face View">👤 Face</button>
-                <button id="cam-outfit" class="studio-icon-btn" onclick="window._setStudioCamera('outfit')" title="Outfit Focus">👕 Top</button>
-                <button id="cam-shoes" class="studio-icon-btn" onclick="window._setStudioCamera('shoes')" title="Kicks View">👟 Shoes</button>
+                <button id="cam-full" class="studio-icon-btn active" onclick="window._setStudioCamera('full')" title="Full Body View"> Full</button>
+                <button id="cam-face" class="studio-icon-btn" onclick="window._setStudioCamera('face')" title="Close-Up Face View"> Face</button>
+                <button id="cam-outfit" class="studio-icon-btn" onclick="window._setStudioCamera('outfit')" title="Outfit Focus"> Top</button>
+                <button id="cam-shoes" class="studio-icon-btn" onclick="window._setStudioCamera('shoes')" title="Kicks View"> Shoes</button>
               </div>
             </div>
 
@@ -10040,11 +10084,11 @@
             <div class="studio-controls-row">
               <span class="studio-controls-label">Pose</span>
               <div class="studio-btn-group">
-                <button id="pose-idle" class="studio-icon-btn active" onclick="window._setStudioPose('idle')" title="Natural Idle">🧍 Idle</button>
-                <button id="pose-walk" class="studio-icon-btn" onclick="window._setStudioPose('walk')" title="Dynamic Walk Cycle">🚶 Walk</button>
-                <button id="pose-wave" class="studio-icon-btn" onclick="window._setStudioPose('wave')" title="Friendly Wave">👋 Wave</button>
-                <button id="pose-thumbs" class="studio-icon-btn" onclick="window._setStudioPose('thumbs_up')" title="Thumbs Up">👍 Thumbs</button>
-                <button id="pose-victory" class="studio-icon-btn" onclick="window._setStudioPose('victory')" title="Victory Cheers">🏆 Victory</button>
+                <button id="pose-idle" class="studio-icon-btn active" onclick="window._setStudioPose('idle')" title="Natural Idle"> Idle</button>
+                <button id="pose-walk" class="studio-icon-btn" onclick="window._setStudioPose('walk')" title="Dynamic Walk Cycle"> Walk</button>
+                <button id="pose-wave" class="studio-icon-btn" onclick="window._setStudioPose('wave')" title="Friendly Wave"> Wave</button>
+                <button id="pose-thumbs" class="studio-icon-btn" onclick="window._setStudioPose('thumbs_up')" title="Thumbs Up"> Thumbs</button>
+                <button id="pose-victory" class="studio-icon-btn" onclick="window._setStudioPose('victory')" title="Victory Cheers"> Victory</button>
               </div>
             </div>
 
@@ -10052,9 +10096,9 @@
             <div class="studio-controls-row">
               <span class="studio-controls-label">Light</span>
               <div class="studio-btn-group">
-                <button id="light-studio" class="studio-icon-btn active" onclick="window._setStudioLighting('studio')" title="Clean Studio 3-Point Light">💡 Studio</button>
-                <button id="light-neon" class="studio-icon-btn" onclick="window._setStudioLighting('neon')" title="Cyberpunk Neon Cyan/Magenta">⚡ Neon</button>
-                <button id="light-sunset" class="studio-icon-btn" onclick="window._setStudioLighting('sunset')" title="Golden Hour Sunset">🌅 Sunset</button>
+                <button id="light-studio" class="studio-icon-btn active" onclick="window._setStudioLighting('studio')" title="Clean Studio 3-Point Light"> Studio</button>
+                <button id="light-neon" class="studio-icon-btn" onclick="window._setStudioLighting('neon')" title="Cyberpunk Neon Cyan/Magenta"> Neon</button>
+                <button id="light-sunset" class="studio-icon-btn" onclick="window._setStudioLighting('sunset')" title="Golden Hour Sunset"> Sunset</button>
               </div>
             </div>
           </div>
@@ -10064,26 +10108,26 @@
         <div class="studio-customization-deck">
           <!-- 1. STYLIZED 3D CHARACTER CONTROLS -->
           <div id="stylized-tabs-bar" class="studio-tabs-bar">
-            <button class="studio-tab active" data-tab="identity" onclick="window._switchStudioTab('identity')">🎭 Identity</button>
-            <button class="studio-tab" data-tab="hair" onclick="window._switchStudioTab('hair')">💇 Hair & Face</button>
-            <button class="studio-tab" data-tab="outfit" onclick="window._switchStudioTab('outfit')">👕 Outfits</button>
-            <button class="studio-tab" data-tab="colors" onclick="window._switchStudioTab('colors')">🎨 Color Palette</button>
-            <button class="studio-tab" data-tab="gear" onclick="window._switchStudioTab('gear')">🎒 Gear & Acc</button>
+            <button class="studio-tab active" data-tab="identity" onclick="window._switchStudioTab('identity')"> Identity</button>
+            <button class="studio-tab" data-tab="hair" onclick="window._switchStudioTab('hair')"> Hair & Face</button>
+            <button class="studio-tab" data-tab="outfit" onclick="window._switchStudioTab('outfit')"> Outfits</button>
+            <button class="studio-tab" data-tab="colors" onclick="window._switchStudioTab('colors')"> Color Palette</button>
+            <button class="studio-tab" data-tab="gear" onclick="window._switchStudioTab('gear')"> Gear & Acc</button>
           </div>
 
           <div id="stylized-panels-container">
             <!-- Identity Tab -->
             <div id="panel-identity" class="studio-panel active">
               <div class="studio-section">
-                <div class="studio-section-title">🌟 3D Character Models (Sample Avatars)</div>
+                <div class="studio-section-title"> 3D Character Models (Sample Avatars)</div>
                 <div id="sample-models-grid" class="studio-grid-2"></div>
               </div>
 
               <div class="studio-section">
                 <div class="studio-section-title">Gender & Frame</div>
                 <div style="display:flex; gap:10px;">
-                  <button id="gender-male" class="studio-icon-btn active" style="flex:1; padding:10px; font-weight:700;" onclick="window._setGender('male')">👨 Male</button>
-                  <button id="gender-female" class="studio-icon-btn" style="flex:1; padding:10px; font-weight:700;" onclick="window._setGender('female')">👩 Female</button>
+                  <button id="gender-male" class="studio-icon-btn active" style="flex:1; padding:10px; font-weight:700;" onclick="window._setGender('male')"> Male</button>
+                  <button id="gender-female" class="studio-icon-btn" style="flex:1; padding:10px; font-weight:700;" onclick="window._setGender('female')"> Female</button>
                 </div>
               </div>
 
@@ -10173,9 +10217,9 @@
 
           <!-- 2. MINECRAFT CHARACTER CONTROLS -->
           <div id="mc-tabs-bar" class="studio-tabs-bar" style="display:none;">
-            <button class="studio-tab active" data-mctab="presets" onclick="window._switchMCTab('presets')">📦 Default Skins</button>
-            <button class="studio-tab" data-mctab="upload" onclick="window._switchMCTab('upload')">📤 Custom Upload</button>
-            <button class="studio-tab" data-mctab="library" onclick="window._switchMCTab('library')">💾 My Library</button>
+            <button class="studio-tab active" data-mctab="presets" onclick="window._switchMCTab('presets')"> Default Skins</button>
+            <button class="studio-tab" data-mctab="upload" onclick="window._switchMCTab('upload')"> Custom Upload</button>
+            <button class="studio-tab" data-mctab="library" onclick="window._switchMCTab('library')"> My Library</button>
           </div>
 
           <div id="mc-panels-container" style="display:none;">
@@ -10200,13 +10244,13 @@
               <div class="studio-section">
                 <div class="studio-section-title">Upload Minecraft PNG Skin</div>
                 <div class="skin-upload-dropzone" onclick="document.getElementById('mc-skin-file-input').click()">
-                  <div style="font-size:2.5rem; margin-bottom:8px;">📁</div>
+                  <div style="font-size:2.5rem; margin-bottom:8px;"></div>
                   <div style="font-weight:700; color:#fff; margin-bottom:4px;">Click or Drag & Drop Skin File</div>
                   <div style="font-size:0.75rem; color:var(--muted);">Standard 64x64 or 64x32 PNG file</div>
                   <input type="file" id="mc-skin-file-input" accept="image/png" style="display:none;" onchange="window._handleSkinFileUpload(event)" />
                 </div>
                 <div style="font-size:0.8rem; color:rgba(255,255,255,0.6); line-height:1.5; margin-top:12px;">
-                  💡 <strong>Supports all Minecraft skins:</strong> Dual outer jacket/hat/armor layers, transparency, and automatic conversion of legacy 64x32 skins.
+                   <strong>Supports all Minecraft skins:</strong> Dual outer jacket/hat/armor layers, transparency, and automatic conversion of legacy 64x32 skins.
                 </div>
               </div>
             </div>
@@ -10222,9 +10266,9 @@
 
           <!-- Studio Footer Action Deck -->
           <div class="studio-actions-footer">
-            <button class="studio-action-btn secondary" onclick="window._randomizeCustomize()">🎲 Randomize</button>
-            <button class="studio-action-btn secondary" onclick="window._resetCustomizeDefault()">🔄 Reset</button>
-            <button class="studio-action-btn primary" onclick="window._saveCustomize()">✨ Save & Equip</button>
+            <button class="studio-action-btn secondary" onclick="window._randomizeCustomize()"> Randomize</button>
+            <button class="studio-action-btn secondary" onclick="window._resetCustomizeDefault()"> Reset</button>
+            <button class="studio-action-btn primary" onclick="window._saveCustomize()"> Save & Equip</button>
           </div>
         </div>
       </div>
@@ -10356,7 +10400,7 @@
         const rewardEl = document.getElementById('gta-intro-reward');
         if (rewardEl) {
           const rAmt = m?.rewards?.wallet || m?.reward || 1500;
-          rewardEl.textContent = `💰 +₹${rAmt.toLocaleString()}`;
+          rewardEl.textContent = `+₹${rAmt.toLocaleString()}`;
         }
 
         const avatarEl = document.getElementById('gta-intro-avatar');
@@ -10367,16 +10411,16 @@
           if (modEl) modEl.textContent = 'MUMBAI 4000';
           if (speakerEl) speakerEl.textContent = 'Insp. Arjun Kadam';
           if (lineEl) lineEl.textContent = story.briefing || '"Drive safely and follow Mumbai traffic regulations."';
-          if (avatarEl) avatarEl.textContent = '👮';
+          if (avatarEl) avatarEl.textContent = 'MTP';
         } else if (m?.characterDialogue && m.characterDialogue.length > 0) {
           const d0 = m.characterDialogue[0];
           if (speakerEl) speakerEl.textContent = d0.speaker;
           if (lineEl) lineEl.textContent = d0.line;
-          if (avatarEl) avatarEl.textContent = d0.speaker.includes('Police') || d0.speaker.includes('Patil') ? '👮' : d0.speaker.includes('Dada') ? '👴' : d0.speaker.includes('Ambulance') ? '🚑' : '🚗';
+          if (avatarEl) avatarEl.textContent = d0.speaker.includes('Police') || d0.speaker.includes('Patil') ? 'MTP' : d0.speaker.includes('Dada') ? 'CIV' : d0.speaker.includes('Ambulance') ? 'EMS' : 'DRV';
         } else {
           if (speakerEl) speakerEl.textContent = 'Constable Patil (Traffic Control)';
           if (lineEl) lineEl.textContent = m?.storyBeat || m?.briefing || '"Drive safely and follow Mumbai traffic regulations."';
-          if (avatarEl) avatarEl.textContent = '👮';
+          if (avatarEl) avatarEl.textContent = 'MTP';
         }
 
         const pObjEl = document.getElementById('gta-obj-primary');
@@ -10423,7 +10467,7 @@
           window.game._camTransition = 2.2;
           window.game._camSnapped = true;
           if (window.game.isPedestrian && typeof toast === 'function') {
-            toast('🎯 MISSION 1 // Head to your vehicle in the garage and press [F] to enter', '#ffd54a', 4500);
+            toast(' MISSION 1 // Head to your vehicle in the garage and press [F] to enter', '#ffd54a', 4500);
           }
         }
       } catch (eG) {}
@@ -10523,7 +10567,7 @@
           hud.id = 'syllabus-hud';
           hud.style.cssText = 'position:fixed;top:70px;left:16px;z-index:9999;background:rgba(0,0,0,0.8);padding:12px 16px;border-radius:12px;border:1px solid var(--border);font-size:0.8rem;color:var(--text);max-width:280px;';
           hud.innerHTML = `
-            <div style="font-weight:700;color:var(--signal);margin-bottom:8px;">📚 Syllabus Test Active</div>
+            <div style="font-weight:700;color:var(--signal);margin-bottom:8px;"> Syllabus Test Active</div>
             <div id="syl-track-violations" style="color:#ef4444;">Violations: 0</div>
             <div id="syl-track-correct" style="color:#34d399;">Correct: 0</div>
             <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:0.7rem;color:var(--muted);">
@@ -10568,13 +10612,13 @@
     <div class="chm-dialog">
       <div class="chm-header">
         <div class="chm-header-left">
-          <span style="font-size:1.3rem;">🚨</span>
+          <span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>
           <div>
             <div class="chm-title">Traffic Violation Record</div>
             <div style="font-size:0.72rem; color:rgba(255,255,255,0.8);">Official E-Challan History (Mumbai Traffic Police)</div>
           </div>
         </div>
-        <button class="chm-close-btn" onclick="window.ui && window.ui.closeChallanHistoryModal && window.ui.closeChallanHistoryModal()">✕</button>
+        <button class="chm-close-btn" onclick="window.ui && window.ui.closeChallanHistoryModal && window.ui.closeChallanHistoryModal()"></button>
       </div>
       <div class="chm-body" id="chm-list">
         <div class="chm-empty">No violations recorded yet. Keep driving safely!</div>
@@ -10592,23 +10636,23 @@
     <div class="aism-dialog">
       <div class="aism-header">
         <div class="aism-header-left">
-          <span style="font-size:1.4rem;">✨</span>
+          <span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
           <div>
             <div class="aism-title">AI Scene Synthesizer & Spatial Architect</div>
             <div class="aism-subtitle">Autonomous 3D spatial placement & curriculum syllabus solver</div>
           </div>
         </div>
-        <button class="aism-close-btn" onclick="closeAISceneSynthesizerModal()">✕</button>
+        <button class="aism-close-btn" onclick="closeAISceneSynthesizerModal()" aria-label="Close">Close</button>
       </div>
       <div class="aism-body">
         
         <!-- 1. Archetype Grid -->
         <div>
-          <div class="aism-section-title">🏙️ 1. Select City Archetype</div>
+          <div class="aism-section-title"> 1. Select City Archetype</div>
           <div class="aism-archetypes-grid" id="aism-archetypes-list">
             <div class="aism-card selected" data-archetype="downtown" onclick="selectAIArchetype('downtown')">
               <div class="aism-card-head">
-                <span class="aism-card-icon">🏙️</span>
+                <span class="aism-card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="18" x="3" y="4" rx="1"/><rect width="8" height="12" x="13" y="10" rx="1"/></svg></span>
                 <span class="aism-card-name">Downtown Core</span>
               </div>
               <div class="aism-card-desc">High-density skyline, 4-lane boulevards, cantilever traffic signals, and bus transit.</div>
@@ -10616,7 +10660,7 @@
 
             <div class="aism-card" data-archetype="coastal" onclick="selectAIArchetype('coastal')">
               <div class="aism-card-head">
-                <span class="aism-card-icon">🌊</span>
+                <span class="aism-card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg></span>
                 <span class="aism-card-name">Marine Drive</span>
               </div>
               <div class="aism-card-desc">6-lane coastal expressway, sea breeze lighting, high-speed cruise, Sea Link toll finish.</div>
@@ -10624,7 +10668,7 @@
 
             <div class="aism-card" data-archetype="suburban" onclick="selectAIArchetype('suburban')">
               <div class="aism-card-head">
-                <span class="aism-card-icon">🏫</span>
+                <span class="aism-card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
                 <span class="aism-card-name">Bandra Suburban</span>
               </div>
               <div class="aism-card-desc">Calm residential streets, St. Xavier school zone, 25 km/h strict speed governor.</div>
@@ -10632,7 +10676,7 @@
 
             <div class="aism-card" data-archetype="monsoon" onclick="selectAIArchetype('monsoon')">
               <div class="aism-card-head">
-                <span class="aism-card-icon">🌧️</span>
+                <span class="aism-card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M16 14v6M8 14v6M12 16v6"/></svg></span>
                 <span class="aism-card-name">Monsoon Night</span>
               </div>
               <div class="aism-card-desc">Wet asphalt puddles, reduced tire grip, night fog, and high-beam discipline.</div>
@@ -10640,7 +10684,7 @@
 
             <div class="aism-card" data-archetype="bazaar" onclick="selectAIArchetype('bazaar')">
               <div class="aism-card-head">
-                <span class="aism-card-icon">🛍️</span>
+                <span class="aism-card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" x2="21" y1="6" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
                 <span class="aism-card-name">Old Town Bazaar</span>
               </div>
               <div class="aism-card-desc">Narrow heritage alleys, pedestrian density, stray cattle, and horn avoidance.</div>
@@ -10648,7 +10692,7 @@
 
             <div class="aism-card" data-archetype="infinite" onclick="selectAIArchetype('infinite')">
               <div class="aism-card-head">
-                <span class="aism-card-icon">🎲</span>
+                <span class="aism-card-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span>
                 <span class="aism-card-name">Infinite Seeded</span>
               </div>
               <div class="aism-card-desc">Algorithmic procedural seed combining multi-grid intersections and dynamic curriculum demands.</div>
@@ -10658,43 +10702,43 @@
 
         <!-- 2. Vehicle Selection -->
         <div>
-          <div class="aism-section-title">🚗 2. Vehicle Selection</div>
+          <div class="aism-section-title"> 2. Vehicle Selection</div>
           <div class="aism-pills" id="aism-vehicle-pills">
-            <div class="aism-pill selected" data-veh="car" onclick="selectAIVehicle('car')">🚗 Car</div>
-            <div class="aism-pill" data-veh="bike" onclick="selectAIVehicle('bike')">🏍️ Motorcycle</div>
-            <div class="aism-pill" data-veh="auto" onclick="selectAIVehicle('auto')">🛺 Auto Rickshaw</div>
-            <div class="aism-pill" data-veh="bus" onclick="selectAIVehicle('bus')">🚌 City Bus</div>
-            <div class="aism-pill" data-veh="lambo" onclick="selectAIVehicle('lambo')">🏎️ Supercar</div>
-            <div class="aism-pill" data-veh="taxi" onclick="selectAIVehicle('taxi')">🚕 Kaali Peeli</div>
+            <div class="aism-pill selected" data-veh="car" onclick="selectAIVehicle('car')"> Car</div>
+            <div class="aism-pill" data-veh="bike" onclick="selectAIVehicle('bike')"> Motorcycle</div>
+            <div class="aism-pill" data-veh="auto" onclick="selectAIVehicle('auto')"> Auto Rickshaw</div>
+            <div class="aism-pill" data-veh="bus" onclick="selectAIVehicle('bus')"> City Bus</div>
+            <div class="aism-pill" data-veh="lambo" onclick="selectAIVehicle('lambo')"> Supercar</div>
+            <div class="aism-pill" data-veh="taxi" onclick="selectAIVehicle('taxi')"> Kaali Peeli</div>
           </div>
         </div>
 
         <!-- 3. Syllabus & Environment Demands -->
         <div>
-          <div class="aism-section-title">🎯 3. Dynamic Syllabus Demands & Climate</div>
+          <div class="aism-section-title"> 3. Dynamic Syllabus Demands & Climate</div>
           <div class="aism-toggles">
             <div class="aism-toggle-item" id="toggle-rain" onclick="toggleAIOption('rain')">
-              <span class="aism-toggle-label">🌧️ Rain / Wet Asphalt</span>
+              <span class="aism-toggle-label"> Rain / Wet Asphalt</span>
               <div class="aism-toggle-switch"></div>
             </div>
             <div class="aism-toggle-item" id="toggle-night" onclick="toggleAIOption('night')">
-              <span class="aism-toggle-label">🌙 Night Time</span>
+              <span class="aism-toggle-label"> Night Time</span>
               <div class="aism-toggle-switch"></div>
             </div>
             <div class="aism-toggle-item active" id="toggle-school" onclick="toggleAIOption('school')">
-              <span class="aism-toggle-label">🏫 School Zone (25 km/h)</span>
+              <span class="aism-toggle-label"> School Zone (25 km/h)</span>
               <div class="aism-toggle-switch"></div>
             </div>
             <div class="aism-toggle-item active" id="toggle-ambulance" onclick="toggleAIOption('ambulance')">
-              <span class="aism-toggle-label">🚑 Emergency Priority</span>
+              <span class="aism-toggle-label"> Emergency Priority</span>
               <div class="aism-toggle-switch"></div>
             </div>
             <div class="aism-toggle-item active" id="toggle-animals" onclick="toggleAIOption('animals')">
-              <span class="aism-toggle-label">🐄 Cattle Obstacles</span>
+              <span class="aism-toggle-label"> Cattle Obstacles</span>
               <div class="aism-toggle-switch"></div>
             </div>
             <div class="aism-toggle-item active" id="toggle-copilot" onclick="toggleAIOption('copilot')">
-              <span class="aism-toggle-label">🎙️ AI Audio Co-Pilot</span>
+              <span class="aism-toggle-label"> AI Audio Co-Pilot</span>
               <div class="aism-toggle-switch"></div>
             </div>
           </div>
@@ -10703,13 +10747,13 @@
       </div>
       <div class="aism-footer">
         <div class="aism-badge">
-          <span>⚡</span>
+          <span></span>
           <span>Zero-Collision Spatial Setbacks • Live Syllabus Evaluator</span>
         </div>
         <div style="display:flex; gap:10px; align-items:center;">
           <button class="chm-dismiss-btn" style="background:#334155;" onclick="closeAISceneSynthesizerModal()">Cancel</button>
           <button class="aism-launch-btn" onclick="launchSynthesizedScene()">
-            <span>🚀 Synthesize & Drive</span>
+            <span> Synthesize & Drive</span>
           </button>
         </div>
       </div>

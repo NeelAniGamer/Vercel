@@ -49,7 +49,7 @@
     <link rel="icon" type="image/png" href="Icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" onload="this.onload=null;this.rel='stylesheet'" /><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" /></noscript>
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
   <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <link rel="stylesheet" href="liquid-glass.css" />
@@ -409,9 +409,12 @@
       /* Auth Overlay */
       #auth-overlay {
         position: fixed;
-        inset: 0;
+        top: 64px;
+        right: 0;
+        bottom: 0;
+        left: 0;
         background: var(--void);
-        z-index: 2000;
+        z-index: 900;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -500,7 +503,7 @@
         --lineb: rgba(0, 0, 0, 0.18);
         --ink: #0f172a;
         --dim: #475569;
-        --signal: #b8720a;
+        --signal: #92400e;
         --ion: #0e72a0;
         --teal: #0a8c7a;
         --plasma: #6f4fe0;
@@ -522,7 +525,7 @@
       }
       body.lm .user-role-badge {
         background: rgba(184, 114, 10, 0.12) !important;
-        color: #b8720a !important;
+        color: #92400e !important;
       }
       body.lm .dash-tab {
         color: #475569 !important;
@@ -544,7 +547,7 @@
         color: #0f172a !important;
       }
       body.lm .trophy-card.unlocked {
-        border-color: #b8720a !important;
+        border-color: #92400e !important;
         background: #ffffff !important;
       }
       body.lm .trophy-card.unlocked:hover {
@@ -557,7 +560,7 @@
         color: #475569 !important;
       }
       body.lm .btn-share {
-        background: #b8720a !important;
+        background: #92400e !important;
         color: #ffffff !important;
       }
       body.lm .btn-share:hover {
@@ -704,7 +707,7 @@
       <div class="auth-card">
         <h2 style="font-family: var(--serif);">Dashboard Locked</h2>
         <p>Please authenticate your account to access your dashboard.</p>
-        <button class="btn-share" onclick="window.location.href='/Traffic/TrafficSetup.html'">Sign In Now</button>
+        <button class="btn-share" onclick="if(window.openGlobalLogin)window.openGlobalLogin();else if(window.openLogin)window.openLogin();else window.location.href='/Traffic/Academy.html?signin=1'">Sign In Now</button>
       </div>
     </div>
 
@@ -827,52 +830,28 @@
         const overlay = document.getElementById('auth-overlay');
         const ui = document.getElementById('dashboard-ui');
 
-        if (!window.colUser && window.ColUserData) {
-          const u = window.ColUserData.getUser();
-          if (u && (u.name || u.username)) {
-            window.colUser = {
-              id: u.id || ('local_' + (u.username || u.name).replace(/[^a-zA-Z0-9_]/g, '')),
-              name: u.name || u.username,
-              email: u.email || (u.username ? (u.username.replace('@','') + '@local.col') : 'local@col.io'),
-              username: u.username || ('@' + (u.name || 'user').toLowerCase().replace(/\\s+/g, '')),
-              picture: u.picture || null,
-              isLocal: !!u.isLocal,
-              user_metadata: {
-                full_name: u.name || u.username,
-                name: u.name || u.username,
-                role: u.role || 'student',
-                preferred_vehicle: u.vehicle || 'Car'
-              }
-            };
-          }
-        }
-        if (!window.colUser && window.colGetActiveLocalUser) {
-          window.colUser = window.colGetActiveLocalUser();
-        } else if (!window.colUser) {
+        // Strictly require a live verified Supabase session (never allow localStorage/cookie spoofing)
+        let verifiedUser = null;
+        if (window.supabaseClient && window.supabaseClient.auth) {
           try {
-            const raw = localStorage.getItem('col_active_local_user') || localStorage.getItem('traffic_local_user');
-            if (raw) {
-              const u = JSON.parse(raw);
-              if (u && (u.name || u.username)) {
-                window.colUser = {
-                  id: u.id || ('local_' + (u.username || u.name).replace(/[^a-zA-Z0-9_]/g, '')),
-                  name: u.name || u.username,
-                  email: u.email || (u.username ? (u.username.replace('@','') + '@local.col') : 'local@col.io'),
-                  username: u.username || ('@' + (u.name || 'user').toLowerCase().replace(/\s+/g, '')),
-                  isLocal: true,
-                  user_metadata: {
-                    full_name: u.name || u.username,
-                    name: u.name || u.username,
-                    role: u.role || 'student',
-                    preferred_vehicle: u.vehicle || 'Car'
-                  }
-                };
-              }
+            const { data } = await window.supabaseClient.auth.getSession();
+            if (data && data.session && data.session.user) {
+              const su = data.session.user;
+              const meta = su.user_metadata || {};
+              verifiedUser = {
+                id: su.id,
+                email: su.email || '',
+                name: meta.full_name || meta.name || (su.email ? su.email.split('@')[0] : 'User'),
+                picture: meta.avatar_url || meta.picture || null,
+                user_metadata: meta
+              };
+              window.colUser = verifiedUser;
             }
-          } catch (e) {}
+          } catch (_e) {}
         }
 
-        if (!window.colUser) {
+        if (!verifiedUser) {
+          window.colUser = null;
           overlay.style.display = 'flex';
           ui.style.display = 'none';
           return;
@@ -881,21 +860,18 @@
         overlay.style.display = 'none';
         ui.style.display = 'block';
 
-        document.getElementById('user-name').textContent = window.colUser.name || 'User';
-        document.getElementById('user-email').textContent = window.colUser.email ? window.colUser.email.toLowerCase() : (window.colUser.username || '');
+        document.getElementById('user-name').textContent = verifiedUser.name || 'User';
+        document.getElementById('user-email').textContent = verifiedUser.email ? verifiedUser.email.toLowerCase() : '';
         
-        const role = window.colUser.user_metadata?.role || 'student';
+        const role = verifiedUser.user_metadata?.role || 'student';
         const roleBadge = document.getElementById('user-role-badge');
         roleBadge.textContent = role === 'parent_teacher' ? 'Parent / Teacher' : role.charAt(0).toUpperCase() + role.slice(1);
-        if (window.colUser.isLocal) {
-          roleBadge.textContent += ' • Local Account';
-        }
         
         const av = document.getElementById('user-avatar');
-        if (window.colUser.picture) {
-          av.innerHTML = `<img src="${window.colUser.picture}" alt="User Avatar" style="width:100%; height:100%; object-fit:cover;">`;
+        if (verifiedUser.picture) {
+          av.innerHTML = `<img src="${verifiedUser.picture}" alt="User Avatar" style="width:100%; height:100%; object-fit:cover;" loading="lazy" decoding="async">`;
         } else {
-          av.textContent = (window.colUser.name || 'U').charAt(0).toUpperCase();
+          av.textContent = (verifiedUser.name || 'U').charAt(0).toUpperCase();
         }
 
         if (role === 'parent' || role === 'teacher' || role === 'parent_teacher') {
@@ -1139,7 +1115,7 @@
             <td class="lb-rank">${idx + 1}</td>
             <td>
               <div class="lb-user">
-                <div class="lb-avatar">${entry.avatar_url ? `<img src="${entry.avatar_url}" alt="Leaderboard Player Avatar" style="width:100%; height:100%; object-fit:cover;">` : ''}</div>
+                <div class="lb-avatar">${entry.avatar_url ? `<img src="${entry.avatar_url}" alt="Leaderboard Player Avatar" style="width:100%; height:100%; object-fit:cover;" loading="lazy" decoding="async">` : ''}</div>
                 <span>${entry.username || entry.name || entry.full_name || 'Anonymous'}</span>
               </div>
             </td>

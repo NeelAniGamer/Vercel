@@ -17,7 +17,7 @@
       name: 'Technology',
       colorKey: 'ion',       // indigo/cyan
       count: 7,
-      icon: '⚡',
+      icon: 'TECH',
       systems: ['AI/ML', 'Cybersecurity', 'Cloud/DevOps', 'Data Science', 'Web3', 'Quantum', 'Robotics']
     },
     {
@@ -25,7 +25,7 @@
       name: 'Sustainability',
       colorKey: 'em',        // green
       count: 3,
-      icon: '🌿',
+      icon: 'ECO',
       systems: ['Climate Tech', 'AgriTech', 'Ocean Science']
     },
     {
@@ -33,7 +33,7 @@
       name: 'Human Sciences',
       colorKey: 'plasma',    // pink/purple
       count: 4,
-      icon: '💜',
+      icon: 'BIO',
       systems: ['Biotech', 'Neuroscience/BCI', 'Digital Health', 'Psychology']
     },
     {
@@ -41,7 +41,7 @@
       name: 'Business',
       colorKey: 'signal',    // gold/amber
       count: 2,
-      icon: '📊',
+      icon: 'BIZ',
       systems: ['Strategy', 'Finance']
     },
     {
@@ -49,7 +49,7 @@
       name: 'Creative',
       colorKey: 'teal',      // cyan/teal
       count: 2,
-      icon: '🎨',
+      icon: 'ART',
       systems: ['Design', 'Media Arts']
     }
   ]

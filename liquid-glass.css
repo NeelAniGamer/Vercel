@@ -1135,13 +1135,13 @@ body.light-mode .tag {
   color: #0f172a !important;
 }
 
-body.lm .vp-card-cyan .vp-badge, body.light-mode .vp-card-cyan .vp-badge { color: #0284c7 !important; border-color: rgba(2, 132, 199, 0.25) !important; }
-body.lm .vp-card-gold .vp-badge, body.light-mode .vp-card-gold .vp-badge { color: #b45309 !important; border-color: rgba(217, 119, 6, 0.25) !important; }
-body.lm .vp-card-emerald .vp-badge, body.light-mode .vp-card-emerald .vp-badge { color: #059669 !important; border-color: rgba(5, 150, 105, 0.25) !important; }
+body.lm .vp-card-cyan .vp-badge, body.light-mode .vp-card-cyan .vp-badge { color: #0369a1 !important; border-color: rgba(3, 105, 161, 0.25) !important; }
+body.lm .vp-card-gold .vp-badge, body.light-mode .vp-card-gold .vp-badge { color: #92400e !important; border-color: rgba(180, 83, 9, 0.25) !important; }
+body.lm .vp-card-emerald .vp-badge, body.light-mode .vp-card-emerald .vp-badge { color: #047857 !important; border-color: rgba(4, 120, 87, 0.25) !important; }
 
-body.lm .vp-card-cyan .vp-icon-box, body.light-mode .vp-card-cyan .vp-icon-box { color: #0284c7 !important; background: rgba(2, 132, 199, 0.1) !important; border-color: rgba(2, 132, 199, 0.28) !important; }
-body.lm .vp-card-gold .vp-icon-box, body.light-mode .vp-card-gold .vp-icon-box { color: #b45309 !important; background: rgba(217, 119, 6, 0.1) !important; border-color: rgba(217, 119, 6, 0.28) !important; }
-body.lm .vp-card-emerald .vp-icon-box, body.light-mode .vp-card-emerald .vp-icon-box { color: #059669 !important; background: rgba(5, 150, 105, 0.1) !important; border-color: rgba(5, 150, 105, 0.28) !important; }
+body.lm .vp-card-cyan .vp-icon-box, body.light-mode .vp-card-cyan .vp-icon-box { color: #0369a1 !important; background: rgba(3, 105, 161, 0.1) !important; border-color: rgba(3, 105, 161, 0.28) !important; }
+body.lm .vp-card-gold .vp-icon-box, body.light-mode .vp-card-gold .vp-icon-box { color: #92400e !important; background: rgba(180, 83, 9, 0.1) !important; border-color: rgba(180, 83, 9, 0.28) !important; }
+body.lm .vp-card-emerald .vp-icon-box, body.light-mode .vp-card-emerald .vp-icon-box { color: #047857 !important; background: rgba(4, 120, 87, 0.1) !important; border-color: rgba(4, 120, 87, 0.28) !important; }
 
 body.lm .arch-metric-display,
 body.light-mode .arch-metric-display {
@@ -1165,10 +1165,11 @@ body.lm .visit-btn,
 body.light-mode .btn-p,
 body.light-mode .nav-dl-btn,
 body.light-mode .visit-btn {
-  background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+  background: linear-gradient(135deg, #b45309 0%, #92400e 100%) !important;
+  background-color: #b45309 !important;
   border: 1px solid rgba(255, 255, 255, 0.5) !important;
   border-top-color: rgba(255, 255, 255, 0.85) !important;
-  box-shadow: 0 10px 28px rgba(217, 119, 6, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.75) !important;
+  box-shadow: 0 10px 28px rgba(180, 83, 9, 0.32), inset 0 1px 1px rgba(255, 255, 255, 0.65) !important;
   color: #ffffff !important;
 }
 

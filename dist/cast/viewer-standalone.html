@@ -9,11 +9,11 @@
   Usage:  viewer-standalone.html?server=https://example.com/cast&room=living-room
   It polls your Flask relay (relay-server/server.py):
       GET {server}/api/rooms/{room}/frame
-  No build step, no dependencies except a font. <img> polling needs
+  No build step, no dependencies except a font. <img decoding="async"> polling needs
   no CORS headers, so the relay works as-is.
 -->
 <link rel="stylesheet" href="../col-skeleton.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" onload="this.onload=null;this.rel='stylesheet'" /><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" /></noscript>
 <style>
   :root { --bg:#0F1118; --teal:#00BFA5; --dim:#9AA0A6; }
   * { margin:0; padding:0; box-sizing:border-box; }

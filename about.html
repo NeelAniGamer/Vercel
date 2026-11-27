@@ -2093,11 +2093,11 @@
       --lineb: rgba(0, 0, 0, 0.16) !important;
       --ink: #0f172a !important;
       --dim: #475569 !important;
-      --signal: #b8720a !important;
-      --ion: #0e72a0 !important;
-      --teal: #0a8c7a !important;
-      --plasma: #6f4fe0 !important;
-      --em: #1b9d66 !important;
+      --signal: #92400e !important;
+      --ion: #0369a1 !important;
+      --teal: #0f766e !important;
+      --plasma: #6d28d9 !important;
+      --em: #047857 !important;
       --nav: rgba(251, 250, 245, 0.88) !important;
     }
 
@@ -2111,18 +2111,18 @@
 
     body.lm .hey,
     body.lm .sey {
-      color: #b8720a !important;
+      color: #92400e !important;
     }
 
     body.lm .hey::before,
     body.lm .sey::before {
-      background: #b8720a !important;
+      background: #92400e !important;
     }
 
     body.lm .hero-badge {
       background: rgba(184, 114, 10, 0.08) !important;
       border-color: rgba(184, 114, 10, 0.25) !important;
-      color: #b8720a !important;
+      color: #92400e !important;
     }
 
     body.lm .tm,
@@ -2176,15 +2176,18 @@
     }
 
     body.lm .team-tab-btn.act {
-      background: #b8720a;
+      background: #92400e;
       color: #ffffff;
-      border-color: #b8720a;
+      border-color: #92400e;
     }
 
     body.lm .team-tab-btn.act .tab-count {
-      background: rgba(255, 255, 255, 0.25);
-      color: #ffffff;
+      background: rgba(0, 0, 0, 0.25);
+      color: #ffffff !important;
     }
+    body.lm .team-tab-btn .tab-count { color: #0f172a !important; background: rgba(15, 23, 42, 0.12) !important; }
+    body.lm .tm-role, body.lm .mentor-role, body.lm .tl-date, body.lm .fc-link { color: #92400e !important; }
+    body.lm .bhc-badge { color: #047857 !important; }
 
     body.lm .tag,
     body.lm .tm-proj-pill,
@@ -2244,7 +2247,10 @@
       border-color: rgba(0, 0, 0, 0.08) !important;
       background: transparent !important;
     }
-  </style>
+  
+body.lm .hero-btn-primary, body.lm .hero-btn-primary span, body.lm .mentor-avatar, body.lm .doubt-submit, body.lm .doubt-ask, body.lm .doubt-ask span { color: #ffffff !important; }
+body.lm .hero-btn-secondary { color: #0f172a !important; }
+    </style>
   <script defer src="col-router.js"></script>
   <script defer src="col-nav.js"></script>
   <script defer src="col-ui.js"></script>
@@ -2323,7 +2329,7 @@
         <a href="making" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>Making</a>
         <div class="dropdown" id="projDD">
           <button class="dropdown-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>Projects <span class="darr">&#9660;</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>Projects 
           </button>
           <div class="dropdown-content">
             <div class="dropdown-content-inner">
@@ -2450,7 +2456,7 @@
             <h3 class="tm-name">Neel Badri</h3>
             <div class="tm-role">Co‑Founder &middot; Systems Architecture &amp; Core Algorithms</div>
             <a href="mailto:neelgbadri@col.dpdns.org" class="tm-email-badge" style="display:inline-flex; align-items:center; gap:5px; font-size:0.75rem; color:var(--signal); text-decoration:none; margin-top:4px; font-weight:600; opacity:0.9;" title="Direct Contact: neelgbadri@col.dpdns.org">
-              <span>✉️</span> <span>neelgbadri@col.dpdns.org</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> <span>neelgbadri@col.dpdns.org</span>
             </a>
           </div>
         </div>

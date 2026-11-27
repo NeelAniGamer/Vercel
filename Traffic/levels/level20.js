@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 20,
-  icon: '🧘',
+  icon: 'sparkles',
   name: 'Lesson 20 - Temple & Prayer Zone',
   modes: ['car', 'bike'],
   col: '#2ecc71',
@@ -16,7 +16,7 @@ window.LVS.push({
     offHi: 'धार्मिक स्थल के पास हॉर्न बजाना'
   },
   theory:
-    '<h2>Temple & Prayer Zone</h2><p>Aarti ho rahi hai aur temple ke saamne log jama ho gaye hain. Ek gaay seedha road ke beech mein baith gayi hai — peaceful hai, kuch nahi kar rahi. Aur peeche waali gaadiyan honk kar rahi hain — bilkul galat!</p><p>Temple ke paas prayer ke waqt honk karna sirf illegal nahi hai — yeh bahut disrespectful hai. Log prayer kar rahe hain, unki awaaz todo mat!</p><h3>🧘 Kya karna hai?</h3><ul><li>Gaay road pe baithi hai — patience rakho, hil jaayegi!</li><li>Peeche waali gaadiyan honk kar rahi hain — tum mat karo!</li><li>Temple ke paas se slowly aur silently guzar jao.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Temple ke paas honk karna MV Act Section 118 aur Religious Place Rules ke under illegal hai — ₹2000 se ₹5000 tak ka fine!</p>',
+    '<h2>Temple & Prayer Zone</h2><p>Aarti ho rahi hai aur temple ke saamne log jama ho gaye hain. Ek gaay seedha road ke beech mein baith gayi hai — peaceful hai, kuch nahi kar rahi. Aur peeche waali gaadiyan honk kar rahi hain — bilkul galat!</p><p>Temple ke paas prayer ke waqt honk karna sirf illegal nahi hai — yeh bahut disrespectful hai. Log prayer kar rahe hain, unki awaaz todo mat!</p><h3> Kya karna hai?</h3><ul><li>Gaay road pe baithi hai — patience rakho, hil jaayegi!</li><li>Peeche waali gaadiyan honk kar rahi hain — tum mat karo!</li><li>Temple ke paas se slowly aur silently guzar jao.</li></ul><h3> Kanoon kya kehta hai?</h3><p>Temple ke paas honk karna MV Act Section 118 aur Religious Place Rules ke under illegal hai — ₹2000 se ₹5000 tak ka fine!</p>',
   pract: 'Wait for the cow to move. Drive past the temple slowly and silently. Do not honk under any circumstances.',
   mode: 'practical',
   themeType: 'no_honking',

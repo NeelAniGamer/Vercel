@@ -53,9 +53,8 @@
     <script>(function () { try { var c = localStorage.getItem('col_admin_config'); if (c) { var cfg = JSON.parse(c), p = window.location.pathname.split('/').pop() || 'home', s = cfg.pages[p] || '200'; if (s === '503' || s === '404') { document.addEventListener('DOMContentLoaded', function () { try { document.body.innerHTML = '<div style="display:flex;height:100vh;width:100vw;background:#070A14;color:#fff;flex-direction:column;justify-content:center;align-items:center;font-family:sans-serif;text-align:center;padding:20px"><div style="font-size:5rem;margin:0;font-weight:800;color:' + (s === '503' ? '#F2B84B' : '#ef4444') + '">' + s + '</div><h2>' + (s === '503' ? 'System Maintenance' : 'Page Not Found') + '</h2><a href="/" style="margin-top:20px;color:#F2B84B;text-decoration:none;font-weight:bold">Return Home</a></div>'; } catch (e) {} }); } } } catch (e) { } })()</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
-        rel="stylesheet">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" /></noscript>
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3">
   <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <link rel="stylesheet" href="liquid-glass.css" />
@@ -130,7 +129,7 @@
             --dim: #475569;
             --signal: #b8720a;
             --ion: #0e72a0;
-            --teal: #0a8c7a;
+            --teal: #0f766e;
             --teal-glow: rgba(10, 140, 122, .12);
             --plasma: #6f4fe0;
             --em: #15803d;
@@ -587,11 +586,18 @@
             stroke: var(--ink)
         }
 
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
         /* Hero */
         .col-hero {
             position: relative;
             width: 100%;
-            min-height: 65vh;
+            min-height: 44vh;
             display: flex;
             align-items: center;
             overflow: hidden
@@ -1667,9 +1673,9 @@
         }
 
         body.lm .h-filter.act {
-            background: #0a8c7a !important;
+            background: #0f766e !important;
             color: #ffffff !important;
-            border-color: #0a8c7a !important;
+            border-color: #0f766e !important;
         }
 
         body.lm .ms {
@@ -1681,12 +1687,151 @@
             background: #087364 !important;
         }
 
+        /* Quick Templates, Rating Stars & Diagnostics Preview */
+        .tpl-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .tpl-btn {
+            padding: 6px 12px;
+            border-radius: 999px;
+            border: 1px solid var(--lineb);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--dim);
+            font-size: .76rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .2s var(--ease);
+        }
+        .tpl-btn:hover {
+            border-color: var(--teal);
+            color: var(--ink);
+            background: rgba(0, 240, 204, 0.08);
+        }
+        .star-rating {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .star-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--dim);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all .2s var(--ease);
+        }
+        .star-btn svg { width: 17px; height: 17px; }
+        .star-btn.lit, .star-btn:hover {
+            color: var(--signal);
+            border-color: rgba(242, 184, 75, 0.45);
+            background: rgba(242, 184, 75, 0.12);
+        }
+        .star-btn.lit svg { fill: currentColor; }
+        .rating-hint {
+            font-family: var(--mono);
+            font-size: .74rem;
+            color: var(--dim);
+            margin-left: 8px;
+        }
+        .diag-preview {
+            margin-top: -8px;
+            margin-bottom: 18px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: rgba(0, 240, 204, 0.05);
+            border: 1px solid rgba(0, 240, 204, 0.18);
+            font-family: var(--mono);
+            font-size: .74rem;
+            color: var(--dim);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .diag-preview strong { color: var(--teal); }
+        .history-search {
+            width: 100%;
+            padding: 9px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--ink);
+            font-size: .84rem;
+            margin-bottom: 12px;
+            outline: none;
+        }
+        .history-search:focus { border-color: var(--teal); }
+        .history-actions-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid var(--line);
+        }
+        .history-tool-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--lineb);
+            color: var(--dim);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: .76rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all .2s;
+        }
+        .history-tool-btn:hover { color: var(--ink); border-color: var(--teal); }
+        .history-tool-btn.danger:hover { color: var(--danger); border-color: var(--danger); }
+        .fbi-del-btn {
+            background: none;
+            border: none;
+            color: var(--dim);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            transition: color .2s;
+        }
+        .fbi-del-btn:hover { color: var(--danger); }
+        body.lm .tpl-btn,
+        body.lm .star-btn,
+        body.lm .history-search,
+        body.lm .history-tool-btn {
+            background: rgba(0, 0, 0, 0.03) !important;
+            border-color: rgba(0, 0, 0, 0.12) !important;
+            color: #334155 !important;
+        }
+        body.lm .star-btn.lit {
+            color: #b45309 !important;
+            border-color: rgba(180, 83, 9, 0.4) !important;
+            background: rgba(242, 184, 75, 0.15) !important;
+        }
+        body.lm .diag-preview {
+            background: rgba(15, 118, 110, 0.06) !important;
+            border-color: rgba(15, 118, 110, 0.2) !important;
+            color: #334155 !important;
+        }
+
         body.lm .sf {
             border-color: rgba(0, 0, 0, 0.08) !important;
             background: transparent !important;
         }
     </style>
     <script defer src="col-router.js"></script>
+    <script defer src="col-nav.js"></script>
     <script defer src="col-ui.js"></script>
     <script defer src="col-auth.js"></script>
 
@@ -1772,7 +1917,7 @@
         <a href="making" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>Making</a>
         <div class="dropdown" id="projDD">
           <button class="dropdown-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>Projects <span class="darr">&#9660;</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>Projects 
           </button>
           <div class="dropdown-content">
             <div class="dropdown-content-inner">
@@ -1891,17 +2036,39 @@
                             <option value="CastFlow Studio">08 &mdash; CastFlow Studio</option>
                             <option value="Cereal AI Assistant">09 &mdash; Cereal AI Assistant</option>
                             <option value="Terra3D World Atlas">10 &mdash; Terra3D World Atlas</option>
-                            <option value="Quest Master RPG">★ &mdash; Quest Master: RPG Engine</option>
+                            <option value="Quest Master RPG">11 &mdash; Quest Master: RPG Engine</option>
                             <option value="Account / OAuth">Account Sync &amp; Google Sign-In</option>
                         </select>
                     </div>
 
                     <div class="fbr">
+                        <label>
+                            <span>Quick Templates</span>
+                            <span style="font-size:.7rem;font-weight:500;text-transform:none;letter-spacing:0;">Optional starter prompts</span>
+                        </label>
+                        <div class="tpl-row" id="tplRow">
+                            <button type="button" class="tpl-btn" onclick="applyTemplate('ui')">UI / Layout Glitch</button>
+                            <button type="button" class="tpl-btn" onclick="applyTemplate('perf')">Performance / Lag</button>
+                            <button type="button" class="tpl-btn" onclick="applyTemplate('feature')">Feature Idea</button>
+                            <button type="button" class="tpl-btn" onclick="applyTemplate('privacy')">Data / Privacy</button>
+                        </div>
                         <label for="fbMsg">
                             <span>Detailed Description</span>
                             <span id="charCount" class="char-counter">0 / 1000</span>
                         </label>
                         <textarea id="fbMsg" class="mi" rows="5" maxlength="1000" placeholder="Describe the issue or feature in detail..." required oninput="updateCharCount()"></textarea>
+                    </div>
+
+                    <div class="fbr">
+                        <label>Experience Rating (Optional)</label>
+                        <div class="star-rating" id="starRating" role="radiogroup" aria-label="Experience rating">
+                            <button type="button" class="star-btn" data-star="1" aria-label="1 star"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+                            <button type="button" class="star-btn" data-star="2" aria-label="2 stars"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+                            <button type="button" class="star-btn" data-star="3" aria-label="3 stars"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+                            <button type="button" class="star-btn" data-star="4" aria-label="4 stars"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+                            <button type="button" class="star-btn" data-star="5" aria-label="5 stars"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+                            <span class="rating-hint" id="ratingHint">Not rated</span>
+                        </div>
                     </div>
 
                     <div class="fbr" id="emailRow">
@@ -1966,12 +2133,13 @@
                             <p class="sml">Attach browser and display metrics (privacy-preserving)</p>
                         </div>
                         <label class="tsb" style="margin-bottom:0">
-                            <input type="checkbox" id="fbDiag" checked>
+                            <input type="checkbox" id="fbDiag" checked onchange="updateDiagPreview()">
                             <div class="tst">
                                 <div class="tsth"></div>
                             </div>
                         </label>
                     </div>
+                    <div class="diag-preview" id="diagPreview"></div>
 
                     <button type="submit" class="ms" id="submitBtn">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -2004,12 +2172,20 @@
                     <button type="button" class="h-filter-status" onclick="filterStatus('resolved', this)">Resolved</button>
                 </div>
 
+                <input type="search" id="historySearch" class="history-search" placeholder="Search past reports by app, message, or ID..." aria-label="Search submission history" oninput="renderFeedbackList()" style="margin-top:12px;">
+
                 <div id="fbList" class="fb-list">
                     <!-- Populated by JavaScript -->
                 </div>
 
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
-                    <button type="button" class="clear-history-btn" onclick="clearFb()">Clear History</button>
+                <div class="history-actions-row">
+                    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                        <button type="button" class="history-tool-btn" onclick="exportFbJson()">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Export JSON
+                        </button>
+                        <button type="button" class="history-tool-btn danger" id="clearHistoryBtn" onclick="clearFb()">Clear History</button>
+                    </div>
                     <span id="historyCount" style="font-size:.78rem;color:var(--dim);font-family:var(--mono)">0 items</span>
                 </div>
             </div>
@@ -2374,11 +2550,14 @@
           var cnt = document.getElementById('historyCount')
           if (!ls) return
 
+          var searchTerm = (document.getElementById('historySearch') ? document.getElementById('historySearch').value : '').toLowerCase().trim()
           var filtered = cachedFeedbackList.filter(function (item) {
             var catMatch = (currentFilter === 'All') || (item.category || item.type) === currentFilter
             var stat = (item.status || 'open').toLowerCase()
             var statMatch = (currentStatusFilter === 'all') || (stat === currentStatusFilter)
-            return catMatch && statMatch
+            var hay = ((item.app || '') + ' ' + (item.message || item.msg || '') + ' ' + (item.id || '')).toLowerCase()
+            var qMatch = !searchTerm || hay.indexOf(searchTerm) !== -1
+            return catMatch && statMatch && qMatch
           })
 
           if (cnt) cnt.textContent = filtered.length + ' item' + (filtered.length === 1 ? '' : 's')
@@ -2401,7 +2580,12 @@
             var refId = escapeHtml(f.id || '')
             var rawStat = (f.status || 'open').toLowerCase()
             var statClass = rawStat === 'resolved' ? 'resolved' : (rawStat === 'in_progress' ? 'in_progress' : 'open')
-            var statLabel = rawStat === 'resolved' ? 'Resolved ✓' : (rawStat === 'in_progress' ? 'In Review ⧗' : 'Open ⬡')
+            var statIcon = rawStat === 'resolved'
+              ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
+              : (rawStat === 'in_progress'
+                ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
+                : '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>')
+            var statLabel = (rawStat === 'resolved' ? 'Resolved' : (rawStat === 'in_progress' ? 'In Review' : 'Open')) + ' ' + statIcon
 
             html += '<div class="fbi">'
             html += '  <div class="fbi-hd">'
@@ -2409,7 +2593,12 @@
             html += '      <span class="fbi-type-badge ' + (isGrievance ? 'grievance' : '') + '">' + cat + '</span>'
             html += '      <span class="fbi-status-badge ' + statClass + '">' + statLabel + '</span>'
             html += '    </div>'
-            html += '    <span class="fbi-date">' + dateStr + '</span>'
+            html += '    <div style="display:flex;align-items:center;gap:6px">'
+            html += '      <span class="fbi-date">' + dateStr + '</span>'
+            if (refId) {
+              html += '      <button type="button" class="fbi-del-btn" onclick="deleteLocalFb(\'' + refId + '\')" title="Remove local entry" aria-label="Remove entry"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>'
+            }
+            html += '    </div>'
             html += '  </div>'
             html += '  <div class="fbi-app">' + appStr + '</div>'
             html += '  <div class="fbi-msg">' + msgStr + '</div>'
@@ -2532,10 +2721,10 @@
           var feedbackId = Date.now().toString(36) + Math.random().toString(36).substring(2, 6)
           var userAgentMeta = navigator.userAgent + (contact ? ' contact:true' : '') + ' app:' + app + diagStr
 
-          // F. Supabase Push
+          // F. Supabase Push (bounded timeout so slow/offline networks fall back cleanly to local save)
           if (window.supabaseClient) {
             try {
-              await window.supabaseClient.from('feedback').insert([{
+              var insertPromise = window.supabaseClient.from('feedback').insert([{
                 user_id: window.colUser ? window.colUser.id : null,
                 category: type,
                 message: msg.substring(0, 1000),
@@ -2543,22 +2732,29 @@
                 user_agent: userAgentMeta.substring(0, 500),
                 email: email || (window.colUser ? window.colUser.email : null)
               }])
+              var timeoutPromise = new Promise(function (_, reject) {
+                setTimeout(function () { reject(new Error('Request timed out')) }, 3500)
+              })
+              await Promise.race([insertPromise, timeoutPromise])
             } catch (err) {
-              console.error(err)
+              console.warn('[Feedback] Cloud sync deferred:', err && err.message ? err.message : err)
             }
           }
 
-          // G. Local Cache Persistence via SafeStorage
+          // G. Local Cache Persistence via SafeStorage (fixed attachedFileData handling)
+          var attachedName = attachedFileData && attachedFileData.name ? attachedFileData.name : ''
+          var attachedPreviewUrl = (attachedFileData && attachedFileData.dataUrl && attachedFileData.dataUrl.length < 500000) ? attachedFileData.dataUrl : null
           var localItem = {
             id: feedbackId,
             type: type,
             app: app,
             msg: msg.substring(0, 1000),
             urg: urg,
+            rating: selectedRating || null,
             contact: contact,
             file: Boolean(attachedFileData),
-            file_name: attachedFileName || '',
-            file_preview: (attachedFileData && attachedFileData.length < 500000) ? attachedFileData : null,
+            file_name: attachedName,
+            file_preview: attachedPreviewUrl,
             email: email,
             status: 'open',
             date: Date.now()
@@ -2576,7 +2772,9 @@
           lastSubmissionTime = Date.now()
           document.getElementById('fbForm').reset()
           removeAttachedFile()
+          setRating(0)
           updateCharCount()
+          updateDiagPreview()
           if (typeof updateSlider === 'function') updateSlider()
 
           if (btn) {
@@ -2588,15 +2786,141 @@
           loadFb()
         }
 
-        function clearFb() {
-          if (confirm('Clear all feedback submission history from this device?')) {
-            SafeStorage.set('col_fbs', '[]')
-            loadFb()
-            showToast('Submission history cleared.', 'green')
+        var selectedRating = 0
+        function setRating(val) {
+          selectedRating = val
+          var hints = ['Not rated', '1 / 5 - Needs work', '2 / 5 - Fair', '3 / 5 - Good', '4 / 5 - Very good', '5 / 5 - Excellent']
+          document.querySelectorAll('#starRating .star-btn').forEach(function (b) {
+            var s = parseInt(b.getAttribute('data-star'), 10)
+            b.classList.toggle('lit', s <= val)
+          })
+          var h = document.getElementById('ratingHint')
+          if (h) h.textContent = hints[val] || hints[0]
+        }
+        document.querySelectorAll('#starRating .star-btn').forEach(function (b) {
+          b.addEventListener('click', function () {
+            var s = parseInt(b.getAttribute('data-star'), 10)
+            setRating(selectedRating === s ? 0 : s)
+          })
+        })
+
+        function applyTemplate(kind) {
+          var msg = document.getElementById('fbMsg')
+          if (!msg) return
+          var templates = {
+            ui: 'Page / Screen: \nWhat looks misaligned or broken: \nDevice & Browser: ',
+            perf: 'Affected App: \nWhere frame drops or slow loading happen: \nDevice specs / connection: ',
+            feature: 'Target App: \nWhat you want to achieve: \nSuggested workflow: ',
+            privacy: 'Request Type (Data export / Deletion / Correction): \nAccount email or identifier: \nDetails: '
           }
+          if (kind === 'privacy') {
+            var gr = document.querySelector('input[name="fbType"][value="Grievance / Deletion"]')
+            if (gr) { gr.checked = true; onCategoryChange(gr.value) }
+          } else if (kind === 'feature') {
+            var fr = document.querySelector('input[name="fbType"][value="Feature Request"]')
+            if (fr) { fr.checked = true; onCategoryChange(fr.value) }
+          }
+          if (!msg.value.trim()) {
+            msg.value = templates[kind] || ''
+            updateCharCount()
+          } else {
+            msg.value = msg.value.trim() + '\n\n' + (templates[kind] || '')
+            updateCharCount()
+          }
+          msg.focus()
         }
 
-        window.addEventListener('DOMContentLoaded', loadFb)
+        function updateDiagPreview() {
+          var el = document.getElementById('diagPreview')
+          var cb = document.getElementById('fbDiag')
+          if (!el || !cb) return
+          if (!cb.checked) { el.style.display = 'none'; return }
+          el.style.display = 'flex'
+          var theme = document.body.classList.contains('lm') ? 'Light' : 'Dark'
+          el.innerHTML =
+            '<span><strong>Viewport:</strong> ' + window.innerWidth + 'x' + window.innerHeight + '</span>' +
+            '<span><strong>Platform:</strong> ' + escapeHtml(navigator.platform || 'Web') + '</span>' +
+            '<span><strong>Theme:</strong> ' + theme + '</span>'
+        }
+
+        function deleteLocalFb(id) {
+          var raw = SafeStorage.get('col_fbs')
+          var list = []
+          try { list = JSON.parse(raw || '[]') } catch (e) {}
+          list = list.filter(function (item) { return item.id !== id })
+          SafeStorage.set('col_fbs', JSON.stringify(list))
+          loadFb()
+          showToast('Removed entry #' + id.substring(0, 6), 'green')
+        }
+
+        function exportFbJson() {
+          if (!cachedFeedbackList.length) {
+            showToast('No submissions to export yet.', 'danger')
+            return
+          }
+          var blob = new Blob([JSON.stringify(cachedFeedbackList, null, 2)], { type: 'application/json' })
+          var url = URL.createObjectURL(blob)
+          var a = document.createElement('a')
+          a.href = url
+          a.download = 'col-feedback-history.json'
+          document.body.appendChild(a)
+          a.click()
+          document.body.removeChild(a)
+          URL.revokeObjectURL(url)
+          showToast('Exported ' + cachedFeedbackList.length + ' feedback items.', 'green')
+        }
+
+        var clearArmed = false
+        var clearArmTimer = null
+        function clearFb() {
+          var btn = document.getElementById('clearHistoryBtn')
+          if (!clearArmed) {
+            clearArmed = true
+            if (btn) btn.textContent = 'Click again to confirm'
+            clearArmTimer = setTimeout(function () {
+              clearArmed = false
+              if (btn) btn.textContent = 'Clear History'
+            }, 3500)
+            return
+          }
+          clearTimeout(clearArmTimer)
+          clearArmed = false
+          if (btn) btn.textContent = 'Clear History'
+          SafeStorage.set('col_fbs', '[]')
+          loadFb()
+          showToast('Submission history cleared.', 'green')
+        }
+
+        window.addEventListener('DOMContentLoaded', function () {
+          loadFb()
+          updateDiagPreview()
+          try {
+            var sp = new URLSearchParams(window.location.search)
+            var appParam = sp.get('app')
+            var typeParam = sp.get('type')
+            if (appParam) {
+              var sel = document.getElementById('fbApp')
+              if (sel) {
+                for (var i = 0; i < sel.options.length; i++) {
+                  if (sel.options[i].value.toLowerCase().indexOf(appParam.toLowerCase()) !== -1) {
+                    sel.selectedIndex = i
+                    break
+                  }
+                }
+              }
+            }
+            if (typeParam) {
+              var radios = document.getElementsByName('fbType')
+              for (var r = 0; r < radios.length; r++) {
+                if (radios[r].value.toLowerCase().indexOf(typeParam.toLowerCase()) !== -1) {
+                  radios[r].checked = true
+                  onCategoryChange(radios[r].value)
+                  break
+                }
+              }
+            }
+          } catch (e) {}
+        })
         window.addEventListener('col-auth-changed', function() {
           loadFb();
           if (window.colUser && window.colUser.email) {

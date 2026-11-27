@@ -99,7 +99,7 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" onload="this.onload=null;this.rel='stylesheet'" /><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" /></noscript>
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
   <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <link rel="stylesheet" href="liquid-glass.css" />
@@ -1275,6 +1275,15 @@
         color: #0f172a;
       }
 
+    
+
+  body.lm .sm-chip.active { background: #4338ca !important; color: #ffffff !important; }
+  body.lm .sc-badge { color: #0f172a !important; }
+  body.lm .sc-badge[style*="f59e0b"] { color: #92400e !important; }
+  body.lm .sc-badge[style*="a855f7"] { color: #6d28d9 !important; }
+  body.lm .sc-badge[style*="059669"] { color: #047857 !important; }
+  body.lm .sc-badge[style*="0284c7"] { color: #0369a1 !important; }
+  body.lm .sc-badge[style*="22c55e"] { color: #15803d !important; }
     </style>
 
     <script defer src="col-router.js"></script>
@@ -1443,13 +1452,13 @@
         <div class="sitemap-group-title">Flagship Models &amp; Engines</div>
         <div class="sitemap-grid">
           <a href="ati" class="sitemap-card csig">
-            <div class="sc-icon">&#9000;&#65039;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></svg></div>
             <h3 class="sc-name">ATI: Advanced Typing Instructor 1.4</h3>
             <p class="sc-desc">Cross-platform touch-typing tutor, curriculum engine, and multiplayer competition with mechanical switch synthesis.</p>
             <span class="sc-badge badge-flagship">Flagship Engine</span>
           </a>
           <a href="solar" class="sitemap-card cion">
-            <div class="sc-icon">&#127760;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></div>
             <h3 class="sc-name">Solar System Engine V3.3</h3>
             <p class="sc-desc">Deep-space 3D astronomical simulator with Keplerian physics, planetary ephemerides, and space telemetry.</p>
             <span class="sc-badge badge-flagship">Flagship 3D Engine</span>
@@ -1462,25 +1471,25 @@
         <div class="sitemap-group-title">Spatial &amp; Creative Productivity</div>
         <div class="sitemap-grid">
           <a href="gesture" class="sitemap-card ctea">
-            <div class="sc-icon">&#128400;&#65039;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 11V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2"/><path d="M14 10V4a2 2 0 0 0-2-2 2 2 0 0 0-2 2v6"/><path d="M10 10.5V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></div>
             <h3 class="sc-name">Perceptus Flow</h3>
             <p class="sc-desc">Computer-vision hand tracking and air-gesture desktop controller via MediaPipe &amp; WebSockets.</p>
             <span class="sc-badge badge-spatial">Spatial Studio</span>
           </a>
           <a href="qr" class="sitemap-card cemp">
-            <div class="sc-icon">&#11035;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/></svg></div>
             <h3 class="sc-name">QR Studio Matrix</h3>
             <p class="sc-desc">Enterprise QR matrix generator with dynamic link redirection, scan telemetry, and custom landing hubs.</p>
             <span class="sc-badge badge-proj">Matrix Suite</span>
           </a>
           <a href="qr-editor" class="sitemap-card cemp">
-            <div class="sc-icon">&#127912;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg></div>
             <h3 class="sc-name">QR Studio Editor</h3>
             <p class="sc-desc">Custom vector styling canvas with frame presets, gradients, logo embeds, and live scannability scoring.</p>
             <span class="sc-badge badge-tool">Creative Canvas</span>
           </a>
           <a href="Career" class="sitemap-card cion">
-            <div class="sc-icon">&#128188;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
             <h3 class="sc-name">The Career Compass</h3>
             <p class="sc-desc">Interactive guide to 480 careers with degree routes, entrance exams, pay bands, and honest AI exposure notes.</p>
             <span class="sc-badge badge-info">Guidance Engine</span>
@@ -1493,33 +1502,33 @@
         <div class="sitemap-group-title">Educational Systems &amp; Civilian Simulators</div>
         <div class="sitemap-grid">
           <a href="Database_Logic" class="sitemap-card csig">
-            <div class="sc-icon">&#128452;&#65039;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg></div>
             <h3 class="sc-name">Database Logic &amp; Query Engine</h3>
             <p class="sc-desc">Interactive relational database laboratory, index optimization simulator, and schema analyzer.</p>
             <span class="sc-badge badge-info">Educational Lab</span>
           </a>
           <a href="Traffic/Driving" class="sitemap-card csig">
-            <div class="sc-icon">&#128664;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="6" width="22" height="12" rx="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/><path d="M5 6l2-3h10l2 3"/></svg></div>
             <h3 class="sc-name">Mumbai Traffic Simulator</h3>
             <p class="sc-desc">Full-scale 3D Mumbai urban driving simulation featuring 57 interactive levels, real-time physics, and NPC AI.</p>
             <span class="sc-badge badge-info">Simulation Engine</span>
           </a>
           <a href="Traffic/Academy" class="sitemap-card ctea">
-            <div class="sc-icon">&#128663;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
             <h3 class="sc-name">Mumbai Traffic Academy</h3>
             <p class="sc-desc">Interactive civilian driver training curriculum covering Indian traffic laws, signals, and road safety theory.</p>
             <span class="sc-badge badge-info">Civic Academy</span>
           </a>
           <a href="Traffic/TrafficDashboard" class="sitemap-card cpla">
-            <div class="sc-icon">&#128200;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
             <h3 class="sc-name">Traffic Civilian Dashboard</h3>
             <p class="sc-desc">Driver score tracking, garage management, civilian violations ledger, and achievement credentials.</p>
             <span class="sc-badge badge-tool">Telemetry Hub</span>
           </a>
-          <a href="Traffic/TrafficSetup" class="sitemap-card cemp">
-            <div class="sc-icon">&#9881;&#65039;</div>
-            <h3 class="sc-name">Traffic Environment Setup</h3>
-            <p class="sc-desc">Hardware performance toggles, graphics fidelity presets, sound channels, and simulator parameters.</p>
+          <a href="Traffic/Academy?settings=1" class="sitemap-card cemp">
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+            <h3 class="sc-name">Traffic Academy Settings</h3>
+            <p class="sc-desc">Learner preferences, graphics fidelity presets, sound controls, and private database configuration.</p>
             <span class="sc-badge badge-tool">Configuration</span>
           </a>
         </div>
@@ -1530,13 +1539,13 @@
         <div class="sitemap-group-title">Native Android Mobile Ecosystem</div>
         <div class="sitemap-grid">
           <a href="CastFlow" class="sitemap-card csig">
-            <div class="sc-icon">&#128241;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
             <h3 class="sc-name">CastFlow Studio</h3>
             <p class="sc-desc">High-performance wireless screen mirroring, bidirectional clipboard sync, and browser-based DeX desktop mode.</p>
             <span class="sc-badge badge-android">Android App</span>
           </a>
           <a href="cereal" class="sitemap-card csig">
-            <div class="sc-icon">&#129384;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div>
             <h3 class="sc-name">Cereal AI Assistant</h3>
             <p class="sc-desc">Classroom lecture recorder powered by Gemini 2.5 Flash, generating structured summaries synced to Google Calendar.</p>
             <span class="sc-badge badge-android">Android Companion</span>
@@ -1549,13 +1558,13 @@
         <div class="sitemap-group-title">Geospatial Shaders &amp; Experimental Worlds</div>
         <div class="sitemap-grid">
           <a href="Terra3D/" class="sitemap-card cion">
-            <div class="sc-icon">&#127757;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
             <h3 class="sc-name">Terra3D World Atlas</h3>
             <p class="sc-desc">Photorealistic 3D geospatial planetary explorer with procedural terrain shaders and spatial data overlays.</p>
             <span class="sc-badge badge-info">Geospatial 3D</span>
           </a>
           <a href="rpg" class="sitemap-card cpla">
-            <div class="sc-icon">&#9876;&#65039;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
             <h3 class="sc-name">Quest Master: RPG Engine</h3>
             <p class="sc-desc">Procedural narrative role-playing engine with tactical turn-based battle mechanics and fantasy character progression.</p>
             <span class="sc-badge badge-proj">Adventure Engine</span>
@@ -1568,37 +1577,37 @@
         <div class="sitemap-group-title">Core Studio &amp; Academic Foundations</div>
         <div class="sitemap-grid">
           <a href="/" class="sitemap-card csig">
-            <div class="sc-icon">&#127968;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
             <h3 class="sc-name">Home Hub</h3>
             <p class="sc-desc">Main studio portal, interactive 3D lab hero, featured projects, and real-time ecosystem showcase.</p>
             <span class="sc-badge badge-proj">Studio Hub</span>
           </a>
           <a href="about" class="sitemap-card cion">
-            <div class="sc-icon">&#128100;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
             <h3 class="sc-name">About Us</h3>
             <p class="sc-desc">How the studio started and who builds the tools: Neel Badri, Aarush Vangari, and Ansh Patil.</p>
             <span class="sc-badge badge-info">Team Ethos</span>
           </a>
           <a href="school" class="sitemap-card cpla">
-            <div class="sc-icon">&#127891;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
             <h3 class="sc-name">School (CBSE)</h3>
             <p class="sc-desc">CBSE Bhavani Shankar School: the classroom computer lab, mentors, and first student projects.</p>
             <span class="sc-badge badge-info">Academic Roots</span>
           </a>
           <a href="sneh-asha" class="sitemap-card cemp">
-            <div class="sc-icon">&#128153;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
             <h3 class="sc-name">Sneh Asha Initiative</h3>
             <p class="sc-desc">Outreach initiative sharing free offline study software with students in under-resourced schools.</p>
             <span class="sc-badge badge-info">Social Impact</span>
           </a>
           <a href="making" class="sitemap-card csig">
-            <div class="sc-icon">&#9889;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
             <h3 class="sc-name">Making &amp; Architecture</h3>
             <p class="sc-desc">The local AI setups, hosting stack, Android builds, and practical notes behind every project.</p>
             <span class="sc-badge badge-info">Technical Specs</span>
           </a>
           <a href="download" class="sitemap-card cemp">
-            <div class="sc-icon">&#128229;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
             <h3 class="sc-name">Downloads Hub</h3>
             <p class="sc-desc">Official repository of standalone Windows binaries, Linux packages, Android APKs, and source distributions.</p>
             <span class="sc-badge badge-tool">Binary Repository</span>
@@ -1611,31 +1620,31 @@
         <div class="sitemap-group-title">Governance, Support &amp; Security</div>
         <div class="sitemap-grid">
           <a href="feedback" class="sitemap-card ctea">
-            <div class="sc-icon">&#128172;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
             <h3 class="sc-name">Feedback Portal</h3>
             <p class="sc-desc">Public transmission channel for bug reports, architectural suggestions, feature requests, and support triage.</p>
             <span class="sc-badge badge-info">User Triage</span>
           </a>
           <a href="verify" class="sitemap-card cemp">
-            <div class="sc-icon">&#127891;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
             <h3 class="sc-name">Certificate Verification</h3>
             <p class="sc-desc">Cryptographic validation gateway for authenticating official course completion credentials and honors.</p>
             <span class="sc-badge badge-tool">Verification</span>
           </a>
           <a href="privacy" class="sitemap-card cion">
-            <div class="sc-icon">&#128274;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
             <h3 class="sc-name">Privacy Policy</h3>
             <p class="sc-desc">Statutory privacy documentation detailing zero-telemetry policy, local-first storage, and data protection.</p>
             <span class="sc-badge badge-legal">Statutory Legal</span>
           </a>
           <a href="terms" class="sitemap-card cion">
-            <div class="sc-icon">&#128220;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
             <h3 class="sc-name">Terms Of Service</h3>
             <p class="sc-desc">Terms, acceptable use policy, licensing guidelines, and conditions governing the Class Of Learners platform.</p>
             <span class="sc-badge badge-legal">Statutory Legal</span>
           </a>
           <a href="admin" class="sitemap-card cpla">
-            <div class="sc-icon">&#128736;</div>
+            <div class="sc-icon" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><polyline points="8 21 12 17 16 21"/></svg></div>
             <h3 class="sc-name">Admin Mission Control</h3>
             <p class="sc-desc">Restricted operations console for routing overrides, live announcement broadcasts, feedback, and user management.</p>
             <span class="sc-badge badge-legal">Internal Terminal</span>

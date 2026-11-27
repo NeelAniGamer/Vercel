@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 24,
-  icon: '🚶',
+  icon: 'pedestrian',
   name: 'Lesson 24 - Pedestrian Priority',
   modes: ['car', 'bike'],
   col: '#2ecc71',
@@ -16,7 +16,7 @@ window.LVS.push({
     offHi: 'पैदल चलने वाले को रास्ता न देना'
   },
   theory:
-    '<h2>Pedestrian Priority</h2><p>Zebra crossing pe ek buzurg cross kar rahe hain — traffic chal raha hai lekin tumhe rukna hai!</p><p>Pedestrians ka hamesha right of way hota hai, especially zebra crossing pe. Buzurg ya disabled pedestrians ko extra time do — jaldi mat karo!</p><h3>🚶 Kya karna hai?</h3><ul><li>Zebra crossing pe poori tarah se ruko!</li><li>Buzurg ko crossing karo — unhe time do.</li><li>Peeche waali gaadiyan honk kar rahi hain — tum mat karo!</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Pedestrian ko yield na karna MV Act Section 126 ke under illegal hai — ₹500 se ₹2000 tak ka fine!</p>',
+    '<h2>Pedestrian Priority</h2><p>Zebra crossing pe ek buzurg cross kar rahe hain — traffic chal raha hai lekin tumhe rukna hai!</p><p>Pedestrians ka hamesha right of way hota hai, especially zebra crossing pe. Buzurg ya disabled pedestrians ko extra time do — jaldi mat karo!</p><h3> Kya karna hai?</h3><ul><li>Zebra crossing pe poori tarah se ruko!</li><li>Buzurg ko crossing karo — unhe time do.</li><li>Peeche waali gaadiyan honk kar rahi hain — tum mat karo!</li></ul><h3> Kanoon kya kehta hai?</h3><p>Pedestrian ko yield na karna MV Act Section 126 ke under illegal hai — ₹500 se ₹2000 tak ka fine!</p>',
   pract: 'Stop at the zebra crossing. Wait patiently for the elderly person to cross completely. Do not honk.',
   mode: 'practical',
   themeType: 'pedestrian_priority',

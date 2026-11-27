@@ -3,19 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995"
-     crossorigin="anonymous"></script>
-    <meta name="description" content="Class of Learners - Qr. An educational tool and resource." />
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995" crossorigin="anonymous"></script>
+    <meta name="description" content="CraftQR Library &amp; Analytics — Manage dynamic QR codes, edit destinations live, inspect scan analytics, and export print-ready SVGs and PDFs." />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="theme-color" content="#070A14" id="themeMeta" />
-    <title>QR Command Center | Class Of Learners</title>
+    <meta name="theme-color" content="#F4F1EA" id="themeMeta" />
+    <title>CraftQR Library &amp; Analytics | Class Of Learners</title>
     <script>
       (function () {
         try {
           var saved = localStorage.getItem('theme');
-          var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
-          var mode = saved || (prefersLight ? 'light' : 'dark');
+          var mode = saved === 'dark' ? 'dark' : 'light';
           document.documentElement.dataset.theme = mode;
           document.documentElement.classList.toggle('lm', mode === 'light');
           if (document.body) document.body.classList.toggle('lm', mode === 'light');
@@ -31,9 +29,8 @@
     <script defer src="qr-dynamic.js"></script>
     <script defer src="col-auth.js"></script>
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
-  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
+    <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <link rel="stylesheet" href="liquid-glass.css" />
-    <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
     <script>
       ;(function () {
         var isM = (window.innerWidth <= 1024) ||
@@ -66,115 +63,79 @@
           if (mql.addEventListener) mql.addEventListener('change', onR);
           else if (mql.addListener) mql.addListener(onR);
         }
-      })()
+      })();
     </script>
     <noscript><link rel="stylesheet" href="/col-mobile.css" media="(max-width: 1024px)" /></noscript>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" onload="this.onload=null;this.rel='stylesheet'" /><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" /></noscript>
     <style>
-      /* Page-specific Dashboard Enhancements & Theme Integration */
       * { box-sizing: border-box; }
       body {
         background: var(--surface-page);
         color: var(--ink-primary);
         min-height: 100vh;
         min-height: 100dvh;
-        transition: background-color 0.25s ease, color 0.25s ease;
         position: relative;
       }
-
-      /* Sidebar Navigation */
+      .qr-app {
+        display: grid;
+        grid-template-columns: 244px minmax(0, 1fr);
+        min-height: calc(100vh - 64px);
+      }
       .app-sb {
         background: var(--surface-card);
         border-right: 1px solid var(--border-subtle);
+        padding: 18px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
       }
-      .sb-top {
-        padding-bottom: 16px;
-        border-bottom: 1px solid var(--border-subtle);
-        margin-bottom: 16px;
-        text-align: center;
-      }
-      .sb-top-title {
-        color: var(--accent);
-        font-weight: 800;
-        font-size: 1.15rem;
-        font-family: var(--font-mono);
-        letter-spacing: 0.5px;
-      }
-      .sb-lbl {
-        padding: 12px 10px 6px;
-        font-size: 0.72rem;
-        font-weight: 700;
-        color: var(--ink-muted);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-      }
+      .sb-top { padding: 4px 8px 14px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 8px; }
+      .sb-brand-row { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+      .sb-brand-title { font-family: var(--font-display); font-size: 1.45rem; font-weight: 600; letter-spacing: -0.02em; color: var(--ink-primary); }
+      .sb-brand-tag { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--secondary); background: var(--tint); padding: 2px 7px; border-radius: var(--radius-pill); }
+      .sb-lbl { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); padding: 8px 10px 4px; }
       .sb-btn {
-        width: 100%;
-        padding: 12px 16px;
-        background: transparent;
-        border: 1px solid transparent;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
         border-radius: var(--radius-sm);
         color: var(--ink-primary);
-        font-weight: 600;
-        font-size: 0.92rem;
-        cursor: pointer;
-        text-align: left;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        transition: all 0.2s ease;
-        margin-bottom: 4px;
         text-decoration: none;
+        font-size: 0.88rem;
+        font-weight: 500;
+        border: 1px solid transparent;
+        transition: background 0.16s, border-color 0.16s;
       }
-      .sb-btn:hover {
-        background: var(--surface-subtle);
-        color: var(--ink-primary);
-        border-color: var(--border-subtle);
-      }
-      .sb-btn.act {
-        background: var(--accent-soft);
-        color: var(--accent);
-        border-color: var(--accent);
-        border-left: 4px solid var(--accent);
-      }
-      .sb-icon {
-        font-size: 1.1rem;
-        display: flex;
-        align-items: center;
-      }
-      .sb-foot {
-        margin-top: auto;
-        padding-top: 20px;
-        border-top: 1px solid var(--border-subtle);
-      }
+      .sb-btn:hover { background: var(--surface-subtle); }
+      .sb-btn.act { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+      .sb-icon { display: inline-flex; color: var(--ink-muted); }
+      .sb-btn.act .sb-icon { color: var(--accent); }
+      .sb-foot { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border-subtle); }
       .sign-btn {
         width: 100%;
-        padding: 12px;
-        background: var(--accent);
-        color: var(--accent-contrast);
-        border: none;
-        border-radius: var(--radius-sm);
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.2s ease;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
-        box-shadow: var(--shadow-sm);
-      }
-      .sign-btn:hover {
-        background: var(--accent-hover);
-        box-shadow: var(--shadow-md);
+        padding: 10px 14px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--accent);
+        background: var(--accent);
+        color: #ffffff;
+        font-family: var(--font-main);
+        font-size: 0.86rem;
+        font-weight: 600;
+        cursor: pointer;
       }
       .pcard {
         display: flex;
         align-items: center;
         gap: 10px;
-        padding: 10px;
+        padding: 8px 10px;
         background: var(--surface-subtle);
         border: 1px solid var(--border-subtle);
         border-radius: var(--radius-sm);
@@ -183,619 +144,491 @@
       .pav {
         width: 36px;
         height: 36px;
-        border-radius: 50%;
-        background: var(--accent);
-        color: var(--accent-contrast);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-      }
-      .pinfo {
-        flex: 1;
-        min-width: 0;
-      }
-      .pname {
-        font-weight: 700;
-        font-size: 0.88rem;
-        color: var(--ink-primary);
-        white-space: nowrap;
+        border-radius: 8px;
+        background: var(--secondary);
+        color: #ffffff;
+        display: grid;
+        place-items: center;
+        font-weight: 600;
+        flex-shrink: 0;
         overflow: hidden;
-        text-overflow: ellipsis;
       }
-      .pemail {
-        font-size: 0.76rem;
-        color: var(--ink-muted);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
+      .pinfo { min-width: 0; }
+      .pname { font-size: 0.85rem; font-weight: 600; color: var(--ink-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .pemail { font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-      /* Workspace Header */
-      .db-container {
-        max-width: 1300px;
-        margin: 0 auto;
-      }
-      .db-hd {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 24px;
-        flex-wrap: wrap;
-        gap: 16px;
-      }
-      .db-hd-info h2 {
-        font-size: clamp(1.6rem, 3.5vw, 2.2rem);
-        font-weight: 800;
-        color: var(--ink-primary);
-        margin: 0 0 6px 0;
-        letter-spacing: -0.5px;
-      }
-      .db-hd-info p {
-        color: var(--ink-muted);
-        font-size: 0.92rem;
-        margin: 0;
-      }
+      .workspace { min-width: 0; display: flex; flex-direction: column; }
+      .db-container { max-width: 1220px; width: 100%; margin: 0 auto; padding: 28px 28px 48px; }
+      .db-hd { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+      .db-hd-info h2 { font-family: var(--font-display); font-size: 2rem; font-weight: 600; letter-spacing: -0.02em; color: var(--ink-primary); margin: 0 0 4px; }
+      .db-hd-info p { color: var(--ink-muted); font-size: 0.94rem; margin: 0; }
       .btn-nx {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        background: var(--accent);
-        color: var(--accent-contrast);
-        border: 1px solid var(--accent);
-        padding: 11px 20px;
+        padding: 10px 18px;
         border-radius: var(--radius-sm);
-        font-weight: 700;
-        font-size: 0.92rem;
+        background: var(--accent);
+        color: #ffffff;
         text-decoration: none;
-        box-shadow: var(--shadow-sm);
-        transition: all 0.2s ease;
+        font-weight: 600;
+        font-size: 0.88rem;
+        border: 1px solid var(--accent);
+        cursor: pointer;
       }
-      .btn-nx:hover {
-        background: var(--accent-hover);
-        border-color: var(--accent-hover);
-        box-shadow: var(--shadow-md);
-        transform: translateY(-1px);
+      .btn-nx:hover { filter: brightness(1.06); }
+      .btn-spruce {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 16px;
+        border-radius: var(--radius-sm);
+        background: var(--secondary);
+        color: #ffffff;
+        border: 1px solid var(--secondary);
+        font-weight: 600;
+        font-size: 0.84rem;
+        cursor: pointer;
+        text-decoration: none;
       }
 
-      /* Sync Bar */
       .db-sync-bar {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 12px 18px;
-        background: var(--surface-card);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        margin-bottom: 20px;
         gap: 12px;
         flex-wrap: wrap;
+        background: var(--surface-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        padding: 12px 16px;
+        margin-bottom: 18px;
       }
-      .db-sync-info {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 0.88rem;
-        font-weight: 600;
-        color: var(--ink-secondary);
+      .db-sync-info { display: flex; align-items: center; gap: 10px; font-size: 0.86rem; color: var(--ink-primary); font-weight: 500; }
+      .sync-pill {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        padding: 2px 9px;
+        border-radius: var(--radius-pill);
+        background: var(--tint);
+        color: var(--secondary);
       }
 
-      /* Card Grid & Saved Items */
-      .db-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 20px;
-        margin-top: 20px;
+      .db-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 20px; }
+      .st-card {
+        background: var(--surface-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        padding: 16px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
       }
+      .st-card-left .l, .stat-label {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--ink-muted);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .st-card-left .v, .stat-value {
+        font-family: var(--font-display);
+        font-size: 1.85rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        color: var(--ink-primary);
+        margin-top: 2px;
+      }
+      .st-card-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: var(--radius-sm);
+        background: var(--tint);
+        color: var(--secondary);
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+      }
+
+      .db-toolbar {
+        background: var(--surface-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        padding: 14px;
+        display: grid;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+      .db-top-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+      .db-search-wrap {
+        flex: 1 1 260px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--surface-subtle);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-sm);
+        padding: 0 12px;
+      }
+      .db-search-wrap svg { color: var(--ink-muted); flex-shrink: 0; }
+      .db-search-input {
+        width: 100%;
+        border: none;
+        background: transparent;
+        color: var(--ink-primary);
+        padding: 10px 0;
+        font-family: var(--font-main);
+        font-size: 0.9rem;
+        outline: none;
+      }
+      .db-actions-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+      .db-select {
+        background: var(--surface-subtle);
+        border: 1px solid var(--border-subtle);
+        color: var(--ink-primary);
+        padding: 9px 12px;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-main);
+        font-size: 0.85rem;
+        outline: none;
+      }
+      .db-filt { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+      .dbf, .dbf-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 12px;
+        border-radius: var(--radius-pill);
+        border: 1px solid var(--border-subtle);
+        background: var(--surface-subtle);
+        color: var(--ink-primary);
+        font-family: var(--font-main);
+        font-size: 0.81rem;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      .dbf:hover, .dbf-btn:hover { background: var(--surface-hover); border-color: var(--border-strong); }
+      .dbf.act { background: var(--accent); color: #ffffff; border-color: var(--accent); font-weight: 600; }
+
+      .db-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+      .db-grid.list-view { grid-template-columns: 1fr; }
       .dbc {
         background: var(--surface-card);
         border: 1px solid var(--border-subtle);
         border-radius: var(--radius-md);
-        padding: 16px;
+        overflow: hidden;
         display: flex;
         flex-direction: column;
-        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        transition: border-color 0.16s, transform 0.16s;
       }
-      .dbc:hover {
-        border-color: var(--border-strong);
-        box-shadow: var(--shadow-md);
-        transform: translateY(-2px);
-      }
+      .dbc:hover { border-color: var(--border-strong); }
+      .db-grid.list-view .dbc { flex-direction: row; align-items: center; }
       .dbt {
-        width: 100%;
-        aspect-ratio: 1;
-        background: #ffffff;
-        border-radius: var(--radius-sm);
-        border: 1px solid var(--border-subtle);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        padding: 12px;
-        margin-bottom: 12px;
+        aspect-ratio: 1 / 1;
+        background: var(--surface-subtle);
+        border-bottom: 1px solid var(--border-subtle);
+        display: grid;
+        place-items: center;
+        padding: 16px;
+        position: relative;
       }
-      .dbt img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-      }
-      .dbb {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-        margin-bottom: 14px;
-      }
-      .dbb h3 {
-        font-size: 1rem;
-        font-weight: 700;
-        color: var(--ink-primary);
-        margin: 0;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .dbb .dtyp {
-        font-size: 0.78rem;
-        font-weight: 600;
-        color: var(--accent);
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-      .dbb .ddt {
-        font-size: 0.75rem;
-        color: var(--ink-muted);
+      .db-grid.list-view .dbt { width: 108px; height: 108px; aspect-ratio: 1/1; border-bottom: none; border-right: 1px solid var(--border-subtle); padding: 10px; flex-shrink: 0; }
+      .dbt img { max-width: 100%; max-height: 100%; border-radius: 6px; object-fit: contain; display: block; }
+      .qr-badge-row { position: absolute; top: 10px; left: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+      .qr-pill {
         font-family: var(--font-mono);
+        font-size: 0.68rem;
+        font-weight: 500;
+        padding: 2px 8px;
+        border-radius: var(--radius-pill);
+        border: 1px solid var(--border-subtle);
+        background: var(--surface-card);
+        color: var(--ink-primary);
       }
+      .qr-pill.dyn { background: var(--tint); color: var(--secondary); border-color: var(--border-subtle); }
+      .qr-pill.paused { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+      .dbb { padding: 14px 16px 10px; flex: 1; min-width: 0; }
+      .dtyp { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--secondary); margin-bottom: 4px; }
+      .dbb h3 { font-size: 0.98rem; font-weight: 600; color: var(--ink-primary); margin: 0 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .ddt { font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink-muted); }
       .dba {
+        padding: 10px 14px 14px;
         display: flex;
-        gap: 8px;
-        margin-top: auto;
-        padding-top: 12px;
+        flex-wrap: wrap;
+        gap: 6px;
         border-top: 1px solid var(--border-subtle);
       }
+      .db-grid.list-view .dba { border-top: none; border-left: 1px solid var(--border-subtle); max-width: 300px; }
       .dba-btn {
-        flex: 1;
-        padding: 8px 10px;
-        font-size: 0.82rem;
-        font-weight: 600;
+        flex: 1 1 auto;
+        min-height: 36px;
+        padding: 6px 9px;
         border-radius: var(--radius-sm);
         border: 1px solid var(--border-subtle);
         background: var(--surface-subtle);
         color: var(--ink-primary);
+        font-family: var(--font-main);
+        font-size: 0.78rem;
+        font-weight: 500;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 5px;
-        transition: all 0.15s ease;
+        gap: 4px;
       }
-      .dba-btn:hover {
-        background: var(--surface-hover);
-        border-color: var(--border-strong);
-      }
-      .dba-btn.del {
-        color: var(--danger);
-        border-color: var(--danger-soft);
-      }
-      .dba-btn.del:hover {
-        background: var(--danger-soft);
-        border-color: var(--danger);
-      }
+      .dba-btn:hover { background: var(--surface-hover); border-color: var(--border-strong); }
+      .dba-btn.del { color: var(--danger); }
+      .dba-btn.del:hover { background: var(--danger-soft); border-color: var(--danger); }
 
-      /* Empty State */
       .db-emp {
+        grid-column: 1 / -1;
         text-align: center;
-        padding: 48px 20px;
         background: var(--surface-card);
         border: 1px dashed var(--border-strong);
         border-radius: var(--radius-md);
-        margin-top: 20px;
+        padding: 46px 24px;
       }
 
-      /* Settings & Account Cards */
       .settings-card {
         background: var(--surface-card);
         border: 1px solid var(--border-subtle);
         border-radius: var(--radius-md);
-        padding: 24px;
-        margin-bottom: 24px;
-        box-shadow: var(--shadow-sm);
+        padding: 22px;
+        margin-bottom: 18px;
       }
-      .settings-card h3 {
-        margin: 0 0 8px 0;
-        font-size: 1.15rem;
-        color: var(--ink-primary);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .settings-card p {
-        margin: 0 0 18px 0;
-        color: var(--ink-muted);
-        font-size: 0.88rem;
-      }
-      .setting-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 14px 0;
-        border-bottom: 1px solid var(--border-subtle);
-        gap: 20px;
-      }
-      .setting-row:last-child {
-        border-bottom: none;
-      }
-      .setting-info h4 {
-        margin: 0 0 4px 0;
-        font-size: 0.95rem;
-        color: var(--ink-primary);
-      }
-      .setting-info p {
-        margin: 0;
-        font-size: 0.82rem;
-        color: var(--ink-muted);
-      }
-      .toggle-switch {
-        position: relative;
-        display: inline-block;
-        width: 48px;
-        height: 26px;
-      }
-      .toggle-switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-      }
-      .toggle-slider {
-        position: absolute;
-        cursor: pointer;
-        inset: 0;
-        background-color: var(--surface-subtle);
-        border: 1px solid var(--border-subtle);
-        transition: 0.3s;
-        border-radius: 34px;
-      }
-      .toggle-slider:before {
-        position: absolute;
-        content: "";
-        height: 18px;
-        width: 18px;
-        left: 3px;
-        bottom: 3px;
-        background-color: var(--ink-primary);
-        transition: 0.3s;
-        border-radius: 50%;
-      }
-      .toggle-switch input:checked + .toggle-slider {
-        background-color: var(--accent);
-        border-color: var(--accent);
-      }
-      .toggle-switch input:checked + .toggle-slider:before {
-        transform: translateX(22px);
-        background-color: var(--accent-contrast);
-      }
+      .settings-card h3 { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; display: flex; align-items: center; gap: 10px; margin: 0 0 6px; color: var(--ink-primary); }
+      .settings-card > p { color: var(--ink-muted); font-size: 0.9rem; margin: 0 0 18px; }
+      .setting-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 14px 0; border-top: 1px solid var(--border-subtle); }
+      .setting-info h4 { font-size: 0.94rem; font-weight: 600; margin: 0 0 3px; color: var(--ink-primary); }
+      .setting-info p { font-size: 0.83rem; color: var(--ink-muted); margin: 0; }
+
       .account-header {
-        display: flex;
-        align-items: center;
-        gap: 20px;
         background: var(--surface-card);
         border: 1px solid var(--border-subtle);
         border-radius: var(--radius-md);
-        padding: 24px;
-        margin-bottom: 24px;
-        box-shadow: var(--shadow-sm);
-      }
-      .account-avatar {
-        width: 68px;
-        height: 68px;
-        border-radius: 50%;
-        background: var(--surface-subtle);
-        border: 2px solid var(--accent);
+        padding: 22px;
         display: flex;
         align-items: center;
-        justify-content: center;
+        gap: 18px;
+        margin-bottom: 18px;
+      }
+      .account-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 12px;
+        background: var(--secondary);
+        color: #ffffff;
+        display: grid;
+        place-items: center;
+        font-family: var(--font-display);
         font-size: 1.8rem;
-        color: var(--accent);
-        font-weight: 700;
         overflow: hidden;
+        flex-shrink: 0;
       }
-      .account-avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-      .account-details h2 {
-        margin: 0 0 6px 0;
-        font-size: 1.35rem;
-        color: var(--ink-primary);
-      }
-      .account-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 4px 10px;
-        border-radius: 999px;
-        background: var(--accent-soft);
-        color: var(--accent);
-        font-size: 0.78rem;
-        font-weight: 600;
-      }
+      .account-avatar img { width: 100%; height: 100%; object-fit: cover; }
+      .account-details h2 { font-family: var(--font-display); font-size: 1.5rem; margin: 0 0 4px; }
+      .account-badge { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 0.74rem; padding: 3px 10px; border-radius: var(--radius-pill); background: var(--tint); color: var(--secondary); }
 
-      /* Login Modal */
+      /* Modals */
       .mo {
-        position: fixed; inset: 0; z-index: 2000;
-        background: rgba(0,0,0,0.65);
-        display: none; align-items: center; justify-content: center;
-        padding: 16px; backdrop-filter: blur(4px);
+        position: fixed;
+        inset: 0;
+        background: rgba(28, 27, 25, 0.56);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        z-index: 9500;
       }
       .mo.open { display: flex; }
       .md {
         background: var(--surface-card);
-        border: 1px solid var(--border-strong);
-        border-radius: var(--radius-md);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-lg);
+        width: 100%;
+        max-width: 480px;
+        padding: 24px;
         box-shadow: var(--shadow-lg);
-        max-width: 480px; width: 100%;
-        overflow: hidden;
-        animation: moFadeIn 0.2s ease-out;
       }
-      .md-hd {
-        padding: 24px;
-        border-bottom: 1px solid var(--border-subtle);
-      }
-      .md-hd h2 {
-        margin: 0 0 6px 0;
-        font-size: 1.35rem;
-        color: var(--ink-primary);
-      }
-      .md-hd p {
-        margin: 0;
-        color: var(--ink-muted);
-        font-size: 0.9rem;
-      }
-      .md-body {
-        padding: 24px;
-      }
-      .ml {
-        display: block;
-        font-size: 0.82rem;
-        font-weight: 600;
-        color: var(--ink-secondary);
-        margin-bottom: 6px;
-      }
+      .md-hd h2 { font-family: var(--font-display); font-size: 1.45rem; margin: 0 0 4px; }
+      .md-hd p { font-size: 0.88rem; color: var(--ink-muted); margin: 0 0 18px; }
+      .ml { display: block; font-family: var(--font-mono); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-muted); margin-bottom: 6px; }
       .mi {
         width: 100%;
-        padding: 10px 14px;
         background: var(--surface-subtle);
         border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
         color: var(--ink-primary);
+        padding: 10px 12px;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-main);
         font-size: 0.92rem;
         margin-bottom: 14px;
-        outline: none;
       }
-      .mi:focus {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 3px var(--accent-soft);
-      }
-      .gbtn {
+      .ms, .gbtn, .msk, .msk-danger {
         width: 100%;
-        padding: 11px 16px;
-        background: var(--surface-card);
+        padding: 11px 14px;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-main);
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
         border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        color: var(--ink-primary);
-        font-size: 0.9rem;
-        font-weight: 600;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        margin-bottom: 16px;
-        transition: all 0.2s ease;
+        margin-top: 8px;
       }
-      .gbtn:hover {
-        background: var(--surface-hover);
-        border-color: var(--border-strong);
-      }
-      .ms {
-        width: 100%;
-        padding: 12px;
-        background: var(--accent);
-        color: var(--accent-contrast);
-        border: none;
-        border-radius: var(--radius-sm);
-        font-weight: 700;
-        cursor: pointer;
-        transition: background 0.2s ease;
-      }
-      .ms:hover {
-        background: var(--accent-hover);
-      }
-      .msk {
-        padding: 10px 18px;
-        background: var(--surface-subtle);
-        color: var(--ink-primary);
-        border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
-        cursor: pointer;
-        font-weight: 600;
-      }
-      .msk:hover {
-        background: var(--surface-hover);
-      }
-      .msk-danger {
-        background: var(--danger);
-        color: #fff;
-        border: none;
-        border-radius: var(--radius-sm);
-        padding: 10px 18px;
-        cursor: pointer;
-        font-weight: 600;
-      }
+      .ms { background: var(--accent); color: #ffffff; border-color: var(--accent); }
+      .gbtn { background: var(--surface-subtle); color: var(--ink-primary); display: flex; align-items: center; justify-content: center; gap: 10px; }
+      .msk { background: var(--surface-subtle); color: var(--ink-primary); }
+      .msk-danger { background: var(--danger-soft); color: var(--danger); border-color: var(--danger); }
 
-      /* Toast Notification */
       .toast {
         position: fixed;
         bottom: 24px;
         right: 24px;
-        background: var(--surface-card);
-        color: var(--ink-primary);
-        border: 1px solid var(--border-strong);
+        background: var(--ink-primary);
+        color: var(--surface-card);
+        padding: 12px 18px;
         border-radius: var(--radius-sm);
-        padding: 12px 20px;
-        box-shadow: var(--shadow-lg);
-        font-size: 0.9rem;
-        font-weight: 600;
+        font-size: 0.86rem;
+        font-weight: 500;
         z-index: 9999;
-        display: flex;
-        align-items: center;
-        gap: 10px;
         transform: translateY(100px);
         opacity: 0;
-        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        transition: transform 0.25s ease, opacity 0.25s ease;
         pointer-events: none;
       }
-      .toast.show {
-        transform: translateY(0);
-        opacity: 1;
-        pointer-events: auto;
+      .toast.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+      .toast.green { border-left: 4px solid var(--secondary); }
+      .toast.err { border-left: 4px solid var(--danger); }
+      .tpl-preview-box {
+        width: 140px;
+        height: 140px;
+        background: #ffffff;
+        border: 1px solid var(--border-subtle);
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
       }
-      .toast.green {
-        border-left: 4px solid var(--success);
-      }
-      .toast.err {
-        border-left: 4px solid var(--danger);
+
+      @media (max-width: 960px) {
+        .qr-app { grid-template-columns: 1fr; }
+        .app-sb { flex-direction: row; flex-wrap: wrap; border-right: none; border-bottom: 1px solid var(--border-subtle); padding: 12px; gap: 6px; }
+        .sb-top, .sb-lbl, .sb-foot { display: none; }
+        .db-stats { grid-template-columns: 1fr; }
+        .db-container { padding: 18px 14px 86px; }
       }
     </style>
 
     <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/qr" />
-
     <script defer src="col-router.js"></script>
     <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
     <link rel="manifest" href="manifest.json" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-      <link rel="icon" type="image/png" href="Icon.png" />
-  
+    <link rel="icon" type="image/png" href="Icon.png" />
     <meta name="robots" content="noindex, nofollow" />
-    <meta property="og:title" content="QR Command Center | Class Of Learners" />
-    <meta property="og:description" content="QR Command Center — create, manage, and track dynamic QR codes with live scan analytics." />
+    <meta property="og:title" content="CraftQR Library &amp; Analytics | Class Of Learners" />
+    <meta property="og:description" content="CraftQR Library — manage dynamic QR codes, edit live links, and view scan analytics." />
     <meta property="og:url" content="https://advancedlogiclabs.dpdns.org/qr" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://advancedlogiclabs.dpdns.org/og/qr.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="QR Command Center | Class Of Learners" />
-    <meta name="twitter:description" content="QR Command Center — create, manage, and track dynamic QR codes with live scan analytics." />
+    <meta name="twitter:title" content="CraftQR Library &amp; Analytics | Class Of Learners" />
+    <meta name="twitter:description" content="CraftQR Library — manage dynamic QR codes, edit live links, and view scan analytics." />
     <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/og/qr.jpg" />
-  <link rel="stylesheet" href="qr-skin.css" />
-<script defer src="qr-compose.js"></script>
-</head>
+    <link rel="stylesheet" href="qr-skin.css" />
+    <script defer src="qr-compose.js"></script>
+  </head>
   <body>
-    <div class="loader col-skeleton-screen sk-theme-emerald" id="loader" role="status" aria-busy="true" aria-label="Loading QR Studio Command Center">
-  <div class="sk-ambient-glow" aria-hidden="true"></div>
-  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
-  <header class="sk-nav" aria-hidden="true">
-    <div class="sk-nav-brand">
-      <div class="sk-circle sk-brand-logo sk-shimmer"></div>
-      <div class="sk-pill sk-brand-text sk-shimmer"></div>
-    </div>
-    <div class="sk-nav-links">
-      <div class="sk-pill sk-shimmer" style="width: 56px; height: 14px;"></div>
-      <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
-      <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
-      <div class="sk-pill sk-shimmer" style="width: 80px; height: 14px;"></div>
-      <div class="sk-pill sk-shimmer" style="width: 68px; height: 14px;"></div>
-    </div>
-    <div class="sk-nav-actions">
-      <div class="sk-pill sk-nav-search sk-shimmer"></div>
-      <div class="sk-circle sk-nav-theme sk-shimmer"></div>
-      <div class="sk-pill sk-nav-btn sk-shimmer" style="width: 78px;"></div>
-      <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 118px;"></div>
-    </div>
-  </header>
-  <div class="sk-workspace-2col" aria-hidden="true">
-    <aside class="sk-sidebar">
-      <div class="sk-pill sk-shimmer-accent" style="width: 150px; height: 24px; margin-bottom: 6px;"></div>
-      <div class="sk-card" style="padding: 14px; gap: 10px;">
-        <div class="sk-box sk-shimmer-accent" style="width: 100%; height: 38px;"></div>
-        <div class="sk-box sk-shimmer" style="width: 100%; height: 38px;"></div>
-        <div class="sk-box sk-shimmer" style="width: 100%; height: 38px;"></div>
-        <div class="sk-box sk-shimmer" style="width: 100%; height: 38px;"></div>
+    <div class="loader col-skeleton-screen" id="loader" role="status" aria-busy="true" aria-label="Loading CraftQR Library">
+      <header class="sk-nav" aria-hidden="true">
+        <div class="sk-nav-brand">
+          <div class="sk-circle sk-brand-logo sk-shimmer"></div>
+          <div class="sk-pill sk-brand-text sk-shimmer"></div>
+        </div>
+        <div class="sk-nav-links">
+          <div class="sk-pill sk-shimmer" style="width: 56px; height: 14px;"></div>
+          <div class="sk-pill sk-shimmer" style="width: 62px; height: 14px;"></div>
+          <div class="sk-pill sk-shimmer" style="width: 66px; height: 14px;"></div>
+        </div>
+        <div class="sk-nav-actions">
+          <div class="sk-pill sk-nav-search sk-shimmer"></div>
+          <div class="sk-circle sk-nav-theme sk-shimmer"></div>
+          <div class="sk-pill sk-nav-cta sk-shimmer" style="width: 118px;"></div>
+        </div>
+      </header>
+      <div class="sk-workspace-2col" aria-hidden="true">
+        <aside class="sk-sidebar">
+          <div class="sk-pill sk-shimmer-accent" style="width: 150px; height: 24px; margin-bottom: 6px;"></div>
+          <div class="sk-card" style="padding: 14px; gap: 10px;">
+            <div class="sk-box sk-shimmer-accent" style="width: 100%; height: 38px;"></div>
+            <div class="sk-box sk-shimmer" style="width: 100%; height: 38px;"></div>
+            <div class="sk-box sk-shimmer" style="width: 100%; height: 38px;"></div>
+          </div>
+        </aside>
+        <div style="display:flex;flex-direction:column;gap:20px;min-width:0;">
+          <div class="sk-banner-box" style="margin-bottom:0;">
+            <div style="display:flex;flex-direction:column;gap:8px;flex:1;"><div class="sk-title-bar sk-shimmer" style="width: 240px; height: 28px;"></div><div class="sk-lede-line sk-shimmer" style="width: 65%;"></div></div>
+            <div class="sk-btn sk-btn-primary sk-shimmer" style="width: 156px; height: 42px;"></div>
+          </div>
+        </div>
       </div>
-    </aside>
-    <div style="display:flex;flex-direction:column;gap:20px;min-width:0;">
-      <div class="sk-banner-box" style="margin-bottom:0;">
-        <div style="display:flex;flex-direction:column;gap:8px;flex:1;"><div class="sk-title-bar sk-shimmer" style="width: 240px; height: 28px;"></div><div class="sk-lede-line sk-shimmer" style="width: 65%;"></div></div>
-        <div class="sk-btn sk-btn-primary sk-shimmer" style="width: 156px; height: 42px;"></div>
-      </div>
-      <div class="sk-grid sk-grid-3">
-        <div class="sk-card"><div class="sk-pill sk-shimmer" style="width: 82px; height: 14px;"></div><div class="sk-title-bar sk-shimmer-accent" style="width: 96px; height: 30px;"></div></div>
-        <div class="sk-card"><div class="sk-pill sk-shimmer" style="width: 94px; height: 14px;"></div><div class="sk-title-bar sk-shimmer" style="width: 96px; height: 30px;"></div></div>
-        <div class="sk-card"><div class="sk-pill sk-shimmer" style="width: 78px; height: 14px;"></div><div class="sk-title-bar sk-shimmer" style="width: 96px; height: 30px;"></div></div>
-      </div>
-      <div class="sk-table-card">
-        <div class="sk-table-row"><div class="sk-box sk-shimmer" style="width:32px;height:32px;"></div><div class="sk-lede-line sk-shimmer" style="width:68%;"></div><div class="sk-pill sk-shimmer" style="width:74px;height:20px;"></div><div class="sk-lede-line sk-shimmer" style="width:60px;"></div><div class="sk-pill sk-shimmer" style="width:70px;height:26px;"></div></div>
-        <div class="sk-table-row"><div class="sk-box sk-shimmer" style="width:32px;height:32px;"></div><div class="sk-lede-line sk-shimmer" style="width:54%;"></div><div class="sk-pill sk-shimmer-accent" style="width:74px;height:20px;"></div><div class="sk-lede-line sk-shimmer" style="width:60px;"></div><div class="sk-pill sk-shimmer" style="width:70px;height:26px;"></div></div>
-        <div class="sk-table-row"><div class="sk-box sk-shimmer" style="width:32px;height:32px;"></div><div class="sk-lede-line sk-shimmer" style="width:72%;"></div><div class="sk-pill sk-shimmer" style="width:74px;height:20px;"></div><div class="sk-lede-line sk-shimmer" style="width:60px;"></div><div class="sk-pill sk-shimmer" style="width:70px;height:26px;"></div></div>
-      </div>
+      <footer class="sk-status-dock" aria-hidden="true">
+        <div class="sk-status-pill">
+          <span class="sk-pulse-live"></span>
+          <span class="sk-status-text"><span>CraftQR</span> &middot; Library &amp; Analytics</span>
+          <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+        </div>
+      </footer>
     </div>
-  </div>
-  <footer class="sk-status-dock" aria-hidden="true">
-    <div class="sk-status-pill">
-      <span class="sk-pulse-live"></span>
-      <span class="sk-status-text"><span>QR Studio</span> &middot; Command Center</span>
-      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
-    </div>
-  </footer>
-</div>
-    <a href="#qrMainContent" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;padding:8px 16px;background:var(--pri);color:#000;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;" onfocus="this.style.cssText='position:fixed;left:0;top:0;width:auto;height:auto;z-index:9999;padding:8px 16px;background:var(--pri);color:#000;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;'" onblur="this.style.cssText='position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;padding:8px 16px;background:var(--pri);color:#000;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;'">Skip to main content</a>
 
-            <div class="top-nav-shield" aria-hidden="true"></div>
+    <a href="#qrMainContent" class="skip-link" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;padding:8px 16px;background:#BF3B1E;color:#ffffff;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;" onfocus="this.style.cssText='position:fixed;left:0;top:0;width:auto;height:auto;z-index:9999;padding:8px 16px;background:#BF3B1E;color:#ffffff;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;'" onblur="this.style.cssText='position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;z-index:9999;padding:8px 16px;background:#BF3B1E;color:#ffffff;border-radius:0 0 8px 0;font-weight:700;text-decoration:none;'">Skip to main content</a>
+
+    <div class="top-nav-shield" aria-hidden="true"></div>
     <nav class="top-nav" id="topNav" data-page="projects">
       <a href="/" class="nav-brand"><img src="Class.png" alt="Class Of Learners" class="brand-logo" width="56" height="56" fetchpriority="high" decoding="async" /><span class="brand-name">Class Of Learners</span></a>
       <div class="nav-links" id="navLinks">
-        <a href="/" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>Home</a>
-        <a href="about" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>About</a>
-        <a href="school" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" /></svg>School</a>
-        <a href="sneh-asha" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" /></svg>Sneh Asha</a>
-        <a href="making" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>Making</a>
+        <a href="/" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>Home</a>
+        <a href="about" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>About</a>
+        <a href="school" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z" /><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z" /></svg>School</a>
+        <a href="sneh-asha" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" /></svg>Sneh Asha</a>
+        <a href="making" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>Making</a>
         <div class="dropdown" id="projDD">
-          <button class="dropdown-btn act">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>Projects <span class="darr">&#9660;</span>
+          <button class="dropdown-btn act" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>Projects 
           </button>
           <div class="dropdown-content">
             <div class="dropdown-content-inner">
-              <a href="ati"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7" /><line x1="9" y1="20" x2="15" y2="20" /><line x1="12" y1="4" x2="12" y2="20" /></svg>Typing Instructor</a>
-              <a href="solar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5" /><line x1="12" y1="12" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" /><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" /><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" /></svg>Solar Engine</a>
-              <a href="gesture"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 010 8h-1" /><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z" /><line x1="6" y1="1" x2="6" y2="4" /><line x1="10" y1="1" x2="10" y2="4" /><line x1="14" y1="1" x2="14" y2="4" /></svg>Perceptus Flow</a>
-              <a href="rpg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>RPG Game</a>
-              <a href="qr" class="act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="8" height="8" rx="1" /><rect x="14" y="2" width="8" height="8" rx="1" /><rect x="2" y="14" width="8" height="8" rx="1" /><rect x="14" y="14" width="4" height="4" /><rect x="20" y="14" width="2" height="2" /><rect x="14" y="20" width="2" height="2" /><rect x="20" y="20" width="2" height="2" /></svg>QR Studio Matrix</a>
-              <a href="Terra3D/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" /></svg>Terra3D Atlas</a>
-              <a href="Career"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" /></svg>Career Compass</a>
-              <a href="Database_Logic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /><line x1="9" y1="7" x2="16" y2="7" /><line x1="9" y1="11" x2="14" y2="11" /></svg>Database Logic DB</a>
-              <a href="CastFlow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>CastFlow Studio</a>
-              <a href="cereal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /><line x1="12" y1="19" x2="12" y2="23" /><line x1="8" y1="23" x2="16" y2="23" /></svg>Cereal AI App</a>
+              <a href="ati"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7" /><line x1="9" y1="20" x2="15" y2="20" /><line x1="12" y1="4" x2="12" y2="20" /></svg>Typing Instructor</a>
+              <a href="solar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5" /></svg>Solar Engine</a>
+              <a href="gesture"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1" /><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z" /></svg>Perceptus Flow</a>
+              <a href="rpg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>RPG Game</a>
+              <a href="qr" class="act"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="8" height="8" rx="1" /><rect x="14" y="2" width="8" height="8" rx="1" /><rect x="2" y="14" width="8" height="8" rx="1" /><rect x="14" y="14" width="4" height="4" /></svg>CraftQR</a>
+              <a href="Terra3D/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /></svg>Terra3D Atlas</a>
+              <a href="Career"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" /></svg>Career Compass</a>
+              <a href="Database_Logic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /></svg>Database Logic DB</a>
+              <a href="CastFlow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" /></svg>CastFlow Studio</a>
+              <a href="cereal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" /></svg>Cereal AI App</a>
             </div>
           </div>
         </div>
       </div>
       <div class="nav-actions">
-        <button type="button" class="nav-cmd-trigger no-cap" onclick="if(window.openColCmdPalette)window.openColCmdPalette();else window.location.href='/?search=true'" title="Press Ctrl+K or / to search all 16 applications" aria-label="Search site (Ctrl K)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <button type="button" class="nav-cmd-trigger no-cap" onclick="if(window.openColCmdPalette)window.openColCmdPalette();else window.location.href='/?search=true'" title="Press Ctrl+K or / to search all applications" aria-label="Search site (Ctrl K)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
           <span>Search</span>
           <kbd class="col-os-key">Ctrl K</kbd>
         </button>
         <div class="hz-toggle" onclick="hzToggle()" title="Toggle Appearance"><div class="hz-clouds"></div><div class="hz-stars"></div><div class="hz-orb"></div></div>
         <button class="nav-login-btn" id="navLoginBtn" onclick="if(window.openGlobalLogin)window.openGlobalLogin();else if(window.openLogin)window.openLogin();" type="button">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-            <circle cx="12" cy="7" r="4" /></svg
-          >Sign In
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>Sign In
         </button>
         <div class="nav-user-profile" id="navUserProfile" onclick="if(window.openGlobalLogin)window.openGlobalLogin();else if(window.openLogin)window.openLogin();">
           <div class="nav-user-avatar" id="navUserAv">?</div>
@@ -813,31 +646,32 @@
     <div class="qr-app" role="main" id="qrMainContent">
       <aside class="app-sb">
         <div class="sb-top">
-          <div class="sb-top-title" style="display:flex; align-items:center; justify-content:center; gap:8px;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="stroke:var(--pri);"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-            <span>QR STUDIO</span>
+          <div class="sb-brand-row">
+            <span class="sb-brand-title">CraftQR</span>
+            <span class="sb-brand-tag">All Free</span>
           </div>
         </div>
 
         <div class="sb-lbl">Create</div>
-        <a href="qr-editor" class="sb-btn"><span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>New QR</a>
-        <a href="qr-editor.html?action=bulk" class="sb-btn"><span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>Bulk QR Generation</a>
+        <a href="qr-editor" class="sb-btn"><span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>New QR Studio</a>
+        <a href="qr-editor.html?action=bulk" class="sb-btn"><span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>Bulk Generator</a>
+        <a href="qr-editor.html?action=scan" class="sb-btn"><span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg></span>Decode Scanner</a>
 
-        <div class="sb-lbl" style="margin-top: 15px">Manage &amp; Telemetry</div>
+        <div class="sb-lbl" style="margin-top:10px;">Manage &amp; Telemetry</div>
         <a href="#" class="sb-btn act" id="sbtn-qrs" onclick="switchView('qrs'); return false;">
-          <span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>
-          My Saved Codes
+          <span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg></span>
+          Saved Library
         </a>
         <a href="#" class="sb-btn" id="sbtn-stats" onclick="switchView('stats'); return false;">
           <span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
-          Analytics &amp; Stats
+          Scan Analytics
         </a>
         <a href="#" class="sb-btn" id="sbtn-templates" onclick="switchView('templates'); return false;">
-          <span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></span>
-          Design Templates
+          <span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg></span>
+          Starter Templates
         </a>
         <a href="#" class="sb-btn" id="sbtn-settings" onclick="switchView('settings'); return false;">
-          <span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+          <span class="sb-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
           Settings &amp; Backup
         </a>
         <a href="#" class="sb-btn" id="sbtn-account" onclick="switchView('account'); return false;">
@@ -845,19 +679,16 @@
           Account &amp; Sync
         </a>
 
-
-      <div class="sb-foot">
-          <button class="sign-btn" id="sbSignBtn" onclick="openLogin()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z" />
-            </svg>
-            Sign In To Save
+        <div class="sb-foot">
+          <button class="sign-btn" id="sbSignBtn" onclick="openLogin()" type="button">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.34 0-10 1.67-10 5v2h20v-2c0-3.33-6.66-5-10-5z" /></svg>
+            Sign In to Sync
           </button>
           <div class="pcard" id="pCard" style="display: none" onclick="openLogin()">
             <div class="pav" id="pAv">?</div>
             <div class="pinfo">
               <div class="pname" id="pName">User</div>
-              <div class="pemail" id="pEmail">tap to edit</div>
+              <div class="pemail" id="pEmail">tap to manage</div>
             </div>
           </div>
         </div>
@@ -868,38 +699,35 @@
           <div id="view-qrs" class="db-view">
             <div class="db-hd">
               <div class="db-hd-info">
-                <h2>My Saved Codes</h2>
-                <p id="dbSub">Manage, inspect, and export your offline generated QR matrices.</p>
+                <h2>Saved Library</h2>
+                <p id="dbSub">Edit live dynamic links, export print sheets, and track scans — 100% free.</p>
               </div>
-              <a href="qr-editor" class="btn-nx"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Create New</a>
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <input type="file" id="importQrTop" accept=".json" style="display:none" onchange="importQRsJSON(event)" />
+                <button class="dbf-btn" onclick="document.getElementById('importQrTop').click()" type="button">Import JSON</button>
+                <a href="qr-editor" class="btn-nx"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Create New</a>
+              </div>
             </div>
 
-            <div class="db-sync-bar" id="dbSyncBar" style="display: none">
+            <div class="db-sync-bar" id="dbSyncBar">
               <div class="db-sync-info">
-                <svg width="20" height="20" viewBox="0 0 87.3 78" fill="#10b981">
-                  <path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8H0a7.3 7.3 0 0 0 1 3.55z" />
-                  <path d="M43.65 25L29.9 1.2a8.8 8.8 0 0 0-3.3 3.3L1 65.2a7.3 7.3 0 0 0-1 3.65h27.45z" />
-                  <path d="M73.55 76.8a8.8 8.8 0 0 0 3.3-3.3l1.6-2.75 7.65-13.25a7.3 7.3 0 0 0 1-3.65H59.85l5.5 10.45z" />
-                  <path d="M43.65 25L57.4 1.2A8.6 8.6 0 0 0 53.73 0H33.58a8.6 8.6 0 0 0-3.68 1.2z" fill="#00832d" />
-                  <path d="M59.85 53.5H27.45L13.7 77.1c1.35.8 2.9 1.2 4.5 1.2h50.6c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc" />
-                  <path d="M73.4 26.5l-13-22.5a8.8 8.8 0 0 0-3-3.3L43.65 25 59.85 53.5h27.4a7.3 7.3 0 0 0-1-3.65z" />
-                </svg>
-                Cloud Backup: <span id="driveStatus">Not Synced</span>
+                <span class="sync-pill" id="driveStatus">Local Storage Active</span>
+                <span id="cloudSyncHint">Sign in with Class Of Learners to sync dynamic codes across devices.</span>
               </div>
-              <div style="display: flex; gap: 10px">
-                <button class="dbf" onclick="syncDrive()" style="display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Upload to Drive</button>
-                <button class="dbf" onclick="loadFromDrive()" style="display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Fetch from Drive</button>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="dbf-btn" onclick="syncDrive()" type="button">Sync Cloud</button>
+                <button class="dbf-btn" onclick="exportAllQRsJSON()" type="button">Backup JSON</button>
               </div>
             </div>
 
             <div class="db-stats">
               <div class="st-card">
                 <div class="st-card-left">
-                  <div class="l">Total Generated</div>
+                  <div class="l">Saved Codes</div>
                   <div class="v" id="stTotal">0</div>
                 </div>
                 <div class="st-card-icon" aria-hidden="true">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
                 </div>
               </div>
               <div class="st-card">
@@ -908,7 +736,7 @@
                   <div class="v" id="stTypes">0</div>
                 </div>
                 <div class="st-card-icon" aria-hidden="true">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>
                 </div>
               </div>
               <div class="st-card">
@@ -917,36 +745,40 @@
                   <div class="v" id="stLast">&mdash;</div>
                 </div>
                 <div class="st-card-icon" aria-hidden="true">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 </div>
               </div>
             </div>
 
             <div class="db-toolbar">
-              <div class="db-search-wrap">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <input type="text" id="qrSearch" class="db-search-input" placeholder="Search saved codes by title, URL, or data..." aria-label="Search saved QR codes" oninput="searchDB(this.value)" autocomplete="off" />
+              <div class="db-top-row">
+                <div class="db-search-wrap">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input type="text" id="qrSearch" class="db-search-input" placeholder="Search codes by title, URL, short code, or format..." aria-label="Search saved QR codes" oninput="searchDB(this.value)" autocomplete="off" />
+                </div>
+                <div class="db-actions-row">
+                  <select id="qrSort" class="db-select" aria-label="Sort codes" onchange="sortDB(this.value)">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="name">Title (A-Z)</option>
+                    <option value="type">Format Type</option>
+                  </select>
+                  <button class="dbf-btn" id="viewModeBtn" onclick="toggleViewMode()" type="button" title="Toggle Grid / List view">List View</button>
+                  <button class="dbf-btn" onclick="exportAllQRsJSON()" type="button" title="Export all codes as JSON">Export JSON</button>
+                </div>
               </div>
               <div class="db-filt">
-                <button class="dbf act" onclick="fDB('all', this)">All Types</button>
-                <button class="dbf" onclick="fDB('url', this)">Website</button>
-                <button class="dbf" onclick="fDB('wifi', this)">Wi-Fi</button>
-                <button class="dbf" onclick="fDB('vcard', this)">Contacts</button>
-                <button class="dbf" onclick="fDB('text', this)">Plain Text</button>
-              </div>
-              <div class="db-actions-row">
-                <select id="qrSort" class="db-select" aria-label="Sort codes" onchange="sortDB(this.value)">
-                  <option value="newest">Newest First</option>
-                  <option value="oldest">Oldest First</option>
-                  <option value="name">Title (A-Z)</option>
-                  <option value="type">Format Type</option>
-                </select>
-                <button class="dbf-btn" onclick="exportAllQRsJSON()" title="Export all codes as JSON">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                  Export JSON
-                </button>
+                <button class="dbf act" onclick="fDB('all', this)" type="button">All Types</button>
+                <button class="dbf" onclick="fDB('dynamic', this)" type="button">Dynamic Links</button>
+                <button class="dbf" onclick="fDB('url', this)" type="button">Website</button>
+                <button class="dbf" onclick="fDB('upi', this)" type="button">UPI &amp; Pay</button>
+                <button class="dbf" onclick="fDB('menu', this)" type="button">Menu &amp; Review</button>
+                <button class="dbf" onclick="fDB('wifi', this)" type="button">Wi-Fi</button>
+                <button class="dbf" onclick="fDB('vcard', this)" type="button">Contacts</button>
+                <button class="dbf" onclick="fDB('text', this)" type="button">Text</button>
               </div>
             </div>
+
             <div class="db-grid" id="dbG"></div>
           </div>
 
@@ -957,126 +789,201 @@
         </div>
 
         <footer class="sf site-footer" style="content-visibility:auto; contain-intrinsic-size: auto 200px">
-      <div class="fi">
-        <div class="sf-primary-row">
-          <div class="fb sf-brand-wrap">
-            <span class="sf-brand-name">Class Of Learners <span class="sf-brand-dot">&bull;</span> CoL</span>
-            <span class="sf-status-pill"><span class="m-dot m-emerald"></span> All Systems Operational</span>
+          <div class="fi">
+            <div class="sf-primary-row">
+              <div class="fb sf-brand-wrap">
+                <span class="sf-brand-name">Class Of Learners <span class="sf-brand-dot">&bull;</span> CraftQR</span>
+                <span class="sf-status-pill"><span class="m-dot m-emerald"></span> All Systems Operational</span>
+              </div>
+              <div class="sf-btn-wrap">
+                <button type="button" class="sf-cmd-btn no-cap" onclick="if(window.openColCmdPalette)window.openColCmdPalette();else window.location.href='/?search=true'" title="Press Ctrl+K or / to search applications">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <span>Quick Launcher</span>
+                  <kbd class="col-os-key">Ctrl K</kbd>
+                </button>
+              </div>
+            </div>
+            <nav class="sf-nav-links" aria-label="Footer Navigation">
+              <a href="about">About</a>
+              <a href="making">Making</a>
+              <a href="download">Downloads</a>
+              <a href="mailto:neelgbadri@col.dpdns.org">Contact Us</a>
+              <a href="feedback">Feedback</a>
+              <a href="privacy">Privacy</a>
+              <a href="terms">Terms</a>
+            </nav>
+            <div class="sf-secondary-row">
+              <div class="sf-founders-text">&copy; 2026 Class Of Learners. Built with pride by Neel, Ansh, &amp; Aarush in Mumbai, India.</div>
+              <div class="sf-meta">CraftQR All-in-One Studio &bull; Zero Paywalls</div>
+            </div>
           </div>
-          <div class="sf-btn-wrap">
-            <button type="button" class="sf-cmd-btn no-cap" onclick="if(window.openColCmdPalette)window.openColCmdPalette();else window.location.href='/?search=true'" title="Press Ctrl+K or / to search all 16 applications">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              <span>Quick Launcher</span>
-              <kbd class="col-os-key">Ctrl K</kbd>
-            </button>
-          </div>
-        </div>
-
-        <nav class="sf-nav-links" aria-label="Footer Navigation">
-          <a href="about">About</a>
-          <a href="making">Making</a>
-          <a href="download">Downloads</a>
-          <a href="mailto:neelgbadri@col.dpdns.org">Contact Us</a>
-          <a href="feedback">Feedback</a>
-          <a href="privacy">Privacy</a>
-          <a href="terms">Terms</a>
-        </nav>
-
-        <div class="sf-secondary-row">
-          <div class="sf-founders-text">&copy; 2026 Class Of Learners. Built with pride by Neel, Ansh, &amp; Aarush in Mumbai, India.</div>
-          <div class="sf-meta">Independent Native Software Engineering &bull; Pure First Principles</div>
-        </div>
-      </div>
-    </footer>
+        </footer>
       </div>
     </div>
+
+    <!-- Quick Edit Destination Modal -->
+    <div class="mo" id="quickEditMo" role="dialog" aria-modal="true" aria-labelledby="qeTitle">
+      <div class="md">
+        <div class="md-hd">
+          <h2 id="qeTitle">Quick-Edit Dynamic Code</h2>
+          <p id="qeSub">Update the live redirect URL or pause this campaign without reprinting.</p>
+        </div>
+        <div class="md-body">
+          <input type="hidden" id="qeId" />
+          <label class="ml" for="qeName">Title / Label</label>
+          <input class="mi" id="qeName" type="text" placeholder="Campaign name..." />
+          <label class="ml" for="qeDest">Destination URL / Payload</label>
+          <input class="mi" id="qeDest" type="text" placeholder="https://example.com" />
+          <label style="display:flex; align-items:center; gap:8px; margin:4px 0 14px; font-size:0.88rem; cursor:pointer;">
+            <input type="checkbox" id="qePaused" style="width:17px; height:17px; accent-color:var(--accent);" />
+            <span>Pause scans on this short link</span>
+          </label>
+          <button class="ms" onclick="saveQuickEdit()" type="button">Save Changes Live</button>
+          <button class="msk" onclick="closeQuickEdit()" type="button">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="mo" id="loginMo" role="dialog" aria-modal="true" aria-labelledby="moAuthTitle">
+      <div class="md">
+        <div class="md-hd">
+          <h2 id="moAuthTitle">Authenticate</h2>
+          <p id="moAuthSub">Sign in to sync CraftQR codes across devices.</p>
+        </div>
+        <div class="md-body">
+          <div id="loggedOutPanel">
+            <button class="gbtn" id="gSignInBtn" onclick="gSignIn()" type="button">
+              <svg width="18" height="18" viewBox="0 0 48 48">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+              </svg>
+              Sign in with Google
+            </button>
+          </div>
+          <div id="loggedInPanel" style="display: none">
+            <label class="ml" for="miEmail">Google Email</label>
+            <input class="mi" id="miEmail" type="email" readonly style="opacity: 0.6; cursor: not-allowed;" />
+            <label class="ml" for="miName">Display Username</label>
+            <input class="mi" id="miName" type="text" placeholder="Choose a username..." maxlength="40" />
+            <button class="ms" onclick="updateUsername()" type="button">Save Username</button>
+            <button class="msk-danger" onclick="doLogout()" type="button">Disconnect Account</button>
+          </div>
+          <button class="msk" onclick="closeMo()" type="button">Close / Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <script>
       var Storage = {
         get: function (key) {
           try {
-            var ck = window.ColCookie ? window.ColCookie.get(key) : null
-            if (ck !== null) return ck
-            return localStorage.getItem(key)
-          } catch (e) {
-            return null
-          }
+            var ck = window.ColCookie ? window.ColCookie.get(key) : null;
+            if (ck !== null) return ck;
+            return localStorage.getItem(key);
+          } catch (e) { return null; }
         },
         set: function (key, val) {
           try {
-            if (window.ColCookie) { window.ColCookie.set(key, val, 365) }
-            localStorage.setItem(key, val)
+            if (window.ColCookie) window.ColCookie.set(key, val, 365);
+            localStorage.setItem(key, val);
           } catch (e) {}
         }
-      }
+      };
 
-      window._qrStub = function (m) {
-        try { toast(m || 'Coming Soon') } catch (e) { alert(m || 'Coming Soon') }
-      }
-      window._qrRange = function (r) {
-        try { toast('Range: ' + r) } catch (e) {}
-      }
-      var dbSearchQuery = ''
-      var dbSortOrder = 'newest'
-      var GOOGLE_CLIENT_ID = '500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com'
-      let curUser = null,
-        dbFil = 'all',
-        googleAccessToken = null,
-        driveFileId = null
-      let saved = []
+      var dbSearchQuery = '';
+      var dbSortOrder = 'newest';
+      var dbViewMode = Storage.get('craftqr_view') || 'grid';
+      var GOOGLE_CLIENT_ID = '500448449044-hv2rp3k0lsok9ara1bred87c75lnsp7l.apps.googleusercontent.com';
+      let curUser = null, dbFil = 'all', googleAccessToken = null;
+      let saved = [];
 
       try {
-        const sData = Storage.get('qrs_min')
-        if (sData) saved = JSON.parse(sData).map(function (q) { if (q && q.thumb && !/^data:image\//.test(q.thumb)) q.thumb = ''; return q })
+        const sData = Storage.get('qrs_min');
+        if (sData) {
+          saved = JSON.parse(sData).map(function (q) {
+            if (q && q.thumb && !/^data:image\//.test(q.thumb)) q.thumb = '';
+            return q;
+          });
+        }
       } catch (e) {}
 
-      function switchView(viewId) {
-        document.querySelectorAll('.db-view').forEach((v) => (v.style.display = 'none'))
-        const target = document.getElementById('view-' + viewId)
-        if (target) target.style.display = 'block'
-
-        document.querySelectorAll('.app-sb .sb-btn').forEach((btn) => {
-          if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(viewId)) {
-            btn.classList.add('act')
-          } else if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes('switchView')) {
-            btn.classList.remove('act')
-          }
-        })
-
-        if (viewId === 'stats') renderStats()
-        if (viewId === 'templates') renderTemplates()
-        if (viewId === 'settings') renderSettings()
-        if (viewId === 'account') renderAccount()
+      function toast(msg, cls) {
+        let t = document.getElementById('toast');
+        if (!t) return;
+        t.textContent = msg;
+        t.className = 'toast ' + (cls || '');
+        t.classList.add('show');
+        clearTimeout(window._tt);
+        window._tt = setTimeout(() => t.classList.remove('show'), 3000);
       }
 
-      // Lazy-load external libraries on demand
-      var _libCache = {}
+      var _libCache = {};
       function loadLib(name, url) {
-        if (_libCache[name]) return _libCache[name]
-        _libCache[name] = new Promise(function(resolve, reject) {
-          var s = document.createElement('script')
-          s.src = url; s.onload = resolve; s.onerror = reject
-          document.head.appendChild(s)
-        })
-        return _libCache[name]
+        if (_libCache[name]) return _libCache[name];
+        _libCache[name] = new Promise(function (resolve, reject) {
+          var s = document.createElement('script');
+          s.src = url;
+          s.onload = resolve;
+          s.onerror = reject;
+          document.head.appendChild(s);
+        });
+        return _libCache[name];
       }
 
       function escHtml(s) {
-        return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+        return String(s == null ? '' : s)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function switchView(viewId) {
+        document.querySelectorAll('.db-view').forEach((v) => (v.style.display = 'none'));
+        const target = document.getElementById('view-' + viewId);
+        if (target) target.style.display = 'block';
+        document.querySelectorAll('.app-sb .sb-btn').forEach((btn) => {
+          const oc = btn.getAttribute('onclick') || '';
+          if (oc.includes("'" + viewId + "'")) btn.classList.add('act');
+          else if (oc.includes('switchView')) btn.classList.remove('act');
+        });
+        if (viewId === 'stats') renderStats();
+        if (viewId === 'templates') renderTemplates();
+        if (viewId === 'settings') renderSettings();
+        if (viewId === 'account') renderAccount();
+      }
+
+      function toggleViewMode() {
+        dbViewMode = dbViewMode === 'grid' ? 'list' : 'grid';
+        Storage.set('craftqr_view', dbViewMode);
+        renderDB();
+      }
+
+      function matchesFilter(q, fil) {
+        if (fil === 'all') return true;
+        if (fil === 'dynamic') return !!(q.isDynamic || q.shortCode);
+        if (fil === 'upi') return q.type === 'upi' || q.type === 'payment' || q.type === 'crypto';
+        if (fil === 'menu') return q.type === 'menu' || q.type === 'feedback' || q.type === 'coupon' || q.type === 'business';
+        if (fil === 'vcard') return q.type === 'vcard' || q.type === 'vcard+' || q.type === 'event' || q.type === 'calendar';
+        return q.type === fil;
       }
 
       function renderDB() {
-        var list = saved.slice();
-        if (dbFil !== 'all') {
-          list = list.filter(function (q) { return q.type === dbFil });
-        }
+        var list = saved.filter(function (q) { return matchesFilter(q, dbFil); });
         if (dbSearchQuery) {
           var qLower = dbSearchQuery.toLowerCase();
           list = list.filter(function (q) {
             var name = (q.advSettings && q.advSettings.name ? q.advSettings.name : (q.content || '')).toLowerCase();
             var content = String(q.content || '').toLowerCase();
             var type = String(q.typeName || q.type || '').toLowerCase();
-            return name.includes(qLower) || content.includes(qLower) || type.includes(qLower);
+            var sc = String(q.shortCode || '').toLowerCase();
+            return name.includes(qLower) || content.includes(qLower) || type.includes(qLower) || sc.includes(qLower);
           });
         }
         if (dbSortOrder === 'oldest') {
@@ -1088,273 +995,362 @@
             return na.localeCompare(nb);
           });
         } else if (dbSortOrder === 'type') {
-          list.sort(function (a, b) { return (a.type || '').localeCompare(b.type || '') });
+          list.sort(function (a, b) { return (a.type || '').localeCompare(b.type || ''); });
         }
-        const filtered = list;
-        document.getElementById('stTotal').textContent = saved.length
 
-        const uniqueTypes = []
-        saved.forEach(function (q) {
-          if (uniqueTypes.indexOf(q.type) === -1) uniqueTypes.push(q.type)
-        })
-        document.getElementById('stTypes').textContent = uniqueTypes.length
-        document.getElementById('stLast').textContent = saved.length > 0 ? saved[0].date : '—'
+        document.getElementById('stTotal').textContent = saved.length;
+        const uniqueTypes = [];
+        saved.forEach(function (q) { if (uniqueTypes.indexOf(q.type) === -1) uniqueTypes.push(q.type); });
+        document.getElementById('stTypes').textContent = uniqueTypes.length;
+        document.getElementById('stLast').textContent = saved.length > 0 ? (saved[0].date || 'Today') : '—';
 
-        const dbs = document.getElementById('dbSub')
-        if (curUser && dbs) dbs.textContent = `Dashboard synced. ${saved.length} assets ready.`
+        const dbs = document.getElementById('dbSub');
+        if (curUser && dbs) dbs.textContent = `Library synced. ${saved.length} CraftQR assets ready.`;
 
-        const g = document.getElementById('dbG')
-        if (!g) return
-        g.innerHTML = ''
-        if (!filtered.length) {
+        const g = document.getElementById('dbG');
+        if (!g) return;
+        g.classList.toggle('list-view', dbViewMode === 'list');
+        const vmb = document.getElementById('viewModeBtn');
+        if (vmb) vmb.textContent = dbViewMode === 'list' ? 'Grid View' : 'List View';
+
+        g.innerHTML = '';
+        if (!list.length) {
           g.innerHTML = `<div class="db-emp">
-            <div class="ei" style="margin-bottom:16px;">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="stroke:var(--pri); filter:drop-shadow(0 0 12px var(--glow));">
-                <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/>
-              </svg>
+            <div style="margin-bottom:14px; color:var(--accent);">
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
             </div>
-            <h2 style="font-size:1.4rem; font-weight:800; color:var(--txt); margin-bottom:8px;">Workspace Ready</h2>
-            <p style="font-size:0.95rem; color:var(--txt-m); max-width:440px; margin:0 auto 20px; line-height:1.5;">Create a high-resolution custom QR code with embedded logo, custom styles, or generate codes in bulk.</p>
-            <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-bottom:10px;">
-              <a href="qr-editor" class="btn-nx" style="margin:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Create Custom QR</a>
-              <a href="qr-editor?action=bulk" class="dbf" style="display:inline-flex; align-items:center; gap:6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Bulk Generation</a>
+            <h2 style="font-family:var(--font-display); font-size:1.5rem; margin:0 0 8px;">${saved.length ? 'No matching codes' : 'Your CraftQR library is ready'}</h2>
+            <p style="font-size:0.93rem; color:var(--ink-muted); max-width:440px; margin:0 auto 20px; line-height:1.5;">${saved.length ? 'Clear or adjust your search query and category filter.' : 'Design custom framed QR codes, UPI payment tiles, menus, review gates, or bulk batches — all free with zero paywalls.'}</p>
+            <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+              <a href="qr-editor" class="btn-nx">Create Custom QR</a>
+              <a href="qr-editor.html?action=bulk" class="btn-spruce">Bulk Generator</a>
             </div>
-          </div>`
-          return
+          </div>`;
+          return;
         }
-        var frag = document.createDocumentFragment()
-        filtered.forEach((q) => {
-          const c = document.createElement('div')
-          c.className = 'dbc'
-          const rawName = q.advSettings && q.advSettings.name ? q.advSettings.name : (q.content || '')
-          const nameStr = String(rawName)
-          const shortC = escHtml(nameStr.length > 38 ? nameStr.substring(0, 38) + '...' : nameStr)
-          const safeTitle = escHtml(String(q.content || ''))
-          const safeType = escHtml(String(q.typeName || 'QR Code'))
-          const safeDate = escHtml(String(q.date || ''))
-          c.innerHTML = `<div class="dbt">${q.thumb ? `<img src="${q.thumb}" alt="QR" loading="lazy">` : '<div style="font-size:2rem;opacity:.25;display:flex;align-items:center;justify-content:center;height:100%;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>'}</div>
-    <div class="dbb"><div class="dtyp" style="display:flex;align-items:center;gap:6px;">${q.typeIcon || ''} <span>${safeType}</span></div><h3 title="${safeTitle}">${shortC}</h3><div class="ddt" style="display:flex;align-items:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${safeDate}</div></div>
-    <div class="dba"><button class="dba-btn" onclick="editQR(${q.id})" style="display:flex;align-items:center;justify-content:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Editor</button><button class="dba-btn" onclick="reDL(${q.id})" style="display:flex;align-items:center;justify-content:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export</button><button class="dba-btn del" onclick="delQR(${q.id})" style="display:flex;align-items:center;justify-content:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Delete</button></div>`
-          frag.appendChild(c)
-        })
-        g.appendChild(frag)
+
+        var frag = document.createDocumentFragment();
+        list.forEach((q) => {
+          const c = document.createElement('div');
+          c.className = 'dbc';
+          const dynEntry = (q.shortCode && window.DYNAMIC_QR) ? DYNAMIC_QR.getByCode(q.shortCode) : null;
+          const isPaused = !!(q.paused || (dynEntry && dynEntry.paused));
+          const scansCount = Math.max(q.scans_count || 0, (dynEntry && dynEntry.scans) || 0);
+          const rawName = q.advSettings && q.advSettings.name ? q.advSettings.name : (q.content || '');
+          const nameStr = String(rawName);
+          const shortC = escHtml(nameStr.length > 40 ? nameStr.substring(0, 40) + '...' : nameStr);
+          const safeTitle = escHtml(String(q.content || ''));
+          const safeType = escHtml(String(q.typeName || q.type || 'QR Code'));
+          const safeDate = escHtml(String(q.date || ''));
+          const isDyn = !!(q.isDynamic || q.shortCode);
+
+          c.innerHTML = `
+            <div class="dbt">
+              <div class="qr-badge-row">
+                <span class="qr-pill ${isDyn ? 'dyn' : ''}">${isDyn ? 'Dynamic' : 'Static'}</span>
+                ${isPaused ? '<span class="qr-pill paused">Paused</span>' : ''}
+              </div>
+              ${q.thumb ? `<img src="${q.thumb}" alt="QR" loading="lazy" decoding="async">` : '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.35;"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>'}
+            </div>
+            <div class="dbb">
+              <div class="dtyp">${safeType}${isDyn && scansCount ? ` &middot; ${scansCount} scans` : ''}</div>
+              <h3 title="${safeTitle}">${shortC}</h3>
+              <div class="ddt">${safeDate}${q.shortCode ? ' &middot; #' + escHtml(q.shortCode) : ''}</div>
+            </div>
+            <div class="dba">
+              <button class="dba-btn" onclick="editQR(${q.id})" type="button">Editor</button>
+              ${isDyn ? `<button class="dba-btn" onclick="openQuickEdit(${q.id})" type="button">Quick Edit</button>` : ''}
+              ${isDyn ? `<button class="dba-btn" onclick="copyShortUrl('${escHtml(q.shortUrl || q.shortCode)}')" type="button">Copy Link</button>` : ''}
+              <button class="dba-btn" onclick="duplicateQR(${q.id})" type="button">Clone</button>
+              <button class="dba-btn" onclick="reDL(${q.id})" type="button">Export</button>
+              <button class="dba-btn del" onclick="delQR(${q.id})" type="button">Delete</button>
+            </div>
+          `;
+          frag.appendChild(c);
+        });
+        g.appendChild(frag);
       }
 
       function fDB(type, btn) {
-        dbFil = type
-        document.querySelectorAll('.dbf').forEach((b) => {
-          if (b === btn) b.classList.add('act')
-          else b.classList.remove('act')
-        })
-        renderDB()
+        dbFil = type;
+        document.querySelectorAll('.db-filt .dbf').forEach((b) => b.classList.toggle('act', b === btn));
+        renderDB();
       }
-      async function delQR(id) {
-        if (!confirm('Permanently purge this QR asset?')) return
-        let idx = -1
-        let deletedItem = null
-        for (let i = 0; i < saved.length; i++) {
-          if (saved[i].id === id) {
-            idx = i
-            deletedItem = saved[i]
-            break
+
+      function openQuickEdit(id) {
+        const q = saved.find((x) => x.id === id);
+        if (!q) return;
+        const dynEntry = (q.shortCode && window.DYNAMIC_QR) ? DYNAMIC_QR.getByCode(q.shortCode) : null;
+        document.getElementById('qeId').value = String(id);
+        document.getElementById('qeName').value = (q.advSettings && q.advSettings.name) || '';
+        const decoded = (dynEntry && window.DYNAMIC_QR) ? DYNAMIC_QR.decodePayload(dynEntry.destination || '') : null;
+        document.getElementById('qeDest').value = (decoded && decoded.url) ? decoded.url : ((dynEntry && dynEntry.destination) || q.content || '');
+        document.getElementById('qePaused').checked = !!(q.paused || (dynEntry && dynEntry.paused));
+        document.getElementById('quickEditMo').classList.add('open');
+      }
+
+      function closeQuickEdit() {
+        const mo = document.getElementById('quickEditMo');
+        if (mo) mo.classList.remove('open');
+      }
+
+      async function saveQuickEdit() {
+        const id = parseInt(document.getElementById('qeId').value, 10);
+        const q = saved.find((x) => x.id === id);
+        if (!q) return;
+        const newName = document.getElementById('qeName').value.trim();
+        const newDest = document.getElementById('qeDest').value.trim();
+        const paused = document.getElementById('qePaused').checked;
+
+        if (!q.advSettings) q.advSettings = {};
+        if (newName) q.advSettings.name = newName;
+        if (newDest) q.content = newDest;
+        q.paused = paused;
+
+        let encodedDest = newDest || q.content;
+        if (q.shortCode && window.DYNAMIC_QR) {
+          const cur = DYNAMIC_QR.getByCode(q.shortCode);
+          const decoded = cur ? DYNAMIC_QR.decodePayload(cur.destination || '') : null;
+          if (decoded && decoded.t === 'go') {
+            encodedDest = DYNAMIC_QR.encodePayload(Object.assign(decoded, { url: newDest || decoded.url, paused: paused }));
+          } else if (paused) {
+            encodedDest = DYNAMIC_QR.encodePayload({ t: 'go', url: newDest || q.content, paused: true });
+          }
+          const allDyn = DYNAMIC_QR.getAll();
+          const di = allDyn.findIndex((x) => x.shortCode === q.shortCode || String(x.id) === String(q.shortCode));
+          if (di !== -1) {
+            allDyn[di].destination = encodedDest;
+            allDyn[di].title = newName || allDyn[di].title;
+            allDyn[di].paused = paused;
+            allDyn[di].updated = new Date().toISOString();
+            DYNAMIC_QR.saveAll(allDyn);
           }
         }
+
+        Storage.set('qrs_min', JSON.stringify(saved));
+        renderDB();
+        closeQuickEdit();
+        toast('Updated code live!', 'green');
+
+        try {
+          await DYNAMIC_QR.getSb();
+          if (window.supabaseClient && q.shortCode) {
+            await window.supabaseClient.from('qr_codes').update({
+              title: q.advSettings.name || q.typeName || 'QR Code',
+              destination_url: encodedDest,
+              qr_data: q,
+              updated_at: new Date().toISOString()
+            }).eq('short_code', q.shortCode);
+          }
+        } catch (e) {}
+      }
+
+      function duplicateQR(id) {
+        const src = saved.find((x) => x.id === id);
+        if (!src) return;
+        const copy = JSON.parse(JSON.stringify(src));
+        copy.id = Date.now();
+        copy.date = new Date().toLocaleDateString();
+        if (!copy.advSettings) copy.advSettings = {};
+        copy.advSettings.name = ((copy.advSettings.name || copy.typeName || 'QR') + ' (Copy)');
+        if (copy.isDynamic && window.DYNAMIC_QR) {
+          copy.shortCode = DYNAMIC_QR.generateShortCode ? DYNAMIC_QR.generateShortCode() : Math.random().toString(36).slice(2, 8).toUpperCase();
+          copy.shortUrl = (DYNAMIC_QR.baseUrl || (window.location.origin + '/q.html')) + '?id=' + copy.shortCode;
+          DYNAMIC_QR.save({
+            id: copy.id,
+            shortCode: copy.shortCode,
+            title: copy.advSettings.name,
+            type: copy.type,
+            destination: copy.content,
+            isDynamic: true
+          });
+        }
+        saved.unshift(copy);
+        Storage.set('qrs_min', JSON.stringify(saved));
+        renderDB();
+        toast('Duplicated into library', 'green');
+      }
+
+      async function delQR(id) {
+        if (!confirm('Permanently delete this QR asset?')) return;
+        let idx = saved.findIndex((x) => x.id === id);
+        let deletedItem = idx > -1 ? saved[idx] : null;
         if (idx > -1) {
-          saved.splice(idx, 1)
-          Storage.set('qrs_min', JSON.stringify(saved))
-          renderDB()
+          saved.splice(idx, 1);
+          Storage.set('qrs_min', JSON.stringify(saved));
+          renderDB();
         }
-        if (deletedItem && deletedItem.shortCode && window.DYNAMIC_QR) DYNAMIC_QR.delete(deletedItem.shortCode)
-        await DYNAMIC_QR.getSb()
-        if (window.supabaseClient && deletedItem) {
-          try {
-            if (deletedItem.shortCode) {
-              await window.supabaseClient.from('qr_codes').delete().eq('short_code', deletedItem.shortCode)
-            }
-          } catch(e) { console.error('Cloud delete failed', e) }
+        if (deletedItem && deletedItem.shortCode && window.DYNAMIC_QR) DYNAMIC_QR.delete(deletedItem.shortCode);
+        if (window.DYNAMIC_QR) await DYNAMIC_QR.getSb();
+        if (window.supabaseClient && deletedItem && deletedItem.shortCode) {
+          try { await window.supabaseClient.from('qr_codes').delete().eq('short_code', deletedItem.shortCode); } catch (e) {}
         }
+        toast('Deleted from library', 'green');
       }
+
       function delQRByCode(c) {
-        const it = saved.find((x) => x.shortCode === c)
-        if (it) delQR(it.id).then(() => renderStats())
+        const it = saved.find((x) => x.shortCode === c);
+        if (it) delQR(it.id).then(() => renderStats());
       }
+
       window.setStatsRange = function (v) {
-        window.statsDays = parseInt(v) || 30
-        renderStats()
-      }
+        window.statsDays = parseInt(v, 10) || 30;
+        renderStats();
+      };
+
       async function renderStats() {
-        const v = document.getElementById('view-stats')
-        if (!v) return
+        const v = document.getElementById('view-stats');
+        if (!v) return;
+        const days = window.statsDays || 30;
 
-        // Initial loading state
         v.innerHTML = `
-        <div class="db-hd" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-          <div><h2 style="font-size:2.2rem; margin:0;">Stats</h2></div>
-          <button class="dbf" onclick="downloadAnalyticsCSV()" style="border:1px solid var(--pri); color:var(--pri); background:transparent;">Export Information</button>
-        </div>
-        
-        
-        
-        <div style="display:flex; justify-content:space-between; margin-bottom:20px; align-items:center; flex-wrap:wrap; gap:15px;">
-            <div style="display:flex; gap:15px; align-items:center; flex-wrap:wrap;">
-                <select id="statsRange" aria-label="Date range" onchange="setStatsRange(this.value)" style="background:var(--panel); border:1px solid var(--border); color:var(--txt); padding:10px 15px; border-radius:8px; outline:none; font-family:var(--font-main);">${[7, 30, 90, 365].map((d) => `<option value="${d}"${d === (window.statsDays || 30) ? ' selected' : ''}>${d === 365 ? 'Last 12 months' : 'Last ' + d + ' days'}</option>`).join('')}</select>
-                <div style="background:var(--panel); border:1px solid var(--border); padding:10px 15px; border-radius:8px; color:var(--txt-m); font-size:0.9rem;">${new Date(Date.now() - ((window.statsDays || 30) - 1) * 864e5).toLocaleDateString()} &ndash; ${new Date().toLocaleDateString()} · ${Intl.DateTimeFormat().resolvedOptions().timeZone}</div>
+          <div class="db-hd">
+            <div class="db-hd-info">
+              <h2>Scan Analytics</h2>
+              <p>Unified cloud + local telemetry for all your dynamic QR campaigns.</p>
             </div>
-        </div>
+            <button class="btn-spruce" onclick="downloadAnalyticsCSV()" type="button">Export CSV Report</button>
+          </div>
 
-        
-
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:20px; margin-bottom:30px;" id="stats-cards-container">
-            <div style="padding: 50px; text-align: center; color: var(--txt-m); grid-column:1/-1;">
-               <div style="margin: 0 auto 20px auto; width: 40px; height: 40px; border: 4px solid rgba(16, 185, 129, 0.2); border-top: 4px solid var(--pri); border-radius: 50%; animation: spin 1s linear infinite;"></div>
-               <p>Syncing analytics data from cloud...</p>
+          <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:18px;">
+            <select id="statsRange" class="db-select" aria-label="Date range" onchange="setStatsRange(this.value)">
+              ${[7, 30, 90, 365].map((d) => `<option value="${d}"${d === days ? ' selected' : ''}>${d === 365 ? 'Last 12 months' : 'Last ' + d + ' days'}</option>`).join('')}
+            </select>
+            <div style="background:var(--surface-card); border:1px solid var(--border-subtle); padding:8px 14px; border-radius:var(--radius-sm); color:var(--ink-muted); font-family:var(--font-mono); font-size:0.78rem;">
+              ${new Date(Date.now() - (days - 1) * 864e5).toLocaleDateString()} &ndash; ${new Date().toLocaleDateString()} &middot; ${Intl.DateTimeFormat().resolvedOptions().timeZone}
             </div>
-        </div>
-        
-        <div class="dbc" style="padding: 25px; margin-bottom:25px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; flex-wrap:wrap; gap:15px;">
-                <div style="display:flex; gap:20px; align-items:center;">
-                    <label style="display:flex; gap:8px; align-items:center; cursor:pointer;"><input type="checkbox" checked style="accent-color:var(--pri); width:18px; height:18px;"> <span style="font-weight:600; font-size:0.95rem;">Totals</span></label>
-                    <label style="display:flex; gap:8px; align-items:center; cursor:pointer;"><input type="checkbox" style="accent-color:var(--pri); width:18px; height:18px;"> <span style="font-weight:600; font-size:0.95rem; color:var(--txt-m);">Uniques</span></label>
-                    <label style="display:flex; gap:8px; align-items:center; cursor:pointer;"><input type="checkbox" style="accent-color:var(--pri); width:18px; height:18px;"> <span style="font-weight:600; font-size:0.95rem; color:var(--txt-m);">Visits</span></label>
-                </div>
-                
-            </div>
-            <div style="width:100%; height:300px; position:relative;">
-                <canvas id="statsChart"></canvas>
-            </div>
-        </div>
+          </div>
 
-        <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:50px;" id="accordions-container">
-            <!-- Accordions rendered below -->
-        </div>
-    `
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px; margin-bottom:22px;" id="stats-cards-container">
+            <div style="padding: 36px; text-align: center; color: var(--ink-muted); grid-column:1/-1;">Loading analytics&hellip;</div>
+          </div>
 
-        // Initialize Supabase if needed
-        let sb = window.supabaseClient
-        if (!sb) {
+          <div class="settings-card" style="margin-bottom:22px;">
+            <div style="width:100%; height:290px; position:relative;">
+              <canvas id="statsChart"></canvas>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:40px;" id="accordions-container"></div>
+        `;
+
+        if (window.DYNAMIC_QR && DYNAMIC_QR.ready) { try { await DYNAMIC_QR.ready; } catch (e) {} }
+        let sb = window.supabaseClient;
+        if (!sb && window.DYNAMIC_QR) sb = await DYNAMIC_QR.getSb();
+
+        const myQrIds = saved.map((q) => String(q.id));
+        const byIdToCode = {};
+        saved.forEach((q) => { byIdToCode[String(q.id)] = q.shortCode || String(q.id); });
+
+        let cloudScans = [];
+        if (sb && myQrIds.length > 0) {
           try {
-            const res = await fetch('/config.json')
-            const config = await res.json()
-            if (config.auth && config.auth.url) {
-              if (typeof window.supabase === 'undefined') {
-                await new Promise((resolve) => {
-                  const script = document.createElement('script')
-                  script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'
-                  script.onload = resolve
-                  document.head.appendChild(script)
-                })
-              }
-              sb = window.supabase.createClient(config.auth.url, config.auth.key)
-              window.supabaseClient = sb
-            }
+            const { data } = await sb.from('qr_scans').select('*').in('qr_id', myQrIds);
+            if (data) cloudScans = data;
           } catch (e) {}
         }
 
-        const myQrIds = saved.map((q) => String(q.id))
-        let scans = []
+        const since = Date.now() - days * 864e5;
+        const normalized = [];
+        const seenKeys = new Set();
 
-        if (sb && myQrIds.length > 0) {
-          try {
-            const { data } = await sb.from('qr_scans').select('*').in('qr_id', myQrIds)
-            if (data) scans = data
-          } catch (e) {
-            console.error('Failed to load stats', e)
-          }
+        cloudScans.forEach((s) => {
+          const ts = new Date(s.scanned_at || s.created_at).getTime();
+          if (isNaN(ts) || ts < since) return;
+          const code = byIdToCode[String(s.qr_id)] || String(s.qr_id);
+          const key = code + '|' + Math.floor(ts / 1000);
+          seenKeys.add(key);
+          normalized.push({
+            code: code,
+            time: ts,
+            visitor: s.visitor_hash || ('c_' + (s.id || ts)),
+            country: s.country || 'Unknown',
+            city: s.city || '',
+            device: s.device_type || s.device || 'Unknown',
+            os: s.os || 'Unknown',
+            browser: s.browser || 'Unknown'
+          });
+        });
+
+        if (window.DYNAMIC_QR) {
+          saved.forEach((qr) => {
+            if (!qr.shortCode) return;
+            const local = DYNAMIC_QR.getByCode(qr.shortCode);
+            const log = (local && Array.isArray(local.analytics)) ? local.analytics : ((local && Array.isArray(local.scanLog)) ? local.scanLog : []);
+            log.forEach((s) => {
+              const ts = new Date(s.time).getTime();
+              if (isNaN(ts) || ts < since) return;
+              const key = qr.shortCode + '|' + Math.floor(ts / 1000);
+              if (seenKeys.has(key)) return;
+              seenKeys.add(key);
+              normalized.push({
+                code: qr.shortCode,
+                time: ts,
+                visitor: s.ip || s.visitorId || ('l_' + ts),
+                country: s.country || 'Local',
+                city: s.city || '',
+                device: s.device || 'Unknown',
+                os: s.os || 'Unknown',
+                browser: s.browser || 'Unknown'
+              });
+            });
+          });
         }
 
-        const _since = Date.now() - (window.statsDays || 30) * 864e5
-        scans = scans.filter((s) => new Date(s.scanned_at || s.created_at) >= _since)
-        const totalQRs = saved.length
-        const totalScans = scans.length
+        const totalScans = normalized.length;
+        const totalUnique = new Set(normalized.map((s) => s.visitor)).size;
+        const last24h = normalized.filter((s) => Date.now() - s.time < 864e5).length;
 
-        // Calculate unique scans (by visitor_hash)
-        const uniqueHashes = new Set(scans.filter((s) => s.visitor_hash).map((s) => s.visitor_hash))
-        const totalUnique = uniqueHashes.size
-        const totalVisits = scans.filter((s) => Date.now() - new Date(s.scanned_at || s.created_at) < 864e5).length
+        document.getElementById('stats-cards-container').innerHTML = `
+          <div class="st-card"><div><div class="stat-label">Total Codes</div><div class="stat-value">${saved.length}</div></div></div>
+          <div class="st-card"><div><div class="stat-label">Total Scans</div><div class="stat-value">${totalScans}</div></div></div>
+          <div class="st-card"><div><div class="stat-label">Unique Visitors</div><div class="stat-value">${totalUnique}</div></div></div>
+          <div class="st-card"><div><div class="stat-label">Last 24 Hours</div><div class="stat-value">${last24h}</div></div></div>
+        `;
 
-        const cardsHtml = `
-         <div class="st-card">
-            <div class="stat-value">${totalQRs}</div>
-            <div class="stat-label">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><rect x="7" y="7" width="3" height="3"></rect><rect x="14" y="7" width="3" height="3"></rect><rect x="7" y="14" width="3" height="3"></rect><rect x="14" y="14" width="3" height="3"></rect></svg> Total QR Codes
-            </div>
-         </div>
-         <div class="st-card">
-            <div class="stat-value">${totalScans}</div>
-            <div class="stat-label">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> Total Scans
-            </div>
-         </div>
-         <div class="st-card">
-            <div class="stat-value">${totalUnique}</div>
-            <div class="stat-label">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> Total Unique Scans
-            </div>
-         </div>
-         <div class="st-card">
-            <div class="stat-value">${totalVisits}</div>
-            <div class="stat-label">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg> Last 24 hours
-            </div>
-         </div>
-    `
-        document.getElementById('stats-cards-container').innerHTML = cardsHtml
-
-        // Render Chart.js (lazy-loaded)
-        const ctx = document.getElementById('statsChart').getContext('2d')
-        const today = new Date()
-        const labels = []
-        const dataPoints = []
-        for (let i = (window.statsDays || 30) - 1; i >= 0; i--) {
-          const d = new Date()
-          d.setDate(today.getDate() - i)
-          labels.push(d.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }))
-          dataPoints.push(0)
+        const labels = [], dataPoints = [];
+        const today = new Date();
+        for (let i = days - 1; i >= 0; i--) {
+          const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
+          labels.push(d.toLocaleDateString('en-US', { month: 'short', day: '2-digit' }));
+          dataPoints.push(0);
         }
+        normalized.forEach((s) => {
+          const dStr = new Date(s.time).toLocaleDateString('en-US', { month: 'short', day: '2-digit' });
+          const idx = labels.indexOf(dStr);
+          if (idx !== -1) dataPoints[idx]++;
+        });
 
-        scans.forEach((s) => {
-          const dStr = new Date(s.scanned_at || s.created_at).toLocaleDateString('en-US', { month: 'short', day: '2-digit' })
-          const idx = labels.indexOf(dStr)
-          if (idx !== -1) dataPoints[idx]++
-        })
-
-        if (window.myStatsChart) {
-          window.myStatsChart.destroy()
-        }
-
+        if (window.myStatsChart) window.myStatsChart.destroy();
         function getChartTheme() {
           const styles = getComputedStyle(document.documentElement);
           return {
-            accent: styles.getPropertyValue('--accent').trim() || '#b85d19',
-            accentSoft: styles.getPropertyValue('--accent-soft').trim() || 'rgba(184, 93, 25, 0.12)',
-            grid: styles.getPropertyValue('--border-subtle').trim() || 'rgba(255,255,255,0.08)',
-            text: styles.getPropertyValue('--ink-muted').trim() || '#888888'
+            accent: styles.getPropertyValue('--accent').trim() || '#BF3B1E',
+            accentSoft: styles.getPropertyValue('--accent-soft').trim() || 'rgba(191, 59, 30, 0.12)',
+            grid: styles.getPropertyValue('--border-subtle').trim() || '#D5CFC3',
+            text: styles.getPropertyValue('--ink-muted').trim() || '#5A564E'
           };
         }
-
-        const cTheme = getChartTheme()
-
-        loadLib('chart', 'https://cdn.jsdelivr.net/npm/chart.js').then(function(){
+        const cTheme = getChartTheme();
+        const ctx = document.getElementById('statsChart').getContext('2d');
+        loadLib('chart', 'https://cdn.jsdelivr.net/npm/chart.js').then(function () {
           window.myStatsChart = new Chart(ctx, {
             type: 'line',
             data: {
               labels: labels,
-              datasets: [
-                {
-                  label: 'Totals',
-                  data: dataPoints,
-                  borderColor: cTheme.accent,
-                  backgroundColor: cTheme.accentSoft,
-                  borderWidth: 2,
-                  pointBackgroundColor: '#fff',
-                  pointBorderColor: cTheme.accent,
-                  pointBorderWidth: 2,
-                  pointRadius: 4,
-                  fill: true,
-                  tension: 0.1
-                }
-              ]
+              datasets: [{
+                label: 'Scans',
+                data: dataPoints,
+                borderColor: cTheme.accent,
+                backgroundColor: cTheme.accentSoft,
+                borderWidth: 2,
+                pointBackgroundColor: '#FBF9F5',
+                pointBorderColor: cTheme.accent,
+                pointBorderWidth: 2,
+                pointRadius: 3,
+                fill: true,
+                tension: 0.2
+              }]
             },
             options: {
               responsive: true,
@@ -1365,800 +1361,525 @@
                 x: { grid: { display: false }, ticks: { color: cTheme.text } }
               }
             }
-          })
-        }).catch(function(){ toast('Chart library failed to load', 'err') })
-
-        if (!window._qrThemeListenerAdded) {
-          window._qrThemeListenerAdded = true;
-          window.addEventListener('qr-theme-change', function () {
-            if (window.myStatsChart) {
-              const t = getChartTheme();
-              window.myStatsChart.data.datasets[0].borderColor = t.accent;
-              window.myStatsChart.data.datasets[0].backgroundColor = t.accentSoft;
-              window.myStatsChart.data.datasets[0].pointBorderColor = t.accent;
-              window.myStatsChart.options.scales.y.grid.color = t.grid;
-              window.myStatsChart.options.scales.y.ticks.color = t.text;
-              window.myStatsChart.options.scales.x.ticks.color = t.text;
-              window.myStatsChart.update();
-            }
           });
-        }
+        }).catch(function () {});
 
-        // Render accordions with actual analytics data
-        const dynamicQrCodes = saved.filter(q => q.isDynamic || q.shortCode);
+        const dynamicQrCodes = saved.filter((q) => q.isDynamic || q.shortCode);
+        const tally = (arr, key) => arr.reduce((m, r) => { const k = r[key] || 'Unknown'; m[k] = (m[k] || 0) + 1; return m; }, {});
         let accHtml = '';
-        
         dynamicQrCodes.forEach((qr) => {
-          if(!qr.shortCode) return;
-          const analytics = DYNAMIC_QR.getAnalytics(qr.shortCode, (window.statsDays || 30) + 'd');
-          if(!analytics) return;
-          
-          const byDay = analytics.byDay || {};
-          const byCountry = analytics.byCountry || {};
-          const byDevice = analytics.byDevice || {};
-          const byOS = analytics.byOS || {};
-          const byBrowser = analytics.byBrowser || {};
-          
+          if (!qr.shortCode) return;
+          const rows = normalized.filter((s) => s.code === qr.shortCode).sort((a, b) => b.time - a.time);
+          const uniq = new Set(rows.map((r) => r.visitor)).size;
+          const byCountry = tally(rows, 'country');
+          const byDevice = tally(rows, 'device');
+          const byOS = tally(rows, 'os');
+          const byBrowser = tally(rows, 'browser');
+          const renderKV = (obj) => Object.entries(obj).sort((a, b) => b[1] - a[1]).slice(0, 5)
+            .map(([k, n]) => `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border-subtle);"><span>${escHtml(k)}</span><strong>${n}</strong></div>`)
+            .join('') || '<div style="color:var(--ink-muted);">No scans yet</div>';
+
           accHtml += `
-            <div style="background:var(--panel); border:1px solid var(--border); border-radius:8px; overflow:hidden; transition:0.3s; margin-bottom:15px;" class="acc-box">
-                <button style="width:100%; padding:20px; background:transparent; border:none; display:flex; justify-content:space-between; align-items:center; cursor:pointer; color:var(--txt); font-weight:700; font-size:1rem;" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'none' ? 'block' : 'none'; this.querySelector('svg').style.transform = this.nextElementSibling.style.display === 'block' ? 'rotate(180deg)' : 'rotate(0deg)';">
-                    ${escHtml(qr.typeName || qr.type)} ${escHtml(qr.advSettings?.name || '')}
-                    <span style="font-size:0.85rem; color:var(--txt-m); font-weight:500;">${analytics.totalScans} scans / ${analytics.uniqueScans} unique</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:0.3s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                </button>
-                <div style="display:none; padding: 0 20px 20px 20px; color:var(--txt-m); font-size:0.9rem; border-top:1px solid rgba(255,255,255,0.05);">
-                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px; padding-top:20px;">
-                        <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:15px;">
-                            <div style="font-size:0.75rem; color:var(--txt-m); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Total Scans</div>
-                            <div style="font-size:1.5rem; font-weight:800; color:var(--pri);">${analytics.totalScans}</div>
-                        </div>
-                        <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:15px;">
-                            <div style="font-size:0.75rem; color:var(--txt-m); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Unique Scans</div>
-                            <div style="font-size:1.5rem; font-weight:800; color:var(--pri);">${analytics.uniqueScans}</div>
-                        </div>
-                        <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:15px;">
-                            <div style="font-size:0.75rem; color:var(--txt-m); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">Today</div>
-                            <div style="font-size:1.5rem; font-weight:800; color:var(--pri);">${analytics.scansToday}</div>
-                        </div>
-                        <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:15px;">
-                            <div style="font-size:0.75rem; color:var(--txt-m); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">This Week</div>
-                            <div style="font-size:1.5rem; font-weight:800; color:var(--pri);">${analytics.scansThisWeek}</div>
-                        </div>
-                    </div>
-                    
-                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:15px; margin-top:20px;">
-                        <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:15px;">
-                            <div style="font-size:0.75rem; color:var(--txt-m); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">Top Countries</div>
-                            <div style="font-size:0.85rem; color:var(--txt);">
-                                ${Object.entries(analytics.byCountry).slice(0,5).map(([c,n]) => `<div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border);">${escHtml(c)} <strong>${n}</strong></div>`).join('') || 'No data'}
-                            </div>
-                        </div>
-                        <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:15px;">
-                            <div style="font-size:0.75rem; color:var(--txt-m); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">Devices</div>
-                            <div style="font-size:0.85rem; color:var(--txt);">
-                                ${Object.entries(analytics.byDevice).map(([c,n]) => `<div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border);">${escHtml(c)} <strong>${n}</strong></div>`).join('') || 'No data'}
-                            </div>
-                        </div>
-                        <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:15px;">
-                            <div style="font-size:0.75rem; color:var(--txt-m); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">Operating Systems</div>
-                            <div style="font-size:0.85rem; color:var(--txt);">
-                                ${Object.entries(analytics.byOS).map(([c,n]) => `<div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border);">${escHtml(c)} <strong>${n}</strong></div>`).join('') || 'No data'}
-                            </div>
-                        </div>
-                        <div style="background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:15px;">
-                            <div style="font-size:0.75rem; color:var(--txt-m); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">Browsers</div>
-                            <div style="font-size:0.85rem; color:var(--txt);">
-                                ${Object.entries(analytics.byBrowser).map(([c,n]) => `<div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid var(--border);">${escHtml(c)} <strong>${n}</strong></div>`).join('') || 'No data'}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div style="margin-top:20px; padding-top:15px; border-top:1px solid var(--border);">
-                        <div style="font-weight:600; margin-bottom:10px; color:var(--txt);">Recent Scans</div>
-                        <div style="max-height:200px; overflow-y:auto; font-size:0.8rem; color:var(--txt-m);">
-                            ${analytics.recentScans.slice().reverse().map(s => `<div style="padding:8px 0; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; gap:10px;"><span>${new Date(s.time).toLocaleString()}</span><span>${escHtml(s.country)}, ${escHtml(s.city)}</span><span>${escHtml(s.device)}/${escHtml(s.os)}</span><span>${escHtml(s.browser)}</span></div>`).join('') || '<div style="padding:20px; text-align:center; color:var(--txt-m);">No recent scans</div>'}
-                        </div>
-                        <div style="display:flex; gap:10px; margin-top:15px;">
-                            <button class="dbf" onclick="downloadAnalyticsCSV('${qr.shortCode}')">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                Download CSV
-                            </button>
-                            <button class="dbf" onclick="copyShortUrl('${qr.shortUrl || qr.shortCode}')">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-                                Copy Short URL
-                            </button>
-                            <button class="dbf" style="background:rgba(239,68,68,0.1); color:#f87171; border-color:#ef4444;" onclick="delQRByCode('${qr.shortCode}')">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-                                Delete
-                            </button>
-                        </div>
+            <div class="settings-card" style="padding:0; overflow:hidden; margin-bottom:0;">
+              <button type="button" style="width:100%; padding:16px 20px; background:transparent; border:none; display:flex; justify-content:space-between; align-items:center; cursor:pointer; color:var(--ink-primary); font-family:var(--font-main); font-weight:600; font-size:0.98rem;" onclick="const p=this.nextElementSibling; p.style.display=p.style.display==='none'?'block':'none';">
+                <span>${escHtml(qr.advSettings?.name || qr.typeName || qr.shortCode)} <span style="font-family:var(--font-mono); font-size:0.74rem; color:var(--ink-muted);">#${escHtml(qr.shortCode)}</span></span>
+                <span style="font-family:var(--font-mono); font-size:0.8rem; color:var(--secondary);">${rows.length} scans &middot; ${uniq} unique &#9662;</span>
+              </button>
+              <div style="display:none; padding:18px 20px; border-top:1px solid var(--border-subtle);">
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:12px;">
+                  <div style="background:var(--surface-subtle); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:12px;"><div class="ml">Countries</div>${renderKV(byCountry)}</div>
+                  <div style="background:var(--surface-subtle); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:12px;"><div class="ml">Devices</div>${renderKV(byDevice)}</div>
+                  <div style="background:var(--surface-subtle); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:12px;"><div class="ml">OS</div>${renderKV(byOS)}</div>
+                  <div style="background:var(--surface-subtle); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:12px;"><div class="ml">Browsers</div>${renderKV(byBrowser)}</div>
                 </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;">
+                  <button class="dbf-btn" onclick="downloadAnalyticsCSV('${escHtml(qr.shortCode)}')" type="button">Download CSV</button>
+                  <button class="dbf-btn" onclick="copyShortUrl('${escHtml(qr.shortUrl || qr.shortCode)}')" type="button">Copy Short URL</button>
+                  <button class="dbf-btn" style="color:var(--danger); border-color:var(--danger);" onclick="delQRByCode('${escHtml(qr.shortCode)}')" type="button">Delete</button>
+                </div>
+              </div>
             </div>
-          `
+          `;
         });
-        
-        if(!accHtml) {
-          accHtml = '<div style="padding:50px; text-align:center; color:var(--txt-m);"><p>No dynamic QR codes found. Create one in the editor to see analytics.</p></div>';
-        }
-        document.getElementById('accordions-container').innerHTML = accHtml;
+        document.getElementById('accordions-container').innerHTML = accHtml ||
+          '<div class="db-emp"><p style="color:var(--ink-muted); margin:0;">No dynamic QR codes yet. Create a Dynamic code in the Studio to inspect scan breakdowns.</p></div>';
       }
+
+      const CRAFT_TEMPLATES = [
+        { id: 'business_card', title: 'Editorial Contact+', desc: 'Iron Charcoal dots with Signal Vermilion eyes on Cardstock', fg: '#1C1B19', csq: '#BF3B1E', bg: '#FBF9F5', dot: 'rounded' },
+        { id: 'wifi_neon', title: 'Guest Wi-Fi Card', desc: 'Mineral Spruce badge for offices, studios & cafes', fg: '#22544C', csq: '#1C1B19', bg: '#F4F1EA', dot: 'classy-rounded' },
+        { id: 'minimal_menu', title: 'Tabletop Digital Menu', desc: 'Crisp high-contrast menu frame for fast table scans', fg: '#BF3B1E', csq: '#1C1B19', bg: '#FBF9F5', dot: 'extra-rounded' },
+        { id: 'social_hub', title: 'Link-in-Bio Hub', desc: 'Bold royal-cobalt dots ready for social bios & merch', fg: '#312E81', csq: '#4F46E5', bg: '#F8FAFC', dot: 'classy' },
+        { id: 'event_promo', title: 'Event & RSVP Pass', desc: 'Clean hairline square print ticket style', fg: '#1C1B19', csq: '#22544C', bg: '#FFFFFF', dot: 'dots' }
+      ];
 
       function renderTemplates() {
-        const v = document.getElementById('view-templates')
-        if (v.innerHTML !== '') return
+        const v = document.getElementById('view-templates');
+        if (!v || v.innerHTML !== '') return;
+        v.innerHTML = `
+          <div class="db-hd">
+            <div class="db-hd-info">
+              <h2>Starter Templates</h2>
+              <p>Pick any editorial style and customize every frame edge, font, gradient, or logo freely.</p>
+            </div>
+          </div>
+          <div class="db-grid">
+            ${CRAFT_TEMPLATES.map((t) => `
+              <a href="qr-editor.html?template=${t.id}" class="dbc" style="text-decoration:none; color:inherit;">
+                <div class="dbt">
+                  <div class="tpl-preview-box" id="tpl_${t.id}" style="background:${t.bg};"></div>
+                </div>
+                <div class="dbb">
+                  <div class="dtyp">Starter Preset</div>
+                  <h3>${escHtml(t.title)}</h3>
+                  <div class="ddt">${escHtml(t.desc)}</div>
+                </div>
+              </a>
+            `).join('')}
+          </div>
+        `;
+        loadLib('qr', 'https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js').then(function () {
+          if (!window.QRCodeStyling) return;
+          CRAFT_TEMPLATES.forEach((t) => {
+            const box = document.getElementById('tpl_' + t.id);
+            if (!box) return;
+            const qr = new QRCodeStyling({
+              width: 124,
+              height: 124,
+              data: 'https://advancedlogiclabs.dpdns.org/qr-editor?template=' + t.id,
+              dotsOptions: { type: t.dot, color: t.fg },
+              backgroundOptions: { color: t.bg },
+              cornersSquareOptions: { type: 'extra-rounded', color: t.csq },
+              cornersDotOptions: { type: 'dot', color: t.csq }
+            });
+            box.innerHTML = '';
+            qr.append(box);
+          });
+        }).catch(function () {});
+      }
+
+      function renderSettings() {
+        var v = document.getElementById('view-settings');
+        if (!v) return;
+        var storageBytes = 0;
+        try { storageBytes = new Blob([Storage.get('qrs_min') || '']).size; } catch (e) {}
+        var kb = (storageBytes / 1024).toFixed(1);
 
         v.innerHTML = `
-        <div class="db-hd">
-          <div><h2>Template Gallery</h2><p>Start with a premium pre-designed template and customize it.</p></div>
-        </div>
-        
-        <div class="db-grid" style="margin-top:20px;">
-            <a href="qr-editor.html?template=business_card" class="dbc" style="cursor:pointer;">
-                <div class="dbt" style="background: linear-gradient(135deg, #3b82f6, #2dd4bf);"><div style="display:flex;align-items:center;justify-content:center;height:100%;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div></div>
-                <div class="dbb"><h3>Modern Business Card</h3><div class="ddt">Professional layout with gradient logo support</div></div>
-            </a>
-            
-            <a href="qr-editor.html?template=wifi_neon" class="dbc" style="cursor:pointer;">
-                <div class="dbt" style="background: linear-gradient(135deg, #10b981, #f59e0b);"><div style="display:flex;align-items:center;justify-content:center;height:100%;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></div></div>
-                <div class="dbb"><h3>Neon Wi-Fi Access</h3><div class="ddt">Vibrant styling for quick guest access</div></div>
-            </a>
-            
-            <a href="qr-editor.html?template=minimal_menu" class="dbc" style="cursor:pointer;">
-                <div class="dbt" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);"><div style="display:flex;align-items:center;justify-content:center;height:100%;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg></div></div>
-                <div class="dbb"><h3>Minimalist Menu</h3><div class="ddt">Clean and scannable design for restaurants</div></div>
-            </a>
-            
-            <a href="qr-editor.html?template=social_hub" class="dbc" style="cursor:pointer;">
-                <div class="dbt" style="background: linear-gradient(135deg, #6366f1, #a855f7);"><div style="display:flex;align-items:center;justify-content:center;height:100%;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div></div>
-                <div class="dbb"><h3>Social Media Hub</h3><div class="ddt">Optimized for Linktree or social profiles</div></div>
-            </a>
+          <div class="db-hd">
+            <div class="db-hd-info">
+              <h2>Settings &amp; Backup</h2>
+              <p>Configure CraftQR export defaults and portable workspace backups.</p>
+            </div>
+          </div>
 
-            <a href="qr-editor.html?template=event_promo" class="dbc" style="cursor:pointer;">
-                <div class="dbt" style="background: linear-gradient(135deg, #f97316, #ea580c);"><div style="display:flex;align-items:center;justify-content:center;height:100%;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="m9 16 2 2 4-4"/></svg></div></div>
-                <div class="dbb"><h3>Event &amp; Ticket Promo</h3><div class="ddt">High-conversion flyer &amp; badge styling</div></div>
-            </a>
-        </div>
-    `
+          <div class="settings-card">
+            <h3>Default Export Preferences</h3>
+            <p>Applied when creating new QR codes in CraftQR Studio.</p>
+            <div class="setting-row">
+              <div class="setting-info"><h4>Default Resolution</h4><p>Canvas width for PNG &amp; WebP exports.</p></div>
+              <select class="db-select" id="prefResolution" onchange="Storage.set('col_qr_def_sz', this.value); toast('Default resolution saved', 'green');">
+                <option value="400">400px &mdash; Mobile</option>
+                <option value="800" selected>800px &mdash; Web Standard</option>
+                <option value="1200">1200px &mdash; HD Display</option>
+                <option value="2400">2400px &mdash; Print UHD</option>
+                <option value="4000">4000px &mdash; 300 DPI Press</option>
+              </select>
+            </div>
+            <div class="setting-row">
+              <div class="setting-info"><h4>Error Correction</h4><p>Higher recovery keeps logo-embedded codes easy to scan.</p></div>
+              <select class="db-select" id="prefEcl" onchange="Storage.set('col_qr_def_ecl', this.value); toast('Default error correction saved', 'green');">
+                <option value="L">Level L (7%)</option>
+                <option value="M">Level M (15%)</option>
+                <option value="Q">Level Q (25%)</option>
+                <option value="H" selected>Level H (30% &mdash; Recommended)</option>
+              </select>
+            </div>
+            <div class="setting-row">
+              <div class="setting-info"><h4>Default File Format</h4><p>Preferred download format.</p></div>
+              <select class="db-select" id="prefFmt" onchange="Storage.set('col_qr_def_fmt', this.value); toast('Default format saved', 'green');">
+                <option value="png" selected>PNG &mdash; Raster</option>
+                <option value="svg">SVG &mdash; Infinite Vector</option>
+                <option value="webp">WEBP &mdash; Compact Web</option>
+                <option value="pdf">PDF &mdash; Print Document</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <h3>Workspace Storage</h3>
+            <p>Currently using ${kb} KB across ${saved.length} saved QR assets in browser storage.</p>
+            <div class="setting-row">
+              <div class="setting-info"><h4>Export Workspace JSON</h4><p>Download all codes, custom designs, and analytics links.</p></div>
+              <button class="btn-nx" onclick="exportAllQRsJSON()" type="button">Export JSON</button>
+            </div>
+            <div class="setting-row">
+              <div class="setting-info"><h4>Import Backup JSON</h4><p>Restore saved codes from a previous backup file.</p></div>
+              <div>
+                <input type="file" id="importQrInput" accept=".json" style="display:none" onchange="importQRsJSON(event)" />
+                <button class="dbf-btn" onclick="document.getElementById('importQrInput').click()" type="button">Import JSON</button>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-info"><h4 style="color:var(--danger);">Clear Local Workspace</h4><p>Remove all locally stored codes on this device.</p></div>
+              <button class="dbf-btn" style="border-color:var(--danger); color:var(--danger);" onclick="clearAllQRs()" type="button">Clear All</button>
+            </div>
+          </div>
+        `;
+        var defSz = Storage.get('col_qr_def_sz');
+        if (defSz && document.getElementById('prefResolution')) document.getElementById('prefResolution').value = defSz;
+        var defEcl = Storage.get('col_qr_def_ecl');
+        if (defEcl && document.getElementById('prefEcl')) document.getElementById('prefEcl').value = defEcl;
+        var defFmt = Storage.get('col_qr_def_fmt');
+        if (defFmt && document.getElementById('prefFmt')) document.getElementById('prefFmt').value = defFmt;
       }
 
-      function editQR(id) {
-        window.location.href = 'qr-editor.html?id=' + id
+      function renderAccount() {
+        var v = document.getElementById('view-account');
+        if (!v) return;
+        var u = window.colUser || curUser || null;
+        var name = (u && u.name) ? u.name : 'Local CraftQR Session';
+        var email = (u && u.email) ? u.email : 'Browser-only storage (sign in to sync cloud campaigns)';
+        var pic = (u && u.picture) ? u.picture : '';
+        var initial = name.charAt(0).toUpperCase();
+
+        v.innerHTML = `
+          <div class="db-hd">
+            <div class="db-hd-info">
+              <h2>Account &amp; Sync</h2>
+              <p>Connect your Class Of Learners account to keep dynamic QR codes synced across devices.</p>
+            </div>
+          </div>
+
+          <div class="account-header">
+            <div class="account-avatar">${pic ? `<img src="${escHtml(pic)}" alt="${escHtml(name)}" loading="lazy" decoding="async">` : escHtml(initial)}</div>
+            <div class="account-details">
+              <h2>${escHtml(name)}</h2>
+              <div style="color:var(--ink-muted); font-size:0.9rem; margin-bottom:8px;">${escHtml(email)}</div>
+              <span class="account-badge">${u ? 'Verified Sync Account' : 'Local Studio Session'}</span>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <h3>Cloud Campaign Sync</h3>
+            <p>Synchronize dynamic codes and scan counters with Supabase cloud storage.</p>
+            <div class="setting-row">
+              <div class="setting-info"><h4>Trigger Sync</h4><p>Pull or refresh saved campaigns linked to your signed-in profile.</p></div>
+              <div style="display:flex; gap:10px;">
+                <button class="dbf-btn" onclick="syncDrive()" type="button">Sync Now</button>
+                <button class="dbf-btn" onclick="exportAllQRsJSON()" type="button">Download Backup</button>
+              </div>
+            </div>
+            <div style="display:flex; gap:12px; margin-top:16px;">
+              ${u ? `<button class="dbf-btn" onclick="doLogout(); renderAccount();" style="border-color:var(--danger); color:var(--danger);" type="button">Sign Out</button>` : `<button class="btn-nx" onclick="openLogin()" type="button">Sign In to Sync</button>`}
+            </div>
+          </div>
+        `;
       }
+
+      function editQR(id) { window.location.href = 'qr-editor.html?id=' + id; }
+
       function reDL(id) {
-        let q = null
-        for (let i = 0; i < saved.length; i++) {
-          if (saved[i].id === id) {
-            q = saved[i]
-            break
-          }
-        }
-        if (!q) return
-        loadLib('qr', 'https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js').then(function(){
-          if (window.QRC) QRC.openExport(q); else toast('Export tools are still loading, try again.', 'err')
-        }).catch(function(){ toast('Failed to load QR library', 'err') })
-      }
-    </script>
-
-    <div class="mo" id="loginMo">
-      <div class="md">
-        <div class="md-hd">
-          <h2 id="moAuthTitle">Authenticate</h2>
-          <p id="moAuthSub">Unlock dashboard storage and cloud sync.</p>
-        </div>
-        <div class="md-body">
-          <div id="loggedOutPanel">
-            <button class="gbtn" id="gSignInBtn" onclick="gSignIn()">
-              <svg width="18" height="18" viewBox="0 0 48 48">
-                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
-                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
-                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
-                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
-              </svg>
-              Sign in with Google
-            </button>
-          </div>
-          <div id="loggedInPanel" style="display: none">
-            <label class="ml">Google Email</label>
-            <input class="mi" id="miEmail" type="email" readonly style="opacity: 0.5; cursor: not-allowed; margin-bottom: 20px" />
-            <label class="ml">Display Username</label>
-            <input class="mi" id="miName" type="text" placeholder="Choose a username..." maxlength="40" style="margin-bottom: 20px" />
-            <button class="ms" onclick="updateUsername()">Save Username</button>
-            <button class="msk-danger" onclick="doLogout()">Disconnect Account</button>
-          </div>
-          <button class="msk" onclick="closeMo()">Close / Cancel</button>
-        </div>
-      </div>
-    </div>
-    <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-    <script>
-      function toast(msg, cls) {
-        let t = document.getElementById('toast')
-        if (!t) return
-        t.textContent = msg
-        t.className = 'toast ' + (cls || '')
-        t.classList.add('show')
-        clearTimeout(window._tt); window._tt = setTimeout(() => t.classList.remove('show'), 3000)
+        const q = saved.find((x) => x.id === id);
+        if (!q) return;
+        loadLib('qr', 'https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js').then(function () {
+          if (window.QRC) QRC.openExport(q);
+          else toast('Export tools are still loading, try again.', 'err');
+        }).catch(function () { toast('Failed to load QR library', 'err'); });
       }
 
       function gSignIn() {
-        toast('Redirecting to Google...', '')
-        const redirectUri = window.location.href.split('#')[0].split('?')[0]
-        const scope = encodeURIComponent('https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email')
-        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${scope}`
-        window.location.href = authUrl
+        toast('Redirecting to Google...', '');
+        const redirectUri = window.location.href.split('#')[0].split('?')[0];
+        const scope = encodeURIComponent('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email');
+        window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${scope}`;
       }
 
       function checkURLForToken() {
-        const hash = window.location.hash.substring(1)
+        const hash = window.location.hash.substring(1);
         if (hash.includes('access_token=')) {
-          const params = new URLSearchParams(hash)
-          const token = params.get('access_token')
+          const params = new URLSearchParams(hash);
+          const token = params.get('access_token');
           if (token) {
-            googleAccessToken = token
-            window.history.replaceState(null, null, window.location.pathname)
-            fetchGoogleProfile(token)
+            googleAccessToken = token;
+            window.history.replaceState(null, null, window.location.pathname);
+            fetchGoogleProfile(token);
           }
         }
       }
 
       async function fetchGoogleProfile(token) {
         try {
-          const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: 'Bearer ' + token } })
+          const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: 'Bearer ' + token } });
           if (r.ok) {
-            const info = await r.json()
-            let savedName = info.name
-            const existing = Storage.get('qrs_user')
+            const info = await r.json();
+            let savedName = info.name;
+            const existing = Storage.get('qrs_user');
             if (existing) {
               try {
-                const parsed = JSON.parse(existing)
-                if (parsed.email === info.email && parsed.name) savedName = parsed.name
+                const parsed = JSON.parse(existing);
+                if (parsed.email === info.email && parsed.name) savedName = parsed.name;
               } catch (e) {}
             }
-
-            curUser = { name: savedName, email: info.email, picture: info.picture, google: true }
-            Storage.set('qrs_user', JSON.stringify(curUser))
-            updatePUI()
-            closeMo()
-            toast('Authenticated: ' + savedName, 'green')
+            curUser = { name: savedName, email: info.email, picture: info.picture, google: true };
+            Storage.set('qrs_user', JSON.stringify(curUser));
+            updatePUI();
+            closeMo();
+            toast('Authenticated: ' + savedName, 'green');
           } else {
-            toast('Authentication failed.', '')
+            toast('Authentication failed.', 'err');
           }
-        } catch (e) {
-          toast('Network error.', '')
-        }
+        } catch (e) { toast('Network error.', 'err'); }
       }
 
       function loadUser() {
-        const u = Storage.get('qrs_user')
-        if (u) {
-          try {
-            curUser = JSON.parse(u)
-            updatePUI()
-          } catch (e) {}
-        }
+        const u = Storage.get('qrs_user');
+        if (u) { try { curUser = JSON.parse(u); updatePUI(); } catch (e) {} }
       }
 
       function updatePUI() {
-        const nlb = document.getElementById('navLoginBtn'),
-          nup = document.getElementById('navUserProfile')
-        const sbBtn = document.getElementById('sbSignBtn'),
-          pCard = document.getElementById('pCard')
+        const nlb = document.getElementById('navLoginBtn'), nup = document.getElementById('navUserProfile');
+        const sbBtn = document.getElementById('sbSignBtn'), pCard = document.getElementById('pCard');
         if (!curUser) {
-          if (nlb) nlb.style.display = 'flex'
-          if (nup) nup.style.display = 'none'
-          if (sbBtn) sbBtn.style.display = 'flex'
-          if (pCard) pCard.style.display = 'none'
-          return
+          if (nlb) nlb.style.display = 'flex';
+          if (nup) nup.style.display = 'none';
+          if (sbBtn) sbBtn.style.display = 'flex';
+          if (pCard) pCard.style.display = 'none';
+          return;
         }
-        if (nlb) nlb.style.display = 'none'
-        if (nup) nup.style.display = 'flex'
-        if (sbBtn) sbBtn.style.display = 'none'
-        if (pCard) pCard.style.display = 'flex'
-        const nun = document.getElementById('navUserName')
-        if (nun) nun.textContent = curUser.name.split(' ')[0]
-        const navAv = document.getElementById('navUserAv')
-        if (curUser.picture) {
-          if (navAv)
-            navAv.innerHTML = `<img src="${escHtml(curUser.picture)}" alt="${escHtml(curUser.name)}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" loading="lazy">`
-        } else {
-          if (navAv) {
-            navAv.innerHTML = ''
-            navAv.textContent = curUser.name.charAt(0).toUpperCase()
-          }
+        if (nlb) nlb.style.display = 'none';
+        if (nup) nup.style.display = 'flex';
+        if (sbBtn) sbBtn.style.display = 'none';
+        if (pCard) pCard.style.display = 'flex';
+        const nun = document.getElementById('navUserName');
+        if (nun) nun.textContent = curUser.name.split(' ')[0];
+        const navAv = document.getElementById('navUserAv');
+        if (navAv) {
+          navAv.innerHTML = curUser.picture ? `<img src="${escHtml(curUser.picture)}" alt="${escHtml(curUser.name)}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" loading="lazy" decoding="async">` : escHtml(curUser.name.charAt(0).toUpperCase());
         }
-        const pName = document.getElementById('pName'),
-          pEmail = document.getElementById('pEmail'),
-          pAv = document.getElementById('pAv')
-        if (pName) pName.textContent = curUser.name
-        if (pEmail) {
-          pEmail.textContent = curUser.email ? curUser.email.toLowerCase() : 'no email'
-          pEmail.style.setProperty('text-transform', 'none', 'important')
-        }
-        if (curUser.picture) {
-          if (pAv)
-            pAv.innerHTML = `<img src="${escHtml(curUser.picture)}" alt="${escHtml(curUser.name)}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:10px;object-fit:cover;" loading="lazy">`
-        } else {
-          if (pAv) {
-            pAv.innerHTML = ''
-            pAv.textContent = curUser.name.charAt(0).toUpperCase()
-          }
+        const pName = document.getElementById('pName'), pEmail = document.getElementById('pEmail'), pAv = document.getElementById('pAv');
+        if (pName) pName.textContent = curUser.name;
+        if (pEmail) pEmail.textContent = curUser.email ? curUser.email.toLowerCase() : 'local session';
+        if (pAv) {
+          pAv.innerHTML = curUser.picture ? `<img src="${escHtml(curUser.picture)}" alt="${escHtml(curUser.name)}" referrerpolicy="no-referrer" style="width:100%;height:100%;border-radius:8px;object-fit:cover;" loading="lazy" decoding="async">` : escHtml(curUser.name.charAt(0).toUpperCase());
         }
       }
 
       function openLogin() {
-        if (window.openGlobalLogin) { window.openGlobalLogin(); return }
-        const mo = document.getElementById('loginMo')
-        if (mo) mo.classList.add('open')
-        const mt = document.getElementById('moAuthTitle'),
-          mSub = document.getElementById('moAuthSub'),
-          mn = document.getElementById('miName'),
-          me = document.getElementById('miEmail'),
-          gBtn = document.getElementById('gSignInBtn'),
-          loggedInPanel = document.getElementById('loggedInPanel')
+        if (window.openGlobalLogin) { window.openGlobalLogin(); return; }
+        const mo = document.getElementById('loginMo');
+        if (mo) mo.classList.add('open');
+        const mt = document.getElementById('moAuthTitle'), mSub = document.getElementById('moAuthSub');
+        const mn = document.getElementById('miName'), me = document.getElementById('miEmail');
+        const gBtn = document.getElementById('gSignInBtn'), loggedInPanel = document.getElementById('loggedInPanel');
         if (curUser) {
-          if (mt) mt.textContent = 'Google Account'
-          if (mSub) mSub.textContent = 'Manage your synced profile.'
-          if (gBtn) gBtn.parentElement.style.display = 'none'
-          if (loggedInPanel) loggedInPanel.style.display = 'block'
-          if (mn) mn.value = curUser.name
-          if (me) me.value = curUser.email || ''
+          if (mt) mt.textContent = 'Account';
+          if (mSub) mSub.textContent = 'Manage your synced profile.';
+          if (gBtn) gBtn.parentElement.style.display = 'none';
+          if (loggedInPanel) loggedInPanel.style.display = 'block';
+          if (mn) mn.value = curUser.name;
+          if (me) me.value = curUser.email || '';
         } else {
-          if (mt) mt.textContent = 'Authenticate'
-          if (mSub) mSub.textContent = 'Unlock dashboard storage and cloud sync.'
-          if (gBtn) gBtn.parentElement.style.display = 'block'
-          if (loggedInPanel) loggedInPanel.style.display = 'none'
+          if (mt) mt.textContent = 'Authenticate';
+          if (mSub) mSub.textContent = 'Sign in to sync CraftQR campaigns across devices.';
+          if (gBtn) gBtn.parentElement.style.display = 'block';
+          if (loggedInPanel) loggedInPanel.style.display = 'none';
         }
       }
-      function closeMo() {
-        const mo = document.getElementById('loginMo')
-        if (mo) mo.classList.remove('open')
-      }
+      function closeMo() { const mo = document.getElementById('loginMo'); if (mo) mo.classList.remove('open'); }
       function updateUsername() {
-        const mn = document.getElementById('miName')
-        if (!mn) return
-        const n = mn.value.trim()
-        if (!n) {
-          toast('Username cannot be empty.', '')
-          return
-        }
+        const mn = document.getElementById('miName');
+        if (!mn) return;
+        const n = mn.value.trim();
+        if (!n) { toast('Username cannot be empty.', 'err'); return; }
         if (curUser) {
-          curUser.name = n
-          Storage.set('qrs_user', JSON.stringify(curUser))
-          updatePUI()
-          closeMo()
-          toast('Username updated', 'green')
+          curUser.name = n;
+          Storage.set('qrs_user', JSON.stringify(curUser));
+          updatePUI();
+          closeMo();
+          toast('Username updated', 'green');
         }
       }
       function doLogout() {
-        curUser = null
-        googleAccessToken = null
-        Storage.set('qrs_user', '')
-        updatePUI()
-        closeMo()
-        toast('Logged out successfully.', '')
+        curUser = null;
+        googleAccessToken = null;
+        Storage.set('qrs_user', '');
+        updatePUI();
+        closeMo();
+        toast('Signed out successfully.', '');
       }
 
       function downloadAnalyticsCSV(shortCode) {
         const codes = shortCode ? [shortCode] : saved.filter((q) => q.shortCode).map((q) => q.shortCode);
-        const parts = codes.map((c) => DYNAMIC_QR.exportCSV(c)).filter(Boolean);
+        const parts = window.DYNAMIC_QR ? codes.map((c) => DYNAMIC_QR.exportCSV(c)).filter(Boolean) : [];
         const csv = parts.map((p, i) => (i ? p.split('\n').slice(1).join('\n') : p)).join('\n');
-        if(!csv) { toast('No analytics data', ''); return; }
-        const blob = new Blob([csv], { type: 'text/csv' });
+        if (!csv) { toast('No scan events recorded yet.', ''); return; }
         const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `analytics-${shortCode || 'all'}-${new Date().toISOString().split('T')[0]}.csv`;
+        a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+        a.download = `craftqr-analytics-${shortCode || 'all'}-${new Date().toISOString().split('T')[0]}.csv`;
         a.click();
         toast('CSV downloaded', 'green');
       }
 
       function copyShortUrl(code) {
         const url = String(code).startsWith('http') ? code : new URL('q.html?id=' + encodeURIComponent(code), location.href).href;
-        navigator.clipboard.writeText(url).then(() => {
-          toast('Short URL copied!', 'green');
-        }).catch(() => {
-          toast('Failed to copy', '');
-        });
+        navigator.clipboard.writeText(url).then(() => toast('Short URL copied!', 'green')).catch(() => toast('Failed to copy', 'err'));
       }
 
       async function syncDrive() {
-        toast('Cloud sync not yet implemented for QR Studio', 'yellow')
+        _qrSyncBackoff = 0;
+        await syncCloudQRs(true);
       }
 
       async function loadFromDrive() {
-        toast('Cloud sync not yet implemented for QR Studio', 'yellow')
+        _qrSyncBackoff = 0;
+        await syncCloudQRs(true);
       }
 
-      function searchDB(val) {
-        dbSearchQuery = (val || '').trim()
-        renderDB()
-      }
-
-      function sortDB(val) {
-        dbSortOrder = val || 'newest'
-        renderDB()
-      }
+      function searchDB(val) { dbSearchQuery = (val || '').trim(); renderDB(); }
+      function sortDB(val) { dbSortOrder = val || 'newest'; renderDB(); }
 
       function exportAllQRsJSON() {
-        if (!saved || !saved.length) {
-          toast('No saved QR codes to export.', '')
-          return
-        }
-        var dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(saved, null, 2))
-        var a = document.createElement('a')
-        a.setAttribute('href', dataStr)
-        a.setAttribute('download', 'col-qrs-backup-' + new Date().toISOString().slice(0, 10) + '.json')
-        document.body.appendChild(a)
-        a.click()
-        a.remove()
-        toast('Exported ' + saved.length + ' QR codes as JSON!', 'green')
+        if (!saved || !saved.length) { toast('No saved QR codes to export.', ''); return; }
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([JSON.stringify(saved, null, 2)], { type: 'application/json' }));
+        a.download = 'craftqr-backup-' + new Date().toISOString().slice(0, 10) + '.json';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        toast('Exported ' + saved.length + ' CraftQR codes!', 'green');
       }
 
       function importQRsJSON(event) {
-        var file = event.target.files && event.target.files[0]
-        if (!file) return
-        var reader = new FileReader()
-        reader.onload = function(e) {
+        var file = event.target.files && event.target.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function (e) {
           try {
-            var imported = JSON.parse(e.target.result)
+            var imported = JSON.parse(e.target.result);
             if (Array.isArray(imported)) {
-              var count = 0
-              imported.forEach(function(item) {
+              var count = 0;
+              imported.forEach(function (item) {
                 if (item && (item.content || item.data)) {
-                  saved.unshift(item)
-                  count++
+                  if (item.thumb && !/^data:image\//.test(item.thumb)) item.thumb = '';
+                  saved.unshift(item);
+                  count++;
                 }
-              })
-              Storage.set('qrs_min', JSON.stringify(saved))
-              renderDB()
-              toast('Successfully imported ' + count + ' codes!', 'green')
+              });
+              Storage.set('qrs_min', JSON.stringify(saved));
+              renderDB();
+              toast('Imported ' + count + ' QR codes!', 'green');
             } else {
-              toast('Invalid JSON backup format.', '')
+              toast('Invalid JSON backup format.', 'err');
             }
-          } catch(err) {
-            toast('Failed to parse JSON file.', '')
-          }
-        }
-        reader.readAsText(file)
+          } catch (err) { toast('Failed to parse JSON file.', 'err'); }
+        };
+        reader.readAsText(file);
       }
 
       function clearAllQRs() {
-        if (!saved.length) {
-          toast('Workspace is already empty.', '')
-          return
+        if (!saved.length) { toast('Workspace is already empty.', ''); return; }
+        if (confirm('Delete ALL ' + saved.length + ' saved QR codes on this device? This cannot be undone.')) {
+          saved = [];
+          Storage.set('qrs_min', JSON.stringify(saved));
+          renderDB();
+          toast('Workspace cleared.', 'green');
+          if (document.getElementById('view-settings')?.style.display !== 'none') renderSettings();
         }
-        if (confirm('Are you sure you want to delete ALL ' + saved.length + ' saved QR codes? This action cannot be undone.')) {
-          saved = []
-          Storage.set('qrs_min', JSON.stringify(saved))
-          renderDB()
-          toast('All saved QR codes have been cleared.', 'green')
-          if (document.getElementById('view-settings') && document.getElementById('view-settings').style.display !== 'none') {
-            renderSettings()
-          }
-        }
-      }
-
-      function renderSettings() {
-        var v = document.getElementById('view-settings')
-        if (!v) return
-
-        var storageBytes = 0
-        try {
-          var s = Storage.get('qrs_min') || ''
-          storageBytes = new Blob([s]).size
-        } catch(e) {}
-        var kb = (storageBytes / 1024).toFixed(1)
-
-        v.innerHTML = `
-        <div class="db-hd">
-          <div>
-            <h2>Studio Settings &amp; Backup</h2>
-            <p>Configure QR rendering defaults, system preferences, and local data persistence.</p>
-          </div>
-        </div>
-
-        <div class="settings-card">
-          <h3>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            QR Studio Generation Defaults
-          </h3>
-          <p>Configure default export parameters applied when initializing new codes in the Studio.</p>
-
-          <div class="setting-row">
-            <div class="setting-info">
-              <h4>Default Resolution</h4>
-              <p>Default export canvas width for raster PNG downloads.</p>
-            </div>
-            <select class="db-select" id="prefResolution" onchange="Storage.set('col_qr_def_sz', this.value); toast('Default resolution saved', 'green');">
-              <option value="400">400px &mdash; Mobile</option>
-              <option value="800" selected>800px &mdash; Web Standard</option>
-              <option value="1200">1200px &mdash; HD Display</option>
-              <option value="2400">2400px &mdash; Ultra HD</option>
-              <option value="4000">4000px &mdash; 300 DPI Print</option>
-            </select>
-          </div>
-
-          <div class="setting-row">
-            <div class="setting-info">
-              <h4>Error Correction Level</h4>
-              <p>Redundancy density for restoring damaged or covered codes.</p>
-            </div>
-            <select class="db-select" id="prefEcl" onchange="Storage.set('col_qr_def_ecl', this.value); toast('Default error correction saved', 'green');">
-              <option value="L">Level L (7% Recovery)</option>
-              <option value="M">Level M (15% Recovery)</option>
-              <option value="Q">Level Q (25% Recovery)</option>
-              <option value="H" selected>Level H (30% Recovery &mdash; Recommended)</option>
-            </select>
-          </div>
-
-          <div class="setting-row">
-            <div class="setting-info">
-              <h4>Default File Format</h4>
-              <p>Preferred export file container for quick downloads.</p>
-            </div>
-            <select class="db-select" id="prefFmt" onchange="Storage.set('col_qr_def_fmt', this.value); toast('Default format saved', 'green');">
-              <option value="png" selected>PNG &mdash; Raster Image</option>
-              <option value="svg">SVG &mdash; Vector Graphic</option>
-              <option value="webp">WEBP &mdash; Compressed Web</option>
-              <option value="pdf">PDF &mdash; Printable Document</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="settings-card">
-          <h3>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            Local Data &amp; Workspace Storage
-          </h3>
-          <p>All QR codes are stored locally in your browser storage (` + kb + ` KB across ` + saved.length + ` assets).</p>
-
-          <div class="setting-row">
-            <div class="setting-info">
-              <h4>Export Workspace Backup</h4>
-              <p>Download a complete JSON file containing all saved codes, titles, and styles.</p>
-            </div>
-            <button class="btn-nx" style="margin:0; padding:8px 18px; font-size:0.85rem;" onclick="exportAllQRsJSON()">Export JSON</button>
-          </div>
-
-          <div class="setting-row">
-            <div class="setting-info">
-              <h4>Import Backup File</h4>
-              <p>Restore previously exported JSON files into your local library.</p>
-            </div>
-            <div>
-              <input type="file" id="importQrInput" accept=".json" style="display:none" onchange="importQRsJSON(event)" />
-              <button class="dbf" style="padding:8px 18px; font-size:0.85rem;" onclick="document.getElementById('importQrInput').click()">Import JSON</button>
-            </div>
-          </div>
-
-          <div class="setting-row">
-            <div class="setting-info">
-              <h4 style="color:#ef4444;">Clear Workspace</h4>
-              <p>Delete all locally saved codes and reset storage.</p>
-            </div>
-            <button class="dbf" style="border-color:#ef4444; color:#ef4444; padding:8px 18px; font-size:0.85rem;" onclick="clearAllQRs()">Clear All</button>
-          </div>
-        </div>
-        `
-
-        var defSz = Storage.get('col_qr_def_sz')
-        if (defSz && document.getElementById('prefResolution')) document.getElementById('prefResolution').value = defSz
-        var defEcl = Storage.get('col_qr_def_ecl')
-        if (defEcl && document.getElementById('prefEcl')) document.getElementById('prefEcl').value = defEcl
-        var defFmt = Storage.get('col_qr_def_fmt')
-        if (defFmt && document.getElementById('prefFmt')) document.getElementById('prefFmt').value = defFmt
-      }
-
-      function renderAccount() {
-        var v = document.getElementById('view-account')
-        if (!v) return
-
-        var u = window.colUser || null
-        var name = (u && u.name) ? u.name : 'Guest Developer'
-        var email = (u && u.email) ? u.email : 'Local Studio Session'
-        var pic = (u && u.picture) ? u.picture : ''
-        var initial = name.charAt(0).toUpperCase()
-
-        v.innerHTML = `
-        <div class="db-hd">
-          <div>
-            <h2>Account &amp; Cloud Sync</h2>
-            <p>Manage your Class Of Learners studio profile and cloud telemetry synchronization.</p>
-          </div>
-        </div>
-
-        <div class="account-header">
-          <div class="account-avatar">
-            ` + (pic ? `<img src="${pic}" alt="${escHtml(name)}">` : initial) + `
-          </div>
-          <div class="account-details">
-            <h2>${escHtml(name)}</h2>
-            <div style="color:var(--txt-m); font-size:0.9rem; margin-bottom:8px;">${escHtml(email)}</div>
-            <span class="account-badge">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              ` + (u ? 'Verified Studio Account' : 'Local Workspace Session') + `
-            </span>
-          </div>
-        </div>
-
-        <div class="settings-card">
-          <h3>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            Cloud Backup &amp; Google Drive Sync
-          </h3>
-          <p>Sync your saved QR codes across devices using secure personal Google Drive app data storage.</p>
-
-          <div class="setting-row">
-            <div class="setting-info">
-              <h4>Drive Sync Status</h4>
-              <p>Current cloud synchronization state.</p>
-            </div>
-            <div style="display:flex; align-items:center; gap:10px;">
-              <span style="font-size:0.9rem; font-weight:600; color:${googleAccessToken ? '#10b981' : 'var(--txt-m)'};">
-                ${googleAccessToken ? 'Connected' : 'Not Connected'}
-              </span>
-            </div>
-          </div>
-
-          <div class="setting-row">
-            <div class="setting-info">
-              <h4>Manual Backup Actions</h4>
-              <p>Trigger instant upload or restore from Google Drive.</p>
-            </div>
-            <div style="display:flex; gap:10px;">
-              <button class="dbf" onclick="syncDrive()" style="padding:8px 16px; font-size:0.85rem;">Upload to Drive</button>
-              <button class="dbf" onclick="loadFromDrive()" style="padding:8px 16px; font-size:0.85rem;">Fetch from Drive</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="settings-card">
-          <h3>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            Session Authentication
-          </h3>
-          <p>Sign in to synchronize certificates, QR assets, and traffic academy stats across the Class Of Learners ecosystem.</p>
-
-          <div style="display:flex; gap:14px; margin-top:16px;">
-            ` + (u ? `
-              <button class="dbf" onclick="doLogout(); toast('Signed out successfully', 'green'); renderAccount();" style="border-color:#ef4444; color:#ef4444; padding:10px 22px;">Sign Out</button>
-            ` : `
-              <button class="btn-nx" onclick="openLogin()" style="margin:0; padding:10px 24px;">Sign In with Google</button>
-            `) + `
-          </div>
-        </div>
-        `
       }
 
       window.onclick = (e) => {
-        if (!e.target.matches('.dropdown-btn') && !e.target.closest('.dropdown-btn')) document.querySelectorAll('.dropdown').forEach((d) => { d.classList.remove('active'); var b=d.querySelector('.dropdown-btn'); if(b) b.setAttribute('aria-expanded','false'); })
-      }
+        if (!e.target.matches('.dropdown-btn') && !e.target.closest('.dropdown-btn')) {
+          document.querySelectorAll('.dropdown').forEach((d) => {
+            d.classList.remove('active');
+            var b = d.querySelector('.dropdown-btn');
+            if (b) b.setAttribute('aria-expanded', 'false');
+          });
+        }
+      };
 
       ;(function () {
-        const theme = Storage.get('theme')
-        const chk = document.getElementById('tsck')
-        const lbl = document.getElementById('tLabel')
-        if (theme === 'light') {
-          document.body.classList.add('light')
-          document.body.classList.add('lm')
-          if (chk) chk.checked = true
-          if (lbl) lbl.textContent = 'Light Mode'
-        } else {
-          document.body.classList.remove('light')
-          document.body.classList.remove('lm')
-          if (chk) chk.checked = false
-          if (lbl) lbl.textContent = 'Dark Mode'
+        checkURLForToken();
+        loadUser();
+        updatePUI();
+        renderDB();
+        requestAnimationFrame(() => syncCloudQRs(false));
+      })();
+
+      window.addEventListener('col-auth-changed', function () {
+        loadUser();
+        syncCloudQRs(false);
+      });
+
+      var _lastQrSyncTime = 0, _qrSyncBackoff = 0;
+      async function syncCloudQRs(interactive) {
+        if (!interactive && Date.now() - _lastQrSyncTime < _qrSyncBackoff) return;
+        _lastQrSyncTime = Date.now();
+        if (!window.DYNAMIC_QR) return;
+        await DYNAMIC_QR.getSb();
+        if (!window.supabaseClient) {
+          if (interactive) toast('Cloud client unavailable offline — use Backup JSON.', '');
+          return;
         }
-
-        checkURLForToken()
-        loadUser()
-        updatePUI()
-        renderDB()
-        setTimeout(syncCloudQRs, 500)
-      })()
-
-      window.addEventListener('col-auth-changed', function() {
-        loadUser()
-        syncCloudQRs()
-      })
-
-      var _lastQrSyncTime = 0
-      var _qrSyncBackoff = 0
-
-      async function syncCloudQRs() {
-        if (Date.now() - _lastQrSyncTime < _qrSyncBackoff) return
-        _lastQrSyncTime = Date.now()
-        await DYNAMIC_QR.getSb(); if (!window.supabaseClient) return;
         try {
           let user = (window.colAuth && window.colAuth.currentUser) || window.colUser;
-          if (!user) { try { const ss = await window.supabaseClient.auth.getSession(); user = ss.data && ss.data.session && ss.data.session.user } catch (x) {} }
-          if (!user || !user.id) return;
+          if (!user) { try { const ss = await window.supabaseClient.auth.getSession(); user = ss.data && ss.data.session && ss.data.session.user; } catch (x) {} }
+          const ds = document.getElementById('driveStatus');
+          if (!user || !user.id) {
+            if (ds) ds.textContent = 'Local Storage Active';
+            if (interactive) toast('Sign in first to sync with cloud.', '');
+            return;
+          }
           const { data, error } = await window.supabaseClient
             .from('qr_codes')
             .select('*')
             .eq('user_id', user.id)
             .order('updated_at', { ascending: false });
           if (error) {
-            _qrSyncBackoff = 60000
-            console.warn('[QR Sync] Cloud sync notice:', error.message || error.status || 'Offline')
-            return
+            _qrSyncBackoff = 60000;
+            if (interactive) toast('Cloud sync unavailable right now.', 'err');
+            return;
           }
-          _qrSyncBackoff = 5000
+          _qrSyncBackoff = 5000;
+          if (ds) ds.textContent = 'Cloud Synced';
           if (data && data.length > 0) {
-            data.forEach(row => {
+            data.forEach((row) => {
               if (row.qr_data && typeof row.qr_data === 'object') {
-                const existingIdx = saved.findIndex(x => (row.short_code && x.shortCode === row.short_code) || x.id === row.qr_data.id);
+                const existingIdx = saved.findIndex((x) => (row.short_code && x.shortCode === row.short_code) || x.id === row.qr_data.id);
                 if (existingIdx > -1) {
-                  saved[existingIdx] = Object.assign({}, saved[existingIdx], row.qr_data, {
-                    scans_count: row.scans_count || 0
-                  });
+                  saved[existingIdx] = Object.assign({}, saved[existingIdx], row.qr_data, { scans_count: row.scans_count || 0 });
                 } else {
-                  saved.unshift(Object.assign({}, row.qr_data, {
-                    scans_count: row.scans_count || 0
-                  }));
+                  saved.unshift(Object.assign({}, row.qr_data, { scans_count: row.scans_count || 0 }));
                 }
               }
             });
-            saved.forEach((q) => { if (q.thumb && !/^data:image\//.test(q.thumb)) q.thumb = '' });
+            saved.forEach((q) => { if (q.thumb && !/^data:image\//.test(q.thumb)) q.thumb = ''; });
             Storage.set('qrs_min', JSON.stringify(saved));
             renderDB();
           }
-        } catch(e) {
-          _qrSyncBackoff = 60000
+          if (interactive) toast('Synced ' + saved.length + ' codes!', 'green');
+        } catch (e) {
+          _qrSyncBackoff = 60000;
         }
       }
 
-      // Mobile drawer + theme switch owned by shared col-ui.js (#mmb/#navLinks, window.toggleTheme).
-      // Page only keeps desktop dropdown auto-close + Escape-to-close-dropdowns.
-      // Close desktop dropdown on Escape
-      document.addEventListener('keydown', function(e){
-        if(e.key==='Escape'){
-          document.querySelectorAll('.dropdown').forEach(function(d){ d.classList.remove('active'); var b=d.querySelector('.dropdown-btn'); if(b) b.setAttribute('aria-expanded','false'); });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          closeQuickEdit();
+          closeMo();
+          document.querySelectorAll('.dropdown').forEach(function (d) {
+            d.classList.remove('active');
+            var b = d.querySelector('.dropdown-btn');
+            if (b) b.setAttribute('aria-expanded', 'false');
+          });
         }
       });
-
-      // In-App Update Button (Version Aware)
-      try {
-        var isWebView = /wv/i.test(navigator.userAgent) || /Build\//i.test(navigator.userAgent)
-        if (isWebView) {
-          fetch('version.json?t=' + Date.now())
-            .then((r) => r.json())
-            .then((data) => {
-              var currentV = localStorage.getItem('col_apk_version') || '0'
-              if (parseInt(data.versionCode) > parseInt(currentV)) {
-                var nl = document.querySelector('.nav-links')
-                if (nl && !document.getElementById('apkUpdateBtn')) {
-                  var updBtn = document.createElement('a')
-                  updBtn.id = 'apkUpdateBtn'
-                  updBtn.href = data.apkUrl || '/COL.apk'
-                  updBtn.className = 'nav-dl-btn mobile-dl'
-                  updBtn.innerHTML = 'Update App'
-                  updBtn.style.display = 'block'
-                  updBtn.style.marginTop = '10px'
-                  updBtn.style.backgroundColor = 'var(--pri, #10b981)'
-                  updBtn.style.color = '#000'
-                  updBtn.style.textAlign = 'center'
-                  updBtn.setAttribute('download', '')
-                  updBtn.onclick = function () {
-                    localStorage.setItem('col_apk_version', data.versionCode)
-                    setTimeout(() => {
-                      this.style.display = 'none'
-                    }, 1000)
-                    alert('Downloading update... Please open your notifications or file manager to install the new version.')
-                  }
-                  nl.appendChild(updBtn)
-                }
-              }
-            })
-            .catch((e) => console.warn('Could not fetch version for update check.'))
-        }
-      } catch (e) {}
     </script>
     <script defer src="col-ui.js"></script>
     <nav class="mobile-bottom-bar" aria-label="Mobile Navigation">
       <a href="qr-editor" class="mob-nav-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-        <span>Editor</span>
+        <span>Studio</span>
       </a>
       <a href="qr-editor.html?action=bulk" class="mob-nav-item">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
@@ -2170,7 +1891,7 @@
       </a>
       <a href="qr" class="mob-nav-item active">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        <span>Dashboard</span>
+        <span>Library</span>
       </a>
     </nav>
   </body>

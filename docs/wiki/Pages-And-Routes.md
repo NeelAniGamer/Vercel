@@ -13,8 +13,9 @@
   - `/civiclogic` &rarr; `/Database_Logic`
   - `/database_logic` &rarr; `/Database_Logic`
 - **Permanent Redirects**:
-  - `/index.html` &rarr; `/home`
-  - `/index` &rarr; `/home`
+  - `/index.html` &rarr; `/`
+  - `/index` &rarr; `/`
+  - `/home.html` &rarr; `/`
   - `/how-it-was-made` &rarr; `/making`
   - `/engine` &rarr; `/solar`
 
@@ -70,7 +71,6 @@
 | `/Traffic/TrafficSetup` | `Traffic/TrafficSetup.html` | Vehicle customizer and graphics presets |
 | `/Traffic/GamePage` | `Traffic/GamePage.html` | React-mode build of the driving simulator |
 | `/Traffic/traffic-messenger` | `Traffic/traffic-messenger.html` | Academy messenger for learners and mentors |
-| `/Traffic/lod_test` | `Traffic/lod_test.html` | Internal level-of-detail renderer diagnostic |
 
 ### Sub-apps and support files
 

@@ -6,8 +6,12 @@
  * Real-time intelligent driving companion and hazard detection assistant:
  * - Telemetry scanner: Time-To-Collision (TTC), speed governor compliance,
  *   traffic signal states, zebra crossing pedestrian tracking, emergency vehicles.
- * - Syllabus Demands Evaluator: Dynamically marks level curriculum tasks done
- *   as player satisfies real-world road safety behaviors.
+ * - Advisory only: it speaks and scores, but never writes to `game.tasks`.
+ *   Objective completion belongs to game_core `_checkTasks`, which is the only
+ *   thing that knows the level's real stop lines, junctions and yields. The
+ *   co-pilot used to tick objectives itself, so "wait at the red", "cross on
+ *   green" and "yield to pedestrians" all completed on its looser proximity
+ *   checks — including without the player moving.
  * - Audio & Voice Alerts: Uses Web Speech Synthesis API with polite, clear
  *   voice guidance and HUD subtitle balloons.
  * - Dynamic Driver Safety Index (0-100%): Continuous score computation.
@@ -71,14 +75,14 @@
           <div class="copilot-header">
             <div class="copilot-avatar">
               <div class="copilot-pulse"></div>
-              <span>🤖</span>
+              <span></span>
             </div>
             <div class="copilot-title-wrap">
               <div class="copilot-name">AI Co-Pilot</div>
               <div class="copilot-sub" id="copilot-sub">SYSTEM ACTIVE</div>
             </div>
             <div class="copilot-score-badge" id="copilot-score">100%</div>
-            <button class="copilot-voice-toggle" id="copilot-voice-btn" title="Toggle Voice Guidance">🔊</button>
+            <button class="copilot-voice-toggle" id="copilot-voice-btn" title="Toggle Voice Guidance">ON</button>
           </div>
           <div class="copilot-body">
             <div class="copilot-hazard-chip" id="copilot-hazard-chip">
@@ -245,7 +249,7 @@
         if (btn) {
           btn.onclick = () => {
             this.voiceEnabled = !this.voiceEnabled;
-            btn.textContent = this.voiceEnabled ? '🔊' : '🔇';
+            btn.innerHTML = window.TrafficIcons ? window.TrafficIcons.svg(this.voiceEnabled ? 'volume' : 'volumeX', 16) : (this.voiceEnabled ? 'ON' : 'MUTE');
             btn.style.opacity = this.voiceEnabled ? '1.0' : '0.5';
             this.speak(this.voiceEnabled ? 'Voice co-pilot enabled.' : 'Voice muted.');
           };
@@ -318,7 +322,7 @@
       if (currentSpeedKmh > (speedLimit + 5)) {
         this.overspeedTimer += dt;
         currentHazard = 'caution';
-        message = `⚠️ Overspeeding (${Math.round(currentSpeedKmh)} km/h)! Limit is ${speedLimit} km/h`;
+        message = ` Overspeeding (${Math.round(currentSpeedKmh)} km/h)! Limit is ${speedLimit} km/h`;
         if (this.overspeedTimer > 2.0) {
           this.safetyScore = Math.max(20, this.safetyScore - 0.2);
           this.speak(`Reduce speed. Speed limit is ${speedLimit} kilometers per hour.`);
@@ -344,24 +348,23 @@
             if (isRed) {
               if (sigDist < 25.0) {
                 currentHazard = 'danger';
-                message = `🛑 RED LIGHT AHEAD (${Math.round(sigDist)}m)! Halt behind stop line.`;
+                message = ` RED LIGHT AHEAD (${Math.round(sigDist)}m)! Halt behind stop line.`;
                 if (currentSpeedKmh > 15) {
                   this.speak('Stop immediately. Red signal ahead.', true);
                 } else if (currentSpeedKmh < 2) {
                   this.stoppedAtRedLight = true;
-                  this._markSyllabusTaskDone('wait_red');
                 }
               } else {
                 currentHazard = 'caution';
-                message = `🚦 Red signal ahead in ${Math.round(sigDist)}m. Prepare to stop.`;
+                message = ` Red signal ahead in ${Math.round(sigDist)}m. Prepare to stop.`;
               }
             } else if (isAmb) {
               currentHazard = 'caution';
-              message = `🟡 Amber signal. Prepare to stop before white line.`;
+              message = ` Amber signal. Prepare to stop before white line.`;
             } else if (sigState === 'green') {
-              if (this.stoppedAtRedLight) {
-                this._markSyllabusTaskDone('move_green');
-              }
+              // Advisory only. The engine completes `move_green` when the player
+              // actually crosses the junction on green after waiting at the red.
+              this.stoppedAtRedLight = false;
             }
           }
         }
@@ -376,13 +379,12 @@
           const pedDist = Math.hypot(ped.position.x - pPos.x, ped.position.z - pPos.z);
           if (pedDist < 16.0) {
             currentHazard = 'danger';
-            message = `🚶 Pedestrian crossing ahead (${Math.round(pedDist)}m)! Yield right-of-way.`;
+            message = ` Pedestrian crossing ahead (${Math.round(pedDist)}m)! Yield right-of-way.`;
             if (currentSpeedKmh > 12) {
               this.speak('Pedestrians crossing. Yield right of way!', true);
               this.safetyScore = Math.max(10, this.safetyScore - 0.4);
             } else if (currentSpeedKmh < 3) {
               this.yieldedToPedestrians = true;
-              this._markSyllabusTaskDone('let_cross');
             }
           }
         }
@@ -397,12 +399,11 @@
           const ambDist = Math.hypot(amb.position.x - pPos.x, amb.position.z - pPos.z);
           if (ambDist < 50.0 && amb.position.z > pPos.z) { // behind player
             currentHazard = 'danger';
-            message = `🚑 EMERGENCY AMBULANCE BEHIND (${Math.round(ambDist)}m)! Yield to the left!`;
+            message = ` EMERGENCY AMBULANCE BEHIND (${Math.round(ambDist)}m)! Yield to the left!`;
             this.speak('Emergency ambulance approaching behind. Shift to the left lane immediately.', true);
             // Check if player moved to the left lane
             if (pPos.x > 3.0) {
               this.yieldedToAmbulance = true;
-              this._markSyllabusTaskDone('yield_ambulance');
             }
           }
         }
@@ -414,25 +415,6 @@
       this.hazardStatus = currentHazard;
       this.hazardMessage = message;
       this._renderHUD();
-    }
-
-    _markSyllabusTaskDone(taskId) {
-      // Only the engine's OWN task list. `game.mapCfg.tasks` is the same array
-      // as the shared LVS level entry (mapCfg is a shallow merge), so writing
-      // to it permanently ticked the objective in the level definition and a
-      // retry started with it already complete.
-      const taskLists = [this.game.tasks];
-
-      for (const list of taskLists) {
-        if (!list || !Array.isArray(list)) {continue;}
-        const task = list.find(t => t.id === taskId || (t.desc && t.desc.toLowerCase().includes(taskId)));
-        if (task && !task.done) {
-          task.done = true;
-          const msg = task.text || task.desc || taskId;
-          if (window.toast) {toast(`✅ Syllabus Task Completed: ${msg}`, '#10b981', 4000);}
-          this.speak(`Task completed: ${msg}`);
-        }
-      }
     }
 
     _renderHUD() {

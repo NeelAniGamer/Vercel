@@ -14,7 +14,8 @@ const excludedDirectories = new Set([
   '.superpowers', '.vercel', 'android', '.gradle', 'react-src', 'tests',
   'build', 'dist', 'dist-electron', 'dist-web', 'docs', 'electron',
   'recordings', 'screenshots', 'scripts', 'scratch', 'supabase', 'Cyberpunk', 'output',
-  'tools', 'shots', 'research', 'FBX format', 'OBJ format', 'traffic-ts', 'skills'
+  'tools', 'shots', 'research', 'FBX format', 'OBJ format', 'traffic-ts', 'skills',
+  '__pycache__', 'futurescape_series', 'shorts_career_indepth', 'real_footage'
 ]);
 
 const excludedFiles = new Set([
@@ -26,6 +27,7 @@ const excludedFiles = new Set([
   'opencode.json', 'skills-lock.json', 'eslint.config.js', 'AdvancedTypingInstructor.exe', 'AdvancedTypingInstructor_Setup.exe',
   'AdvancedTypingInstructor_1.4.0_all.deb', 'AdvancedTypingInstructor-Linux.tar.gz', 'AdvancedTypingInstructor.apk',
   'CoL_Ecosystem_Comprehensive_Apps_Report.pdf', 'bmcbrand.zip', 'build_col_apk.bat', 'terms.7z',
+  'Overview.html', 'sqlite_mcp_server.db',
   // Internal renderer diagnostic. It loads the proc_* scripts, which the
   // deny-list keeps out of the deploy, so shipping it would ship a page whose
   // scripts 404 in production.

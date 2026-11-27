@@ -124,7 +124,11 @@ export const GameHUD: React.FC<GameHUDProps> = ({
             gap: 6
           }}
         >
-          🎥 {state.cameraMode === 'chase_close' ? '3rd Person' : state.cameraMode === 'chase_far' ? 'Tactical' : state.cameraMode === 'hood' ? 'Hood' : 'Bumper'}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="m22 8-6 4 6 4V8Z" />
+            <rect width="14" height="12" x="2" y="6" rx="2" ry="2" />
+          </svg>
+          {state.cameraMode === 'chase_close' ? '3rd Person' : state.cameraMode === 'chase_far' ? 'Tactical' : state.cameraMode === 'hood' ? 'Hood' : 'Bumper'}
         </button>
 
         <button
@@ -139,15 +143,26 @@ export const GameHUD: React.FC<GameHUDProps> = ({
             borderRadius: 10,
             cursor: 'pointer',
             fontSize: 12,
-            fontWeight: 700
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6
           }}
         >
-          🎨 Custom
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
+            <circle cx="17.5" cy="10.5" r=".5" fill="currentColor" />
+            <circle cx="8.5" cy="7.5" r=".5" fill="currentColor" />
+            <circle cx="6.5" cy="12.5" r=".5" fill="currentColor" />
+            <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" />
+          </svg>
+          Custom
         </button>
 
         <button
           onClick={() => setIsSettingsOpen(true)}
           title="Settings (Esc)"
+          aria-label="Settings"
           style={{
             background: 'rgba(15, 23, 42, 0.82)',
             backdropFilter: 'blur(12px)',
@@ -157,10 +172,15 @@ export const GameHUD: React.FC<GameHUDProps> = ({
             borderRadius: 10,
             cursor: 'pointer',
             fontSize: 12,
-            fontWeight: 700
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center'
           }}
         >
-          ⚙️
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
         </button>
 
         <button
@@ -175,10 +195,19 @@ export const GameHUD: React.FC<GameHUDProps> = ({
             borderRadius: 10,
             cursor: 'pointer',
             fontSize: 12,
-            fontWeight: 700
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6
           }}
         >
-          ⛶ Fullscreen
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polyline points="15 3 21 3 21 9" />
+            <polyline points="9 21 3 21 3 15" />
+            <line x1="21" y1="3" x2="14" y2="10" />
+            <line x1="3" y1="21" x2="10" y2="14" />
+          </svg>
+          Fullscreen
         </button>
       </div>
 

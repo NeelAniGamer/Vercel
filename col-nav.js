@@ -239,7 +239,7 @@
               '<line x1="8" y1="21" x2="16" y2="21" />' +
               '<line x1="12" y1="17" x2="12" y2="21" />' +
             '</svg>' +
-            '<span>Projects</span> <span class="darr">&#9660;</span>' +
+            '<span>Projects</span> <svg class="darr" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>' +
           '</button>' +
           '<div class="dropdown-content">' +
             '<div class="dropdown-content-inner">' +

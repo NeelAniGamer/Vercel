@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 35,
-  icon: '➡️',
+  icon: 'navigation',
   name: 'Lesson 35 - One-Way Wonder!',
   modes: ['car', 'bike'],
   col: '#27ae60',
@@ -16,7 +16,7 @@ window.LVS.push({
     offHi: 'एक तरफ रास्ते का नियम तोड़ना'
   },
   theory:
-    '<h2>One-Way Wonder!</h2><p>One-way street aa rahi hai — sahi end se ghuste ho aur traffic ke flow mein chalte ho!</p><p>One-way mein galat side se ghusna sabse khatarnak galti hai. Blue rectangular sign dekho — arrow dikha raha hai kis direction mein jaana hai. Flow follow karo!</p><h3>➡️ Kya karna hai?</h3><ul><li>Sahi end se one-way mein ghuste ho.</li><li>Traffic ke flow mein chalo — opposite mat jaao.</li><li>Intersection pe exit karo.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>One-way rules todna MV Act Section 119 ke under illegal hai — ₹500 se ₹2000 tak ka fine!</p>',
+    '<h2>One-Way Wonder!</h2><p>One-way street aa rahi hai — sahi end se ghuste ho aur traffic ke flow mein chalte ho!</p><p>One-way mein galat side se ghusna sabse khatarnak galti hai. Blue rectangular sign dekho — arrow dikha raha hai kis direction mein jaana hai. Flow follow karo!</p><h3> Kya karna hai?</h3><ul><li>Sahi end se one-way mein ghuste ho.</li><li>Traffic ke flow mein chalo — opposite mat jaao.</li><li>Intersection pe exit karo.</li></ul><h3> Kanoon kya kehta hai?</h3><p>One-way rules todna MV Act Section 119 ke under illegal hai — ₹500 se ₹2000 tak ka fine!</p>',
   pract: 'Enter the one-way from the correct end. Follow the traffic flow. Exit at the designated intersection.',
   mode: 'practical',
   themeType: 'one_way',

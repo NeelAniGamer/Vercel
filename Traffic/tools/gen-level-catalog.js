@@ -47,7 +47,7 @@ function readLevels() {
         id: idNum ? Number(idNum[1]) : idStr[1],
         numericId: !!idNum,
         name: name[1],
-        icon: icon ? icon[1] : '🚦',
+        icon: icon ? icon[1] : 'signal',
         theme: theme ? theme[1] : '',
         file
       })

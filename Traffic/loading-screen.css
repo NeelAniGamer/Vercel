@@ -1,0 +1,193 @@
+/* Unified Stage-Driven Loading Screen — Class Of Learners / Mumbai Traffic Hero */
+#col-loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: radial-gradient(circle at 50% 25%, #131c31 0%, #070a14 70%);
+  color: #e8e3d8;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+#col-loading-screen.is-hidden {
+  opacity: 0;
+  transform: scale(1.02);
+  pointer-events: none;
+}
+
+.col-ls-card {
+  width: 100%;
+  max-width: 520px;
+  background: rgba(17, 24, 39, 0.88);
+  border: 1px solid rgba(242, 184, 75, 0.25);
+  border-radius: 18px;
+  padding: 24px 22px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px);
+}
+
+.col-ls-brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.col-ls-logo {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #f2b84b;
+}
+
+.col-ls-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(94, 212, 245, 0.14);
+  color: #5ed4f5;
+  border: 1px solid rgba(94, 212, 245, 0.3);
+}
+
+.col-ls-title {
+  margin: 0 0 16px;
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #f8fafc;
+}
+
+.col-ls-stages {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.col-ls-stage {
+  text-align: center;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 6px 4px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #94a3b8;
+  border: 1px solid transparent;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.col-ls-stage.is-active {
+  background: rgba(242, 184, 75, 0.14);
+  color: #f2b84b;
+  border-color: rgba(242, 184, 75, 0.45);
+}
+
+.col-ls-stage.is-done {
+  background: rgba(52, 211, 153, 0.14);
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.35);
+}
+
+.col-ls-bar-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.84rem;
+  margin-bottom: 8px;
+}
+
+#col-ls-status {
+  color: #cbd5e1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 82%;
+}
+
+#col-ls-pct {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: #f2b84b;
+}
+
+.col-ls-track {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+#col-ls-fill {
+  width: 0%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f2b84b 0%, #5ed4f5 60%, #34d399 100%);
+  transition: width 0.22s ease-out;
+}
+
+.col-ls-tip {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #94a3b8;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(7, 10, 20, 0.65);
+  border-left: 3px solid #5ed4f5;
+}
+
+.col-ls-error {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(239, 68, 68, 0.14);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fecaca;
+  font-size: 0.85rem;
+  display: none;
+}
+
+.col-ls-error.is-visible {
+  display: block;
+}
+
+.col-ls-retry {
+  margin-top: 10px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 0;
+  background: #f2b84b;
+  color: #070a14;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 420px) {
+  .col-ls-card {
+    padding: 18px 16px;
+  }
+  .col-ls-stages {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+  }
+  .col-ls-stage {
+    font-size: 0.6rem;
+    padding: 5px 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #col-loading-screen,
+  #col-ls-fill {
+    transition: none;
+  }
+}

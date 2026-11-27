@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 25,
-  icon: '🔶',
+  icon: 'alert',
   name: 'Lesson 25 - Know Your Signs!',
   modes: ['car', 'bike'],
   col: '#f39c12',
@@ -16,7 +16,7 @@ window.LVS.push({
     offHi: 'सड़क संकेतों की अनदेखी'
   },
   theory:
-    '<h2>Know Your Signs!</h2><p>Teen tarah ke road signs hain — blue, red, aur green. Har ek ka alag matlab hai!</p><p>Blue = Mandatory (karna hi hai). Red = Cautionary (khatra hai, dhyan do). Green = Informational (raasta dikha raha hai). Har sign ko samajhna zaroori hai!</p><h3>🔶 Kya karna hai?</h3><ul><li>Blue sign (mandatory) dekho — uska instruction follow karo!</li><li>Red sign (cautionary) dekho — slow down karo!</li><li>Green sign (informational) dekho — distance/location jaano.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Road signs ignore karna MV Act Section 116 ke under illegal hai — ₹500 se ₹2000 tak ka fine!</p>',
+    '<h2>Know Your Signs!</h2><p>Teen tarah ke road signs hain — blue, red, aur green. Har ek ka alag matlab hai!</p><p>Blue = Mandatory (karna hi hai). Red = Cautionary (khatra hai, dhyan do). Green = Informational (raasta dikha raha hai). Har sign ko samajhna zaroori hai!</p><h3> Kya karna hai?</h3><ul><li>Blue sign (mandatory) dekho — uska instruction follow karo!</li><li>Red sign (cautionary) dekho — slow down karo!</li><li>Green sign (informational) dekho — distance/location jaano.</li></ul><h3> Kanoon kya kehta hai?</h3><p>Road signs ignore karna MV Act Section 116 ke under illegal hai — ₹500 se ₹2000 tak ka fine!</p>',
   pract: 'Obey the blue mandatory sign. Slow down for the red cautionary sign. Read the green informational sign.',
   mode: 'practical',
   themeType: 'signs',

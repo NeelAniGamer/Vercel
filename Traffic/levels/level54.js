@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 54,
-  icon: '🏡',
+  icon: 'home',
   name: 'Lesson 54 - Suburban Avenue & Residential Safety',
   modes: ['car', 'bike', 'supercar_white', 'sports_cyan', 'bus_green', 'auto', 'pedestrian'],
   col: '#2ecc71',

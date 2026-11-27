@@ -113,7 +113,7 @@ class TrafficManager {
     this._updateDensity(dt);
     this._updatePlatoons(dt);
     this._updateSignalAccumulation(dt, signals);
-    this._manageVehicleLifecycle(playerVehicle, dt);
+    this._manageVehicleLifecycle(playerVehicle, dt, signals);
     this._updateEdgeIndex();
     this._checkDeadlocks(dt, playerVehicle);
 
@@ -253,7 +253,7 @@ class TrafficManager {
     this.platoons = this.platoons.filter(p => p.active && p.followers && p.followers.length > 0);
   }
 
-  _manageVehicleLifecycle(playerVehicle, dt = 0.016) {
+  _manageVehicleLifecycle(playerVehicle, dt = 0.016, signals = null) {
     const despawnDist = 320;
     const despawnDistSq = despawnDist * despawnDist;
     const px = playerVehicle?.position ? playerVehicle.position.x : 0;
@@ -279,6 +279,18 @@ class TrafficManager {
           // — on a 60fps device they fired after 1s and 4s, recycling traffic
           // roughly 3x too aggressively.
           vehicle._stoppedSeconds = (vehicle._stoppedSeconds || 0) + dt;
+          // A vehicle held by a red is queuing, not gridlocked. Shoving it
+          // forward every 3s made queued cars creep into the junction and
+          // read as traffic that would not move on green.
+          let _waitingRed = false;
+          try {
+            const _sig = typeof vehicle.npcAI._getSignalAhead === 'function' ? vehicle.npcAI._getSignalAhead(signals) : null;
+            if (_sig && (_sig.state === 'red' || _sig.state === 'yellow')) {_waitingRed = true;}
+          } catch (e) {}
+          if (_waitingRed) {
+            vehicle._stoppedSeconds = 0;
+            return;
+          }
           // If far away from player (>90m) and stuck for >12s, quietly recycle
           if (distSq > 8100 && vehicle._stoppedSeconds > 12.0) { // 90m squared
             vehicle._stoppedSeconds = 0;
@@ -412,7 +424,8 @@ class TrafficManager {
       route = npcConfig.route;
       color = npcConfig.color;
 
-      isRuleBreaker = !rulesCompliantLevel && (['reckless_bike', 'rulebreaker', 'aggressive'].includes(type) || Math.random() < RULE_BREAKER_PROBABILITY);
+      const forcedProfile = npcConfig.profileKey || '';
+      isRuleBreaker = !rulesCompliantLevel && (['reckless_bike', 'rulebreaker', 'aggressive'].includes(forcedProfile) || Math.random() < RULE_BREAKER_PROBABILITY);
       // Scripted NPCs may force an exact driver personality (e.g. the impatient taxi in Lesson 1)
       profileKey = (npcConfig.profileKey && (window.NPC_PROFILES || {})[npcConfig.profileKey])
         ? npcConfig.profileKey
@@ -480,13 +493,16 @@ class TrafficManager {
       // Floating rival nametag (Title Case per house rules)
       try {
         if (this.game && typeof this.game._makeNametag === 'function' && typeof this.game._titleCase === 'function') {
-          const tag = this.game._makeNametag('🏁 ' + this.game._titleCase(vehicle.rivalName), { border: 'rgba(239,68,68,0.65)' });
+          const tag = this.game._makeNametag(' ' + this.game._titleCase(vehicle.rivalName), { border: 'rgba(239,68,68,0.65)' });
           if (tag && vehicle.mesh) {
             tag.position.set(0, 3.6, 0);
             vehicle.mesh.add(tag);
           }
         }
       } catch (e) {}
+    }
+    if (npcConfig && npcConfig.forceSignalViolation && vehicle.npcAI) {
+      vehicle.npcAI.forceSignalViolation = true;
     }
     if (this.levelConfig && (this.levelConfig.id === 5 || this.levelConfig.isSuburbanNeighborhood)) {
       vehicle.npcAI.isRandomWanderer = true;
@@ -511,6 +527,10 @@ class TrafficManager {
     this.game.scene.add(vehicle.mesh);
     if (this.game.npcs) {this.game.npcs.push(vehicle.mesh);}
     if (this.game.obstacles && !this.game.obstacles.includes(vehicle.mesh)) {
+      // Marked so the chase-cam raycast can skip moving traffic (see
+      // game_core `_ucam`): raycasting against cars made the camera snap.
+      vehicle.mesh.userData = vehicle.mesh.userData || {};
+      vehicle.mesh.userData.isTrafficNpc = true;
       this.game.obstacles.push(vehicle.mesh);
     }
 

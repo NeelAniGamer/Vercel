@@ -68,10 +68,9 @@
     const main = document.createElement('main')
     main.setAttribute('role', 'alert')
     const icon = document.createElement('div')
-    icon.textContent = '⚠️'
-    icon.style.fontSize = '4rem'
+    icon.innerHTML = '<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
     icon.style.marginBottom = '20px'
-    icon.style.textShadow = '0 0 15px rgba(239, 68, 68, 0.5)'
+    icon.style.filter = 'drop-shadow(0 0 15px rgba(239, 68, 68, 0.45))'
     const heading = document.createElement('h1')
     heading.textContent = safeCode
     const label = document.createElement('div')
@@ -103,7 +102,7 @@
     banner.setAttribute('role', 'status')
     banner.style.cssText = 'background: linear-gradient(90deg, #38bdf8, #818cf8); color: #fff; text-align: center; padding: 12px 20px; font-weight: bold; font-family: Inter, sans-serif; font-size: 14px; position: relative; z-index: 999999; box-shadow: 0 4px 15px rgba(0,0,0,0.2); line-height: 1.5;'
     const message = document.createElement('span')
-    message.textContent = '🚀 ' + String(text).slice(0, 240)
+    message.textContent = String(text).slice(0, 240)
     message.style.display = 'inline-block'
     message.style.marginRight = '42px'
     const close = document.createElement('button')

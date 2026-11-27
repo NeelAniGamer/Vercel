@@ -305,7 +305,7 @@ const DOMAIN_DATA = {
 // Title-specific enhancements for specific key occupations
 const SPECIFIC_OCCUPATIONS = {
   'airline and commercial pilots': {
-    cat: 'space', catName: 'Aviation & Aerospace', icon: '✈️',
+    cat: 'space', catName: 'Aviation & Aerospace', icon: 'navigation',
     stream: 'Science (PCM / Math)',
     salary: 'Entry: $90K / ₹15-22 LPA · Mid: $185K / ₹35-65 LPA · Lead: $340K+ / ₹85 LPA+',
     growth: '14% (Faster than average)', demand: 'Extreme',
@@ -328,7 +328,7 @@ const SPECIFIC_OCCUPATIONS = {
     resources: ['Stick and Rudder (Wolfgang Langewiesche)', 'The Turbine Pilot’s Flight Manual', 'Federal Aviation Administration (FAA) Pilot Handbooks', 'International Civil Aviation Organization (ICAO) Standards', 'Air Line Pilots Association (ALPA)']
   },
   'veterinarians': {
-    cat: 'health', catName: 'Veterinary & Animal Care', icon: '🐾',
+    cat: 'health', catName: 'Veterinary & Animal Care', icon: 'leaf',
     stream: 'Science (PCB / Bio)',
     salary: 'Entry: $80K / ₹8-14 LPA · Mid: $130K / ₹18-30 LPA · Lead: $210K+ / ₹55 LPA+',
     growth: '20% (Much faster than average)', demand: 'Very High',
@@ -351,7 +351,7 @@ const SPECIFIC_OCCUPATIONS = {
     resources: ['Veterinary Medicine (Blood & Radostits)', 'Small Animal Surgery (Fossum)', 'Journal of the American Veterinary Medical Association (JAVMA)', 'World Small Animal Veterinary Association (WSAVA)', 'Merck Veterinary Manual']
   },
   'firefighters': {
-    cat: 'law', catName: 'Public Safety & Defense', icon: '🚒',
+    cat: 'law', catName: 'Public Safety & Defense', icon: 'sparkles',
     stream: 'Any Stream',
     salary: 'Entry: $48K / ₹5-9 LPA · Mid: $82K / ₹12-20 LPA · Lead: $135K+ / ₹32 LPA+',
     growth: '8% (As fast as average)', demand: 'High',
@@ -402,9 +402,9 @@ const enrichedOccupations = oohRows.map((r, i) => {
   const demand = spec?.demand || arch.demand;
   const aiImpact = spec?.aiImpact || arch.aiImpact;
   const icon = spec?.icon || ({
-    tech: '💻', health: '🩺', eng: '⚙️', space: '🔭', biz: '📊',
-    law: '⚖️', creative: '🎨', eco: '🌿', trades: '🛠️', edu: '🎓', service: '🤝'
-  }[cat] || '💼');
+    tech: '', health: '', eng: '', space: '', biz: '',
+    law: '', creative: '', eco: '', trades: '', edu: '', service: ''
+  }[cat] || '');
 
   const tagline = `Professional Excellence in ${title}`;
   const desc = `Master the tools, rigorous workflows, and strategic expertise required to excel as a leader in ${title.toLowerCase()}.`;

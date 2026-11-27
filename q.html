@@ -3,23 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Dynamic QR Code Redirection Service by Class Of Learners." />
+  <meta name="description" content="CraftQR Dynamic Link &amp; Micro-Landing Service by Class Of Learners." />
   <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
-  <title>Redirecting... | Class Of Learners</title>
+  <title>Redirecting... | CraftQR</title>
   <link rel="icon" type="image/png" href="Icon.png">
-      <link rel="preconnect" href="https://hvukxajztizsuhfubjws.supabase.co" crossorigin />
-    <link rel="dns-prefetch" href="https://hvukxajztizsuhfubjws.supabase.co" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://hvukxajztizsuhfubjws.supabase.co" crossorigin />
+  <link rel="dns-prefetch" href="https://hvukxajztizsuhfubjws.supabase.co" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" onload="this.onload=null;this.rel='stylesheet'" /><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap" /></noscript>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="qr-dynamic.js"></script>
   <script>
     (function () {
       try {
         var saved = localStorage.getItem('theme');
-        var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
-        var mode = saved || (prefersLight ? 'light' : 'dark');
+        var mode = saved === 'dark' ? 'dark' : 'light';
         document.documentElement.dataset.theme = mode;
         document.documentElement.classList.toggle('lm', mode === 'light');
         if (document.body) document.body.classList.toggle('lm', mode === 'light');
@@ -31,6 +30,9 @@
   </script>
   <link rel="stylesheet" href="qr-tokens.css" />
   <link rel="stylesheet" href="qr-components.css" />
+  <link rel="stylesheet" href="col-ui.css" />
+  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
+  <link rel="stylesheet" href="qr-skin.css" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -38,11 +40,12 @@
       background: var(--surface-page);
       color: var(--ink-primary);
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
       min-height: 100dvh;
-      padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+      padding: max(20px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
       position: relative;
       overflow-x: hidden;
     }
@@ -50,68 +53,88 @@
       background: var(--surface-card);
       border: 1px solid var(--border-subtle);
       border-radius: var(--radius-lg);
-      padding: clamp(22px, 5vw, 38px);
-      max-width: 460px;
+      padding: clamp(22px, 5vw, 36px);
+      max-width: 490px;
       width: 100%;
       text-align: center;
       box-shadow: var(--shadow-lg);
       position: relative;
       z-index: 1;
       margin: auto;
-      animation: fadeIn 0.3s ease-out;
+      animation: fadeIn 0.25s ease-out;
     }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
+      from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    .brand-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--secondary);
+      background: var(--tint);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-pill);
+      padding: 4px 12px;
+      margin-bottom: 16px;
+    }
     .spinner {
-      width: 44px;
-      height: 44px;
-      border: 3px solid var(--border-subtle);
+      width: 42px;
+      height: 42px;
+      border: 2.5px solid var(--border-subtle);
       border-top-color: var(--accent);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
-      margin: 0 auto 20px;
+      margin: 0 auto 18px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     .title {
-      font-size: 1.35rem;
-      font-weight: 700;
+      font-family: var(--font-display);
+      font-size: 1.65rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
       color: var(--ink-primary);
       margin-bottom: 8px;
     }
     .msg {
       color: var(--ink-muted);
-      font-size: 0.95rem;
-      line-height: 1.5;
-      margin-bottom: 24px;
+      font-size: 0.94rem;
+      line-height: 1.55;
+      margin-bottom: 22px;
     }
     .icon-container {
-      width: 64px;
-      height: 64px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
-      background: var(--accent-soft);
+      background: var(--tint);
       border: 1px solid var(--border-subtle);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 20px;
-      color: var(--accent);
+      margin: 0 auto 16px;
+      color: var(--secondary);
     }
     .icon-container.err {
-      color: var(--danger);
-      background: var(--danger-soft);
-      border-color: rgba(197, 48, 48, 0.25);
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-color: var(--accent);
     }
     .pwd-input {
       width: 100%;
       background: var(--surface-subtle);
       border: 1px solid var(--border-subtle);
       color: var(--ink-primary);
-      padding: 14px 16px;
+      padding: 13px 16px;
       border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
       font-size: 1rem;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       outline: none;
       transition: border-color 0.2s, box-shadow 0.2s;
       text-align: center;
@@ -124,60 +147,262 @@
     .err-text {
       color: var(--danger);
       font-size: 0.85rem;
-      margin-top: -10px;
+      margin-top: -8px;
       margin-bottom: 14px;
       display: none;
     }
-    .stack { display: grid; gap: 10px; margin-top: 8px; }
-    .stack .btn { margin: 0; min-height: 48px; }
-    .code { font-family: var(--font-mono); font-size: 1.35rem; letter-spacing: 3px; padding: 14px; border: 2px dashed var(--accent); background: var(--surface-subtle); color: var(--ink-primary); border-radius: var(--radius-sm); margin-bottom: 14px; user-select: all; word-break: break-all; }
-    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+    .stack { display: grid; gap: 10px; margin-top: 8px; text-align: left; }
+    .stack .btn {
+      margin: 0;
+      min-height: 46px;
+      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 18px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-main);
+      font-size: 0.92rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid var(--border-subtle);
+      transition: background 0.16s, border-color 0.16s, transform 0.12s;
+    }
+    .btn-primary {
+      background: var(--accent) !important;
+      color: #ffffff !important;
+      border-color: var(--accent) !important;
+    }
+    .btn-primary:hover { filter: brightness(1.06); }
+    .btn-secondary {
+      background: var(--surface-subtle);
+      color: var(--ink-primary);
+      border-color: var(--border-subtle);
+    }
+    .btn-secondary:hover { background: var(--surface-hover); border-color: var(--border-strong); }
+    .btn-spruce {
+      background: var(--secondary);
+      color: #ffffff;
+      border-color: var(--secondary);
+    }
+    .code {
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      letter-spacing: 2.5px;
+      padding: 14px;
+      border: 1.5px dashed var(--accent);
+      background: var(--surface-subtle);
+      color: var(--ink-primary);
+      border-radius: var(--radius-sm);
+      margin-bottom: 8px;
+      user-select: all;
+      word-break: break-all;
+      text-align: center;
+    }
+    .kv-box {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: grid;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .kv-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      font-size: 0.88rem;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 6px;
+    }
+    .kv-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .kv-k {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-muted);
+    }
+    .kv-v { font-weight: 600; color: var(--ink-primary); text-align: right; word-break: break-word; }
+
+    /* Digital Menu */
+    .menu-sec { display: grid; gap: 12px; margin-bottom: 8px; }
+    .menu-cat-box {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+    .menu-cat {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--secondary);
+      background: var(--tint);
+      padding: 7px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .menu-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .menu-row:last-child { border-bottom: none; }
+    .menu-dish { font-weight: 600; font-size: 0.92rem; color: var(--ink-primary); }
+    .menu-note { font-size: 0.8rem; color: var(--ink-muted); margin-top: 2px; line-height: 1.4; }
+    .menu-price {
+      font-family: var(--font-mono);
+      font-weight: 500;
+      font-size: 0.88rem;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    /* Review Gate Stars */
+    .star-row {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 6px 0 12px;
+    }
+    .star-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      background: var(--surface-subtle);
+      color: var(--ink-muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+      transition: transform 0.12s, background 0.16s, color 0.16s, border-color 0.16s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .star-btn.lit, .star-btn:hover {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    /* Payment Card */
+    .pay-box {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 18px 16px;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .pay-amt {
+      font-family: var(--font-display);
+      font-size: 2.1rem;
+      font-weight: 600;
+      color: var(--ink-primary);
+      letter-spacing: -0.02em;
+    }
+    .pay-cur {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+
+    /* Gallery & Video */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .gallery-item {
+      display: block;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+      background: var(--surface-subtle);
+      aspect-ratio: 4 / 3;
+    }
+    .gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .vid-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+      background: #151412;
+      margin-bottom: 6px;
+    }
+    .vid-frame iframe { width: 100%; height: 100%; border: 0; }
+    .foot-brand {
+      margin-top: 18px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.04em;
+    }
+    .foot-brand a { color: var(--secondary); text-decoration: none; font-weight: 500; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
   </style>
 
-    <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/q" />
-    <meta name="robots" content="noindex, nofollow" />
-    <meta property="og:title" content="Redirecting... | Class Of Learners" />
-    <meta property="og:description" content="Resolving a Class Of Learners short link." />
-    <meta property="og:url" content="https://advancedlogiclabs.dpdns.org/q" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://advancedlogiclabs.dpdns.org/og/home.jpg" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Redirecting... | Class Of Learners" />
-    <meta name="twitter:description" content="Resolving a Class Of Learners short link." />
-    <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/og/home.jpg" />
-    <link rel="stylesheet" href="col-ui.css">
-  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
+  <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/q" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta property="og:title" content="CraftQR Redirect | Class Of Learners" />
+  <meta property="og:description" content="Resolving a CraftQR dynamic link." />
+  <meta property="og:url" content="https://advancedlogiclabs.dpdns.org/q" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://advancedlogiclabs.dpdns.org/og/home.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="CraftQR Redirect | Class Of Learners" />
+  <meta name="twitter:description" content="Resolving a CraftQR dynamic link." />
+  <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/og/home.jpg" />
 </head>
 <body>
-    <!-- Dynamic QR Landing Skeleton Loading Screen -->
-    <div class="loader col-skeleton-screen sk-theme-emerald" id="loader" role="status" aria-busy="true" aria-label="Loading Dynamic QR Redirect">
-  <div class="sk-ambient-glow" aria-hidden="true"></div>
-  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+  <div class="loader col-skeleton-screen" id="loader" role="status" aria-busy="true" aria-label="Loading CraftQR Link">
     <div class="sk-editorial-wrap" aria-hidden="true" style="justify-content: center; min-height: 88vh; padding: 24px;">
-    <div class="sk-card" style="max-width: 440px; width: 100%; align-items: center; text-align: center; padding: 36px 28px; gap: 18px; border-radius: 22px;">
-      <div class="sk-circle sk-shimmer-accent" style="width: 72px; height: 72px;"></div>
-      <div class="sk-title-bar sk-shimmer" style="width: 68%; height: 24px;"></div>
-      <div class="sk-lede-line sk-shimmer" style="width: 84%;"></div>
-      <div class="sk-pill sk-shimmer" style="width: 150px; height: 24px;"></div>
-      <div class="sk-btn sk-btn-primary sk-shimmer" style="width: 100%; height: 46px; margin-top: 8px;"></div>
+      <div class="sk-card" style="max-width: 440px; width: 100%; align-items: center; text-align: center; padding: 36px 28px; gap: 18px; border-radius: 14px;">
+        <div class="sk-circle sk-shimmer-accent" style="width: 64px; height: 64px;"></div>
+        <div class="sk-title-bar sk-shimmer" style="width: 68%; height: 24px;"></div>
+        <div class="sk-lede-line sk-shimmer" style="width: 84%;"></div>
+        <div class="sk-pill sk-shimmer" style="width: 150px; height: 24px;"></div>
+        <div class="sk-btn sk-btn-primary sk-shimmer" style="width: 100%; height: 46px; margin-top: 8px;"></div>
+      </div>
     </div>
+    <footer class="sk-status-dock" aria-hidden="true">
+      <div class="sk-status-pill">
+        <span class="sk-pulse-live"></span>
+        <span class="sk-status-text"><span>CraftQR</span> &middot; Resolving Link</span>
+        <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+      </div>
+    </footer>
   </div>
-  <footer class="sk-status-dock" aria-hidden="true">
-    <div class="sk-status-pill">
-      <span class="sk-pulse-live"></span>
-      <span class="sk-status-text"><span>CoL</span> &middot; Dynamic QR Redirect</span>
-      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
-    </div>
-  </footer>
-</div>
 
-
-  <div class="card" id="app">
+  <main class="card" id="app">
+    <div class="brand-eyebrow">CraftQR</div>
     <div class="spinner"></div>
-    <div class="title">Redirecting...</div>
+    <div class="title">Redirecting&hellip;</div>
     <div class="msg">Connecting to your destination</div>
+  </main>
+
+  <div class="foot-brand">
+    Powered by <a href="qr-editor">CraftQR</a> &middot; Free Studio by Class Of Learners
   </div>
 
   <script>
@@ -193,25 +418,32 @@
       }
 
       const app = document.getElementById('app');
+      const loaderEl = document.getElementById('loader');
+      const hideLoader = () => { if (loaderEl) loaderEl.style.display = 'none'; };
 
       function renderError(svgIcon, title, message) {
+        hideLoader();
         app.innerHTML = `
+          <div class="brand-eyebrow">CraftQR</div>
           <div class="icon-container err">${svgIcon}</div>
           <div class="title">${title}</div>
           <div class="msg">${message}</div>
-          <a href="/" class="btn btn-secondary">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            Return to Home
-          </a>
+          <div class="stack">
+            <a href="qr-editor" class="btn btn-primary">Create a Free QR Code</a>
+            <a href="/" class="btn btn-secondary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              Return to Home
+            </a>
+          </div>
         `;
       }
 
       const ICONS = {
-        missing: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
-        notFound: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
-        expired: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
-        locked: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
-        warning: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+        missing: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+        notFound: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+        expired: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+        locked: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+        warning: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
       };
 
       if (!code) {
@@ -223,7 +455,6 @@
         await DYNAMIC_QR.ready;
       }
 
-      // Initialize Supabase client
       let sbClient = null;
       try {
         let cfg = {};
@@ -233,15 +464,14 @@
         if (cfg.auth && cfg.auth.url && typeof window.supabase !== 'undefined') {
           sbClient = window.supabase.createClient(cfg.auth.url, cfg.auth.key);
         }
-      } catch(e) {}
+      } catch (e) {}
 
       try {
         let entry = null, fromCloud = false;
 
-        // 1. First priority: Remote Supabase dynamic QR lookup (RPC lookup_dynamic_qr)
         if (sbClient) {
           try {
-            const { data, error } = await sbClient.rpc('lookup_dynamic_qr', { p_code: code });
+            const { data } = await sbClient.rpc('lookup_dynamic_qr', { p_code: code });
             if (data && data.found) {
               entry = {
                 id: data.id,
@@ -254,27 +484,24 @@
                 isExpired: data.is_expired,
                 scansCount: data.scans_count
               };
-
               fromCloud = true;
             }
-          } catch(rpcErr) {
+          } catch (rpcErr) {
             console.warn('Supabase lookup_dynamic_qr error:', rpcErr);
           }
         }
 
-        // 2. Second priority: Local storage lookup via DYNAMIC_QR
         if (!entry && typeof DYNAMIC_QR !== 'undefined') {
           entry = DYNAMIC_QR.getByCode(code);
         }
 
-        // 3. Fallback: qrs_min in Cookie or localStorage
         if (!entry) {
           try {
             const list = (typeof ColCookie !== 'undefined' ? ColCookie.get('qrs_min') : null) || (localStorage.getItem('qrs_min') ? JSON.parse(localStorage.getItem('qrs_min')) : null);
             if (list && Array.isArray(list)) {
               entry = list.find(q => q.shortCode === code || String(q.id) === String(code));
             }
-          } catch(e) {}
+          } catch (e) {}
         }
 
         if (!entry) {
@@ -282,13 +509,16 @@
           return;
         }
 
-        // Expiration check
+        if (entry.paused) {
+          renderError(ICONS.warning, 'Campaign Paused', 'This dynamic QR campaign is temporarily paused by its owner.');
+          return;
+        }
+
         if (entry.isExpired || (entry.expiry && new Date(entry.expiry) < new Date())) {
           renderError(ICONS.expired, 'QR Code Expired', 'This dynamic campaign link has reached its expiration date.');
           return;
         }
 
-        // Schedule check
         if (entry.schedule) {
           const now = new Date();
           if (entry.schedule.start && new Date(entry.schedule.start) > now) {
@@ -310,12 +540,23 @@
           p_referer: document.referrer || 'Direct'
         };
         const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => '&#' + c.charCodeAt(0) + ';');
-        const safe = u => /^(https?:\/\/|mailto:|tel:)/i.test(u || '') ? u : (/^[\w-]+(\.[\w-]+)+/.test(u || '') ? 'https://' + u : '#');
-        const save = (name, text, mime) => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type: mime })); a.download = name; a.click(); };
+        const safe = u => {
+          const v = String(u || '').trim();
+          if (!v) return '#';
+          if (/^(https?:\/\/|mailto:|tel:|sms:|smsto:|geo:|upi:|bitcoin:|ethereum:|solana:)/i.test(v)) return v;
+          if (/^[\w-]+(\.[\w-]+)+/.test(v)) return 'https://' + v;
+          return '#';
+        };
+        const saveBlob = (name, text, mime) => {
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(new Blob([text], { type: mime }));
+          a.download = name;
+          a.click();
+        };
+
         let scanned = false;
-        // Count the scan only once access is granted, and wait (max 0.8s) so the redirect cannot cancel the request.
         const recordScan = async () => {
-          if (scanned) {return;}
+          if (scanned) return;
           scanned = true;
           if (fromCloud && sbClient) {
             try { await Promise.race([sbClient.rpc('record_qr_scan', Object.assign({ p_code: code }, meta)), new Promise(r => setTimeout(r, 800))]); } catch (e) {}
@@ -323,41 +564,176 @@
             DYNAMIC_QR.trackScan(code, { device: meta.p_device_type, os: meta.p_os, browser: meta.p_browser, referrer: meta.p_referer });
           }
         };
+
+        const videoEmbedUrl = (url) => {
+          const u = String(url || '');
+          const yt = u.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
+          if (yt) return 'https://www.youtube.com/embed/' + yt[1];
+          const vm = u.match(/vimeo\.com\/(\d+)/);
+          if (vm) return 'https://player.vimeo.com/video/' + vm[1];
+          return '';
+        };
+
         const renderLanding = (p) => {
-          document.title = p.title || 'Class Of Learners';
+          hideLoader();
+          document.title = (p.title || 'CraftQR') + ' | CraftQR';
           const link = (label, href, cls) => `<a class="btn ${cls || 'btn-secondary'}" href="${esc(safe(href))}" rel="noopener noreferrer">${esc(label)}</a>`;
           const ic = s => String(s == null ? '' : s).replace(/([,;\\])/g, '\\$1').replace(/\n/g, '\\n');
           const ts = s => (s || '').replace(/[-:]/g, '').replace(/^(\d{8}T\d{4})$/, '$100');
-          let body = '', after = null, desc = p.desc || '', headerIcon = '';
+          let body = '', after = null, desc = p.desc || '', badge = 'CraftQR Page';
+
           if (p.t === 'links') {
-            headerIcon = '<div class="icon-container"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>';
-            body = (p.links || []).slice(0, 30).map(l => link(l.label || l.url, l.url)).join('');
+            badge = 'Link-in-Bio';
+            body = (p.links || []).map((l, i) => link(l.label || l.url, l.url, i === 0 ? 'btn-primary' : 'btn-secondary')).join('');
           } else if (p.t === 'app') {
-            headerIcon = '<div class="icon-container"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>';
-            const store = /iPhone|iPad|iPod/.test(UA) ? p.ios : /Android/.test(UA) ? p.android : '';
-            if (store) { window.location.replace(safe(store)); return; }
-            body = link('Download on the App Store', p.ios, 'btn-primary') + link('Get it on Google Play', p.android);
+            badge = 'App Router';
+            const goApp = /iPhone|iPad|iPod/.test(UA) ? p.ios : /Android/.test(UA) ? p.android : '';
+            if (goApp) { window.location.replace(safe(goApp)); return; }
+            desc = desc || 'Choose your platform';
+            body = (p.ios ? link('Download for iOS', p.ios, 'btn-primary') : '') + (p.android ? link('Download for Android', p.android, 'btn-secondary') : '');
           } else if (p.t === 'vcard') {
-            headerIcon = '<div class="icon-container"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
-            body = '<button class="btn btn-primary" id="lpAct">Save contact</button>' + (p.phone ? link('Call ' + p.phone, 'tel:' + p.phone.replace(/[^\d+]/g, '')) : '') + (p.email ? link(p.email, 'mailto:' + p.email) : '') + (p.url ? link(p.url, p.url) : '');
-            after = () => { document.getElementById('lpAct').onclick = () => {
-              const parts = (p.name || '').trim().split(/\s+/), fam = parts.length > 1 ? parts.pop() : '';
-              save((p.name || 'contact') + '.vcf', ['BEGIN:VCARD', 'VERSION:3.0', 'N:' + ic(fam) + ';' + ic(parts.join(' ')) + ';;;', 'FN:' + ic(p.name), p.org && 'ORG:' + ic(p.org), p.role && 'TITLE:' + ic(p.role), p.phone && 'TEL:' + p.phone, p.email && 'EMAIL:' + p.email, p.url && 'URL:' + p.url, p.adr && 'ADR:;;' + ic(p.adr) + ';;;', 'END:VCARD'].filter(Boolean).join('\r\n'), 'text/vcard');
-            }; };
+            badge = 'Contact+ Card';
+            const vcf = `BEGIN:VCARD\nVERSION:3.0\nFN:${ic(p.name || p.title)}\n${p.org ? `ORG:${ic(p.org)}\n` : ''}${p.role ? `TITLE:${ic(p.role)}\n` : ''}${p.phone ? `TEL:${p.phone}\n` : ''}${p.email ? `EMAIL:${p.email}\n` : ''}${p.url ? `URL:${p.url}\n` : ''}${p.adr ? `ADR:;;${ic(p.adr)};;;\n` : ''}END:VCARD`;
+            const metaRows = [
+              p.org ? ['Company', p.org] : null,
+              p.role ? ['Role', p.role] : null,
+              p.phone ? ['Phone', p.phone] : null,
+              p.email ? ['Email', p.email] : null,
+              p.adr ? ['Address', p.adr] : null
+            ].filter(Boolean);
+            body = (metaRows.length ? `<div class="kv-box">${metaRows.map(([k, v]) => `<div class="kv-row"><span class="kv-k">${esc(k)}</span><span class="kv-v">${esc(v)}</span></div>`).join('')}</div>` : '') +
+              `<button class="btn btn-primary" id="vcb" type="button">Save Contact (.vcf)</button>` +
+              (p.phone ? link('Call ' + p.phone, 'tel:' + p.phone) : '') +
+              (p.email ? link('Email ' + p.email, 'mailto:' + p.email) : '') +
+              (p.url ? link('Visit Website', p.url) : '');
+            after = () => {
+              const b = document.getElementById('vcb');
+              if (b) b.onclick = () => saveBlob(((p.name || p.title) || 'contact') + '.vcf', vcf, 'text/vcard');
+            };
+          } else if (p.t === 'menu') {
+            badge = 'Digital Menu';
+            const groups = {};
+            (p.items || []).forEach(row => {
+              const cat = (row[0] || 'Menu').trim();
+              if (!groups[cat]) groups[cat] = [];
+              groups[cat].push(row);
+            });
+            const secHtml = Object.keys(groups).map(cat => `
+              <div class="menu-cat-box">
+                <div class="menu-cat">${esc(cat)}</div>
+                ${groups[cat].map(r => `
+                  <div class="menu-row">
+                    <div>
+                      <div class="menu-dish">${esc(r[1] || r[0])}</div>
+                      ${r[3] ? `<div class="menu-note">${esc(r[3])}</div>` : ''}
+                    </div>
+                    ${r[2] ? `<div class="menu-price">${esc(r[2])}</div>` : ''}
+                  </div>`).join('')}
+              </div>`).join('');
+            body = `<div class="menu-sec">${secHtml || '<div class="msg">No menu items listed yet.</div>'}</div>` +
+              (p.url ? link('Full Ordering / Website', p.url, 'btn-primary') : '');
+          } else if (p.t === 'feedback') {
+            badge = 'Review Gate';
+            desc = desc || 'Tap a star rating to share your experience';
+            body = `
+              <div class="star-row" role="group" aria-label="Rate your experience">
+                ${[1, 2, 3, 4, 5].map(n => `<button type="button" class="star-btn" data-star="${n}" aria-label="${n} star"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>`).join('')}
+              </div>
+              <div id="fbAction" class="stack"></div>
+            `;
+            after = () => {
+              const btns = app.querySelectorAll('.star-btn');
+              const out = document.getElementById('fbAction');
+              btns.forEach(btn => {
+                btn.onclick = () => {
+                  const n = parseInt(btn.dataset.star, 10);
+                  btns.forEach(b => b.classList.toggle('lit', parseInt(b.dataset.star, 10) <= n));
+                  if (n >= 4) {
+                    out.innerHTML = `<div class="msg" style="margin:6px 0 8px;">Thank you! Mind sharing your ${n}-star review publicly?</div>` +
+                      (p.url ? link('Leave a Public Review', p.url, 'btn-primary') : '<div class="msg">No public review link configured.</div>');
+                  } else {
+                    out.innerHTML = `<div class="msg" style="margin:6px 0 8px;">We want to make this right. Please message us directly:</div>` +
+                      (p.fbUrl ? link('Send Private Feedback', p.fbUrl, 'btn-primary') : '<div class="msg">Thank you for letting us know.</div>');
+                  }
+                };
+              });
+            };
+          } else if (p.t === 'payment') {
+            badge = 'Checkout';
+            body = `
+              <div class="pay-box">
+                <div class="pay-cur">${esc(p.currency || 'Amount Due')}</div>
+                <div class="pay-amt">${esc(p.amount ? ((p.currency ? p.currency + ' ' : '') + p.amount) : 'Open Payment')}</div>
+              </div>
+              ${p.url ? link('Proceed to Pay', p.url, 'btn-primary') : ''}
+              ${p.url ? '<button class="btn btn-secondary" id="cpPayBtn" type="button">Copy Payment Link</button>' : ''}
+            `;
+            after = () => {
+              const b = document.getElementById('cpPayBtn');
+              if (b && p.url) b.onclick = () => navigator.clipboard?.writeText(p.url).then(() => { b.textContent = 'Copied!'; });
+            };
           } else if (p.t === 'event') {
-            headerIcon = '<div class="icon-container"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>';
-            desc = [p.start && new Date(p.start).toLocaleString(), p.loc, p.desc].filter(Boolean).join(' · ');
-            body = '<button class="btn btn-primary" id="lpAct">Add to calendar</button>';
-            after = () => { document.getElementById('lpAct').onclick = () => save('event.ics', ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Class Of Learners//QR//EN', 'BEGIN:VEVENT', 'UID:' + code + '@col', 'DTSTAMP:' + new Date().toISOString().replace(/[-:]|\.\d+/g, ''), 'DTSTART:' + ts(p.start), p.end && 'DTEND:' + ts(p.end), 'SUMMARY:' + ic(p.title), p.desc && 'DESCRIPTION:' + ic(p.desc), p.loc && 'LOCATION:' + ic(p.loc), 'END:VEVENT', 'END:VCALENDAR'].filter(Boolean).join('\r\n'), 'text/calendar'); };
+            badge = 'Event & RSVP';
+            const evStart = ts(p.start);
+            const evEnd = ts(p.end || p.start);
+            const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:${ic(p.title)}\nDTSTART:${evStart}\nDTEND:${evEnd}\nLOCATION:${ic(p.loc)}\nDESCRIPTION:${ic(p.desc)}\nEND:VEVENT\nEND:VCALENDAR`;
+            const calMeta = [
+              p.start ? ['Starts', new Date(p.start).toLocaleString()] : null,
+              p.end ? ['Ends', new Date(p.end).toLocaleString()] : null,
+              p.loc ? ['Location', p.loc] : null
+            ].filter(Boolean);
+            body = (calMeta.length ? `<div class="kv-box">${calMeta.map(([k, v]) => `<div class="kv-row"><span class="kv-k">${esc(k)}</span><span class="kv-v">${esc(v)}</span></div>`).join('')}</div>` : '') +
+              (p.url ? link('Tickets / RSVP Link', p.url, 'btn-primary') : '') +
+              `<button class="btn ${p.url ? 'btn-secondary' : 'btn-primary'}" id="evb" type="button">Add to Calendar (.ics)</button>`;
+            after = () => {
+              const b = document.getElementById('evb');
+              if (b) b.onclick = () => saveBlob((p.title || 'event') + '.ics', ics, 'text/calendar');
+            };
           } else if (p.t === 'coupon') {
-            headerIcon = '<div class="icon-container"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v5a2 2 0 0 1 0 4v5a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 1 0-4z"/></svg></div>';
-            desc = [p.off && p.off + '% off', p.expiry && 'valid until ' + new Date(p.expiry).toLocaleDateString()].filter(Boolean).join(' · ');
-            body = '<div class="code">' + esc(p.code) + '</div><button class="btn btn-primary" id="lpAct">Copy code</button>';
-            after = () => { document.getElementById('lpAct').onclick = function () { navigator.clipboard.writeText(p.code).then(() => { this.textContent = 'Copied'; }); }; };
+            badge = 'Offer & Coupon';
+            desc = p.desc || (p.off ? p.off + ' ' : '') + (p.expiry ? 'Valid until ' + p.expiry : 'Redeem in store or online');
+            body = (p.code ? `<div class="code" id="cpCode">${esc(p.code)}</div><button class="btn btn-primary" id="cpBtn" type="button">Copy Coupon Code</button>` : '') +
+              (p.url ? link('Redeem Offer', p.url, p.code ? 'btn-secondary' : 'btn-primary') : '');
+            after = () => {
+              const b = document.getElementById('cpBtn');
+              if (b) b.onclick = () => navigator.clipboard?.writeText(p.code || '').then(() => { b.textContent = 'Copied!'; });
+            };
+          } else if (p.t === 'pdf') {
+            badge = 'PDF Showcase';
+            body = (p.url ? link('Open / Download PDF', p.url, 'btn-primary') : '<div class="msg">No document URL attached.</div>');
+          } else if (p.t === 'images') {
+            badge = 'Photo Gallery';
+            const imgs = (p.imgs || []).filter(Boolean);
+            body = `<div class="gallery-grid">${imgs.map(u => `<a class="gallery-item" href="${esc(safe(u))}" target="_blank" rel="noopener noreferrer"><img src="${esc(safe(u))}" alt="Gallery photo" loading="lazy" decoding="async"></a>`).join('')}</div>` +
+              (imgs[0] ? link('Open First Full Image', imgs[0], 'btn-secondary') : '');
+          } else if (p.t === 'video') {
+            badge = 'Video Showcase';
+            const embed = videoEmbedUrl(p.url);
+            body = (embed ? `<div class="vid-frame"><iframe src="${esc(embed)}" allowfullscreen title="${esc(p.title || 'Video')}"></iframe></div>` : '') +
+              (p.url ? link('Watch Full Video', p.url, 'btn-primary') : '');
+          } else if (p.t === 'business') {
+            badge = 'Business Profile';
+            const bzRows = [
+              p.hours ? ['Hours', p.hours] : null,
+              p.phone ? ['Phone', p.phone] : null
+            ].filter(Boolean);
+            body = (bzRows.length ? `<div class="kv-box">${bzRows.map(([k, v]) => `<div class="kv-row"><span class="kv-k">${esc(k)}</span><span class="kv-v">${esc(v)}</span></div>`).join('')}</div>` : '') +
+              (p.url ? link('Visit Website', p.url, 'btn-primary') : '') +
+              (p.phone ? link('Call ' + p.phone, 'tel:' + p.phone, 'btn-secondary') : '');
+          } else if (p.t === 'survey') {
+            badge = 'Quick Survey';
+            body = p.url ? link('Start Survey', p.url, 'btn-primary') : '';
           }
-          app.innerHTML = `${headerIcon}<div class="title">${esc(p.title)}</div><div class="msg">${esc(desc)}</div><div class="stack">${body}</div>`;
-          if (after) {after();}
+
+          app.innerHTML = `<div class="brand-eyebrow">${esc(badge)}</div><div class="title">${esc(p.title)}</div><div class="msg">${esc(desc)}</div><div class="stack">${body}</div>`;
+          if (after) after();
         };
+
+        const parseTimeMinutes = (hhmm) => {
+          const m = String(hhmm || '').trim().match(/^(\d{1,2}):(\d{2})$/);
+          return m ? (parseInt(m[1], 10) * 60 + parseInt(m[2], 10)) : -1;
+        };
+
         const go = async (dest) => {
           let target = dest || entry.destination || entry.content;
           if (!target) { renderError(ICONS.warning, 'Empty Destination', 'This QR code has no target link configured.'); return; }
@@ -367,35 +743,81 @@
             const fb = page.fb ? (/^https?:\/\//i.test(page.fb) ? page.fb : 'https://' + page.fb) : null;
             const deny = (icon, title, msg) => { if (fb) { window.location.replace(fb); } else { renderError(icon, title, msg); } };
             const used = entry.scansCount != null ? entry.scansCount : (entry.scans || 0);
+            if (page.paused) { deny(ICONS.warning, 'Campaign Paused', 'This dynamic QR campaign is temporarily paused.'); return; }
             if (page.exp && new Date(page.exp) < now) { deny(ICONS.expired, 'QR Code Expired', 'This dynamic campaign link has reached its expiration date.'); return; }
             if (page.start && new Date(page.start) > now) { deny(ICONS.expired, 'Upcoming Campaign', `This QR code will activate on ${new Date(page.start).toLocaleDateString()}.`); return; }
             if (page.end && new Date(page.end) < now) { deny(ICONS.expired, 'Campaign Ended', `This campaign concluded on ${new Date(page.end).toLocaleDateString()}.`); return; }
             if (page.max && used >= page.max) { deny(ICONS.warning, 'Scan Limit Reached', 'This QR code has reached its maximum number of scans.'); return; }
             await recordScan();
             if (page.t !== 'go') { renderLanding(page); return; }
-            // Smart rules: device targeting, A/B rotation, UTM tagging
+
+            // Smart routing: device, language, daypart window, A/B rotation, UTM parameters
             target = (/iPhone|iPad|iPod/.test(UA) ? page.ios : /Android/.test(UA) ? page.android : page.desktop) || page.url;
-            if (page.ab && page.ab.length) { const pool = [target].concat(page.ab); target = pool[Math.floor(Math.random() * pool.length)]; }
-            if (page.utm && !/^(mailto:|tel:|sms:|smsto:|geo:)/i.test(target)) {
+            if (Array.isArray(page.lang) && page.lang.length) {
+              const navLang = (navigator.language || '').toLowerCase();
+              const hit = page.lang.find(([pfx, u]) => pfx && u && navLang.startsWith(pfx.toLowerCase()));
+              if (hit) target = hit[1];
+            }
+            if (Array.isArray(page.daypart) && page.daypart.length) {
+              const d = new Date();
+              const curMin = d.getHours() * 60 + d.getMinutes();
+              const hit = page.daypart.find(([win, u]) => {
+                if (!win || !u) return false;
+                const parts = String(win).split('-');
+                if (parts.length !== 2) return false;
+                const sMin = parseTimeMinutes(parts[0]), eMin = parseTimeMinutes(parts[1]);
+                if (sMin < 0 || eMin < 0) return false;
+                return sMin <= eMin ? (curMin >= sMin && curMin <= eMin) : (curMin >= sMin || curMin <= eMin);
+              });
+              if (hit) target = hit[1];
+            }
+            if (page.ab && page.ab.length) {
+              const pool = [target].concat(page.ab);
+              target = pool[Math.floor(Math.random() * pool.length)];
+            }
+            if (page.utm && !/^(mailto:|tel:|sms:|smsto:|geo:|upi:|bitcoin:|ethereum:|solana:)/i.test(target)) {
               try {
                 const u = new URL(/^https?:/i.test(target) ? target : 'https://' + target.replace(/^\/+/, ''));
-                [['s', 'source'], ['m', 'medium'], ['c', 'campaign']].forEach(([k, n]) => { if (page.utm[k] && !u.searchParams.has('utm_' + n)) { u.searchParams.set('utm_' + n, page.utm[k]); } });
+                [['s', 'source'], ['m', 'medium'], ['c', 'campaign']].forEach(([k, n]) => {
+                  if (page.utm[k] && !u.searchParams.has('utm_' + n)) u.searchParams.set('utm_' + n, page.utm[k]);
+                });
                 target = u.href;
               } catch (e) {}
             }
           } else {
             await recordScan();
           }
-          if (/^(WIFI:|BEGIN:)/i.test(target)) {
-            app.innerHTML = `<div class="title">Your content</div><div class="msg"></div><div class="code" style="font-size:.85rem;text-align:left;letter-spacing:0;white-space:pre-wrap">${esc(target)}</div>`;
+
+          if (/^WIFI:/i.test(target)) {
+            hideLoader();
+            const ssid = (target.match(/S:((?:\\.|[^;])*)/i) || [])[1]?.replace(/\\(.)/g, '$1') || '';
+            const pass = (target.match(/P:((?:\\.|[^;])*)/i) || [])[1]?.replace(/\\(.)/g, '$1') || '';
+            const sec = (target.match(/T:([^;]*)/i) || [])[1] || 'WPA';
+            app.innerHTML = `
+              <div class="brand-eyebrow">Wi-Fi Credentials</div>
+              <div class="title">${esc(ssid || 'Guest Network')}</div>
+              <div class="msg">Join this wireless network using the details below.</div>
+              <div class="kv-box">
+                <div class="kv-row"><span class="kv-k">Network</span><span class="kv-v">${esc(ssid)}</span></div>
+                <div class="kv-row"><span class="kv-k">Security</span><span class="kv-v">${esc(sec)}</span></div>
+              </div>
+              ${pass ? `<div class="code">${esc(pass)}</div><div class="stack"><button type="button" class="btn btn-primary" id="wfCpBtn">Copy Wi-Fi Password</button></div>` : '<div class="msg">Open network (no password required).</div>'}
+            `;
+            const wfBtn = document.getElementById('wfCpBtn');
+            if (wfBtn) wfBtn.onclick = () => navigator.clipboard?.writeText(pass).then(() => { wfBtn.textContent = 'Copied!'; });
             return;
           }
-          if (!/^(https?:|mailto:|tel:|sms:|smsto:|geo:)/i.test(target)) { target = 'https://' + target.replace(/^\/+/, ''); }
+          if (/^BEGIN:/i.test(target)) {
+            hideLoader();
+            app.innerHTML = `<div class="brand-eyebrow">Structured Payload</div><div class="title">Saved Content</div><div class="msg">Ready to save or copy.</div><div class="code" style="font-size:.82rem;text-align:left;letter-spacing:0;white-space:pre-wrap">${esc(target)}</div>`;
+            return;
+          }
+          if (!/^(https?:|mailto:|tel:|sms:|smsto:|geo:|upi:|bitcoin:|ethereum:|solana:)/i.test(target)) {
+            target = 'https://' + target.replace(/^\/+/, '');
+          }
           window.location.replace(target);
         };
 
-        // Passcode: new codes carry an AES-encrypted destination (works on any device);
-        // legacy codes fall back to the locally stored salted hash.
         const blob = typeof entry.destination === 'string' && entry.destination.indexOf('enc:v1:') === 0 ? entry.destination : null;
         const localHash = entry.isPasswordProtected !== false && (entry.authHash || entry.passwordHash);
         if (!blob && !localHash && entry.isPasswordProtected && fromCloud) {
@@ -403,14 +825,16 @@
           return;
         }
         if (blob || localHash) {
+          hideLoader();
           app.innerHTML = `
+            <div class="brand-eyebrow">CraftQR Lock</div>
             <div class="icon-container">${ICONS.locked}</div>
             <div class="title">Protected QR Code</div>
             <div class="msg">Enter the passcode to continue.</div>
             <form id="pwdForm">
               <input type="password" class="pwd-input" id="pwdInput" placeholder="Passcode" autocomplete="current-password" aria-label="Passcode" required />
               <div class="err-text" id="errText" role="alert">Incorrect passcode. Please try again.</div>
-              <button type="submit" class="btn btn-primary">Unlock &amp; continue</button>
+              <button type="submit" class="btn btn-primary">Unlock &amp; Continue</button>
             </form>`;
           const pwdInput = document.getElementById('pwdInput'), errText = document.getElementById('errText');
           document.getElementById('pwdForm').onsubmit = async function (e) {
@@ -422,7 +846,7 @@
             else { ok = await DYNAMIC_QR.checkPassword(code, val); }
             btn.disabled = false;
             if (ok) {
-              app.innerHTML = '<div class="spinner"></div><div class="title">Access verified</div><div class="msg" role="status">Redirecting…</div>';
+              app.innerHTML = '<div class="brand-eyebrow">CraftQR</div><div class="spinner"></div><div class="title">Access Verified</div><div class="msg" role="status">Redirecting&hellip;</div>';
               go(blob ? plain : undefined);
             } else {
               errText.style.display = 'block';
@@ -435,7 +859,6 @@
         }
 
         await go();
-
       } catch (err) {
         console.error('Redirection error:', err);
         renderError(ICONS.warning, 'Redirect Error', 'Unable to complete redirection. Please try again.');

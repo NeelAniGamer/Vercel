@@ -148,21 +148,9 @@ const PAGES = {
     ogImage: '/og/traffic.jpg',
     robots: 'noindex'
   },
-  'Traffic/TrafficSetup.html': {
-    route: '/Traffic/TrafficSetup',
-    desc: 'Traffic Academy driver setup — create your learner profile before starting the Mumbai driving academy.',
-    ogImage: '/og/traffic.jpg',
-    robots: 'noindex'
-  },
   'Traffic/index.html': {
     route: '/Traffic',
     desc: 'Mumbai Traffic Hero — a 3D driving simulator and rules academy for Indian road users.',
-    ogImage: '/og/traffic.jpg',
-    robots: 'noindex'
-  },
-  'Traffic/lod_test.html': {
-    route: '/Traffic/lod_test',
-    desc: 'Internal level-of-detail diagnostic for the Traffic simulator renderer.',
     ogImage: '/og/traffic.jpg',
     robots: 'noindex'
   },

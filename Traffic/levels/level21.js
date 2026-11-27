@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 21,
-  icon: '🚦',
+  icon: 'signal',
   name: 'Lesson 21 - Signal Discipline',
   modes: ['car', 'bike'],
   col: '#e74c3c',
@@ -16,7 +16,7 @@ window.LVS.push({
     offHi: 'लाल बत्ती पार करना'
   },
   theory:
-    '<h2>Signal Discipline</h2><p>Busy intersection hai aur delivery truck ne signal jump kar diya! Tumhare saamne aur gaadiyan bhi uske peeche ja rahi hain — bilkul galat!</p><p>Red light jump karna sabse khatarnak violations mein se ek hai. Koi bhi tumhare peeche aaye, tum follow mat karo!</p><h3>🚦 Kya karna hai?</h3><ul><li>Truck ne signal jump kiya — tum mat karo!</li><li>Red pe poori tarah se ruko.</li><li>Green pe sab taraf dekh kar proceed karo.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Signal jump karna MV Act Section 119 ke under illegal hai — ₹500 se ₹2000 tak ka fine!</p>',
+    '<h2>Signal Discipline</h2><p>Busy intersection hai aur delivery truck ne signal jump kar diya! Tumhare saamne aur gaadiyan bhi uske peeche ja rahi hain — bilkul galat!</p><p>Red light jump karna sabse khatarnak violations mein se ek hai. Koi bhi tumhare peeche aaye, tum follow mat karo!</p><h3> Kya karna hai?</h3><ul><li>Truck ne signal jump kiya — tum mat karo!</li><li>Red pe poori tarah se ruko.</li><li>Green pe sab taraf dekh kar proceed karo.</li></ul><h3> Kanoon kya kehta hai?</h3><p>Signal jump karna MV Act Section 119 ke under illegal hai — ₹500 se ₹2000 tak ka fine!</p>',
   pract: 'Wait for the signal to turn green. Check all directions before proceeding. Do not follow the truck.',
   mode: 'practical',
   themeType: 'signal_jump',

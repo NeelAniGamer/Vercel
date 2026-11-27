@@ -13,7 +13,7 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7939810376745995" crossorigin="anonymous"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" onload="this.onload=null;this.rel='stylesheet'" /><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" /></noscript>
     
     <script>
       (function () {
@@ -860,6 +860,21 @@
         .key.space { flex: 5 1 0; min-width: 0; }
         .eval-metrics-grid { grid-template-columns: repeat(2, 1fr); }
       }
+    
+
+      body.lm .crumb-btn, body.lm .lite-badge, body.lm .engine-tab { color: #0369a1 !important; }
+      body.lm #ghostLeadBadge.lead-badge { color: #047857 !important; }
+      body.lm .key { color: #0e7490 !important; }
+      body.lm span[style*="217, 119, 6"], body.lm span[style*="#d97706"] { color: #92400e !important; }
+      body.lm span[style*="2, 132, 199"], body.lm span[style*="#0284c7"] { color: #0369a1 !important; }
+    
+
+      body.lm [style*="2, 132, 199"], body.lm [style*="#0284c7"] { color: #0369a1 !important; }
+      body.lm [style*="217, 119, 6"], body.lm [style*="#d97706"] { color: #92400e !important; }
+    
+
+      body.lm [style*="var(--cyan)"] { color: #0369a1 !important; }
+      body.lm [style*="var(--amber)"] { color: #92400e !important; }
     </style>
   
     <meta property="og:title" content="ATI 3.2 Lite · Cyber Typing Arena · Class Of Learners" />
@@ -1088,9 +1103,9 @@
         <div id="racerTrackContainer">
           <canvas id="racerCanvas" width="1120" height="200"></canvas>
           <div class="racer-telemetry-lead">
-            <div><span style="color: var(--cyan);">&#9658;</span> Player Speeder: <strong id="playerLeadText">0% Completed</strong></div>
+            <div><span style="color: var(--cyan);">&bull;</span> Player Speeder: <strong id="playerLeadText">0% Completed</strong></div>
             <div id="ghostLeadBadge" class="lead-badge">Equal Pace</div>
-            <div><span style="color: var(--amber);">&#9658;</span> 3 AI Rivals Active</div>
+            <div><span style="color: var(--amber);">&bull;</span> 3 AI Rivals Active</div>
           </div>
           <!-- Nitro Overdrive Dock -->
           <div class="nitro-dock">
@@ -1884,11 +1899,29 @@
           spans[charIndex].className = 'char correct';
           playMechanicalSound(false);
 
+          // Update Nitro gauge & key heatmap counters
+          const kKey = ch.toLowerCase();
+          liteKeyHits[kKey] = (liteKeyHits[kKey] || 0) + 1;
+          if (!isNitroActive) {
+            nitroGauge = Math.min(100, nitroGauge + 4);
+            const nf = document.getElementById('nitroFill');
+            const np = document.getElementById('nitroPctText');
+            const nb = document.getElementById('nitroBtn');
+            if (nf) nf.style.width = nitroGauge + '%';
+            if (np) np.textContent = nitroGauge + '%';
+            if (nb) {
+              nb.disabled = nitroGauge < 100;
+              nb.classList.toggle('ready', nitroGauge >= 100);
+            }
+          }
+
           // Spawn particle spark
           const targetSpan = spans[charIndex];
-          const isNitro = streak >= 20;
+          const isNitro = streak >= 20 || isNitroActive;
           spawnSparks(targetSpan.offsetLeft + 6, targetSpan.offsetTop + 12, isNitro);
         } else {
+          const kKey = expected.toLowerCase();
+          liteKeyErrors[kKey] = (liteKeyErrors[kKey] || 0) + 1;
           streak = 0;
           spans[charIndex].className = 'char incorrect';
           playMechanicalSound(true);
@@ -2108,6 +2141,56 @@
           match.classList.add('active');
           setTimeout(() => match.classList.remove('active'), 100);
         }
+      }
+
+      function applyLiteHeatmapClasses() {
+        const kb = document.getElementById('virtualKeyboard');
+        if (!kb) return;
+        kb.classList.toggle('heatmap-active', isLiteHeatmapOn);
+        kb.querySelectorAll('.key').forEach((el) => {
+          el.classList.remove('heat-fast', 'heat-mid', 'heat-error');
+          if (!isLiteHeatmapOn) return;
+          const k = el.dataset.key;
+          const errs = liteKeyErrors[k] || 0;
+          const hits = liteKeyHits[k] || 0;
+          if (errs >= 2) el.classList.add('heat-error');
+          else if (errs === 1) el.classList.add('heat-mid');
+          else if (hits >= 3) el.classList.add('heat-fast');
+        });
+      }
+
+      function toggleLiteHeatmap() {
+        isLiteHeatmapOn = !isLiteHeatmapOn;
+        const lbl = document.getElementById('liteHeatmapText');
+        const btn = document.getElementById('liteHeatmapBtn');
+        if (lbl) lbl.textContent = isLiteHeatmapOn ? 'Heatmap: ON' : 'Heatmap: OFF';
+        if (btn) btn.classList.toggle('active', isLiteHeatmapOn);
+        applyLiteHeatmapClasses();
+      }
+
+      function triggerNitro() {
+        if (isNitroActive || nitroGauge < 100) return;
+        isNitroActive = true;
+        const nb = document.getElementById('nitroBtn');
+        const np = document.getElementById('nitroPctText');
+        const nf = document.getElementById('nitroFill');
+        if (nb) {
+          nb.disabled = true;
+          nb.classList.remove('ready');
+          nb.textContent = 'NITRO ACTIVE!';
+        }
+        if (np) np.textContent = 'BOOST!';
+        clearTimeout(nitroTimer);
+        nitroTimer = setTimeout(() => {
+          isNitroActive = false;
+          nitroGauge = 0;
+          if (nf) nf.style.width = '0%';
+          if (np) np.textContent = '0%';
+          if (nb) {
+            nb.disabled = true;
+            nb.textContent = 'IGNITE (SHIFT)';
+          }
+        }, 4000);
       }
 
       // Input Event Listeners

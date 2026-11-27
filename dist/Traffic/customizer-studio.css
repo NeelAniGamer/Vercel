@@ -450,7 +450,7 @@
 }
 
 .studio-card-btn.active::after {
-  content: '✓';
+  content: 'ACTIVE'; font-size: 0.65rem;
   position: absolute;
   top: 8px;
   right: 8px;

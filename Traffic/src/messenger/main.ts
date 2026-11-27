@@ -277,7 +277,7 @@ export class MumbaiMessengerApp {
     if (scoreEl) scoreEl.textContent = `${this.delivery.safeDriverScore} pts`;
     if (rankEl) rankEl.textContent = this.delivery.getRank();
     if (modeBadge) {
-      modeBadge.textContent = this.hero.currentMode === 'auto' ? '🛺 Auto-Rickshaw' : this.hero.currentMode === 'bicycle' ? '🚲 Dabbawala Bicycle' : '🏃 Courier on Foot';
+      modeBadge.textContent = this.hero.currentMode === 'auto' ? ' Auto-Rickshaw' : this.hero.currentMode === 'bicycle' ? ' Dabbawala Bicycle' : ' Courier on Foot';
     }
   }
 
@@ -288,7 +288,7 @@ export class MumbaiMessengerApp {
     const reward = document.getElementById('modal-reward');
     const stamp = document.getElementById('modal-stamp');
 
-    if (title) title.textContent = '🎉 Delivery Completed!';
+    if (title) title.textContent = ' Delivery Completed!';
     if (text) text.textContent = `Successfully delivered to ${data.quest.destId.replace('_', ' ').toUpperCase()}!`;
     if (reward) reward.textContent = `+${data.coins} Rupees Earned`;
     if (stamp) stamp.textContent = `Unlocked: ${data.stampUnlocked}`;
@@ -349,10 +349,10 @@ export class MumbaiMessengerApp {
     // 5. Check Traffic Safety at signals
     const safetyEvent = this.delivery.updateTrafficSafety(this.hero.position, this.hero.speed, this.planet.trafficSignals, delta);
     if (safetyEvent === 'SAFE_STOP') {
-      this.showNotification('🟢 Safe Driver Bonus: +50 Points for stopping at Red!');
+      this.showNotification(' Safe Driver Bonus: +50 Points for stopping at Red!');
       this.updateHUD();
     } else if (safetyEvent === 'RED_VIOLATION') {
-      this.showNotification('🔴 Traffic Warning: Ran a red light! (-25 pts)');
+      this.showNotification(' Traffic Warning: Ran a red light! (-25 pts)');
       this.updateHUD();
     }
 
@@ -438,7 +438,7 @@ export class MumbaiMessengerApp {
           const card = document.createElement('div');
           card.className = `stamp-card ${st.unlocked ? 'unlocked' : 'locked'}`;
           card.innerHTML = `
-            <div class="stamp-icon">${st.unlocked ? st.icon : '🔒'}</div>
+            <div class="stamp-icon">${st.unlocked ? st.icon : 'lock'}</div>
             <div class="stamp-title">${st.title}</div>
             <div class="stamp-desc">${st.unlocked ? st.desc : 'Deliver more packages to unlock'}</div>
           `;

@@ -784,10 +784,10 @@
   function drawHazardIndicator(ctx, hazard, w, h, t) {
     if (!hazard) {return}
     const icons = {
-      red_light: '🚦', ambulance: '🚑', puddle: '💧', children: '🧒',
-      crowd: '👥', dark: '🌙', rain: '🌧️', merge: '🔀', parking: '🅿️', hospital: '🏥'
+      red_light: 'SIG', ambulance: 'AMB', puddle: 'WET', children: 'SCH',
+      crowd: 'CRD', dark: 'NGT', rain: 'RAIN', merge: 'MRG', parking: 'PARK', hospital: 'HOSP'
     }
-    const icon = icons[hazard] || '⚠️'
+    const icon = icons[hazard] || 'WARN'
     const pulse = 1 + Math.sin(t * 3) * 0.1
     // Top-left corner: the level badge (h*0.22) and the headline (h*0.35) are
     // both centred, so a centred badge sat on top of the headline.
@@ -800,7 +800,8 @@
     ctx.fill()
     ctx.translate(cx, cy)
     ctx.scale(pulse, pulse)
-    ctx.font = `${size}px serif`
+    ctx.font = `700 ${Math.round(size * 0.38)}px monospace`
+    ctx.fillStyle = '#f8fafc'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillText(icon, 0, 0)
@@ -831,8 +832,16 @@
       const lv = this.lv
       // An explicit scenario key wins: the syllabus demo asks for a named
       // theme, which is not always the level's own themeType.
-      const themeType = scenarioKey || (lv ? (lv.themeType || 'signal_jump') : 'signal_jump')
-      const scenario = SCENARIOS[themeType] || SCENARIOS.default
+      const preset = (window.TrafficScenarioPresets && lv) ? window.TrafficScenarioPresets.forLevel(lv) : null
+      const themeType = scenarioKey || (preset && preset.key) || (lv ? (lv.themeType || 'signal_jump') : 'signal_jump')
+      const baseScenario = SCENARIOS[themeType] || SCENARIOS.default
+      const scenario = Object.assign({}, baseScenario, preset ? {
+        sky: preset.sky || baseScenario.sky,
+        rain: Boolean(preset.isRain || baseScenario.rain),
+        night: Boolean(preset.isNight || baseScenario.night),
+        headline: (lv && lv.name ? String(lv.name).replace(/^Lesson\s+\d+\s*[-–:]\s*/i, '').toUpperCase() : baseScenario.headline),
+        subline: (preset.location ? preset.location + ' — ' : '') + (preset.prompt || baseScenario.subline)
+      } : {})
       this.duration = scenario.duration || 5000
       this._destroyed = false
 
@@ -1001,7 +1010,7 @@
         ctx.fillStyle = 'rgba(0,0,0,0.5)'; roundRect(ctx, bx - 120, by - 18, 240, 36, 18); ctx.fill()
         ctx.fillStyle = '#fff'; ctx.font = `bold ${Math.round(16 * (w / 800))}px Inter, sans-serif`
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
-        const levelNum = this.lv ? this.lv.id : 1; const levelIcon = this.lv ? this.lv.icon : '🚦'
+        const levelNum = this.lv ? this.lv.id : 1; const levelIcon = this.lv ? this.lv.icon : ''
         ctx.fillText(`${levelIcon}  Level ${levelNum}  ${levelIcon}`, bx, by)
         ctx.globalAlpha = 1
       }
@@ -1049,7 +1058,7 @@
           const oy = h * 0.85
           ctx.fillStyle = 'rgba(0,0,0,0.5)'; roundRect(ctx, w / 2 - 120, oy - 15, 240, 30, 8); ctx.fill()
           ctx.fillStyle = '#4ECDC4'; ctx.font = `600 ${Math.round(11 * (w / 800))}px Inter, sans-serif`
-          ctx.textAlign = 'center'; ctx.fillText('🎯 ' + (scenario.objectives[0] || ''), w / 2, oy)
+          ctx.textAlign = 'center'; ctx.fillText(' ' + (scenario.objectives[0] || ''), w / 2, oy)
           ctx.globalAlpha = 1
         }
       }
@@ -1066,7 +1075,7 @@
         const lawY = h * 0.92
         ctx.fillStyle = 'rgba(231,76,60,0.15)'; roundRect(ctx, w / 2 - 160, lawY - 10, 320, 20, 5); ctx.fill()
         ctx.fillStyle = 'rgba(255,180,180,0.8)'; ctx.font = `500 ${Math.round(10 * (w / 800))}px Inter, sans-serif`
-        ctx.textAlign = 'center'; ctx.fillText(`⚖️ ${this.lv.law.off} — Fine: ${this.lv.law.fine}`, w / 2, lawY)
+        ctx.textAlign = 'center'; ctx.fillText(` ${this.lv.law.off} — Fine: ${this.lv.law.fine}`, w / 2, lawY)
         ctx.globalAlpha = 1
       }
 

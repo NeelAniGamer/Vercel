@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 22,
-  icon: '😡',
+  icon: 'alert',
   name: 'Lesson 22 - Road Rage Control',
   modes: ['car', 'bike'],
   col: '#e74c3c',
@@ -16,7 +16,7 @@ window.LVS.push({
     offHi: 'आक्रामक ड्राइविंग'
   },
   theory:
-    '<h2>Road Rage Control</h2><p>Taxi waale ne tumhe kaat liya — bilkul aggressive! Tumhe gussa aa raha hai, lekin road rage se kuch nahi hoga — sirf accident ya fight!</p><p>India mein road rage bahut common hai. Gussa chhodo, space do, aur safely drive karo. Koi tumhare upar chadh raha hai toh side ho jao!</p><h3>😡 Kya karna hai?</h3><ul><li>Gussa control karo — breathing slow karo!</li><li>Taxi ko space do — door raho.</li><li>Horn mat bajao baar baar — situation worse hogi!</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Aggressive driving MV Act Section 117 ke under illegal hai — ₹1000 se ₹5000 tak ka fine!</p>',
+    '<h2>Road Rage Control</h2><p>Taxi waale ne tumhe kaat liya — bilkul aggressive! Tumhe gussa aa raha hai, lekin road rage se kuch nahi hoga — sirf accident ya fight!</p><p>India mein road rage bahut common hai. Gussa chhodo, space do, aur safely drive karo. Koi tumhare upar chadh raha hai toh side ho jao!</p><h3> Kya karna hai?</h3><ul><li>Gussa control karo — breathing slow karo!</li><li>Taxi ko space do — door raho.</li><li>Horn mat bajao baar baar — situation worse hogi!</li></ul><h3> Kanoon kya kehta hai?</h3><p>Aggressive driving MV Act Section 117 ke under illegal hai — ₹1000 se ₹5000 tak ka fine!</p>',
   pract: 'Stay calm. Give the taxi extra space. Do not honk back or tailgate. Drive safely to destination.',
   mode: 'practical',
   themeType: 'road_rage',

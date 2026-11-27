@@ -1,28 +1,28 @@
 
 
 const MODES = {
-  LEARN:   { id: 'learn',   label: 'LEARN',   icon: '📖', color: '--ion',    desc: 'Theory & rules' },
-  PRACTICE:{ id: 'practice',label: 'PRACTICE',icon: '🚗', color: '--signal', desc: 'Hands-on driving' },
-  EXAM:    { id: 'exam',    label: 'EXAM',    icon: '📝', color: '--plasma', desc: 'MCQ assessment' },
-  CHAOS:   { id: 'chaos',   label: 'CHAOS',   icon: '🌪️', color: '--em',     desc: 'Adaptive stress test' }
+  LEARN:   { id: 'learn',   label: 'LEARN',   icon: 'book', color: '--ion',    desc: 'Theory & rules' },
+  PRACTICE:{ id: 'practice',label: 'PRACTICE',icon: 'car', color: '--signal', desc: 'Hands-on driving' },
+  EXAM:    { id: 'exam',    label: 'EXAM',    icon: 'book', color: '--plasma', desc: 'MCQ assessment' },
+  CHAOS:   { id: 'chaos',   label: 'CHAOS',   icon: 'alert', color: '--em',     desc: 'Adaptive stress test' }
 };
 
 const VEHICLES = [
-  { id: 'car',            name: 'Supercar Sedan',   icon: '🏎️', recommended: [1,2,3,4,5,7,9,10,11,13,14,15] },
-  { id: 'supercar_white', name: 'White Supercar',   icon: '🏎️', recommended: [1,2,4,7,10,13,15,54] },
-  { id: 'sports_cyan',    name: 'Cyan Sports GT',   icon: '⚡', recommended: [1,4,7,10,15,54] },
-  { id: 'bus_green',      name: 'City Transit Bus', icon: '🚍', recommended: [1,4,7,10,54] },
-  { id: 'bmw_m4',         name: 'BMW M4 Widebody',  icon: '🏎️', recommended: [1,4,7,10,13,15] },
-  { id: 'nilu_27',        name: 'Nilu 27 Hypercar', icon: '⚡', recommended: [1,4,7,10,15] },
-  { id: 'bike',           name: 'Motorcycle',       icon: '🏍️', recommended: [3,4,6,8,12] },
-  { id: 'cyberpunk_bike', name: 'Cyber Bike',       icon: '⚡', recommended: [3,4,6,8,12] },
-  { id: 'auto',           name: 'Auto-rickshaw',    icon: '🛺', recommended: [2,5,6,12] },
-  { id: 'bus',            name: 'BEST Bus',         icon: '🚌', recommended: [1,4,7,10] },
-  { id: 'truck',          name: 'Truck',            icon: '🚚', recommended: [1,9,11] },
-  { id: 'taxi',           name: 'Kaali-Peeli',      icon: '🚕', recommended: [1,3,7,13] },
-  { id: 'cycle',          name: 'Bicycle',          icon: '🚲', recommended: [3,6] },
-  { id: 'ambulance',      name: 'Ambulance',        icon: '🚑', recommended: [8] },
-  { id: 'police',         name: 'Police Interceptor',icon: '🚓', recommended: [8,14] }
+  { id: 'car',            name: 'Supercar Sedan',   icon: 'car', recommended: [1,2,3,4,5,7,9,10,11,13,14,15] },
+  { id: 'supercar_white', name: 'White Supercar',   icon: 'car', recommended: [1,2,4,7,10,13,15,54] },
+  { id: 'sports_cyan',    name: 'Cyan Sports GT',   icon: 'zap', recommended: [1,4,7,10,15,54] },
+  { id: 'bus_green',      name: 'City Transit Bus', icon: 'bus', recommended: [1,4,7,10,54] },
+  { id: 'bmw_m4',         name: 'BMW M4 Widebody',  icon: 'car', recommended: [1,4,7,10,13,15] },
+  { id: 'nilu_27',        name: 'Nilu 27 Hypercar', icon: 'zap', recommended: [1,4,7,10,15] },
+  { id: 'bike',           name: 'Motorcycle',       icon: 'bike', recommended: [3,4,6,8,12] },
+  { id: 'cyberpunk_bike', name: 'Cyber Bike',       icon: 'zap', recommended: [3,4,6,8,12] },
+  { id: 'auto',           name: 'Auto-rickshaw',    icon: 'auto', recommended: [2,5,6,12] },
+  { id: 'bus',            name: 'BEST Bus',         icon: 'bus', recommended: [1,4,7,10] },
+  { id: 'truck',          name: 'Truck',            icon: 'truck', recommended: [1,9,11] },
+  { id: 'taxi',           name: 'Kaali-Peeli',      icon: 'car', recommended: [1,3,7,13] },
+  { id: 'cycle',          name: 'Bicycle',          icon: 'bike', recommended: [3,6] },
+  { id: 'ambulance',      name: 'Ambulance',        icon: 'ambulance', recommended: [8] },
+  { id: 'police',         name: 'Police Interceptor',icon: 'shield', recommended: [8,14] }
 ];
 
 const MUMBAI_STATS = {
@@ -39,39 +39,39 @@ const MUMBAI_STATS = {
 };
 
 const BADGES = [
-  { id: 'safe_walker', name: 'Safe Walker', icon: '🚶', desc: 'Crossed all roads safely as a pedestrian' },
-  { id: 'law_abider', name: 'Law Abider', icon: '🏛️', desc: 'Passed all checkpoint inspections cleanly' },
-  { id: 'speed_king', name: 'Speed King', icon: '🏎️', desc: 'Completed Sea Link with zero speed violations' },
-  { id: 'traffic_hero', name: 'Traffic Hero', icon: '🌟', desc: 'Completed all 52 levels of the Academy' },
-  { id: 'smart_citizen', name: 'Mumbai Smart Citizen', icon: '🏙️', desc: 'Earned the Traffic Hero badge — A true road hero' },
-  { id: 'signal_master', name: 'Signal Master', icon: '🚦', desc: 'Completed 5+ levels without a single red-light violation' },
-  { id: 'level_10', name: 'Novice Driver', icon: '🎓', desc: 'Completed first 10 levels' },
-  { id: 'level_20', name: 'Learner Driver', icon: '📋', desc: 'Completed first 20 levels' },
-  { id: 'level_30', name: 'Competent Driver', icon: '🎖️', desc: 'Completed first 30 levels' },
-  { id: 'level_40', name: 'Skilled Driver', icon: '🏅', desc: 'Completed first 40 levels' },
-  { id: 'level_52', name: 'Master Driver', icon: '💎', desc: 'Completed all 52 levels' },
-  { id: 'pedestrian_expert', name: 'Pedestrian Expert', icon: '🚶‍♂️', desc: 'Completed all pedestrian mode levels' },
-  { id: 'night_driver', name: 'Night Driver', icon: '🌙', desc: 'Completed all night driving levels' },
-  { id: 'weather_pro', name: 'Weather Expert', icon: '⛈️', desc: 'Completed all weather-related levels' },
-  { id: 'emergency_hero', name: 'Emergency Hero', icon: '🚑', desc: 'Completed all emergency vehicle levels' },
-  { id: 'parking_master', name: 'Parking Master', icon: '🅿️', desc: 'Completed all parking scenarios' },
-  { id: 'streak_7', name: 'Week Warrior', icon: '🔥', desc: 'Maintained a 7-day learning streak' },
-  { id: 'streak_30', name: 'Monthly Master', icon: '📅', desc: 'Maintained a 30-day learning streak' },
-  { id: 'perfect_run', name: 'Perfect Run', icon: '💯', desc: 'Completed a level with zero violations' },
-  { id: 'chaos_survivor', name: 'Chaos Survivor', icon: '🌪️', desc: 'Survived Chaos mode at max difficulty' }
+  { id: 'safe_walker', name: 'Safe Walker', icon: 'pedestrian', desc: 'Crossed all roads safely as a pedestrian' },
+  { id: 'law_abider', name: 'Law Abider', icon: 'building', desc: 'Passed all checkpoint inspections cleanly' },
+  { id: 'speed_king', name: 'Speed King', icon: 'car', desc: 'Completed Sea Link with zero speed violations' },
+  { id: 'traffic_hero', name: 'Traffic Hero', icon: 'star', desc: 'Completed all 52 levels of the Academy' },
+  { id: 'smart_citizen', name: 'Mumbai Smart Citizen', icon: 'city', desc: 'Earned the Traffic Hero badge — A true road hero' },
+  { id: 'signal_master', name: 'Signal Master', icon: 'signal', desc: 'Completed 5+ levels without a single red-light violation' },
+  { id: 'level_10', name: 'Novice Driver', icon: 'grad', desc: 'Completed first 10 levels' },
+  { id: 'level_20', name: 'Learner Driver', icon: 'list', desc: 'Completed first 20 levels' },
+  { id: 'level_30', name: 'Competent Driver', icon: 'medal', desc: 'Completed first 30 levels' },
+  { id: 'level_40', name: 'Skilled Driver', icon: 'medal', desc: 'Completed first 40 levels' },
+  { id: 'level_52', name: 'Master Driver', icon: 'sparkles', desc: 'Completed all 52 levels' },
+  { id: 'pedestrian_expert', name: 'Pedestrian Expert', icon: 'pedestrian', desc: 'Completed all pedestrian mode levels' },
+  { id: 'night_driver', name: 'Night Driver', icon: 'moon', desc: 'Completed all night driving levels' },
+  { id: 'weather_pro', name: 'Weather Expert', icon: 'rain', desc: 'Completed all weather-related levels' },
+  { id: 'emergency_hero', name: 'Emergency Hero', icon: 'ambulance', desc: 'Completed all emergency vehicle levels' },
+  { id: 'parking_master', name: 'Parking Master', icon: 'parking', desc: 'Completed all parking scenarios' },
+  { id: 'streak_7', name: 'Week Warrior', icon: 'flame', desc: 'Maintained a 7-day learning streak' },
+  { id: 'streak_30', name: 'Monthly Master', icon: 'clock', desc: 'Maintained a 30-day learning streak' },
+  { id: 'perfect_run', name: 'Perfect Run', icon: 'check', desc: 'Completed a level with zero violations' },
+  { id: 'chaos_survivor', name: 'Chaos Survivor', icon: 'alert', desc: 'Survived Chaos mode at max difficulty' }
 ];
 
 const VIOLATION_MODALS = {
-  signal_jump: { title: '🚦 Signal Jump', violation: 'Sec 184 MV Act', fine: '₹1,000–5,000', statKey: 'signal_jump', message: 'Jumping a red signal endangers everyone at the intersection.' },
-  sidewalk_bike: { title: '🛣️ Bike on Sidewalk', violation: 'Sec 190(2) MV Act', fine: '₹2,000', statKey: 'sidewalk_bike', message: 'Sidewalks are for pedestrians, not two-wheelers.' },
+  signal_jump: { title: ' Signal Jump', violation: 'Sec 184 MV Act', fine: '₹1,000–5,000', statKey: 'signal_jump', message: 'Jumping a red signal endangers everyone at the intersection.' },
+  sidewalk_bike: { title: ' Bike on Sidewalk', violation: 'Sec 190(2) MV Act', fine: '₹2,000', statKey: 'sidewalk_bike', message: 'Sidewalks are for pedestrians, not two-wheelers.' },
   wrong_side: { title: '↩️ Wrong Side Driving', violation: 'Sec 184 MV Act', fine: '₹5,000', statKey: 'wrong_side', message: 'Driving against traffic flow causes head-on collisions.' },
-  no_helmet: { title: '⛑️ No Helmet', violation: 'Sec 194D MV Act', fine: '₹1,000 + 3-month license suspension', statKey: 'no_helmet', message: 'Helmets save lives — 67% of fatalities were unhelmeted.' },
-  phone_driving: { title: '📱 Phone While Driving', violation: 'Sec 184(c) MV Act', fine: '₹5,000', statKey: 'phone_driving', message: 'A text can wait. A life cannot.' },
-  drunk_driving: { title: '🍺 Drunk Driving', violation: 'Sec 185 MV Act', fine: '₹10,000 + 6-month imprisonment', statKey: 'drunk_driving', message: 'Even one drink impairs judgment. Don\'t risk it.' },
-  zebra_violation: { title: '🦓 Zebra Crossing Violation', violation: 'Sec 138 MV Act', fine: '₹2,000', statKey: 'zebra_violation', message: 'Pedestrians have right of way at crossings.' },
-  high_beam: { title: '🔦 High Beam Misuse', violation: 'Sec 177 MV Act', fine: '₹500', statKey: 'high_beam', message: 'High beams blind oncoming drivers. Dip them in traffic.' },
-  ambulance_block: { title: '🚑 Ambulance Blocked', violation: 'Sec 194E MV Act', fine: '₹10,000', statKey: 'ambulance_block', message: 'Every minute of delay reduces survival chance by 10%.' },
-  school_zone: { title: '🏫 School Zone Speeding', violation: 'Sec 183 MV Act', fine: '₹2,000+', statKey: 'school_zone', message: 'Children are unpredictable. Slow down near schools.' }
+  no_helmet: { title: ' No Helmet', violation: 'Sec 194D MV Act', fine: '₹1,000 + 3-month license suspension', statKey: 'no_helmet', message: 'Helmets save lives — 67% of fatalities were unhelmeted.' },
+  phone_driving: { title: ' Phone While Driving', violation: 'Sec 184(c) MV Act', fine: '₹5,000', statKey: 'phone_driving', message: 'A text can wait. A life cannot.' },
+  drunk_driving: { title: ' Drunk Driving', violation: 'Sec 185 MV Act', fine: '₹10,000 + 6-month imprisonment', statKey: 'drunk_driving', message: 'Even one drink impairs judgment. Don\'t risk it.' },
+  zebra_violation: { title: ' Zebra Crossing Violation', violation: 'Sec 138 MV Act', fine: '₹2,000', statKey: 'zebra_violation', message: 'Pedestrians have right of way at crossings.' },
+  high_beam: { title: ' High Beam Misuse', violation: 'Sec 177 MV Act', fine: '₹500', statKey: 'high_beam', message: 'High beams blind oncoming drivers. Dip them in traffic.' },
+  ambulance_block: { title: ' Ambulance Blocked', violation: 'Sec 194E MV Act', fine: '₹10,000', statKey: 'ambulance_block', message: 'Every minute of delay reduces survival chance by 10%.' },
+  school_zone: { title: ' School Zone Speeding', violation: 'Sec 183 MV Act', fine: '₹2,000+', statKey: 'school_zone', message: 'Children are unpredictable. Slow down near schools.' }
 };
 
 function showConsequenceModal(violationType) {
@@ -84,7 +84,7 @@ function showConsequenceModal(violationType) {
   modal.innerHTML = `
     <div style="background:var(--card,#111827);border:1px solid var(--border);border-radius:16px;padding:${isMobile ? '20px' : '28px'};max-width:${isMobile ? '95%' : '420px'};width:100%;">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-        <div style="font-size:${isMobile ? '2.5rem' : '3rem'};">${data.title.split(' ')[0]}</div>
+        <div style="font-size:${isMobile ? '2.5rem' : '3rem'};">${window.TrafficIcons ? window.TrafficIcons.forCategory(data.title) : '!'}</div>
         <div>
           <div style="font-family:'Instrument Serif',serif;font-size:${isMobile ? '1.2rem' : '1.4rem'};font-weight:700;color:var(--red,#ef4444);">${data.title}</div>
           <div style="font-size:${isMobile ? '0.75rem' : '0.8rem'};color:var(--muted);">${data.violation}</div>
@@ -96,9 +96,9 @@ function showConsequenceModal(violationType) {
       </div>
       <div style="font-size:${isMobile ? '0.85rem' : '0.9rem'};color:var(--ink);line-height:1.6;margin-bottom:16px;">${data.message}</div>
       <div style="background:rgba(94,212,245,0.1);border:1px solid rgba(94,212,245,0.3);border-radius:8px;padding:12px;margin-bottom:16px;font-size:${isMobile ? '0.75rem' : '0.8rem'};color:var(--signal);">
-        <strong>📊 Mumbai ${stat.year} Data:</strong> ${stat.stat} ${stat.unit} (${stat.source})
+        <strong>Mumbai ${stat.year} Data:</strong> ${stat.stat} ${stat.unit} (${stat.source})
       </div>
-      <button onclick="this.closest('.modal')?this.closest('.modal').remove():this.remove()" style="width:100%;background:var(--red);color:#fff;border:none;padding:12px;border-radius:10px;font-weight:700;font-size:${isMobile ? '0.9rem' : '1rem'};cursor:pointer;">Understood — Drive Safely</button>
+      <button type="button" data-ui-action="close-modal" style="width:100%;background:var(--red);color:#fff;border:none;padding:12px;border-radius:10px;font-weight:700;font-size:${isMobile ? '0.9rem' : '1rem'};cursor:pointer;">Understood — Drive Safely</button>
     </div>
   `;
   modal.className = 'modal';
@@ -262,7 +262,7 @@ const CAMPAIGNS = [
     moduleId: 1,
     name: 'Andheri Initiation',
     description: 'Master the basics of Mumbai intersection navigation',
-    icon: '🚦',
+    icon: 'signal',
     color: '--ion',
     storyIntro: 'Welcome to Andheri Junction - Mumbai\'s beating heart where every second counts. Your instructor, Constable Patil, has seen it all: "Beta, Mumbai mein signal sirf light nahi, zindagi ka sawaal hai."',
     missions: [
@@ -389,7 +389,7 @@ const CAMPAIGNS = [
     moduleId: 2,
     name: 'Dadar Courtesy',
     description: 'Pedestrian-first driving in Mumbai\'s busiest junction',
-    icon: '🚶',
+    icon: 'pedestrian',
     color: '--em',
     prerequisite: 'andheri_initiation',
     storyIntro: 'Dadar Station - 7 lakh commuters daily. Your mentor, Traffic Havaldar Desai, has guarded these crossings for 25 years. His whistle cuts through chaos: "Dadar mein paidal chalne wala bhagwan hai. Gaadi wala uska sevak."',
@@ -517,7 +517,7 @@ const CAMPAIGNS = [
     moduleId: 3,
     name: 'Bandra Discipline',
     description: 'Lane discipline and overtaking etiquette on backroads',
-    icon: '🛣️',
+    icon: 'highway',
     color: '--signal',
     prerequisite: 'dadar_courtesy',
     storyIntro: 'Bandra Backroads - where the city forgets its rules. Your mentor, Senior Inspector Khan, has patrolled these gullies for 18 years. His mantra: "Lane mein chalo, signal do, overtake karo - warna challan pakka."',
@@ -645,7 +645,7 @@ const CAMPAIGNS = [
     moduleId: 4,
     name: 'Juhu Speed Control',
     description: 'Coastal cruising with strict speed management',
-    icon: '🌊',
+    icon: 'droplet',
     color: '--plasma',
     prerequisite: 'bandra_discipline',
     storyIntro: 'Juhu Beach - where Mumbai comes to breathe. The coastal road stretches 5km and every driver thinks it is a race track. Your mentor, Coastal PSI Meera Deshmukh: "Saheb, yeh beach road hai, runway nahi. 40 km/h - ek km bhi zyada nahi."',
@@ -773,7 +773,7 @@ const CAMPAIGNS = [
     moduleId: 5,
     name: 'Parel Silence Zone',
     description: 'Zero-honking discipline near schools and hospitals',
-    icon: '🔇',
+    icon: 'volumeX',
     color: '--teal',
     prerequisite: 'juhu_speed',
     missions: [
@@ -790,7 +790,7 @@ const CAMPAIGNS = [
     moduleId: 6,
     name: 'Matunga Rail Safety',
     description: 'Level crossings, metro pillars, and commuter crush',
-    icon: '🚂',
+    icon: 'truck',
     color: '--ion',
     prerequisite: 'parel_silence',
     missions: [
@@ -807,7 +807,7 @@ const CAMPAIGNS = [
     moduleId: 7,
     name: 'Marine Drive Nights',
     description: 'High-beam etiquette, drunk detection, and street racing',
-    icon: '🌙',
+    icon: 'moon',
     color: '--plasma',
     prerequisite: 'matunga_rail',
     missions: [
@@ -824,7 +824,7 @@ const CAMPAIGNS = [
     moduleId: 8,
     name: 'Byculla Emergency Access',
     description: 'Narrow lanes, fire engines, and disaster response',
-    icon: '🚑',
+    icon: 'ambulance',
     color: '--signal',
     prerequisite: 'marine_night',
     missions: [
@@ -841,7 +841,7 @@ const CAMPAIGNS = [
     moduleId: 9,
     name: 'Hindmata Monsoon Survival',
     description: 'Flooded roads, potholes, and zero visibility',
-    icon: '🌧️',
+    icon: 'rain',
     color: '--teal',
     prerequisite: 'byculla_emergency',
     missions: [
@@ -858,7 +858,7 @@ const CAMPAIGNS = [
     moduleId: 10,
     name: 'Eastern Express Highway',
     description: 'High-speed discipline, merges, and convoy escort',
-    icon: '🛣️',
+    icon: 'highway',
     color: '--plasma',
     prerequisite: 'hindmata_monsoon',
     missions: [
@@ -875,7 +875,7 @@ const CAMPAIGNS = [
     moduleId: 11,
     name: 'Bonus: Night Monsoon',
     description: 'Ultimate test: night + flood + traffic',
-    icon: '🌪️',
+    icon: 'alert',
     color: '--em',
     prerequisite: 'eastern_highway',
     missions: [
@@ -888,7 +888,7 @@ const CAMPAIGNS = [
     moduleId: 12,
     name: 'Bonus: VIP Convoy',
     description: 'Protocol drive with full escort',
-    icon: '💎',
+    icon: 'sparkles',
     color: '--ion',
     prerequisite: 'eastern_highway',
     missions: [
@@ -901,7 +901,7 @@ const CAMPAIGNS = [
     moduleId: 13,
     name: 'Bonus: Free Roam',
     description: 'Open world sandbox',
-    icon: '🌍',
+    icon: 'sparkles',
     color: '--signal',
     missions: [
       { levelId: 53, missionType: 'CHECKPOINT', title: 'City Sandbox', briefing: 'Explore 50km Mumbai. Create your own missions.' }
@@ -932,7 +932,7 @@ function getMissionForLevel(levelId) {
         const lv = mod.levels.find(l => l.id === numId);
         if (lv) {
           return {
-            campaign: { name: mod.name, icon: '🚦' },
+            campaign: { name: mod.name, icon: 'signal' },
             mission: {
               levelId: numId,
               title: lv.name,

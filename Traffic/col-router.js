@@ -68,7 +68,7 @@
     const main = document.createElement('main')
     main.setAttribute('role', 'alert')
     const icon = document.createElement('div')
-    icon.textContent = '⚠️'
+    icon.textContent = '!'
     icon.style.fontSize = '4rem'
     icon.style.marginBottom = '20px'
     icon.style.textShadow = '0 0 15px rgba(239, 68, 68, 0.5)'
@@ -103,7 +103,7 @@
     banner.setAttribute('role', 'status')
     banner.style.cssText = 'background: linear-gradient(90deg, #38bdf8, #818cf8); color: #fff; text-align: center; padding: 12px 20px; font-weight: bold; font-family: Inter, sans-serif; font-size: 14px; position: relative; z-index: 999999; box-shadow: 0 4px 15px rgba(0,0,0,0.2); line-height: 1.5;'
     const message = document.createElement('span')
-    message.textContent = '🚀 ' + String(text).slice(0, 240)
+    message.textContent = '' + String(text).slice(0, 240)
     message.style.display = 'inline-block'
     message.style.marginRight = '42px'
     const close = document.createElement('button')

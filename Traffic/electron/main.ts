@@ -231,7 +231,7 @@ function createMenu(): void {
       label: 'Modes',
       submenu: [
         {
-          label: '🏎️ 3D Driving Simulator',
+          label: ' 3D Driving Simulator',
           accelerator: 'F2',
           click: () => {
             if (isDev) mainWindow?.loadURL('http://localhost:5173/Driving.html');
@@ -239,7 +239,7 @@ function createMenu(): void {
           }
         },
         {
-          label: '📊 Driver Dashboard',
+          label: ' Driver Dashboard',
           accelerator: 'F3',
           click: () => {
             if (isDev) mainWindow?.loadURL('http://localhost:5173/TrafficDashboard.html');
@@ -247,7 +247,7 @@ function createMenu(): void {
           }
         },
         {
-          label: '🚶 Pedestrian Academy',
+          label: ' Pedestrian Academy',
           accelerator: 'F4',
           click: () => {
             if (isDev) mainWindow?.loadURL('http://localhost:5173/Academy.html');
@@ -255,11 +255,11 @@ function createMenu(): void {
           }
         },
         {
-          label: '🛠️ Vehicle Customizer',
+          label: 'Vehicle & Settings',
           accelerator: 'F5',
           click: () => {
-            if (isDev) mainWindow?.loadURL('http://localhost:5173/TrafficSetup.html');
-            else mainWindow?.loadFile(path.join(__dirname, '..', 'dist', 'TrafficSetup.html'));
+            if (isDev) mainWindow?.loadURL('http://localhost:5173/Academy.html?settings=1');
+            else mainWindow?.loadFile(path.join(__dirname, '..', 'dist', 'Academy.html'), { query: { settings: '1' } });
           }
         }
       ]

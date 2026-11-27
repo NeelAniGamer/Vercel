@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 99,
-  icon: '🌆',
+  icon: 'city',
   name: 'Free Roam - Mumbai City',
   modes: ['car', 'bike', 'auto', 'bus', 'truck'],
   col: '#34d399',

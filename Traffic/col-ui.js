@@ -25,11 +25,132 @@
     } catch (e) {}
   }
 
+  // Generic UI Input Debounce Helper (Point 4: Debounce search and autocomplete inputs)
+  window.colDebounce = function (func, waitMs = 300) {
+    let timeout = null;
+    return function (...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), waitMs);
+    };
+  };
+
+  // OS & Platform Detection System: Windows, Mac, Linux, Android, iOS
+  function initColOS() {
+    var nav = window.navigator || {};
+    var ua = nav.userAgent || '';
+    var platform = nav.platform || '';
+    var userAgentData = nav.userAgentData || null;
+    var osName = 'windows';
+
+    if (userAgentData && userAgentData.platform) {
+      var p = userAgentData.platform.toLowerCase();
+      if (p.includes('win')) osName = 'windows';
+      else if (p.includes('mac')) osName = 'mac';
+      else if (p.includes('linux')) osName = 'linux';
+      else if (p.includes('android')) osName = 'android';
+      else if (p.includes('ios') || p.includes('iphone') || p.includes('ipad')) osName = 'ios';
+    } else {
+      if (/Win/i.test(platform) || /Windows/i.test(ua)) osName = 'windows';
+      else if (/Mac/i.test(platform) || /Macintosh/i.test(ua)) osName = 'mac';
+      else if (/Linux/i.test(platform) || /Linux/i.test(ua)) osName = 'linux';
+      else if (/Android/i.test(ua)) osName = 'android';
+      else if (/iPhone|iPad|iPod/i.test(ua)) osName = 'ios';
+    }
+
+    var isMac = osName === 'mac' || osName === 'ios';
+    var isWin = osName === 'windows';
+    var isLinux = osName === 'linux';
+    var isAndroid = osName === 'android';
+
+    document.documentElement.setAttribute('data-os', osName);
+    document.documentElement.classList.add('os-' + osName);
+
+    window.__colOS = {
+      name: osName,
+      isMac: isMac,
+      isWindows: isWin,
+      isAndroid: isAndroid,
+      isLinux: isLinux,
+      modKey: isMac ? '⌘' : 'Ctrl',
+      shortcutText: isMac ? '⌘K' : 'Ctrl+K',
+      shortcutInline: isMac ? '⌘K' : 'Ctrl K'
+    };
+
+    function applyPlatformKeys() {
+      var kText = window.__colOS.shortcutInline;
+      var fullKey = window.__colOS.shortcutText;
+      var tip = 'Press ' + fullKey + ' or / to search all 16 applications';
+
+      var navTrig = document.querySelector('.nav-cmd-trigger');
+      if (navTrig) {
+        navTrig.setAttribute('title', tip);
+        var nk = navTrig.querySelector('kbd');
+        if (nk) nk.textContent = kText;
+      }
+
+      var heroPill = document.querySelector('.hero-cmd-pill');
+      if (heroPill) {
+        heroPill.setAttribute('title', tip);
+        var hk = heroPill.querySelector('.hcp-kbd');
+        if (hk) hk.textContent = kText;
+      }
+
+      var sfBtn = document.querySelector('.sf-cmd-btn');
+      if (sfBtn) {
+        sfBtn.setAttribute('title', tip);
+        var sk = sfBtn.querySelector('kbd');
+        if (sk) sk.textContent = kText;
+      }
+
+      var osHint = document.querySelector('.col-cmd-hint-toggle kbd');
+      if (osHint) {
+        osHint.textContent = fullKey;
+      }
+
+      document.querySelectorAll('.col-os-key').forEach(function (el) {
+        el.textContent = kText;
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', applyPlatformKeys);
+    } else {
+      applyPlatformKeys();
+    }
+
+    window.addEventListener('keydown', function (e) {
+      var isK = (isMac ? e.metaKey : e.ctrlKey) && (e.key === 'k' || e.key === 'K');
+      if (isK && typeof window.toggleColCmdPalette === 'function') {
+        e.preventDefault();
+        e.stopPropagation();
+        window.toggleColCmdPalette();
+      }
+    }, true);
+  }
+  initColOS();
+
+  // Global Liquid Glass Toggle Fallback (ensures desktop PC toggle works even when pull-refresh.js is not loaded)
+  if (typeof window.toggleAppleLiquidGlass !== 'function') {
+    window.toggleAppleLiquidGlass = function (force) {
+      var isCurrentlyOn = document.documentElement.classList.contains('apple-glass');
+      var willEnable = typeof force === 'boolean' ? force : !isCurrentlyOn;
+      try {
+        if (window.ColCookie) window.ColCookie.set('liquid_glass', willEnable ? 'true' : 'false', 365);
+        localStorage.setItem('liquid_glass', willEnable ? 'true' : 'false');
+      } catch (e) {}
+      document.documentElement.classList.toggle('apple-glass', willEnable);
+      return willEnable;
+    };
+  }
+
   // 0. Ambient Visual System Auto-Injector (Aurora Mesh & Cyber Grid)
   // Full-fidelity 3-orb ambient mesh + cyber spotlight across all devices.
   // Hardware-accelerated GPU layers run at full unthrottled refresh rates.
   function initAmbientVisuals() {
     if (document.querySelector('.col-ambient-bg')) {return;}
+    if (document.getElementById('apple-liquid-backdrop') || document.documentElement.classList.contains('apple-glass') || document.documentElement.classList.contains('is-iphone')) {
+      return;
+    }
     const bg = document.createElement('div');
     bg.className = 'col-ambient-bg';
     bg.setAttribute('aria-hidden', 'true');
@@ -100,28 +221,31 @@
       }
     }
 
+    let cursorRaf = null
     document.addEventListener(
       'mousemove',
       function (e) {
+        if (!document.body.classList.contains('has-mouse')) {
+          document.body.classList.add('has-mouse')
+        }
         mx = e.clientX
         my = e.clientY
-        if (dot) {
-          dot.style.transform = 'translate3d(' + mx + 'px,' + my + 'px,0) translate(-50%,-50%)'
-        }
-        if (!ringRaf && ring) {
-          ringRaf = requestAnimationFrame(updateRing)
-        }
-        if (!isMoving) {
-          isMoving = true
-          requestAnimationFrame(function () {
+        if (!cursorRaf) {
+          cursorRaf = requestAnimationFrame(function () {
+            cursorRaf = null
+            if (dot) {
+              dot.style.transform = 'translate3d(' + mx + 'px,' + my + 'px,0) translate(-50%,-50%)'
+            }
             if (!spot) {
               spot = document.querySelector('.col-ambient-spotlight')
             }
             if (spot) {
               spot.style.transform = 'translate3d(' + mx + 'px,' + my + 'px,0)'
             }
-            isMoving = false
           })
+        }
+        if (!ringRaf && ring) {
+          ringRaf = requestAnimationFrame(updateRing)
         }
       },
       { passive: true }
@@ -143,13 +267,13 @@
 
   // 2. Mobile Menu & In-App Updater — Engineered for 720p→2K
   const mmb = document.getElementById('mmb'),
-    nl = document.getElementById('navLinks')
+    nl = document.getElementById('navLinks') || document.querySelector('.top-nav .nav-links, .nav .nav-links') || document.querySelector('.top-nav .nav-links, .nav .nav-links')
   const isGamePage2 = /Driving|Academy|solar|gesture|rpg/i.test(location.pathname)
   if (mmb) {
     mmb.innerHTML = '<span class="m-line"></span><span class="m-line"></span><span class="m-line"></span>'
     mmb.setAttribute('aria-label', 'Toggle navigation menu')
     mmb.setAttribute('aria-expanded', 'false')
-    if (nl) {
+    if (mmb) {
       // — Helper: lock body scroll without layout shift —
       let _lockY = 0
       let _navLocked = false
@@ -163,7 +287,7 @@
         document.body.style.position = 'fixed'
         document.body.style.width = '100%'
         mmb.setAttribute('aria-expanded', 'true')
-        nl.setAttribute('aria-hidden', 'false')
+        if (nl) nl.setAttribute('aria-hidden', 'false')
       }
       function unlockNav() {
         document.body.classList.remove('nav-lock')
@@ -180,7 +304,7 @@
           _navLocked = false
         }
         mmb.setAttribute('aria-expanded', 'false')
-        nl.setAttribute('aria-hidden', 'true')
+        if (nl) nl.setAttribute('aria-hidden', 'true')
       }
       function isNavOpen() {
         return Boolean(_drawer && _drawer.classList.contains('active'))
@@ -215,7 +339,7 @@
           '<div class="cmd-panel">' +
             '<div class="cmd-header">' +
               '<div class="cmd-brand">' +
-                '<img src="Class.png" alt="Class Of Learners" class="cmd-logo" width="36" height="36" />' +
+                '<img src="/Class.png" alt="Class Of Learners" class="cmd-logo" width="36" height="36" />' +
                 '<div class="cmd-brand-text">' +
                   '<span class="cmd-brand-name">Class Of Learners</span>' +
                   '<span class="cmd-brand-badge">v1.4</span>' +
@@ -252,7 +376,7 @@
                 '<button type="button" class="cmd-accordion-btn" id="cmdAccBtn">' +
                   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>' +
                   '<span>Projects</span>' +
-                  '<span class="cmd-acc-arrow">&#9660;</span>' +
+                  '<span class="cmd-acc-arrow">v</span>' +
                 '</button>' +
                 '<div class="cmd-accordion-list" id="cmdAccList">' +
                   '<a href="/ati" class="cmd-acc-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg><span>Typing Instructor</span></a>' +
@@ -298,7 +422,7 @@
 
             '<div class="cmd-quick-deck">' +
               '<a href="/making" class="cmd-tile highlight">' +
-                '<span class="cmd-tile-icon">⚡</span>' +
+                '<span class="cmd-tile-icon"></span>' +
                 '<span class="cmd-tile-title">Making</span>' +
                 '<span class="cmd-tile-sub">AIs, Services &amp; Stack</span>' +
               '</a>' +
@@ -308,7 +432,7 @@
                 '<span class="cmd-tile-sub">Tutor &amp; Speed Test</span>' +
               '</a>' +
               '<a href="/solar" class="cmd-tile">' +
-                '<span class="cmd-tile-icon">🪐</span>' +
+                '<span class="cmd-tile-icon"></span>' +
                 '<span class="cmd-tile-title">Solar 3D Engine</span>' +
                 '<span class="cmd-tile-sub">Cosmic Physics Sim</span>' +
               '</a>' +
@@ -445,11 +569,14 @@
       window.openMobileDrawer = openDrawer
       window.closeMobileDrawer = closeDrawer
 
-      mmb.addEventListener('click', function () {
-        const d = getOrCreateMobileDrawer()
-        if (d.classList.contains('active')) {closeDrawer()}
-        else {openDrawer()}
-      })
+      if (mmb && !mmb.dataset.mmbBound) {
+        mmb.dataset.mmbBound = 'true'
+        mmb.addEventListener('click', function () {
+          const d = getOrCreateMobileDrawer()
+          if (d.classList.contains('active')) {closeDrawer()}
+          else {openDrawer()}
+        })
+      }
 
       // Android Native App detection
       if (/ClassOfLearnersApp/i.test(navigator.userAgent)) {
@@ -465,7 +592,7 @@
       })
 
       // Mobile dropdown toggle (accordion, no propagation to drawer close)
-      const dropdowns = nl.querySelectorAll('.dropdown')
+      const dropdowns = nl ? nl.querySelectorAll('.dropdown') : []
       dropdowns.forEach(function (dd) {
         const btn = dd.querySelector('.dropdown-btn')
         if (btn) {
@@ -494,7 +621,7 @@
       try {
         const isWebView = /wv/i.test(navigator.userAgent) || /Build\//i.test(navigator.userAgent)
         if (isWebView) {
-          fetch('/version.json?t=' + Date.now())
+          fetch('/version.json', { signal: AbortSignal.timeout(5000) })
             .then((r) => r.json())
             .then((data) => {
               const currentV = localStorage.getItem('col_apk_version') || '0'
@@ -675,7 +802,7 @@ function initBottomBar() {
     // 1100px matches the CSS breakpoint that hides the desktop .nav-links and
     // shows the thumb bar. Using 900px left a 901–1100px dead zone where the
     // desktop nav was hidden AND the bottom bar was removed.
-    if (window.innerWidth > 1100) {
+    if (window.innerWidth > 1024) {
       const existing = document.querySelector('.col-bottom-bar')
       if (existing) {existing.remove()}
       document.body.classList.remove('nav-lock')
@@ -824,7 +951,8 @@ function initBmcBadge() {
     let pointerDown = false
     let didDrag = false
     let suppressNextClick = false
-    let startX = 0, startY = 0, origX = 0, origY = 0
+    let startX = 0, startY = 0, origX = 0, origY = 0, origW = 180, origH = 40
+    let dragRaf = null, currentDx = 0, currentDy = 0
 
     function onDown(e) {
       if (e.target && e.target.closest && e.target.closest('.bmc-dismiss')) {return}
@@ -838,6 +966,10 @@ function initBmcBadge() {
       const rect = badge.getBoundingClientRect()
       origX = rect.left
       origY = rect.top
+      origW = rect.width || badge.offsetWidth || 180
+      origH = rect.height || badge.offsetHeight || 40
+      currentDx = 0
+      currentDy = 0
       // Suppress the browser's native image drag. Without this the <img>
       // starts a native drag on the first few pixels of movement, which
       // swallows the remaining mousemove/mouseup events and the badge
@@ -856,19 +988,28 @@ function initBmcBadge() {
       }
       if (!didDrag) {return}
       if (e.cancelable) {e.preventDefault()}
-      // Clamp to viewport.
-      const w = badge.offsetWidth, h = badge.offsetHeight
-      const x = Math.max(8, Math.min(window.innerWidth - w - 8, origX + dx))
-      const y = Math.max(8, Math.min(window.innerHeight - h - 8, origY + dy))
-      badge.style.left = x + 'px'
-      badge.style.top = y + 'px'
-      badge.style.right = 'auto'
-      badge.style.bottom = 'auto'
+      currentDx = dx
+      currentDy = dy
+      if (!dragRaf) {
+        dragRaf = requestAnimationFrame(function () {
+          dragRaf = null
+          const x = Math.max(8, Math.min(window.innerWidth - origW - 8, origX + currentDx))
+          const y = Math.max(8, Math.min(window.innerHeight - origH - 8, origY + currentDy))
+          badge.style.left = x + 'px'
+          badge.style.top = y + 'px'
+          badge.style.right = 'auto'
+          badge.style.bottom = 'auto'
+        })
+      }
     }
 
     function onUp() {
       if (!pointerDown) {return}
       pointerDown = false
+      if (dragRaf) {
+        cancelAnimationFrame(dragRaf)
+        dragRaf = null
+      }
       badge.style.cursor = 'grab'
       if (didDrag) {
         // The click that follows a drag must not open the badge link.
@@ -917,10 +1058,326 @@ function initBmcBadge() {
 }
 initBmcBadge()
 
+// Universal Cookie & Data Management Subsystem
+;(function (global) {
+  if (global.ColCookie && global.ColUserData) return
+
+  var ColCookie = {
+    set: function (name, value, days, options) {
+      if (!name) return false
+      options = options || {}
+      var d = typeof days === 'number' ? days : 365
+      var expires = ''
+      if (d !== 0) {
+        var date = new Date()
+        date.setTime(date.getTime() + (d * 24 * 60 * 60 * 1000))
+        expires = '; expires=' + date.toUTCString()
+      }
+      var isSecure = (options.secure !== undefined ? options.secure : (location.protocol === 'https:')) ? '; Secure' : ''
+      var sameSite = options.sameSite ? '; SameSite=' + options.sameSite : '; SameSite=Lax'
+      var path = options.path ? '; path=' + options.path : '; path=/'
+
+      var rawVal
+      try {
+        rawVal = typeof value === 'object' && value !== null ? JSON.stringify(value) : String(value)
+      } catch (e) {
+        rawVal = String(value)
+      }
+
+      var cookieStr = encodeURIComponent(name) + '=' + encodeURIComponent(rawVal) + expires + path + sameSite + isSecure
+      try {
+        document.cookie = cookieStr
+        try {
+          if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('col_ck_' + name, rawVal)
+          }
+        } catch (_ls) {}
+        return true
+      } catch (e) {
+        try {
+          if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('col_ck_' + name, rawVal)
+            return true
+          }
+        } catch (_err) {}
+        return false
+      }
+    },
+
+    get: function (name, fallback) {
+      if (fallback === undefined) fallback = null
+      if (!name) return fallback
+      try {
+        var prefix = encodeURIComponent(name) + '='
+        var cookies = (document.cookie || '').split(';')
+        for (var i = 0; i < cookies.length; i++) {
+          var c = cookies[i].trim()
+          if (c.indexOf(prefix) === 0) {
+            var raw = decodeURIComponent(c.substring(prefix.length))
+            try {
+              return JSON.parse(raw)
+            } catch (_) {
+              return raw
+            }
+          }
+        }
+      } catch (e) {}
+
+      try {
+        if (typeof localStorage !== 'undefined') {
+          var lsVal = localStorage.getItem('col_ck_' + name)
+          if (lsVal !== null) {
+            try {
+              return JSON.parse(lsVal)
+            } catch (_) {
+              return lsVal
+            }
+          }
+        }
+      } catch (_ls) {}
+
+      return fallback
+    },
+
+    has: function (name) {
+      return this.get(name) !== null
+    },
+
+    remove: function (name, path) {
+      if (!name) return
+      path = path || '/'
+      try {
+        document.cookie = encodeURIComponent(name) + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=' + path + '; SameSite=Lax'
+      } catch (e) {}
+      try {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.removeItem('col_ck_' + name)
+        }
+      } catch (_ls) {}
+    },
+
+    getAll: function () {
+      var map = {}
+      try {
+        var cookies = (document.cookie || '').split(';')
+        for (var i = 0; i < cookies.length; i++) {
+          var c = cookies[i].trim()
+          if (!c) continue
+          var eq = c.indexOf('=')
+          if (eq > 0) {
+            var k = decodeURIComponent(c.substring(0, eq))
+            var v = decodeURIComponent(c.substring(eq + 1))
+            try {
+              map[k] = JSON.parse(v)
+            } catch (_) {
+              map[k] = v
+            }
+          }
+        }
+      } catch (e) {}
+      return map
+    }
+  }
+
+  var ColUserData = {
+    getUser: function () {
+      var online = ColCookie.get('col_user')
+      if (online && (online.name || online.username || online.email)) return online
+      var local = ColCookie.get('col_local_user')
+      if (local && (local.name || local.username)) return local
+      try {
+        if (typeof localStorage !== 'undefined') {
+          var raw = localStorage.getItem('col_active_local_user') || localStorage.getItem('traffic_local_user')
+          if (raw) return JSON.parse(raw)
+        }
+      } catch (e) {}
+      return null
+    },
+
+    setUser: function (user) {
+      if (!user) return
+      var safe = {
+        id: user.id || null,
+        name: user.name || user.full_name || user.displayName || 'Learner',
+        username: user.username || null,
+        email: user.email ? String(user.email).toLowerCase() : null,
+        picture: user.picture || user.avatar_url || null,
+        role: user.role || 'learner',
+        lastActive: Date.now()
+      }
+      ColCookie.set('col_user', safe, 365)
+      ColCookie.set('col_user_hint', safe.name, 365)
+      try {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('col_user', JSON.stringify(safe))
+        }
+      } catch (e) {}
+    },
+
+    setLocalUser: function (localUser) {
+      if (!localUser) return
+      var safe = {
+        id: localUser.id || ('local_' + Date.now()),
+        name: localUser.name || localUser.username || 'Guest Learner',
+        username: localUser.username || null,
+        vehicle: localUser.vehicle || 'Car',
+        age: localUser.age || 18,
+        language: localUser.language || 'en',
+        picture: localUser.picture || null,
+        isLocal: true,
+        lastActive: Date.now()
+      }
+      ColCookie.set('col_local_user', safe, 365)
+    },
+
+    clearUser: function () {
+      ColCookie.remove('col_user')
+      ColCookie.remove('col_user_hint')
+      try {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.removeItem('col_user')
+        }
+      } catch (e) {}
+    },
+
+    clearLocalUser: function () {
+      ColCookie.remove('col_local_user')
+    },
+
+    getPref: function (key, defaultVal) {
+      if (defaultVal === undefined) defaultVal = null
+      var prefs = ColCookie.get('col_prefs') || {}
+      if (typeof prefs === 'object' && prefs !== null && key in prefs) {
+        return prefs[key]
+      }
+      var single = ColCookie.get('col_pref_' + key)
+      if (single !== null) return single
+      try {
+        if (typeof localStorage !== 'undefined') {
+          var ls = localStorage.getItem('col_pref_' + key)
+          if (ls !== null) return ls
+        }
+      } catch (e) {}
+      return defaultVal
+    },
+
+    setPref: function (key, value) {
+      if (!key) return
+      var prefs = ColCookie.get('col_prefs') || {}
+      if (typeof prefs !== 'object' || prefs === null) prefs = {}
+      prefs[key] = value
+      ColCookie.set('col_prefs', prefs, 365)
+      ColCookie.set('col_pref_' + key, value, 365)
+      try {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('col_pref_' + key, typeof value === 'object' ? JSON.stringify(value) : String(value))
+        }
+      } catch (e) {}
+    },
+
+    getAllPrefs: function () {
+      var prefs = ColCookie.get('col_prefs') || {}
+      return typeof prefs === 'object' && prefs !== null ? prefs : {}
+    },
+
+    recordVisit: function () {
+      try {
+        var path = window.location.pathname || '/'
+        var title = document.title || 'Class Of Learners'
+        if (path.indexOf('login') !== -1 || path.indexOf('404') !== -1) return
+        var info = {
+          path: path,
+          title: title.split('—')[0].split('|')[0].trim(),
+          time: Date.now()
+        }
+        ColCookie.set('col_last_visit', info, 30)
+      } catch (e) {}
+    },
+
+    getLastVisit: function () {
+      return ColCookie.get('col_last_visit', null)
+    },
+
+    exportData: function () {
+      var data = {
+        exportedAt: new Date().toISOString(),
+        user: this.getUser(),
+        theme: ColCookie.get('theme') || 'dark',
+        preferences: this.getAllPrefs(),
+        lastVisit: this.getLastVisit()
+      }
+      return JSON.stringify(data, null, 2)
+    },
+
+    importData: function (source) {
+      try {
+        var data = typeof source === 'string' ? JSON.parse(source) : source
+        if (!data || typeof data !== 'object') return false
+        if (data.theme) {
+          ColCookie.set('theme', data.theme, 365)
+          if (typeof window.safeThemeSet === 'function') {
+            window.safeThemeSet(data.theme)
+          }
+        }
+        if (data.preferences && typeof data.preferences === 'object') {
+          for (var k in data.preferences) {
+            if (Object.prototype.hasOwnProperty.call(data.preferences, k)) {
+              this.setPref(k, data.preferences[k])
+            }
+          }
+        }
+        if (data.user && typeof data.user === 'object') {
+          this.setUser(data.user)
+        }
+        return true
+      } catch (e) {
+        console.warn('[ColUserData] Import failed:', e)
+        return false
+      }
+    },
+
+    clearAllData: function () {
+      ColCookie.remove('theme')
+      ColCookie.remove('col_user')
+      ColCookie.remove('col_user_hint')
+      ColCookie.remove('col_local_user')
+      ColCookie.remove('col_prefs')
+      ColCookie.remove('col_last_visit')
+      ColCookie.remove('liquid_glass')
+      ColCookie.remove('force_iphone')
+      try {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.removeItem('col_user')
+          localStorage.removeItem('col_active_local_user')
+          localStorage.removeItem('traffic_local_user')
+        }
+      } catch (e) {}
+    }
+  }
+
+  global.ColCookie = ColCookie
+  global.ColUserData = ColUserData
+  global.ColStorage = ColCookie
+})(typeof window !== 'undefined' ? window : this)
+
+// Automatically record lesson/page visit for seamless resume
+if (window.ColUserData) {
+  try { window.ColUserData.recordVisit() } catch (e) {}
+}
+
 // Global canonical theme helpers for all pages
 window.safeThemeGet = function () {
   try {
-    return localStorage.getItem('theme')
+    var fromCookie = window.ColCookie ? window.ColCookie.get('theme') : null
+    if (fromCookie === 'light' || fromCookie === 'dark') {
+      try { localStorage.setItem('theme', fromCookie) } catch (_) {}
+      return fromCookie
+    }
+    var fromLs = localStorage.getItem('theme')
+    if (fromLs && window.ColCookie) {
+      window.ColCookie.set('theme', fromLs, 365)
+    }
+    return fromLs
   } catch (e) {
     return null
   }
@@ -928,6 +1385,9 @@ window.safeThemeGet = function () {
 
 window.safeThemeSet = function (val) {
   try {
+    if (window.ColCookie) {
+      window.ColCookie.set('theme', val, 365)
+    }
     localStorage.setItem('theme', val)
   } catch (e) {}
 }
@@ -946,7 +1406,7 @@ window.hzSync = function () {
   const tsck = document.getElementById('tsck')
   if (tsck) {tsck.checked = isLight}
   const meta = document.getElementById('themeMeta') || document.querySelector('meta[name="theme-color"]')
-  if (meta) {meta.setAttribute('content', isLight ? '#f3f2eb' : '#070a14')}
+  if (meta) {meta.setAttribute('content', isLight ? '#F4F1EA' : '#121316')}
 }
 
 window.hzToggle = function () {
@@ -1002,5 +1462,272 @@ window.toggleTheme = function (el) {
     window.hzSync()
   }
 })()
+
+// Smooth Scroll Performance: Passive window scroll flag without DOM tree invalidation
+;(function () {
+  let scrollTimeout = null
+  window.addEventListener(
+    'scroll',
+    function () {
+      window.__isWindowScrolling = true
+      clearTimeout(scrollTimeout)
+      scrollTimeout = setTimeout(function () {
+        window.__isWindowScrolling = false
+      }, 80)
+    },
+    { passive: true }
+  )
+})()
+
+// Universal CoL Skeleton Screen Lifecycle & Global Controls
+;(function () {
+  var isDebugSkeleton = false
+  var manualSkeletonShown = false
+  try {
+    isDebugSkeleton = /[?&]skeleton(=|&|$)/i.test(window.location.search)
+  } catch (e) {}
+
+  window.showSkeleton = function () {
+    var l = document.getElementById('loader') || document.querySelector('.col-skeleton-screen')
+    if (l) {
+      manualSkeletonShown = true
+      var prevTransition = l.style.transition
+      l.style.transition = 'none'
+      l.style.display = 'flex'
+      l.scrollTop = 0
+      l.classList.remove('gone')
+      l.removeAttribute('aria-hidden')
+      l.setAttribute('aria-busy', 'true')
+      l.style.opacity = '1'
+      l.style.visibility = 'visible'
+      l.style.transform = 'none'
+      l.style.pointerEvents = 'all'
+      l.offsetHeight // force reflow with instant reveal
+      l.style.transition = prevTransition || ''
+    }
+  }
+
+  window.hideSkeleton = function () {
+    var l = document.getElementById('loader') || document.querySelector('.col-skeleton-screen')
+    manualSkeletonShown = false
+    if (l) {
+      l.style.opacity = ''
+      l.style.visibility = ''
+      l.style.transform = ''
+      l.classList.add('gone')
+      l.setAttribute('aria-busy', 'false')
+      l.setAttribute('aria-hidden', 'true')
+      l.style.pointerEvents = 'none'
+      setTimeout(function () {
+        if (l.classList.contains('gone')) l.style.display = 'none'
+      }, 360)
+    }
+  }
+
+  window.toggleSkeleton = function () {
+    var l = document.getElementById('loader') || document.querySelector('.col-skeleton-screen')
+    if (l && l.classList.contains('gone')) {
+      window.showSkeleton()
+    } else {
+      window.hideSkeleton()
+    }
+  }
+
+  function handleAutoDismiss() {
+    if (manualSkeletonShown) return
+    if (isDebugSkeleton && !navigator.webdriver) {
+      console.info('[CoL] Skeleton screen debug active (?skeleton). Call window.hideSkeleton() to dismiss.')
+      return
+    }
+    var l = document.getElementById('loader') || document.querySelector('.col-skeleton-screen')
+    if (l && !l.classList.contains('gone')) {
+      l.setAttribute('aria-busy', 'false')
+      l.setAttribute('aria-hidden', 'true')
+      l.style.pointerEvents = 'none'
+      if (navigator.webdriver) {
+        l.style.display = 'none'
+        l.classList.add('gone')
+      } else {
+        l.classList.add('gone')
+        setTimeout(function () {
+          if (l.classList.contains('gone')) l.style.display = 'none'
+        }, 360)
+      }
+    }
+    if (document.body) document.body.classList.add('hero-ready')
+  }
+
+  if (navigator.webdriver) {
+    handleAutoDismiss()
+  } else if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      requestAnimationFrame(handleAutoDismiss)
+    })
+  } else {
+    requestAnimationFrame(handleAutoDismiss)
+  }
+  window.addEventListener('load', handleAutoDismiss, { once: true })
+})()
+
+// ==========================================================================
+// CoL Universal Cookie & Privacy Banner Subsystem
+// ==========================================================================
+;(function () {
+  var CONSENT_KEY = 'col_cookie_consent'
+
+  function closeBanner() {
+    var banner = document.getElementById('colCookieBanner')
+    if (banner) {
+      banner.classList.remove('open')
+      setTimeout(function () {
+        if (!banner.classList.contains('open')) {
+          banner.style.display = 'none'
+        }
+      }, 380)
+    }
+  }
+
+  function injectBanner() {
+    if (document.getElementById('colCookieBanner')) return
+    var el = document.createElement('div')
+    el.id = 'colCookieBanner'
+    el.className = 'col-cookie-banner'
+    el.setAttribute('role', 'region')
+    el.setAttribute('aria-label', 'Cookie and Privacy Preferences')
+    el.innerHTML = [
+      '<div class="col-cookie-content">',
+      '  <div class="col-cookie-header">',
+      '    <div class="col-cookie-badge">',
+      '      <span class="col-cookie-dot"></span>',
+      '      <span>Privacy &amp; Data Preferences</span>',
+      '    </div>',
+      '    <button type="button" class="col-cookie-close" data-col-cookie="dismiss" aria-label="Dismiss cookie notice">&times;</button>',
+      '  </div>',
+      '  <div class="col-cookie-body">',
+      '    <p class="col-cookie-text">',
+      '      Class Of Learners uses essential local cookies and session storage to preserve your typing curriculum, simulation state, and secure account authentication. Optional performance telemetry helps us optimize real-time physics engines.',
+      '    </p>',
+      '  </div>',
+      '  <div class="col-cookie-actions">',
+      '    <button type="button" class="col-cookie-btn col-cookie-accept" data-col-cookie="all">Accept All</button>',
+      '    <button type="button" class="col-cookie-btn col-cookie-essential" data-col-cookie="essential">Essential Only</button>',
+      '    <a href="/privacy.html#cookies" class="col-cookie-link">Learn More</a>',
+      '  </div>',
+      '</div>'
+    ].join('\n')
+    el.addEventListener('click', function (ev) {
+      const btn = ev.target && ev.target.closest ? ev.target.closest('[data-col-cookie]') : null
+      if (!btn) return
+      const act = btn.getAttribute('data-col-cookie')
+      if (act === 'dismiss') colDismissCookieBanner()
+      else if (act === 'all') colAcceptAllCookies()
+      else if (act === 'essential') colAcceptEssentialCookies()
+    })
+    document.body.appendChild(el)
+  }
+
+  window.showCookieBanner = function () {
+    var banner = document.getElementById('colCookieBanner')
+    if (!banner) {
+      injectBanner()
+      banner = document.getElementById('colCookieBanner')
+    }
+    if (banner) {
+      banner.style.display = 'block'
+      banner.offsetHeight
+      banner.classList.add('open')
+    }
+  }
+
+  window.colAcceptAllCookies = function () {
+    try {
+      localStorage.setItem(CONSENT_KEY, 'all')
+      localStorage.setItem(CONSENT_KEY + '_time', new Date().toISOString())
+      if (window.ColCookie) {
+        window.ColCookie.set(CONSENT_KEY, 'all', 365)
+      }
+    } catch (_e) {}
+    closeBanner()
+    if (typeof window.toast === 'function') {
+      window.toast('All cookie preferences accepted and saved.', '#10b981')
+    }
+  }
+
+  window.colAcceptEssentialCookies = function () {
+    try {
+      localStorage.setItem(CONSENT_KEY, 'essential')
+      localStorage.setItem(CONSENT_KEY + '_time', new Date().toISOString())
+      if (window.ColCookie) {
+        window.ColCookie.set(CONSENT_KEY, 'essential', 365)
+      }
+    } catch (_e) {}
+    closeBanner()
+    if (typeof window.toast === 'function') {
+      window.toast('Essential cookie preferences active.', '#f59e0b')
+    }
+  }
+
+  window.colDismissCookieBanner = function () {
+    window.colAcceptEssentialCookies()
+  }
+
+  function initCookieBanner() {
+    try {
+      var saved = localStorage.getItem(CONSENT_KEY)
+      if (saved) return
+    } catch (_e) {}
+
+    setTimeout(function () {
+      if (document.body) {
+        window.showCookieBanner()
+      }
+    }, 700)
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCookieBanner)
+  } else {
+    initCookieBanner()
+  }
+})()
+
+// ==========================================================================
+// Universal CoL Command Palette Launcher Trigger (Ctrl+K / Cmd+K)
+// ==========================================================================
+if (typeof window.openColCmdPalette !== 'function') {
+  window.openColCmdPalette = function () {
+    var p = document.getElementById('colCmdPalette')
+    if (p) {
+      p.style.display = 'flex'
+      p.removeAttribute('aria-hidden')
+      requestAnimationFrame(function () {
+        p.classList.add('is-open')
+        var inp = p.querySelector('.col-cmd-input') || p.querySelector('input')
+        if (inp) {
+          inp.value = ''
+          inp.focus()
+        }
+      })
+    } else {
+      window.location.href = '/?search=true'
+    }
+  }
+}
+
+document.addEventListener('keydown', function (e) {
+  if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
+    // If not typing inside an editable field or textarea
+    var tag = (e.target && e.target.tagName ? e.target.tagName.toLowerCase() : '')
+    if (tag !== 'input' && tag !== 'textarea' && !e.target.isContentEditable) {
+      e.preventDefault()
+      if (typeof window.openColCmdPalette === 'function') {
+        window.openColCmdPalette()
+      }
+    }
+  }
+})
+
+
+
 
 

@@ -8,14 +8,14 @@
   'use strict';
 
   const DEFAULT_MINECRAFT_SKINS = [
-    { id: 'steve', name: 'Classic Steve', file: 'skins/steve.png', icon: '⛏️', desc: 'The original Minecraft adventurer' },
-    { id: 'alex', name: 'Classic Alex', file: 'skins/alex.png', isSlim: true, icon: '🏹', desc: 'Slim-armed explorer' },
-    { id: 'police', name: 'Mumbai Police', file: 'skins/police.png', icon: '👮', desc: 'Traffic enforcement uniform' },
-    { id: 'mumbai_driver', name: 'Kaali-Peeli Pilot', file: 'skins/mumbai_driver.png', icon: '🚕', desc: 'Iconic yellow-black taxi jacket' },
-    { id: 'cyberpunk', name: 'Cyber Runner', file: 'skins/cyberpunk.png', icon: '⚡', desc: 'Glowing neon cyborg suit' },
-    { id: 'hoodie', name: 'Urban Hoodie', file: 'skins/hoodie.png', icon: '🛹', desc: 'Streetwear red hoodie & kicks' },
-    { id: 'racer', name: 'Grand Prix Racer', file: 'skins/racer.png', icon: '🏎️', desc: 'High-speed racing suit & helmet' },
-    { id: 'hacker', name: 'Secret Agent', file: 'skins/hacker.png', icon: '🕶️', desc: 'Matrix tie & sleek black coat' }
+    { id: 'steve', name: 'Classic Steve', file: 'skins/steve.png', icon: 'wrench', desc: 'The original Minecraft adventurer' },
+    { id: 'alex', name: 'Classic Alex', file: 'skins/alex.png', isSlim: true, icon: 'sparkles', desc: 'Slim-armed explorer' },
+    { id: 'police', name: 'Mumbai Police', file: 'skins/police.png', icon: 'shield', desc: 'Traffic enforcement uniform' },
+    { id: 'mumbai_driver', name: 'Kaali-Peeli Pilot', file: 'skins/mumbai_driver.png', icon: 'car', desc: 'Iconic yellow-black taxi jacket' },
+    { id: 'cyberpunk', name: 'Cyber Runner', file: 'skins/cyberpunk.png', icon: 'zap', desc: 'Glowing neon cyborg suit' },
+    { id: 'hoodie', name: 'Urban Hoodie', file: 'skins/hoodie.png', icon: 'bike', desc: 'Streetwear red hoodie & kicks' },
+    { id: 'racer', name: 'Grand Prix Racer', file: 'skins/racer.png', icon: 'car', desc: 'High-speed racing suit & helmet' },
+    { id: 'hacker', name: 'Secret Agent', file: 'skins/hacker.png', icon: 'user', desc: 'Matrix tie & sleek black coat' }
   ];
 
   /**
@@ -396,7 +396,7 @@
     saveCustomSkin(name, dataUrl) {
       const skins = this.getCustomSkins();
       const id = 'custom_' + Date.now();
-      const newSkin = { id, name: name || 'Custom Skin', dataUrl, isCustom: true, icon: '🎨' };
+      const newSkin = { id, name: name || 'Custom Skin', dataUrl, isCustom: true, icon: 'sparkles' };
       skins.unshift(newSkin);
       // Keep up to 12 custom skins in local storage
       if (skins.length > 12) {skins.length = 12;}

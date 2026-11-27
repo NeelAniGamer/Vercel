@@ -1430,7 +1430,7 @@ body.light-mode .menu-credits-highlight {
   cursor: pointer;
 }
 .col-cookie-accept {
-  background: #0284c7;
+  background: #0369a1;
   border-color: #38bdf8;
   color: #ffffff;
 }
@@ -1480,3 +1480,8 @@ body.light-mode .col-cookie-close {
   color: #334155;
   border-color: rgba(15, 23, 42, 0.14);
 }
+
+#start-btn, #start-btn span { color: #04101d !important; }
+.menu-footer { color: #94a3b8 !important; }
+
+#play-btn, #play-btn span { color: #04101d !important; }

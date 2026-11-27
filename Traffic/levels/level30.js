@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 30,
-  icon: '💳',
+  icon: 'wallet',
   name: 'Lesson 30 - Toll Plaza!',
   modes: ['car', 'bike'],
   col: '#2ecc71',
@@ -16,7 +16,7 @@ window.LVS.push({
     offHi: 'टोल चोरी'
   },
   theory:
-    '<h2>Toll Plaza!</h2><p>Highway pe toll plaza aa raha hai! FASTag lane hai aur cash lane hai — sahi lane choose karo!</p><p>Toll plaza pe slow down karo. FASTag wali gaadiyan FASTag lane mein jao. Cash lane mein ruko aur toll pay karo. Toll evade karna bhaari fine ka hai!</p><h3>💳 Kya karna hai?</h3><ul><li>Toll plaza dekhte hi slow down karo!</li><li>Sahi lane choose karo — FASTag ya cash.</li><li>Booth pe ruko, toll pay karo, aur aage badho.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Toll evade karna National Highway Authority Rules ke under illegal hai — ₹500 se ₹5000 tak ka fine!</p>',
+    '<h2>Toll Plaza!</h2><p>Highway pe toll plaza aa raha hai! FASTag lane hai aur cash lane hai — sahi lane choose karo!</p><p>Toll plaza pe slow down karo. FASTag wali gaadiyan FASTag lane mein jao. Cash lane mein ruko aur toll pay karo. Toll evade karna bhaari fine ka hai!</p><h3> Kya karna hai?</h3><ul><li>Toll plaza dekhte hi slow down karo!</li><li>Sahi lane choose karo — FASTag ya cash.</li><li>Booth pe ruko, toll pay karo, aur aage badho.</li></ul><h3> Kanoon kya kehta hai?</h3><p>Toll evade karna National Highway Authority Rules ke under illegal hai — ₹500 se ₹5000 tak ka fine!</p>',
   pract: 'Slow down on approach. Choose the correct lane. Stop at the booth and pay. Proceed on the highway.',
   mode: 'practical',
   themeType: 'toll',

@@ -31,7 +31,7 @@ export class DeliverySystem {
       pickupId: 'csmt_station',
       destId: 'marine_drive',
       item: '12 Hot Tiffins (Dabbas)',
-      icon: '🍱',
+      icon: 'package',
       brief: 'Deliver fresh lunch tiffins from CSMT Station to corporate towers on Marine Drive before lunchtime!',
       stampId: 'dabba_stamp',
       stampTitle: '6-Sigma Dabbawala Stamp',
@@ -43,7 +43,7 @@ export class DeliverySystem {
       pickupId: 'chai_stall',
       destId: 'sealink_toll',
       item: '10 Hot Cutting Chais & Vada Pavs',
-      icon: '☕',
+      icon: 'sparkles',
       brief: 'Deliver piping hot cutting chai to the maintenance crew at the Bandra-Worli Sea Link toll plaza!',
       stampId: 'chai_stamp',
       stampTitle: 'Cutting Chai Artisan Stamp',
@@ -55,7 +55,7 @@ export class DeliverySystem {
       pickupId: 'csmt_station',
       destId: 'gateway_of_india',
       item: 'Golden Marigold Flower Garlands',
-      icon: '🌸',
+      icon: 'sparkles',
       brief: 'Rush fragrant marigold garlands to the Gateway of India to welcome arriving harbor ferry travelers!',
       stampId: 'gateway_stamp',
       stampTitle: 'Gateway of India Seal',
@@ -67,7 +67,7 @@ export class DeliverySystem {
       pickupId: 'chai_stall',
       destId: 'chowpatty_beach',
       item: 'Crispy Butter Pav & Chutney',
-      icon: '🏖️',
+      icon: 'sun',
       brief: 'Express evening snack drop for sunset watchers relaxing by the Arabian Sea at Chowpatty beach!',
       stampId: 'chowpatty_stamp',
       stampTitle: 'Girgaon Sunset Stamp',
@@ -79,7 +79,7 @@ export class DeliverySystem {
       pickupId: 'sealink_toll',
       destId: 'marine_drive',
       item: 'Emergency Bridge FastTags',
-      icon: '🌉',
+      icon: 'sparkles',
       brief: 'High-speed coastal transit from the Sea Link across the Queen’s Necklace!',
       stampId: 'sealink_stamp',
       stampTitle: 'Sea Link Cable Marvel Stamp',
@@ -88,12 +88,12 @@ export class DeliverySystem {
   ];
 
   public stamps: Record<string, StampData> = {
-    dabba_stamp: { id: 'dabba_stamp', title: '6-Sigma Dabbawala', icon: '🍱', unlocked: false, desc: 'World-renowned lunch distribution precision.' },
-    chai_stamp: { id: 'chai_stamp', title: 'Cutting Chai Master', icon: '☕', unlocked: false, desc: 'Hot, fragrant street tea of Mumbai.' },
-    gateway_stamp: { id: 'gateway_stamp', title: 'Gateway of India', icon: '🏛️', unlocked: false, desc: 'The historic ceremonial arch of the Arabian Sea.' },
-    chowpatty_stamp: { id: 'chowpatty_stamp', title: 'Girgaon Chowpatty', icon: '🏖️', unlocked: false, desc: 'Golden sands, kulfi, and coastal sunsets.' },
-    sealink_stamp: { id: 'sealink_stamp', title: 'Bandra-Worli Sea Link', icon: '🌉', unlocked: false, desc: 'Cable-stayed bridge spanning Mumbai bay.' },
-    queens_stamp: { id: 'queens_stamp', title: "Queen's Necklace", icon: '🌊', unlocked: false, desc: 'The glowing coastal arc of Marine Drive.' }
+    dabba_stamp: { id: 'dabba_stamp', title: '6-Sigma Dabbawala', icon: 'package', unlocked: false, desc: 'World-renowned lunch distribution precision.' },
+    chai_stamp: { id: 'chai_stamp', title: 'Cutting Chai Master', icon: 'sparkles', unlocked: false, desc: 'Hot, fragrant street tea of Mumbai.' },
+    gateway_stamp: { id: 'gateway_stamp', title: 'Gateway of India', icon: 'building', unlocked: false, desc: 'The historic ceremonial arch of the Arabian Sea.' },
+    chowpatty_stamp: { id: 'chowpatty_stamp', title: 'Girgaon Chowpatty', icon: 'sun', unlocked: false, desc: 'Golden sands, kulfi, and coastal sunsets.' },
+    sealink_stamp: { id: 'sealink_stamp', title: 'Bandra-Worli Sea Link', icon: 'sparkles', unlocked: false, desc: 'Cable-stayed bridge spanning Mumbai bay.' },
+    queens_stamp: { id: 'queens_stamp', title: "Queen's Necklace", icon: 'droplet', unlocked: false, desc: 'The glowing coastal arc of Marine Drive.' }
   };
 
   public currentQuestIndex = 0;
@@ -174,9 +174,9 @@ export class DeliverySystem {
   }
 
   public getRank(): string {
-    if (this.totalDeliveries >= 5) return 'Legendary Mumbai Dabbawala 🌟';
-    if (this.totalDeliveries >= 3) return 'Master Traffic Hero 🛺';
-    if (this.totalDeliveries >= 1) return 'Express Route Scout 🚲';
-    return 'Apprentice Courier 📦';
+    if (this.totalDeliveries >= 5) return 'Legendary Mumbai Dabbawala ';
+    if (this.totalDeliveries >= 3) return 'Master Traffic Hero ';
+    if (this.totalDeliveries >= 1) return 'Express Route Scout ';
+    return 'Apprentice Courier ';
   }
 }

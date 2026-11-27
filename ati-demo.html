@@ -1522,6 +1522,31 @@
         .btn-auto-sim:hover, .btn-res-action:hover { transform: none; }
         .tip-card:hover, .tel-card:hover { transform: none; }
       }
+    
+
+      /* WCAG AA Contrast Overrides */
+      .skip-link { background: #92400e !important; color: #ffffff !important; }
+      button#autoTestBtn, button[onclick*="AutoTest"], button[onclick*="autoTest"] {
+        background: #047857 !important; color: #ffffff !important;
+      }
+      button#autoTestBtn span, button[onclick*="AutoTest"] span, button[onclick*="autoTest"] span {
+        color: #ffffff !important;
+      }
+      body.lm .mode-pill.active, body.lm .mode-pill[aria-pressed="true"] { color: #92400e !important; }
+      body.lm .sub-opt-btn, body.lm .key, body.lm a[href="ati"] span { color: #0369a1 !important; }
+      body.lm .term-focus-badge, body.lm a[href="ati-lite"] span { color: #0f766e !important; }
+      body.lm #btnStart, body.lm #btnStart span { background: #92400e !important; color: #ffffff !important; }
+    
+
+      .ati-hero-cta a:first-child, .ati-hero-cta a:first-child span { color: #070a14 !important; }
+body.lm .ati-hero-cta a:first-child, body.lm .ati-hero-cta a:first-child span { color: #ffffff !important; }
+      button[onclick*="Sim"], button[onclick*="sim"], button[id*="sim"], button[id*="Sim"] {
+        background: #047857 !important; color: #ffffff !important;
+      }
+      button[onclick*="Sim"] span, button[onclick*="sim"] span, button[id*="sim"] span, button[id*="Sim"] span {
+        color: #ffffff !important;
+      }
+      body.lm #atiDoubtAsk.doubt-ask { color: #ffffff !important; }
     </style>
   </head>
   <body>
@@ -2023,7 +2048,7 @@
           </div>
           <div class="replay-screen" id="replayScreen"></div>
           <div class="replay-controls">
-            <button class="sub-opt-btn" id="btnReplayPlay" onclick="toggleReplay()">▶ Play</button>
+            <button class="sub-opt-btn" id="btnReplayPlay" onclick="toggleReplay()">Play</button>
             <input type="range" class="replay-scrubber" id="replayScrubber" min="0" max="100" value="0" oninput="seekReplay(this.value)">
             <select class="deck-select" id="replaySpeed" onchange="setReplaySpeed(this.value)" aria-label="Replay speed">
               <option value="1">1.0x</option>
@@ -2417,7 +2442,7 @@
         if (replayTimer) {
           clearInterval(replayTimer);
           replayTimer = null;
-          if (btn) btn.textContent = '▶ Play';
+          if (btn) btn.textContent = 'Play';
           return;
         }
         if (replayIndex >= replayLog.length) {
@@ -2425,13 +2450,13 @@
           const sc = document.getElementById('replayScreen');
           if (sc) sc.textContent = '';
         }
-        if (btn) btn.textContent = '⏸ Pause';
+        if (btn) btn.textContent = 'Pause';
         const interval = Math.max(16, 45 / replaySpeedMultiplier);
         replayTimer = setInterval(() => {
           if (replayIndex >= replayLog.length) {
             clearInterval(replayTimer);
             replayTimer = null;
-            if (btn) btn.textContent = '▶ Replay';
+            if (btn) btn.textContent = 'Replay';
             return;
           }
           const item = replayLog[replayIndex];
@@ -2459,7 +2484,7 @@
       function seekReplay(val) {
         if (replayTimer) { clearInterval(replayTimer); replayTimer = null; }
         const btn = document.getElementById('btnReplayPlay');
-        if (btn) btn.textContent = '▶ Play';
+        if (btn) btn.textContent = 'Play';
         const targetIdx = Math.round((val / 100) * (replayLog.length - 1));
         replayIndex = Math.max(0, targetIdx);
         const sc = document.getElementById('replayScreen');

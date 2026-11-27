@@ -777,9 +777,24 @@ def generate_full_scene():
     # Save .blend
     print(f"[Save] Saving Blender scene to: {BLEND_OUTPUT_PATH}")
     bpy.ops.wm.save_as_mainfile(filepath=BLEND_OUTPUT_PATH)
-    
-    # Export glTF/GLB
-    print(f"[Export] Exporting glTF/GLB to: {GLB_OUTPUT_PATH}")
+
+    # Generate LOD1/LOD2 decimated variants for major buildings before GLB export
+    lod_col = get_or_create_collection('LOD_Proxies')
+    for obj in list(bpy.data.objects):
+        if obj.type != 'MESH' or obj.name.endswith(('_lod1', '_lod2')):
+            continue
+        if len(obj.data.polygons) < 40:
+            continue
+        for suffix, ratio in (('_lod1', 0.45), ('_lod2', 0.18)):
+            dup = obj.copy()
+            dup.data = obj.data.copy()
+            dup.name = obj.name + suffix
+            dec = dup.modifiers.new(name='LODDecimate', type='DECIMATE')
+            dec.ratio = ratio
+            lod_col.objects.link(dup)
+
+    # Export Draco-compressed glTF/GLB
+    print(f"[Export] Exporting Draco glTF/GLB to: {GLB_OUTPUT_PATH}")
     try:
         bpy.ops.export_scene.gltf(
             filepath=GLB_OUTPUT_PATH,
@@ -788,9 +803,11 @@ def generate_full_scene():
             export_apply=True,
             export_yup=True,
             export_materials='EXPORT',
-            export_colors=True
+            export_colors=True,
+            export_draco_mesh_compression_enable=True,
+            export_draco_mesh_compression_level=6
         )
-        print("[Export] glTF/GLB export SUCCESSFUL!")
+        print("[Export] Draco glTF/GLB export SUCCESSFUL!")
     except Exception as e:
         print(f"[Export Warning] glTF exporter error: {e}")
 

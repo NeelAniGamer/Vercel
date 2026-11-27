@@ -1325,7 +1325,7 @@ function populateDrawer(countryName) {
         if (iso) {
             document.getElementById('drawer-country-flag').innerHTML = `<img src="https://flagcdn.com/w80/${iso}.png" alt="${countryName} Flag" class="country-flag-img">`;
         } else {
-            document.getElementById('drawer-country-flag').innerHTML = `<span style="font-size: 32px;">${data.flag || '🏳️'}</span>`;
+            document.getElementById('drawer-country-flag').innerHTML = `<span class="country-code-pill" style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:30px;border-radius:6px;background:rgba(94,212,245,0.12);border:1px solid rgba(94,212,245,0.3);font-family:monospace;font-weight:700;font-size:13px;color:#5ed4f5;">${(countryName || 'GL').slice(0,2).toUpperCase()}</span>`;
         }
         document.getElementById('drawer-country-name').textContent = countryName;
         document.getElementById('drawer-country-subtitle').textContent = data.region || 'Unknown Region';
@@ -1384,7 +1384,7 @@ function populateDrawer(countryName) {
         `;
         
     } else {
-        document.getElementById('drawer-country-flag').innerHTML = '🏳️';
+        document.getElementById('drawer-country-flag').innerHTML = '<span class="country-code-pill">' + (data.iso ? data.iso.toUpperCase() : '--') + '</span>';
         document.getElementById('drawer-country-name').textContent = countryName;
         document.getElementById('drawer-country-subtitle').textContent = 'Unknown Region';
         

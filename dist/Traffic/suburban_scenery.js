@@ -1167,7 +1167,7 @@
       hud.innerHTML = `
         <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.12); padding-bottom:6px; margin-bottom:8px;">
           <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:1.2rem;">📻</span>
+            <span style="font-size:1.2rem;"></span>
             <span style="font-size:0.75rem; font-weight:800; color:#f1c40f; letter-spacing:1.5px; text-transform:uppercase;">POLICE & FAMILY DISPATCH</span>
           </div>
           <span id="suburban-radio-speaker" style="font-size:0.82rem; font-weight:700; color:#5ed4f5;">Dispatch</span>
@@ -3925,7 +3925,7 @@ function buildSchoolOverheadGantry(width, opts) {
     ctx.fillStyle = '#111827';
     ctx.font = '900 52px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('🏫 ST. XAVIER HIGH SCHOOL CAMPUS', 512, 78);
+    ctx.fillText(' ST. XAVIER HIGH SCHOOL CAMPUS', 512, 78);
     ctx.font = '800 42px sans-serif';
     ctx.fillStyle = '#b71c1c';
     ctx.fillText('SPEED LIMIT 20 KM/H • SILENCE ZONE (NO HONKING)', 512, 142);
@@ -4103,11 +4103,11 @@ function buildStXavierHeritageArch(opts, arg2, arg3) {
       aCtx.fillStyle = '#f1c40f';
       aCtx.font = 'bold 34px sans-serif';
       aCtx.textAlign = 'center';
-      aCtx.fillText('★  ★  ★   FOUNDED 1869   ★  ★  ★', 512, 58);
+      aCtx.fillText('       FOUNDED 1869       ', 512, 58);
 
       aCtx.fillStyle = '#ffffff';
       aCtx.font = '900 60px "Segoe UI", Arial, sans-serif';
-      aCtx.fillText('🏫 ST. XAVIER HIGH SCHOOL', 512, 130);
+      aCtx.fillText(' ST. XAVIER HIGH SCHOOL', 512, 130);
 
       aCtx.fillStyle = '#facc15';
       aCtx.font = 'bold 36px sans-serif';
@@ -4442,11 +4442,11 @@ function buildSchoolAcademicBuilding(opts) {
       bCtx.fillStyle = '#f1c40f';
       bCtx.font = 'bold 32px sans-serif';
       bCtx.textAlign = 'center';
-      bCtx.fillText('★ ★ ★   ESTD 1869   ★ ★ ★', 512, 60);
+      bCtx.fillText('     ESTD 1869     ', 512, 60);
 
       bCtx.fillStyle = '#ffffff';
       bCtx.font = '900 64px "Segoe UI", Arial, sans-serif';
-      bCtx.fillText('🏫 ST. XAVIER HIGH SCHOOL', 512, 135);
+      bCtx.fillText(' ST. XAVIER HIGH SCHOOL', 512, 135);
 
       bCtx.fillStyle = '#f1c40f';
       bCtx.font = 'bold 36px "Segoe UI", Arial, sans-serif';
@@ -4736,7 +4736,7 @@ function buildStXavierSportsComplex(opts) {
       spCtx.fillStyle = '#ffffff';
       spCtx.font = 'bold 30px sans-serif';
       spCtx.textAlign = 'center';
-      spCtx.fillText('🏆 ST. XAVIER SPORTS PAVILION', 256, 54);
+      spCtx.fillText(' ST. XAVIER SPORTS PAVILION', 256, 54);
       spCtx.fillStyle = '#f1c40f';
       spCtx.font = 'bold 22px sans-serif';
       spCtx.fillText('ATHLETIC GROUNDS & XAVIERITE ARENA', 256, 96);
@@ -4819,10 +4819,10 @@ function buildStXavierCampusBoundaryRailings(length, opts) {
   // 4. Mounted Campus Notice Plates along the Railing
   if (typeof document !== 'undefined') {
     const signs = [
-      { text1: '🏫 ST. XAVIER HIGH SCHOOL', text2: 'PAREL CAMPUS • FOUNDED 1869', z: 30 },
-      { text1: '⚠️ SCHOOL ZONE — STRICT 20 KM/H', text2: 'WATCH FOR STUDENTS CROSSING', z: 90 },
-      { text1: '🔇 SILENCE ZONE (NO HONKING)', text2: 'MV ACT SEC 194F — FINE ₹1000', z: 150 },
-      { text1: '🚌 SCHOOL BUS PICKUP ZONE', text2: 'KEEP CLEAR DURING DISMISSAL', z: 210 }
+      { text1: ' ST. XAVIER HIGH SCHOOL', text2: 'PAREL CAMPUS • FOUNDED 1869', z: 30 },
+      { text1: ' SCHOOL ZONE — STRICT 20 KM/H', text2: 'WATCH FOR STUDENTS CROSSING', z: 90 },
+      { text1: ' SILENCE ZONE (NO HONKING)', text2: 'MV ACT SEC 194F — FINE ₹1000', z: 150 },
+      { text1: ' SCHOOL BUS PICKUP ZONE', text2: 'KEEP CLEAR DURING DISMISSAL', z: 210 }
     ];
 
     signs.forEach(sInfo => {
@@ -4941,11 +4941,11 @@ function buildStXavierNorthDismissalBlock(opts) {
       pCtx.fillStyle = '#f1c40f';
       pCtx.font = 'bold 32px sans-serif';
       pCtx.textAlign = 'center';
-      pCtx.fillText('★ ★ ★   WELCOME TO ST. XAVIER HIGH SCHOOL   ★ ★ ★', 512, 60);
+      pCtx.fillText('     WELCOME TO ST. XAVIER HIGH SCHOOL     ', 512, 60);
 
       pCtx.fillStyle = '#ffffff';
       pCtx.font = '900 58px "Segoe UI", Arial, sans-serif';
-      pCtx.fillText('🏁 CAMPUS DISMISSAL & PICKUP GATE', 512, 135);
+      pCtx.fillText(' CAMPUS DISMISSAL & PICKUP GATE', 512, 135);
 
       pCtx.fillStyle = '#facc15';
       pCtx.font = 'bold 32px sans-serif';

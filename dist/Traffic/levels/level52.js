@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 52,
-  icon: '🎓',
+  icon: 'grad',
   name: 'Lesson 52 - Driving Instructor',
   modes: ['car'],
   col: '#2980b9',
@@ -21,7 +21,7 @@ window.LVS.push({
     offHi: 'बिना सिग्नल के लेन बदलना / गलत ओवरटेकिंग'
   },
   theory:
-    '<h2>Driving Instructor - Lane Change Lesson</h2><p>Driving school mein aaj lane change seekh rahe ho. Highway pe ek slow bus hai — usko overtake karna hai, phir wapas apni lane mein aana hai.</p><p>Har step ka order fixed hai: pehle indicator, phir mirror check, phir lane change. Galat order = challan!</p><h3>🚗 Kya karna hai?</h3><ol><li>Right indicator on karo — batana hai ki right side jaana hai.</li><li>Left lane mein jao — bus ko right se overtake karo.</li><li>Bus pass ho jaaye toh left indicator on karo.</li><li>Wapas right lane mein merge karo — smoothly!</li></ol><h3>⚖️ Kanoon kya kehta hai?</h3><p>MV Act Section 136 ke under bina signal ke lane change karna = ₹5,000 fine. Overtake sirf right side se karo (India left-hand drive).</p>',
+    '<h2>Driving Instructor - Lane Change Lesson</h2><p>Driving school mein aaj lane change seekh rahe ho. Highway pe ek slow bus hai — usko overtake karna hai, phir wapas apni lane mein aana hai.</p><p>Har step ka order fixed hai: pehle indicator, phir mirror check, phir lane change. Galat order = challan!</p><h3> Kya karna hai?</h3><ol><li>Right indicator on karo — batana hai ki right side jaana hai.</li><li>Left lane mein jao — bus ko right se overtake karo.</li><li>Bus pass ho jaaye toh left indicator on karo.</li><li>Wapas right lane mein merge karo — smoothly!</li></ol><h3> Kanoon kya kehta hai?</h3><p>MV Act Section 136 ke under bina signal ke lane change karna = ₹5,000 fine. Overtake sirf right side se karo (India left-hand drive).</p>',
   pract: 'Signal right, merge left to overtake the bus, then signal left and merge back to the right lane.',
   mode: 'practical',
   themeType: 'driving_school',

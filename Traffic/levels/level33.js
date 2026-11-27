@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 33,
-  icon: '🚌',
+  icon: 'bus',
   name: 'Lesson 33 - Bus Stop Yield!',
   modes: ['car', 'bike'],
   col: '#3498db',
@@ -16,7 +16,7 @@ window.LVS.push({
     offHi: 'बस स्टॉप के पास खतरनाक ड्राइविंग'
   },
   theory:
-    '<h2>Bus Stop Yield!</h2><p>Bus stop pe ek bus ruki hai — passengers utar rahe hain. Tumhare saamne tempting hai overtake karne ka — lekin BILKUL MAT KARO!</p><p>Bus stop pe passengers utarte hi seedha road cross karte hain. Agar tum overtake kar rahe ho toh seedha unse takra sakte ho!</p><h3>🚌 Kya karna hai?</h3><ul><li>Bus ke peeche ruko — overtake mat karo!</li><li>Passengers cross kar rahe hain — wait karo!</li><li>Bus chale jaaye aur road clear ho — tab aage badho.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Bus stop ke paas overtake karna MV Act Section 117 ke under illegal hai — ₹1000 se ₹5000 tak ka fine!</p>',
+    '<h2>Bus Stop Yield!</h2><p>Bus stop pe ek bus ruki hai — passengers utar rahe hain. Tumhare saamne tempting hai overtake karne ka — lekin BILKUL MAT KARO!</p><p>Bus stop pe passengers utarte hi seedha road cross karte hain. Agar tum overtake kar rahe ho toh seedha unse takra sakte ho!</p><h3> Kya karna hai?</h3><ul><li>Bus ke peeche ruko — overtake mat karo!</li><li>Passengers cross kar rahe hain — wait karo!</li><li>Bus chale jaaye aur road clear ho — tab aage badho.</li></ul><h3> Kanoon kya kehta hai?</h3><p>Bus stop ke paas overtake karna MV Act Section 117 ke under illegal hai — ₹1000 se ₹5000 tak ka fine!</p>',
   pract: 'Stop behind the bus. Wait for passengers to cross. Do not overtake until the bus moves away.',
   mode: 'practical',
   themeType: 'bus_stop',

@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 18,
-  icon: '🎒',
+  icon: 'package',
   name: 'Lesson 18 - School Zone Puddles',
   modes: ['pedestrian', 'car', 'bike'],
   col: '#9b59b6',
@@ -20,7 +20,7 @@ window.LVS.push({
     offHi: 'स्कूल क्षेत्र में बच्चों पर पानी छींकना'
   },
   theory:
-    '<h2>School Zone Puddles</h2><p>School chhutti ho gayi hai aur baarish ho rahi hai. Bachche uniform mein puddles ke beech se ghar ja rahe hain — sab group mein hain, baatein kar rahe hain, traffic ka dhyan nahi de rahe!</p><p>Ek bachcha abhi deep puddle mein kadam rakhne wala hai — tumhari saamne! Agar tum tez jaoge toh sab bheeg jaayenge. Bachche bade vulnerable hain — unhe bheegna ya darr lagna bilkul galat hai.</p><h3>🎒 Kya karna hai?</h3><ul><li>Bachche groups mein hain, baatein kar rahe hain — traffic ka dhyan nahi de rahe!</li><li>Ek bachcha deep puddle mein kadam rakhne wala hai — ruk jao!</li><li>20 km/h se zyada mat chalao — school zone hai!</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>School zone mein bachon ko bheegna MV Act Section 196 aur civic sense laws ke under ₹1000 se ₹5000 tak ka fine!</p>',
+    '<h2>School Zone Puddles</h2><p>School chhutti ho gayi hai aur baarish ho rahi hai. Bachche uniform mein puddles ke beech se ghar ja rahe hain — sab group mein hain, baatein kar rahe hain, traffic ka dhyan nahi de rahe!</p><p>Ek bachcha abhi deep puddle mein kadam rakhne wala hai — tumhari saamne! Agar tum tez jaoge toh sab bheeg jaayenge. Bachche bade vulnerable hain — unhe bheegna ya darr lagna bilkul galat hai.</p><h3> Kya karna hai?</h3><ul><li>Bachche groups mein hain, baatein kar rahe hain — traffic ka dhyan nahi de rahe!</li><li>Ek bachcha deep puddle mein kadam rakhne wala hai — ruk jao!</li><li>20 km/h se zyada mat chalao — school zone hai!</li></ul><h3> Kanoon kya kehta hai?</h3><p>School zone mein bachon ko bheegna MV Act Section 196 aur civic sense laws ke under ₹1000 se ₹5000 tak ka fine!</p>',
   pract: 'Crawl through the school zone. Wait for children to clear your path. Do not splash them.',
   mode: 'practical',
   themeType: 'puddle_etiquette',

@@ -7,21 +7,21 @@
 import * as THREE from 'three';
 
 export const MISSION_TYPES: Record<string, any> = {
-  CHECKPOINT: { id: 'checkpoint', icon: '🏁', label: 'Checkpoints', description: 'Drive through all checkpoints' },
+  CHECKPOINT: { id: 'checkpoint', icon: 'flag', label: 'Checkpoints', description: 'Drive through all checkpoints' },
   COLLECT: { id: 'collect', icon: '⭐', label: 'Collectibles', description: 'Collect all stars' },
-  TIME_TRIAL: { id: 'time_trial', icon: '⏱️', label: 'Time Trial', description: 'Reach the destination before time runs out' },
-  DELIVERY: { id: 'delivery', icon: '📦', label: 'Delivery', description: 'Pick up and deliver the package' },
-  FOLLOW: { id: 'follow', icon: '🗺️', label: 'Follow Route', description: 'Follow the GPS route' },
-  ESCORT: { id: 'escort', icon: '🚑', label: 'Escort Duty', description: 'Protect VIP/emergency vehicle through traffic' },
-  CHASE: { id: 'chase', icon: '🚓', label: 'Pursuit', description: 'Chase and stop target vehicle' },
-  PARKING: { id: 'parking', icon: '🅿️', label: 'Precision Parking', description: 'Park in marked spot without collisions' },
-  CARGO: { id: 'cargo', icon: '📦', label: 'Fragile Cargo', description: 'Transport delicate load smoothly' },
-  EVASION: { id: 'evasion', icon: '🏃', label: 'Evasion', description: 'Escape pursuers to safe zone' },
-  CROSSING_GUARD: { id: 'crossing_guard', icon: '🚸', label: 'Crossing Guard', description: 'Guide pedestrians safely across intersections' },
-  SIDEWALK_PATROL: { id: 'sidewalk_patrol', icon: '🚶', label: 'Sidewalk Patrol', description: 'Monitor sidewalk for violations' },
-  EMERGENCY_CLEAR: { id: 'emergency_clear', icon: '🚑', label: 'Emergency Clear', description: 'Clear path for emergency vehicle' },
-  SCHOOL_PATROL: { id: 'school_patrol', icon: '🏫', label: 'School Zone Patrol', description: 'Enforce school zone speed limits' },
-  PASSENGER_PICKUP: { id: 'passenger_pickup', icon: '🚖', label: 'Passenger Transit', description: 'Pick up and drop off passengers across Mumbai' }
+  TIME_TRIAL: { id: 'time_trial', icon: 'clock', label: 'Time Trial', description: 'Reach the destination before time runs out' },
+  DELIVERY: { id: 'delivery', icon: 'package', label: 'Delivery', description: 'Pick up and deliver the package' },
+  FOLLOW: { id: 'follow', icon: 'map', label: 'Follow Route', description: 'Follow the GPS route' },
+  ESCORT: { id: 'escort', icon: 'ambulance', label: 'Escort Duty', description: 'Protect VIP/emergency vehicle through traffic' },
+  CHASE: { id: 'chase', icon: 'shield', label: 'Pursuit', description: 'Chase and stop target vehicle' },
+  PARKING: { id: 'parking', icon: 'parking', label: 'Precision Parking', description: 'Park in marked spot without collisions' },
+  CARGO: { id: 'cargo', icon: 'package', label: 'Fragile Cargo', description: 'Transport delicate load smoothly' },
+  EVASION: { id: 'evasion', icon: 'pedestrian', label: 'Evasion', description: 'Escape pursuers to safe zone' },
+  CROSSING_GUARD: { id: 'crossing_guard', icon: 'pedestrian', label: 'Crossing Guard', description: 'Guide pedestrians safely across intersections' },
+  SIDEWALK_PATROL: { id: 'sidewalk_patrol', icon: 'pedestrian', label: 'Sidewalk Patrol', description: 'Monitor sidewalk for violations' },
+  EMERGENCY_CLEAR: { id: 'emergency_clear', icon: 'ambulance', label: 'Emergency Clear', description: 'Clear path for emergency vehicle' },
+  SCHOOL_PATROL: { id: 'school_patrol', icon: 'building', label: 'School Zone Patrol', description: 'Enforce school zone speed limits' },
+  PASSENGER_PICKUP: { id: 'passenger_pickup', icon: 'car', label: 'Passenger Transit', description: 'Pick up and drop off passengers across Mumbai' }
 };
 
 export const COLLECTIBLE_TYPES: Record<string, any> = {
@@ -186,11 +186,11 @@ export class EscortMission extends Mission {
     if (dist < this.data.minDistance || dist > this.data.maxDistance) {
       this.distanceViolationTime += dt;
       if (typeof toast === 'function') {
-        toast(`⚠️ Keep distance! (${Math.round(dist)}m)`, '#f2b84b');
+        toast(` Keep distance! (${Math.round(dist)}m)`, '#f2b84b');
       }
       if (this.distanceViolationTime > this.maxViolationTime) {
         this.fail();
-        if (typeof toast === 'function') toast('❌ Escort failed — lost formation!', '#ef4444');
+        if (typeof toast === 'function') toast(' Escort failed — lost formation!', '#ef4444');
         return;
       }
     } else {
@@ -202,7 +202,7 @@ export class EscortMission extends Mission {
       if (cleared > this.data.intersectionsCleared) {
         this.data.intersectionsCleared = cleared;
         this.updateProgress(cleared);
-        if (typeof toast === 'function') toast(`🛡️ Intersection cleared (${cleared}/${this.data.targetIntersections})`, '#34d399');
+        if (typeof toast === 'function') toast(` Intersection cleared (${cleared}/${this.data.targetIntersections})`, '#34d399');
       }
     }
 
@@ -240,7 +240,7 @@ export class ChaseMission extends Mission {
     this.data.chaseTime += dt;
     if (this.data.chaseTime > this.data.maxChaseTime) {
       this.fail();
-      if (typeof toast === 'function') toast('⏱️ Target escaped!', '#ef4444');
+      if (typeof toast === 'function') toast('Target escaped!', '#ef4444');
       return;
     }
 
@@ -252,9 +252,9 @@ export class ChaseMission extends Mission {
     if (dist < this.data.catchDistance) {
       this.data.targetVehicle = 'stopped';
       this.complete();
-      if (typeof toast === 'function') toast('🚓 Target apprehended!', '#34d399');
+      if (typeof toast === 'function') toast(' Target apprehended!', '#34d399');
     } else if (dist < this.data.pitDistance) {
-      if (typeof toast === 'function') toast('⚡ PIT maneuver available!', '#f2b84b');
+      if (typeof toast === 'function') toast(' PIT maneuver available!', '#f2b84b');
     }
   }
 
@@ -296,10 +296,10 @@ export class ParkingMission extends Mission {
       if (!this.data.parked) {
         this.data.parked = true;
         this.data.parkStartTime = Date.now();
-        if (typeof toast === 'function') toast('🅿️ Parked! Hold position...', '#34d399');
+        if (typeof toast === 'function') toast(' Parked! Hold position...', '#34d399');
       } else if (Date.now() - this.data.parkStartTime > 3000) {
         this.complete();
-        if (typeof toast === 'function') toast('✅ Perfect park!', '#34d399');
+        if (typeof toast === 'function') toast(' Perfect park!', '#34d399');
       }
     } else {
       this.data.parked = false;
@@ -356,7 +356,7 @@ export class CargoMission extends Mission {
     if (hitPothole) {
       this.data.potholeImpacts++;
       this.data.cargoIntegrity -= 15;
-      if (typeof toast === 'function') toast(`📦 Cargo damaged! (${this.data.potholeImpacts}/${this.data.maxPotholes})`, '#ef4444');
+      if (typeof toast === 'function') toast(` Cargo damaged! (${this.data.potholeImpacts}/${this.data.maxPotholes})`, '#ef4444');
     }
 
     this.data.cargoIntegrity = Math.max(0, this.data.cargoIntegrity);
@@ -364,10 +364,10 @@ export class CargoMission extends Mission {
 
     if (this.data.cargoIntegrity <= 0) {
       this.fail();
-      if (typeof toast === 'function') toast('💥 Cargo destroyed!', '#ef4444');
+      if (typeof toast === 'function') toast(' Cargo destroyed!', '#ef4444');
     } else if (this.data.distanceTraveled >= this.data.distanceTarget) {
       this.complete();
-      if (typeof toast === 'function') toast(`📦 Cargo delivered! Integrity: ${Math.round(this.data.cargoIntegrity)}%`, '#34d399');
+      if (typeof toast === 'function') toast(` Cargo delivered! Integrity: ${Math.round(this.data.cargoIntegrity)}%`, '#34d399');
     }
   }
 
@@ -399,7 +399,7 @@ export class EvasionMission extends Mission {
     this.data.evasionTime += dt;
     if (this.data.evasionTime > this.data.maxEvasionTime) {
       this.fail();
-      if (typeof toast === 'function') toast('⏱️ Caught by pursuers!', '#ef4444');
+      if (typeof toast === 'function') toast('Caught by pursuers!', '#ef4444');
       return;
     }
 
@@ -409,7 +409,7 @@ export class EvasionMission extends Mission {
       const dist = Math.sqrt(dx * dx + dz * dz);
       if (dist < 5) {
         this.fail();
-        if (typeof toast === 'function') toast('💥 Pursuer caught you!', '#ef4444');
+        if (typeof toast === 'function') toast(' Pursuer caught you!', '#ef4444');
         return;
       }
     }
@@ -420,7 +420,7 @@ export class EvasionMission extends Mission {
 
     if (distToSafe < this.data.safeZone.radius) {
       this.complete();
-      if (typeof toast === 'function') toast('🏁 Reached safe zone!', '#34d399');
+      if (typeof toast === 'function') toast(' Reached safe zone!', '#34d399');
     }
   }
 
@@ -460,14 +460,14 @@ export class CrossingGuardMission extends Mission {
         group.waiting = false;
         group.crossing = true;
         this.data.currentGroup = group;
-        if (typeof toast === 'function') toast('🚸 Guide children across!', '#34d399');
+        if (typeof toast === 'function') toast(' Guide children across!', '#34d399');
       }
       if (group.crossing && dist > 15) {
         group.crossed = true;
         group.crossing = false;
         this.data.childrenCrossed++;
         this.updateProgress(this.data.childrenCrossed);
-        if (typeof toast === 'function') toast(`🚸 Group crossed (${this.data.childrenCrossed}/${this.data.targetChildren})`, '#34d399');
+        if (typeof toast === 'function') toast(` Group crossed (${this.data.childrenCrossed}/${this.data.targetChildren})`, '#34d399');
       }
     }
 
@@ -510,7 +510,7 @@ export class SidewalkPatrolMission extends Mission {
         v.reported = true;
         this.data.violationsReported++;
         this.updateProgress(this.data.violationsReported);
-        if (typeof toast === 'function') toast(`🚶 Violation reported: ${v.type}`, '#34d399');
+        if (typeof toast === 'function') toast(` Violation reported: ${v.type}`, '#34d399');
       }
     }
 
@@ -558,9 +558,9 @@ export class EmergencyClearMission extends Mission {
       if (blocking === 0) {
         this.data.pathCleared = true;
         this.complete();
-        if (typeof toast === 'function') toast('🚑 Path cleared for ambulance!', '#34d399');
+        if (typeof toast === 'function') toast(' Path cleared for ambulance!', '#34d399');
       } else if (typeof toast === 'function') {
-        toast(`🚑 Clear ${blocking} pedestrians from path!`, '#f2b84b');
+        toast(` Clear ${blocking} pedestrians from path!`, '#f2b84b');
       }
     }
   }
@@ -598,7 +598,7 @@ export class SchoolPatrolMission extends Mission {
         v.caught = true;
         this.data.speedersCaught++;
         this.updateProgress(this.data.speedersCaught);
-        if (typeof toast === 'function') toast(`🏫 Speeder caught in school zone! (${this.data.speedersCaught}/${this.data.targetSpeeders})`, '#ef4444');
+        if (typeof toast === 'function') toast(` Speeder caught in school zone! (${this.data.speedersCaught}/${this.data.targetSpeeders})`, '#ef4444');
       }
     }
 
@@ -650,7 +650,7 @@ export class PassengerPickupMission extends Mission {
         this.data.stage = 'BOARDING';
         this.data.dwellTimer = 0;
         if (typeof toast === 'function') {
-          toast(`🙋 ${this.data.passengerName}: "${this.data.dialogue}"`, '#00f0cc', 4500);
+          toast(` ${this.data.passengerName}: "${this.data.dialogue}"`, '#00f0cc', 4500);
         }
       }
     } else if (stage === 'BOARDING') {
@@ -671,7 +671,7 @@ export class PassengerPickupMission extends Mission {
         }
         this.data.stage = 'DRIVE_TO_DROPOFF';
         if (typeof toast === 'function') {
-          toast(`🚘 Passenger on board! Destination: ${this.data.dropoffSpot.name}`, '#fbbf24', 4500);
+          toast(` Passenger on board! Destination: ${this.data.dropoffSpot.name}`, '#fbbf24', 4500);
         }
       }
     } else if (stage === 'DRIVE_TO_DROPOFF') {
@@ -683,7 +683,7 @@ export class PassengerPickupMission extends Mission {
         this.data.stage = 'COMPLETED';
         this.complete();
         if (typeof toast === 'function') {
-          toast(`🎉 Dropped off ${this.data.passengerName}! +₹${this.reward} Bonus`, '#34d399', 5000);
+          toast(` Dropped off ${this.data.passengerName}! +₹${this.reward} Bonus`, '#34d399', 5000);
         }
       }
     }
@@ -1202,7 +1202,7 @@ export class MissionManager {
     if (this.game.playerScore !== undefined) this.game.playerScore += value;
     if (this.game.rupees !== undefined) this.game.rupees += value;
     if (typeof toast === 'function') {
-      toast(`+₹${value} ${collectible.type === 'STAR' ? '⭐' : collectible.type === 'GEM' ? '💎' : '🪙'}`, '#f2b84b');
+      toast(`+₹${value} ${collectible.type === 'STAR' ? '⭐' : collectible.type === 'GEM' ? '' : ''}`, '#f2b84b');
     }
     if (typeof sfx !== 'undefined' && sfx.play) sfx.play('ok');
     for (const mission of this.missions) {
@@ -1211,7 +1211,7 @@ export class MissionManager {
   }
 
   _onCheckpointReached(checkpoint: any): void {
-    if (typeof toast === 'function') toast('🏁 Checkpoint!', '#34d399');
+    if (typeof toast === 'function') toast(' Checkpoint!', '#34d399');
     if (typeof sfx !== 'undefined' && sfx.play) sfx.play('ok');
   }
 
@@ -1224,7 +1224,7 @@ export class MissionManager {
     }
     const tokenEl = document.getElementById('mission-tokens');
     if (tokenEl) tokenEl.textContent = (window as any).S?.missionTokens?.toLocaleString?.() || String(tokens);
-    if (typeof toast === 'function') toast(`🎖️ +${tokens} Mission Tokens!`, '#b89bff');
+    if (typeof toast === 'function') toast(` +${tokens} Mission Tokens!`, '#b89bff');
     if (this.game && typeof this.game._syncWalletToSupabase === 'function') {
       this.game._syncWalletToSupabase(tokens, 'earn', 'mission_token');
     }
@@ -1341,7 +1341,7 @@ export class CampaignManager {
         progress.completed = true;
         progress.completedAt = Date.now();
         this._grantCampaignRewards();
-        if (typeof toast === 'function') toast(`🏆 Campaign Complete: ${this.activeCampaign.name}!`, '#ffd54a');
+        if (typeof toast === 'function') toast(` Campaign Complete: ${this.activeCampaign.name}!`, '#ffd54a');
       }
     }
     this._saveProgress();
@@ -1363,7 +1363,7 @@ export class CampaignManager {
       const userData = { badges: S?.badges || [], campaignProgress: this.campaignProgress };
       const newBadges = (window as any).checkAndAwardBadges(userData);
       if (newBadges.length > 0 && typeof toast === 'function') {
-        newBadges.forEach(b => toast(`🏅 New Badge: ${b}`, '#ffd54a'));
+        newBadges.forEach(b => toast(` New Badge: ${b}`, '#ffd54a'));
       }
     }
     if ((window as any).WalletHistory && wallet) {

@@ -9,13 +9,13 @@ export interface DesiEmoji {
 export class EmojiWheel {
   public group: THREE.Group = new THREE.Group();
   public emojis: DesiEmoji[] = [
-    { symbol: '🙏', label: 'Namaste' },
-    { symbol: '🛺', label: 'Auto' },
-    { symbol: '☕', label: 'Cutting Chai' },
-    { symbol: '❤️', label: 'Dil Se' },
-    { symbol: '🎉', label: 'Balle Balle' },
-    { symbol: '🍱', label: 'Dabba Express' },
-    { symbol: '⚡', label: 'Speed Rush' }
+    { symbol: 'NAMASTE', label: 'Namaste' },
+    { symbol: 'AUTO', label: 'Auto' },
+    { symbol: 'CHAI', label: 'Cutting Chai' },
+    { symbol: 'THANKS', label: 'Dil Se' },
+    { symbol: 'BRAVO', label: 'Bravo' },
+    { symbol: 'TIFFIN', label: 'Dabba Express' },
+    { symbol: 'RUSH', label: 'Speed Rush' }
   ];
 
   private activeFloatingEmojis: { sprite: THREE.Sprite; velocity: THREE.Vector3; life: number }[] = [];
@@ -44,7 +44,8 @@ export class EmojiWheel {
     ctx.stroke();
 
     // Emoji icon
-    ctx.font = '64px sans-serif';
+    ctx.font = 'bold 20px sans-serif';
+    ctx.fillStyle = '#0f172a';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(symbol, 64, 68);

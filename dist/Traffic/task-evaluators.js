@@ -613,7 +613,7 @@
       const tz = cfg.tollZ !== undefined ? cfg.tollZ : 60;
       if (Math.abs(pp.z - tz) > 20) return false;
       // Lanes sit at tx-8, tx, tx+8. The FASTAG lane is the GREEN one at
-      // tx-8 - the engine signs it '🏷️ FASTAG' and the other two '💵 CASH'.
+      // tx-8 - the engine signs it ' FASTAG' and the other two ' CASH'.
       // The old test aimed at the MIDDLE lane, so the objective completed
       // for driving into the cash booth on a lesson that teaches FASTAG.
       const laneOffset = (pp.x - tx) + 8;

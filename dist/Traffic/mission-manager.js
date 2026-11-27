@@ -3,7 +3,7 @@
 const MISSION_TYPES = {
   CHECKPOINT: {
     id: 'checkpoint',
-    icon: '🏁',
+    icon: 'flag',
     label: 'Checkpoints',
     description: 'Drive through all checkpoints',
   },
@@ -15,79 +15,79 @@ const MISSION_TYPES = {
   },
   TIME_TRIAL: {
     id: 'time_trial',
-    icon: '⏱️',
+    icon: 'clock',
     label: 'Time Trial',
     description: 'Reach the destination before time runs out',
   },
   DELIVERY: {
     id: 'delivery',
-    icon: '📦',
+    icon: 'package',
     label: 'Delivery',
     description: 'Pick up and deliver the package',
   },
   FOLLOW: {
     id: 'follow',
-    icon: '🗺️',
+    icon: 'map',
     label: 'Follow Route',
     description: 'Follow the GPS route',
   },
   ESCORT: {
     id: 'escort',
-    icon: '🚑',
+    icon: 'ambulance',
     label: 'Escort Duty',
     description: 'Protect VIP/emergency vehicle through traffic',
   },
   CHASE: {
     id: 'chase',
-    icon: '🚓',
+    icon: 'shield',
     label: 'Pursuit',
     description: 'Chase and stop target vehicle',
   },
   PARKING: {
     id: 'parking',
-    icon: '🅿️',
+    icon: 'parking',
     label: 'Precision Parking',
     description: 'Park in marked spot without collisions',
   },
   CARGO: {
     id: 'cargo',
-    icon: '📦',
+    icon: 'package',
     label: 'Fragile Cargo',
     description: 'Transport delicate load smoothly',
   },
   EVASION: {
     id: 'evasion',
-    icon: '🏃',
+    icon: 'pedestrian',
     label: 'Evasion',
     description: 'Escape pursuers to safe zone',
   },
   CROSSING_GUARD: {
     id: 'crossing_guard',
-    icon: '🚸',
+    icon: 'pedestrian',
     label: 'Crossing Guard',
     description: 'Guide pedestrians safely across intersections',
   },
   SIDEWALK_PATROL: {
     id: 'sidewalk_patrol',
-    icon: '🚶',
+    icon: 'pedestrian',
     label: 'Sidewalk Patrol',
     description: 'Monitor sidewalk for violations',
   },
   EMERGENCY_CLEAR: {
     id: 'emergency_clear',
-    icon: '🚑',
+    icon: 'ambulance',
     label: 'Emergency Clear',
     description: 'Clear path for emergency vehicle',
   },
   SCHOOL_PATROL: {
     id: 'school_patrol',
-    icon: '🏫',
+    icon: 'building',
     label: 'School Zone Patrol',
     description: 'Enforce school zone speed limits',
   },
   PASSENGER_PICKUP: {
     id: 'passenger_pickup',
-    icon: '🚖',
+    icon: 'car',
     label: 'Passenger Transit',
     description: 'Pick up and drop off passengers across Mumbai',
   },
@@ -261,13 +261,13 @@ class EscortMission extends Mission {
       this.distanceViolationTime += dt;
       if (this.distanceViolationTime > this.maxViolationTime) {
         this.fail();
-        if (typeof toast === 'function') {toast('❌ Too close to VIP vehicle!', '#ef4444');}
+        if (typeof toast === 'function') {toast(' Too close to VIP vehicle!', '#ef4444');}
       }
     } else if (dist > this.data.maxDistance) {
       this.distanceViolationTime += dt;
       if (this.distanceViolationTime > this.maxViolationTime) {
         this.fail();
-        if (typeof toast === 'function') {toast('❌ Fell too far behind!', '#ef4444');}
+        if (typeof toast === 'function') {toast(' Fell too far behind!', '#ef4444');}
       }
     } else {
       this.distanceViolationTime = Math.max(0, this.distanceViolationTime - dt * 2);
@@ -278,7 +278,7 @@ class EscortMission extends Mission {
       if (cleared > this.data.intersectionsCleared) {
         this.data.intersectionsCleared = cleared;
         this.updateProgress(cleared);
-        if (typeof toast === 'function') {toast(`🛡️ Intersection cleared (${cleared}/${this.data.targetIntersections})`, '#34d399');}
+        if (typeof toast === 'function') {toast(` Intersection cleared (${cleared}/${this.data.targetIntersections})`, '#34d399');}
       }
     }
 
@@ -317,7 +317,7 @@ class ChaseMission extends Mission {
     this.data.chaseTime += dt;
     if (this.data.chaseTime > this.data.maxChaseTime) {
       this.fail();
-      if (typeof toast === 'function') {toast('⏱️ Target escaped!', '#ef4444');}
+      if (typeof toast === 'function') {toast('Target escaped!', '#ef4444');}
       return;
     }
 
@@ -330,10 +330,10 @@ class ChaseMission extends Mission {
     if (dist < this.data.catchDistance) {
       this.data.targetVehicle = 'stopped';
       this.status = 'completed';
-      if (typeof toast === 'function') {toast('🚓 Target apprehended!', '#34d399');}
+      if (typeof toast === 'function') {toast(' Target apprehended!', '#34d399');}
       if (this.onComplete) {this.onComplete(this);}
     } else if (dist < this.data.pitDistance) {
-      if (typeof toast === 'function') {toast('⚡ PIT maneuver available!', '#f2b84b');}
+      if (typeof toast === 'function') {toast(' PIT maneuver available!', '#f2b84b');}
     }
   }
 
@@ -381,10 +381,10 @@ class ParkingMission extends Mission {
       if (!this.data.parked) {
         this.data.parked = true;
         this.data.parkStartTime = Date.now();
-        if (typeof toast === 'function') {toast('🅿️ Parked! Hold position...', '#34d399');}
+        if (typeof toast === 'function') {toast(' Parked! Hold position...', '#34d399');}
       } else if (Date.now() - this.data.parkStartTime > 3000) {
         this.status = 'completed';
-        if (typeof toast === 'function') {toast('✅ Perfect park!', '#34d399');}
+        if (typeof toast === 'function') {toast(' Perfect park!', '#34d399');}
         if (this.onComplete) {this.onComplete(this);}
       }
     } else {
@@ -442,7 +442,7 @@ class CargoMission extends Mission {
     if (hitPothole) {
       this.data.potholeImpacts++;
       this.data.cargoIntegrity -= 15;
-      if (typeof toast === 'function') {toast(`📦 Cargo damaged! (${this.data.potholeImpacts}/${this.data.maxPotholes})`, '#ef4444');}
+      if (typeof toast === 'function') {toast(` Cargo damaged! (${this.data.potholeImpacts}/${this.data.maxPotholes})`, '#ef4444');}
     }
 
     this.data.cargoIntegrity = Math.max(0, this.data.cargoIntegrity);
@@ -450,10 +450,10 @@ class CargoMission extends Mission {
 
     if (this.data.cargoIntegrity <= 0) {
       this.fail();
-      if (typeof toast === 'function') {toast('💥 Cargo destroyed!', '#ef4444');}
+      if (typeof toast === 'function') {toast(' Cargo destroyed!', '#ef4444');}
     } else if (this.data.distanceTraveled >= this.data.distanceTarget) {
       this.status = 'completed';
-      if (typeof toast === 'function') {toast(`📦 Cargo delivered! Integrity: ${Math.round(this.data.cargoIntegrity)}%`, '#34d399');}
+      if (typeof toast === 'function') {toast(` Cargo delivered! Integrity: ${Math.round(this.data.cargoIntegrity)}%`, '#34d399');}
       if (this.onComplete) {this.onComplete(this);}
     }
   }
@@ -486,7 +486,7 @@ class EvasionMission extends Mission {
     this.data.evasionTime += dt;
     if (this.data.evasionTime > this.data.maxEvasionTime) {
       this.fail();
-      if (typeof toast === 'function') {toast('⏱️ Caught by pursuers!', '#ef4444');}
+      if (typeof toast === 'function') {toast('Caught by pursuers!', '#ef4444');}
       return;
     }
 
@@ -496,7 +496,7 @@ class EvasionMission extends Mission {
       const dist = Math.sqrt(dx * dx + dz * dz);
       if (dist < 5) {
         this.fail();
-        if (typeof toast === 'function') {toast('💥 Pursuer caught you!', '#ef4444');}
+        if (typeof toast === 'function') {toast(' Pursuer caught you!', '#ef4444');}
         return;
       }
     }
@@ -507,7 +507,7 @@ class EvasionMission extends Mission {
 
     if (distToSafe < this.data.safeZone.radius) {
       this.status = 'completed';
-      if (typeof toast === 'function') {toast('🏁 Reached safe zone!', '#34d399');}
+      if (typeof toast === 'function') {toast(' Reached safe zone!', '#34d399');}
       if (this.onComplete) {this.onComplete(this);}
     }
   }
@@ -549,14 +549,14 @@ class CrossingGuardMission extends Mission {
         group.waiting = false;
         group.crossing = true;
         this.data.currentGroup = group;
-        if (typeof toast === 'function') {toast('🚸 Guide children across!', '#34d399');}
+        if (typeof toast === 'function') {toast(' Guide children across!', '#34d399');}
       }
       if (group.crossing && dist > 15) {
         group.crossed = true;
         group.crossing = false;
         this.data.childrenCrossed++;
         this.updateProgress(this.data.childrenCrossed);
-        if (typeof toast === 'function') {toast(`🚸 Group crossed (${this.data.childrenCrossed}/${this.data.targetChildren})`, '#34d399');}
+        if (typeof toast === 'function') {toast(` Group crossed (${this.data.childrenCrossed}/${this.data.targetChildren})`, '#34d399');}
       }
     }
 
@@ -598,7 +598,7 @@ class SidewalkPatrolMission extends Mission {
         v.reported = true;
         this.data.violationsReported++;
         this.updateProgress(this.data.violationsReported);
-        if (typeof toast === 'function') {toast(`🚶 Violation reported: ${v.type}`, '#34d399');}
+        if (typeof toast === 'function') {toast(` Violation reported: ${v.type}`, '#34d399');}
       }
     }
 
@@ -647,10 +647,10 @@ class EmergencyClearMission extends Mission {
       if (blocking === 0) {
         this.data.pathCleared = true;
         this.status = 'completed';
-        if (typeof toast === 'function') {toast('🚑 Path cleared for ambulance!', '#34d399');}
+        if (typeof toast === 'function') {toast(' Path cleared for ambulance!', '#34d399');}
         if (this.onComplete) {this.onComplete(this);}
       } else if (typeof toast === 'function') {
-        toast(`🚑 Clear ${blocking} pedestrians from path!`, '#f2b84b');
+        toast(` Clear ${blocking} pedestrians from path!`, '#f2b84b');
       }
     }
   }
@@ -694,7 +694,7 @@ class SchoolPatrolMission extends Mission {
         v.caught = true;
         this.data.speedersCaught++;
         this.updateProgress(this.data.speedersCaught);
-        if (typeof toast === 'function') {toast(`🏫 Speeder caught in school zone! (${this.data.speedersCaught}/${this.data.targetSpeeders})`, '#ef4444');}
+        if (typeof toast === 'function') {toast(` Speeder caught in school zone! (${this.data.speedersCaught}/${this.data.targetSpeeders})`, '#ef4444');}
       }
     }
 
@@ -748,7 +748,7 @@ class PassengerPickupMission extends Mission {
         this.data.stage = 'BOARDING';
         this.data.dwellTimer = 0;
         if (typeof toast === 'function') {
-          toast(`🙋 ${this.data.passengerName}: "${this.data.dialogue}"`, '#00f0cc', 4500);
+          toast(` ${this.data.passengerName}: "${this.data.dialogue}"`, '#00f0cc', 4500);
         }
         if (window.sfx && window.sfx.play) {window.sfx.play('ok');}
       }
@@ -772,7 +772,7 @@ class PassengerPickupMission extends Mission {
         }
         this.data.stage = 'DRIVE_TO_DROPOFF';
         if (typeof toast === 'function') {
-          toast(`🚘 Passenger on board! Destination: ${this.data.dropoffSpot.name}`, '#fbbf24', 4500);
+          toast(` Passenger on board! Destination: ${this.data.dropoffSpot.name}`, '#fbbf24', 4500);
         }
       }
     } else if (stage === 'DRIVE_TO_DROPOFF') {
@@ -785,7 +785,7 @@ class PassengerPickupMission extends Mission {
         this.data.stage = 'COMPLETED';
         this.status = 'completed';
         if (typeof toast === 'function') {
-          toast(`🎉 Dropped off ${this.data.passengerName}! +₹${this.reward} Bonus`, '#34d399', 5000);
+          toast(` Dropped off ${this.data.passengerName}! +₹${this.reward} Bonus`, '#34d399', 5000);
         }
         if (window.sfx && window.sfx.play) {window.sfx.play('win');}
         if (this.onComplete) {this.onComplete(this);}
@@ -1425,7 +1425,7 @@ class MissionManager {
     }
 
     if (typeof toast === 'function') {
-      toast(`+₹${value} ${collectible.type === 'STAR' ? '⭐' : collectible.type === 'GEM' ? '💎' : '🪙'}`, '#f2b84b');
+      toast(`+₹${value} ${collectible.type === 'STAR' ? '⭐' : collectible.type === 'GEM' ? '' : ''}`, '#f2b84b');
     }
 
     if (typeof sfx !== 'undefined' && sfx.play) {
@@ -1442,7 +1442,7 @@ class MissionManager {
 
   _onCheckpointReached(checkpoint) {
     if (typeof toast === 'function') {
-      toast('🏁 Checkpoint!', '#34d399');
+      toast(' Checkpoint!', '#34d399');
     }
     if (typeof sfx !== 'undefined' && sfx.play) {
       sfx.play('ok');
@@ -1468,25 +1468,28 @@ class MissionManager {
       this.game.missionTokens += tokens;
     }
 
-    // Add to user data
+    // Add to user data (strictly Mission Tokens — never mix into INR wallets table)
     if (window.S) {
-      window.S.missionTokens = (window.S.missionTokens || 0) + tokens;
+      window.S.missionTokens = (Number.isFinite(window.S.missionTokens) ? window.S.missionTokens : 0) + tokens;
+      window.S.tokensUpdatedAt = new Date().toISOString();
     }
 
     // Update UI
     const tokenEl = document.getElementById('mission-tokens');
     if (tokenEl) {
-      tokenEl.textContent = window.S?.missionTokens?.toLocaleString?.() || tokens;
+      tokenEl.textContent = (window.S && Number.isFinite(window.S.missionTokens) ? window.S.missionTokens : tokens).toLocaleString();
     }
 
     // Show toast
     if (typeof toast === 'function') {
-      toast(`🎖️ +${tokens} Mission Tokens!`, '#b89bff');
+      toast(` +${tokens} Mission Tokens!`, '#b89bff');
     }
 
-    // Sync to Supabase
-    if (this.game && typeof this.game._syncWalletToSupabase === 'function') {
-      this.game._syncWalletToSupabase(tokens, 'earn', 'mission_token');
+    if (window.WalletHistory && typeof window.WalletHistory.earnTokens === 'function') {
+      window.WalletHistory.earnTokens('mission_token', tokens, { missionId: mission.id || null });
+    }
+    if (typeof window.save === 'function') {
+      window.save({ immediate: true });
     }
   }
 
@@ -1653,7 +1656,7 @@ class CampaignManager {
         this._grantCampaignRewards();
         
         if (typeof toast === 'function') {
-          toast(`🏆 Campaign Complete: ${this.activeCampaign.name}!`, '#ffd54a');
+          toast(` Campaign Complete: ${this.activeCampaign.name}!`, '#ffd54a');
         }
       }
     }
@@ -1668,7 +1671,9 @@ class CampaignManager {
     const { wallet, xp, badge } = this.activeCampaign.rewards;
     
     if (window.S && wallet) {
-      window.S.wallet = (window.S.wallet || 0) + wallet;
+      const curW = Number.isFinite(window.S.wallet) ? window.S.wallet : 50000;
+      window.S.wallet = Math.max(0, curW + Math.round(wallet));
+      window.S.walletUpdatedAt = new Date().toISOString();
       const hw = document.getElementById('hwallet');
       if (hw) {hw.textContent = '₹' + window.S.wallet.toLocaleString('en-IN');}
     }
@@ -1681,12 +1686,18 @@ class CampaignManager {
       const userData = { badges: window.S?.badges || [], campaignProgress: this.campaignProgress };
       const newBadges = window.checkAndAwardBadges(userData);
       if (newBadges.length > 0 && typeof toast === 'function') {
-        newBadges.forEach(b => toast(`🏅 New Badge: ${b}`, '#ffd54a'));
+        newBadges.forEach(b => toast(` New Badge: ${b}`, '#ffd54a'));
       }
     }
     
     if (window.WalletHistory && wallet) {
       window.WalletHistory.earn('campaign_reward', wallet, { campaignId: this.activeCampaign.id });
+    }
+    if (wallet && this.game && typeof this.game._syncWalletToSupabase === 'function') {
+      this.game._syncWalletToSupabase(wallet, 'earn', 'campaign_reward');
+    }
+    if (typeof window.save === 'function') {
+      window.save({ immediate: true });
     }
   }
 

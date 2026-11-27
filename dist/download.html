@@ -103,7 +103,7 @@
     <link rel="dns-prefetch" href="https://hvukxajztizsuhfubjws.supabase.co" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" onload="this.onload=null;this.rel='stylesheet'" /><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" /></noscript>
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
   <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <link rel="stylesheet" href="liquid-glass.css" />
@@ -1741,14 +1741,19 @@
         border-color: var(--signal) !important;
       }
       body.lm .unlock-all-btn {
-        background: rgba(27, 157, 102, 0.1) !important;
-        color: #1b9d66 !important;
-        border-color: rgba(27, 157, 102, 0.35) !important;
+        background: rgba(4, 120, 87, 0.1) !important;
+        color: #047857 !important;
+        border-color: rgba(4, 120, 87, 0.35) !important;
       }
       body.lm .unlock-all-btn:hover {
-        background: #1b9d66 !important;
+        background: #047857 !important;
         color: #ffffff !important;
       }
+      body.lm details { background: #f8fafc !important; border-color: rgba(15, 23, 42, 0.14) !important; }
+      body.lm details summary { color: #0f172a !important; }
+      body.lm .pc h3 span { color: #0f172a !important; background: #e2e8f0 !important; border-color: rgba(15, 23, 42, 0.16) !important; }
+      body.lm .terms-check { background: #f1f5f9 !important; border-color: rgba(15, 23, 42, 0.16) !important; }
+      body.lm .terms-check label { color: #0f172a !important; }
       body.lm .checksum-drawer {
         background: #ffffff !important;
         border-color: rgba(0, 0, 0, 0.08) !important;
@@ -1812,7 +1817,11 @@
         border-color: rgba(2, 132, 199, 0.45);
         color: #0369a1;
       }
-</style>
+
+
+      body.lm .card-checkbox-wrapper { background: #f1f5f9 !important; border-color: rgba(15, 23, 42, 0.16) !important; }
+      body.lm .card-checkbox-wrapper label, body.lm #label-ati { color: #0f172a !important; }
+    </style>
 
     <script defer src="col-router.js"></script>
     <script defer src="col-nav.js"></script>
@@ -1896,7 +1905,7 @@
         <a href="making" class="nav-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>Making</a>
         <div class="dropdown" id="projDD">
           <button class="dropdown-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>Projects <span class="darr">&#9660;</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg>Projects 
           </button>
           <div class="dropdown-content">
             <div class="dropdown-content-inner">

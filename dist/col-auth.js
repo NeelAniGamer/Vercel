@@ -1,335 +1,150 @@
-// Class Of Learners Global Authentication System (Supabase)
+// Class Of Learners Global Authentication System (Supabase PKCE + Google One Tap)
 
-// Supabase client - must be at top to avoid temporal dead zone
 let supabaseClient = null
 
-// --- Shared Login Modal Injection ---
-// Injects the standard loginMo modal if the page doesn't already have one inline.
+// Shared fallback login modal for pages without #colAuthModal in markup
 function injectLoginModal() {
-  if (document.getElementById('loginMo')) {return}
+  if (document.getElementById('loginMo')) return
   const mo = document.createElement('div')
   mo.className = 'col-auth-mo'
   mo.id = 'loginMo'
   mo.innerHTML =
-    '<div class="col-auth-md"><div class="col-auth-hd"><h2 id="moAuthTitle">Authenticate</h2><p id="moAuthSub">Unlock dashboard storage and cloud sync.</p></div><div class="col-auth-body"><div id="loggedOutPanel" style="display:flex; justify-content:center; align-items:center; width:100%; margin-bottom:15px;"><div id="gSignInBtnContainer" style="width:100%; display:flex; justify-content:center;"></div></div><div id="loggedInPanel" style="display: none;"><label style="display:block; margin-bottom:5px; color:var(--dim, #8891AA); font-size:0.85rem; text-align:left;">Google Email</label><input class="col-auth-inp" id="miEmail" type="email" readonly style="opacity: 0.5; cursor: not-allowed; margin-bottom: 20px;"><label style="display:block; margin-bottom:5px; color:var(--dim, #8891AA); font-size:0.85rem; text-align:left;">Display Username</label><input class="col-auth-inp" id="miName" type="text" placeholder="Choose a username..." maxlength="40" style="margin-bottom: 20px;"><button class="col-auth-btn" style="margin-bottom: 10px;" onclick="updateUsername()">Save Username</button><button class="col-auth-danger" onclick="doLogout()">Disconnect Account</button></div><button class="col-auth-btn" style="margin-top: 10px; background: transparent; color: var(--dim, #8891AA); border: 1px solid var(--line, rgba(255,255,255,.08));" onclick="closeMo()">Close / Cancel</button></div></div>'
+    '<div class="col-auth-md"><div class="col-auth-hd"><h2>Authenticate</h2><p>Unlock dashboard storage and cloud sync.</p></div><div class="col-auth-body"><div id="loggedOutPanel" style="display:flex;justify-content:center;align-items:center;width:100%;margin-bottom:15px;"><div id="gSignInBtnContainer" style="width:100%;display:flex;justify-content:center;"></div></div><div id="loggedInPanel" style="display:none;"><label class="col-auth-lbl" for="miEmail">Account Email</label><input class="col-auth-inp" id="miEmail" type="email" readonly style="opacity:0.6;cursor:not-allowed;"><label class="col-auth-lbl" for="miName">Display Name</label><input class="col-auth-inp" id="miName" type="text" placeholder="Choose a display name..." maxlength="40"><button type="button" class="col-auth-btn" data-col-mo="save-username" style="margin-bottom:10px;">Save Name</button><button type="button" class="col-auth-danger" data-col-mo="logout">Disconnect Account</button></div><button type="button" class="col-auth-btn" data-col-mo="close" style="margin-top:10px;background:transparent;color:var(--dim,#8891AA);border:1px solid var(--line,rgba(255,255,255,.08));">Close</button></div></div>'
   document.body.appendChild(mo)
   mo.addEventListener('click', function (e) {
-    if (e.target === this) {closeMo()}
+    if (e.target === this) {
+      window.closeMo()
+      return
+    }
+    const btn = e.target && e.target.closest ? e.target.closest('[data-col-mo]') : null
+    if (!btn) return
+    const act = btn.getAttribute('data-col-mo')
+    if (act === 'save-username' && typeof window.updateUsername === 'function') window.updateUsername()
+    else if (act === 'logout' && typeof window.doLogout === 'function') window.doLogout()
+    else if (act === 'close') window.closeMo()
   })
 }
 
-// Unified global authentication bridge: expose openLogin and closeMo globally
 window.openLogin = function () {
   if (typeof window.openGlobalLogin === 'function') {
     window.openGlobalLogin()
-  } else {
-    if (typeof injectAuthStyles === 'function') {injectAuthStyles()}
-    if (typeof injectAuthUI === 'function') {injectAuthUI()}
-    if (typeof window.openGlobalLogin === 'function') {
-      window.openGlobalLogin()
-    } else {
-      const mo = document.getElementById('colAuthModal') || document.getElementById('loginMo')
-      if (mo) {
-        mo.classList.add('open')
-        mo.removeAttribute('aria-hidden')
-        mo.removeAttribute('inert')
-      }
-    }
+    return
+  }
+  const mo = document.getElementById('colAuthModal') || document.getElementById('loginMo')
+  if (mo) {
+    mo.classList.add('open')
+    mo.removeAttribute('aria-hidden')
+    mo.removeAttribute('inert')
   }
 }
+
 window.closeMo = function () {
-  if (typeof window.closeGlobalAuth === 'function') {
-    window.closeGlobalAuth()
-  }
+  if (typeof window.closeGlobalAuth === 'function') window.closeGlobalAuth()
   const mo = document.getElementById('loginMo')
-  if (mo) {mo.classList.remove('open')}
+  if (mo) mo.classList.remove('open')
 }
 
 ;(async function () {
-  if (window._colAuthRunning) {return}
+  if (window._colAuthRunning) return
   window._colAuthRunning = true
 
-  // Single entry point for dismissing the auth modal. closeGlobalAuth()
-  // also restores aria-hidden="true" and the inert attribute; the raw
-  // `mo.classList.remove('open')` calls that used to be scattered through
-  // the sign-in / OTP / logout handlers left the modal exposed to
-  // assistive tech and to background focus.
-  function closeAuthModal() {
-    if (typeof window.closeGlobalAuth === 'function') {
-      window.closeGlobalAuth()
-      return
+  const RETURN_TO_KEY = 'col_auth_return_to'
+  const ALLOWED_RETURN_AGE_MS = 10 * 60 * 1000
+  const OTP_RESEND_SECONDS = 60
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+  const SVG_EYE_OPEN =
+    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>'
+  const SVG_EYE_OFF =
+    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>'
+
+  let authSyncSeq = 0
+  let otpCooldownTimer = null
+  let usernameCheckDebounce = null
+  let colOtpState = { step: 'send', email: '', cooldownUntil: 0 }
+
+  let authChannel = null
+  try {
+    if (typeof BroadcastChannel !== 'undefined') {
+      authChannel = new BroadcastChannel('col_auth_sync')
+      authChannel.onmessage = function (ev) {
+        if (!ev || !ev.data || !supabaseClient) return
+        if (ev.data.type === 'SIGNED_OUT') {
+          window.colUser = null
+          clearActiveLocalUser()
+          dispatchAuthEvent()
+          updateAuthUI()
+        } else if (ev.data.type === 'SIGNED_IN' || ev.data.type === 'PROFILE_UPDATED') {
+          supabaseClient.auth.getSession().then(function (res) {
+            if (res && res.data && res.data.session) {
+              applySession(res.data.session, 'SYNC')
+            }
+          }).catch(function () {})
+        }
+      }
     }
-    const mo = document.getElementById('colAuthModal')
-    if (mo) {mo.classList.remove('open')}
+  } catch (_bcErr) {}
+
+  function broadcastAuth(type) {
+    try {
+      if (authChannel) authChannel.postMessage({ type: type, ts: Date.now() })
+    } catch (_e) {}
   }
 
-  // --- Local Account Storage Utilities ---
-  // Local profiles are intentionally non-sensitive. Passwords are never
-  // persisted in localStorage; offline credentials are represented only by a
-  // salted PBKDF2 verifier created by the submit handlers below.
-  const LOCAL_CREDENTIAL_ITERATIONS = 120000
-  const localCrypto = globalThis.crypto
-
-  function bytesToBase64(bytes) {
-    let binary = ''
-    for (const byte of bytes) {binary += String.fromCharCode(byte)}
-    return btoa(binary)
+  function escapeColHtml(str) {
+    if (!str) return ''
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
   }
 
-  function base64ToBytes(value) {
-    const binary = atob(value)
-    return Uint8Array.from(binary, char => char.charCodeAt(0))
+  function getSafeImageUrl(value) {
+    if (!value) return ''
+    const raw = String(value).trim()
+    if (/^data:image\/(?:png|jpe?g|webp|gif|svg\+xml);/i.test(raw)) return raw
+    try {
+      const parsed = new URL(raw, window.location.origin)
+      if (parsed.protocol === 'https:' || parsed.protocol === 'http:' || parsed.protocol === 'blob:') {
+        return parsed.href
+      }
+    } catch (_e) {}
+    return ''
   }
 
   function getSecureRandomInt(min, max) {
     const range = max - min + 1
-    if (localCrypto?.getRandomValues) {
+    const cryptoObj = globalThis.crypto
+    if (cryptoObj && typeof cryptoObj.getRandomValues === 'function') {
       const buf = new Uint32Array(1)
-      localCrypto.getRandomValues(buf)
+      cryptoObj.getRandomValues(buf)
       return min + (buf[0] % range)
     }
     return Math.floor(min + Math.random() * range)
   }
 
-  async function createLocalCredential(secret) {
-    if (!secret || !localCrypto?.subtle || typeof TextEncoder === 'undefined') {return null}
-    const salt = localCrypto.getRandomValues(new Uint8Array(16))
-    const key = await localCrypto.subtle.importKey(
-      'raw',
-      new TextEncoder().encode(secret),
-      'PBKDF2',
-      false,
-      ['deriveBits']
-    )
-    const bits = await localCrypto.subtle.deriveBits({
-      name: 'PBKDF2',
-      salt,
-      iterations: LOCAL_CREDENTIAL_ITERATIONS,
-      hash: 'SHA-256'
-    }, key, 256)
-    return {
-      authVerifier: bytesToBase64(new Uint8Array(bits)),
-      authSalt: bytesToBase64(salt)
+  function closeAuthModal() {
+    clearOtpTimer()
+    if (typeof window.closeGlobalAuth === 'function') {
+      window.closeGlobalAuth()
+      return
     }
-  }
-
-  async function verifyLocalCredential(account, secret) {
-    const verifier = account?.authVerifier || account?.credentialHash
-    const saltBase = account?.authSalt || account?.credentialSalt
-    if (!verifier || !saltBase || !secret || !localCrypto?.subtle) {return false}
-    try {
-      const salt = base64ToBytes(saltBase)
-      const key = await localCrypto.subtle.importKey(
-        'raw',
-        new TextEncoder().encode(secret),
-        'PBKDF2',
-        false,
-        ['deriveBits']
-      )
-      const bits = await localCrypto.subtle.deriveBits({
-        name: 'PBKDF2',
-        salt,
-        iterations: LOCAL_CREDENTIAL_ITERATIONS,
-        hash: 'SHA-256'
-      }, key, 256)
-      const actual = new Uint8Array(bits)
-      const expected = base64ToBytes(verifier)
-      if (actual.length !== expected.length) {return false}
-      let difference = 0
-      for (let i = 0; i < actual.length; i++) {difference |= actual[i] ^ expected[i]}
-      return difference === 0
-    } catch (e) {
-      return false
-    }
-  }
-
-  function sanitizeLocalAccount(account = {}) {
-    if (!account || typeof account !== 'object') {return {}}
-    const {
-      password,
-      pin,
-      secret,
-      token,
-      credential,
-      credentialHash,
-      credentialSalt,
-      ...clean
-    } = account
-    const safe = {}
-    for (const field of ['id', 'name', 'username', 'picture', 'role', 'vehicle', 'language', 'createdAt', 'updatedAt', 'uid', 'authVerifier', 'authSalt']) {
-      if (typeof clean[field] === 'string' && clean[field]) {safe[field] = clean[field]}
-    }
-    if (credentialHash && !safe.authVerifier) {safe.authVerifier = credentialHash}
-    if (credentialSalt && !safe.authSalt) {safe.authSalt = credentialSalt}
-    for (const field of ['age', 'grade', 'total']) {
-      if (Number.isFinite(Number(clean[field]))) {safe[field] = Number(clean[field])}
-    }
-    if (Array.isArray(clean.badges)) {safe.badges = clean.badges.slice(0, 50)}
-    return safe
-  }
-
-  function sanitizeActiveUser(account = {}) {
-    if (!account || typeof account !== 'object') {return {}}
-    const {
-      password,
-      pin,
-      secret,
-      token,
-      credential,
-      credentialHash,
-      credentialSalt,
-      authVerifier,
-      authSalt,
-      ...clean
-    } = account
-    const safe = {}
-    for (const field of ['id', 'name', 'username', 'picture', 'role', 'vehicle', 'language', 'createdAt', 'updatedAt', 'uid']) {
-      if (typeof clean[field] === 'string' && clean[field]) {safe[field] = clean[field]}
-    }
-    for (const field of ['age', 'grade', 'total']) {
-      if (Number.isFinite(Number(clean[field]))) {safe[field] = Number(clean[field])}
-    }
-    if (Array.isArray(clean.badges)) {safe.badges = clean.badges.slice(0, 50)}
-    return safe
-  }
-
-  function readLocalAccounts() {
-    try {
-      const raw = localStorage.getItem('col_local_accounts')
-      const parsed = raw ? JSON.parse(raw) : []
-      return Array.isArray(parsed) ? parsed.map(sanitizeLocalAccount).filter(a => a.id || a.username) : []
-    } catch (e) {
-      return []
-    }
-  }
-
-  function getLocalAccounts() {
-    const list = readLocalAccounts()
-    try {
-      const trafficRaw = localStorage.getItem('traffic_local_user')
-      if (trafficRaw) {
-        const tu = sanitizeActiveUser(JSON.parse(trafficRaw))
-        if (tu.name || tu.username) {
-          const exists = list.some(a => (tu.username && a.username === tu.username) || (tu.name && a.name === tu.name))
-          if (!exists) {list.push(tu)}
-        }
-      }
-      // Only non-secret profile fields reach this key. sanitizeLocalAccount() strips password,
-      // pin, secret, token and credential outright and keeps at most a PBKDF2-SHA256 verifier
-      // plus its salt; usernames and display names are not confidential.
-      // codeql[js/clear-text-storage-of-sensitive-data]
-      localStorage.setItem('col_local_accounts', JSON.stringify(list.map(sanitizeLocalAccount)))
-    } catch (e) {}
-    return list
-  }
-
-  function saveLocalAccount(acc) {
-    try {
-      const safe = sanitizeLocalAccount(acc)
-      const list = getLocalAccounts()
-      const normUname = (safe.username || '').toLowerCase()
-      const idx = list.findIndex(a => (safe.id && a.id === safe.id) || (normUname && (a.username || '').toLowerCase() === normUname))
-      if (idx >= 0) {list[idx] = { ...list[idx], ...safe }}
-      else {list.push(safe)}
-      // Same boundary as getLocalAccounts(): the record is rebuilt field by field by
-      // sanitizeLocalAccount(), which drops every secret before this write.
-      // codeql[js/clear-text-storage-of-sensitive-data]
-      localStorage.setItem('col_local_accounts', JSON.stringify(list.map(sanitizeLocalAccount)))
-      return safe
-    } catch (e) {
-      console.warn('[col-auth] Could not save local account:', e)
-      return null
-    }
-  }
-
-  function getActiveLocalUser() {
-    try {
-      const raw = localStorage.getItem('col_active_local_user') || localStorage.getItem('traffic_local_user')
-      if (!raw) {return null}
-      const u = sanitizeLocalAccount(JSON.parse(raw))
-      if (!u.name && !u.username) {return null}
-      const cachedGoogleName = (function () {
-        try { return sessionStorage.getItem('col_google_full_name') || localStorage.getItem('col_google_full_name') || '' } catch (_e) { return '' }
-      })()
-      if (cachedGoogleName && (!u.name || /^(hh|user|test|guest)$/i.test(u.name))) {
-        u.name = cachedGoogleName
-      }
-      return {
-        id: u.id || ('local_' + (u.username || u.name).replace(/[^a-zA-Z0-9_]/g, '')),
-        name: u.name || u.username,
-        email: u.username ? (u.username.replace('@', '') + '@local.col') : 'local@col.io',
-        username: u.username || ('@' + (u.name || 'user').toLowerCase().replace(/\s+/g, '')),
-        picture: u.picture || null,
-        isLocal: true,
-        user_metadata: {
-          full_name: u.name || u.username,
-          name: u.name || u.username,
-          role: u.role || 'student',
-          preferred_vehicle: u.vehicle || 'Car'
-        }
-      }
-    } catch (e) {
-      return null
-    }
-  }
-
-  function setActiveLocalUser(acc) {
-    try {
-      const fullAcc = {
-        ...sanitizeLocalAccount(acc),
-        id: acc.id || ('local_' + Date.now()),
-        name: acc.name || acc.username,
-        username: acc.username || ('@' + (acc.name || 'user').toLowerCase().replace(/\s+/g, '')),
-        picture: acc.picture || acc.avatar || null,
-        role: acc.role || 'student',
-        vehicle: acc.vehicle || 'Car',
-        age: acc.age || 18,
-        language: acc.language || 'en',
-        updatedAt: new Date().toISOString()
-      }
-      const safeAcc = sanitizeActiveUser(fullAcc)
-      saveLocalAccount(fullAcc)
-      // safeAcc comes from sanitizeActiveUser(), which drops password, pin, secret, token and
-      // credential before this write. What remains is a display profile, and a username is not
-      // a secret.
-      // codeql[js/clear-text-storage-of-sensitive-data]
-      localStorage.setItem('col_active_local_user', JSON.stringify(safeAcc))
-      // codeql[js/clear-text-storage-of-sensitive-data]
-      localStorage.setItem('traffic_local_user', JSON.stringify(safeAcc))
-      localStorage.setItem('trafficSetupComplete', 'true')
-      if (window.ColUserData) {
-        try { window.ColUserData.setLocalUser(safeAcc) } catch (_ck) {}
-      }
-      window.colLocalUser = {
-        id: safeAcc.id,
-        name: safeAcc.name,
-        email: acc.email || (safeAcc.username.replace('@', '') + '@local.col'),
-        username: safeAcc.username,
-        picture: safeAcc.picture || null,
-        isLocal: true,
-        user_metadata: {
-          full_name: safeAcc.name,
-          name: safeAcc.name,
-          role: safeAcc.role,
-          preferred_vehicle: safeAcc.vehicle,
-          avatar_url: safeAcc.picture || null,
-          picture: safeAcc.picture || null
-        }
-      }
-      // Do not populate window.colUser from local storage. Only a verified
-      // Supabase session may identify the logged-in account.
-      window.colUser = null
-    } catch (e) {
-      console.warn('[col-auth] Could not set active local user:', e)
-    }
+    const mo = document.getElementById('colAuthModal')
+    if (mo) mo.classList.remove('open')
   }
 
   function clearActiveLocalUser() {
+    const keys = [
+      'col_active_local_user',
+      'traffic_local_user',
+      'trafficSetupComplete',
+      'col_user',
+      'col_local_accounts'
+    ]
     try {
-      localStorage.removeItem('col_active_local_user')
-      localStorage.removeItem('traffic_local_user')
-      localStorage.removeItem('trafficSetupComplete')
-      localStorage.removeItem('col_user')
+      keys.forEach(function (k) { localStorage.removeItem(k) })
       if (window.ColUserData) {
         try {
           window.ColUserData.clearLocalUser()
@@ -338,61 +153,45 @@ window.closeMo = function () {
       }
       window.colLocalUser = null
       window.colUser = null
-    } catch (e) {}
+    } catch (_e) {}
   }
 
-  // window.colUser is reserved for the live Supabase session. Local/offline
-  // profiles are exposed separately and must never impersonate a signed-in user.
   window.colLocalUser = null
-
-  // Expose local auth utilities for sub-apps
-  window.colGetLocalAccounts = getLocalAccounts
-  window.colSaveLocalAccount = saveLocalAccount
-  window.colGetActiveLocalUser = getActiveLocalUser
-  window.colSetActiveLocalUser = setActiveLocalUser
   window.colClearActiveLocalUser = clearActiveLocalUser
-  // Credential primitives. Sub-apps that store offline PINs must hash and
-  // verify through these rather than persisting the secret itself — the earlier
-  // TrafficSetup.html path wrote `pin`/`password` in cleartext and accepted any
-  // value when no PIN was present.
-  window.colCreateLocalCredential = createLocalCredential
-  window.colVerifyLocalCredential = verifyLocalCredential
-  // Escaping helpers. Sub-app pages should build DOM with these or with
-  // createElement/textContent rather than interpolating display names into
-  // innerHTML or inline event-handler attributes.
   window.colEscapeHtml = escapeColHtml
   window.colGetSafeImageUrl = getSafeImageUrl
 
-  // Inject modal styles and UI immediately if DOM is ready
   function ensureAuthUI() {
     try {
-      if (typeof injectAuthStyles === 'function') {injectAuthStyles()}
-      if (typeof injectAuthUI === 'function') {injectAuthUI()}
-    } catch (e) {}
+      injectAuthStyles()
+      injectAuthUI()
+    } catch (_e) {}
   }
-  if (document.body) {
-    ensureAuthUI()
-  } else {
-    document.addEventListener('DOMContentLoaded', ensureAuthUI)
-  }
+  if (document.body) ensureAuthUI()
+  else document.addEventListener('DOMContentLoaded', ensureAuthUI, { once: true })
 
-  // 1. Fetch Global Configuration to get Supabase Keys (root-absolute so /Traffic/* pages resolve)
-  // The request is shared with col-router.js via window.__colConfigPromise so
-  // the site does not fetch /config.json twice on every page load.
+  // Resolve canonical CoL Supabase configuration
   let authConfig = null
   try {
-    window.__colConfigPromise =
-      window.__colConfigPromise ||
-      fetch('/config.json', { signal: AbortSignal.timeout(8000) })
-        .then((r) => (r.ok ? r.json() : null))
-        .catch(() => null)
-    const config = await window.__colConfigPromise
-    if (config && config.auth && config.auth.url && config.auth.key) {
-      authConfig = config.auth
+    if (window.ColDbConfig && typeof window.ColDbConfig.loadConfig === 'function') {
+      authConfig = await window.ColDbConfig.loadConfig()
     }
-  } catch (e) {
-    console.warn('[col-auth] Could not load config.json — using default auth config.')
+  } catch (_e) {}
+
+  if (!authConfig) {
+    try {
+      window.__colConfigPromise =
+        window.__colConfigPromise ||
+        fetch('/config.json', { signal: AbortSignal.timeout(8000) })
+          .then(function (r) { return r.ok ? r.json() : null })
+          .catch(function () { return null })
+      const config = await window.__colConfigPromise
+      if (config && config.auth && config.auth.url && config.auth.key) {
+        authConfig = config.auth
+      }
+    } catch (_e) {}
   }
+
   if (!authConfig) {
     authConfig = {
       url: 'https://hvukxajztizsuhfubjws.supabase.co',
@@ -400,114 +199,97 @@ window.closeMo = function () {
     }
   }
 
-  // 2. Load Supabase SDK if keys exist
-  if (authConfig) {
-    if (typeof supabase === 'undefined') {
-      if (!document.querySelector('script[src*="@supabase"]')) {
-        const script = document.createElement('script')
-        script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'
-        script.onload = () => initSupabase(authConfig.url, authConfig.key)
-        document.head.appendChild(script)
-      } else {
-        // Script is loading, wait for it
-        document.querySelector('script[src*="@supabase"]').addEventListener('load', () => initSupabase(authConfig.url, authConfig.key))
-      }
+  if (typeof supabase === 'undefined') {
+    const existing = document.querySelector('script[src*="@supabase"]')
+    if (!existing) {
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'
+      script.onload = function () { initSupabase(authConfig.url, authConfig.key) }
+      document.head.appendChild(script)
     } else {
-      initSupabase(authConfig.url, authConfig.key)
+      existing.addEventListener('load', function () { initSupabase(authConfig.url, authConfig.key) }, { once: true })
     }
   } else {
-    // A local profile may exist for offline play, but it is not an
-    // authenticated account and must not populate window.colUser.
-    window.colLocalUser = getActiveLocalUser()
-    window.colUser = null
-    dispatchAuthEvent()
+    initSupabase(authConfig.url, authConfig.key)
+  }
+
+  function decodeJwtPayload(token) {
+    if (!token) return null
+    const parts = String(token).split('.')
+    if (parts.length < 2) return null
+    const payloadStr = decodeURIComponent(
+      atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'))
+        .split('')
+        .map(function (c) { return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2) })
+        .join('')
+    )
+    return JSON.parse(payloadStr)
   }
 
   window.handleGoogleOneTap = async (response) => {
-    if (!response || !response.credential) {return}
-    // Parse Google JWT ID token directly to extract full first and last name
+    if (!response || !response.credential) return
     try {
-      const parts = response.credential.split('.')
-      if (parts.length >= 2) {
-        const payloadStr = decodeURIComponent(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')).split('').map(function (c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-        }).join(''))
-        const jwt = JSON.parse(payloadStr)
-        if (jwt) {
-          const gGiven = jwt.given_name || ''
-          const gFamily = jwt.family_name || ''
-          const fullFromNames = (gGiven && gFamily) ? (gGiven + ' ' + gFamily) : (gGiven || gFamily || '')
-          const gFull = fullFromNames || jwt.name || ''
-          if (gFull) {
-            window._lastGoogleName = gFull
-            window._lastGoogleGiven = gGiven
-            window._lastGoogleFamily = gFamily
-            try {
-              sessionStorage.setItem('col_google_full_name', gFull)
-              if (gGiven) sessionStorage.setItem('col_google_given_name', gGiven)
-              if (gFamily) sessionStorage.setItem('col_google_family_name', gFamily)
-            } catch (_e) {}
-          }
+      const jwt = decodeJwtPayload(response.credential)
+      if (jwt) {
+        const gGiven = jwt.given_name || ''
+        const gFamily = jwt.family_name || ''
+        const gFull = (gGiven && gFamily ? gGiven + ' ' + gFamily : gGiven || gFamily || '') || jwt.name || ''
+        if (gFull) {
+          window._lastGoogleName = gFull
+          try {
+            sessionStorage.setItem('col_google_full_name', gFull)
+            if (gGiven) sessionStorage.setItem('col_google_given_name', gGiven)
+            if (gFamily) sessionStorage.setItem('col_google_family_name', gFamily)
+          } catch (_e) {}
         }
       }
-    } catch (e) {
-      console.warn('[col-auth] Could not decode Google ID token payload:', e)
-    }
+    } catch (_e) {}
 
     let client = window.supabaseClient
-    if (!client && window.__colConfigPromise) {
-      try {
-        await window.__colConfigPromise
-        for (let i = 0; i < 25 && !window.supabaseClient; i++) {
-          await new Promise((r) => setTimeout(r, 100))
-        }
-        client = window.supabaseClient
-      } catch (e) {}
-    }
     if (!client) {
-      console.error('[col-auth] Cannot complete Google One Tap: Supabase client unavailable')
-      return
+      for (let i = 0; i < 25 && !window.supabaseClient; i++) {
+        await new Promise(function (r) { setTimeout(r, 100) })
+      }
+      client = window.supabaseClient
     }
+    if (!client) return
+
     try {
-      const { data, error } = await client.auth.signInWithIdToken({
+      const { error } = await client.auth.signInWithIdToken({
         provider: 'google',
         token: response.credential
       })
-      if (error) {throw error}
-      if (typeof toast === 'function') {
-        toast('Signed In With Google', '#22c55e')
-      }
+      if (error) throw error
+      closeAuthModal()
+      if (typeof window.toast === 'function') window.toast('Signed in with Google', '#22c55e')
     } catch (error) {
-      console.error('[col-auth] One Tap Sign-in error:', error.message)
-      if (typeof toast === 'function') {
-        toast('Google Sign-in Failed: ' + (error.message || 'Authentication error'), '#ef4444')
+      if (typeof window.toast === 'function') {
+        window.toast('Google Sign-in failed: ' + (error.message || 'Authentication error'), '#ef4444')
       }
     }
   }
 
   function clearOneTapCoolDown() {
     try {
-      // Google GSI sets a client-side 'g_state' cookie on dismissal that suppresses
-      // One Tap for 2 hours up to 7 days. Clearing it unblocks immediate display.
       const past = 'Thu, 01 Jan 1970 00:00:01 GMT'
       document.cookie = 'g_state=; expires=' + past + '; path=/;'
       document.cookie = 'g_state=; expires=' + past + ';'
-    } catch (e) {}
+    } catch (_e) {}
   }
 
   function initOneTap() {
-    if (window.colUser) {return}
+    if (window.colUser) return
     if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
-      if (!document.querySelector('script[src*="accounts.google.com/gsi/client"]')) {
+      const existing = document.querySelector('script[src*="accounts.google.com/gsi/client"]')
+      if (!existing) {
         const script = document.createElement('script')
         script.src = 'https://accounts.google.com/gsi/client'
         script.async = true
         script.defer = true
-        script.onload = () => setupOneTap()
+        script.onload = setupOneTap
         document.head.appendChild(script)
       } else {
-        const existing = document.querySelector('script[src*="accounts.google.com/gsi/client"]')
-        existing.addEventListener('load', () => setupOneTap())
+        existing.addEventListener('load', setupOneTap, { once: true })
       }
     } else {
       setupOneTap()
@@ -515,17 +297,14 @@ window.closeMo = function () {
   }
 
   function setupOneTap() {
-    if (window.colUser) {return}
-    // Respect explicit dismissal within this browser tab session so we don't nag
-    if (sessionStorage.getItem('col_onetap_dismissed_session')) {return}
+    if (window.colUser) return
+    if (window.location.protocol !== 'https:') return
+    if (sessionStorage.getItem('col_onetap_dismissed_session')) return
 
-    // Don't show One Tap on Driving.html levels screen or briefing screen
     const path = window.location.pathname.toLowerCase()
-    if (path.includes('setup') || (path.includes('driving') && (new URLSearchParams(window.location.search).get('screen') === 'levels' || new URLSearchParams(window.location.search).get('lv')))) {
-      return
-    }
+    const sp = new URLSearchParams(window.location.search)
+    if (path.includes('driving') && (sp.get('screen') === 'levels' || sp.get('lv'))) return
 
-    // Clear stale multi-day g_state cool-down cookie so returning visitors receive the prompt
     clearOneTapCoolDown()
 
     if (!window._gsiInitialized && typeof google !== 'undefined' && google.accounts && google.accounts.id) {
@@ -540,23 +319,11 @@ window.closeMo = function () {
     }
 
     if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
-      google.accounts.id.prompt((notification) => {
-        if (notification.isNotDisplayed()) {
-          const reason = typeof notification.getNotDisplayedReason === 'function' ? notification.getNotDisplayedReason() : 'unknown'
-          console.log('[col-auth] One Tap not displayed:', reason)
-        } else if (notification.isSkippedMoment()) {
-          const reason = typeof notification.getSkippedReason === 'function' ? notification.getSkippedReason() : 'unknown'
-          console.log('[col-auth] One Tap skipped:', reason)
-        } else if (notification.isDismissedMoment()) {
-          const reason = typeof notification.getDismissedReason === 'function' ? notification.getDismissedReason() : 'dismissed'
-          console.log('[col-auth] One Tap dismissed by user:', reason)
-          try {
-            sessionStorage.setItem('col_onetap_dismissed_session', '1')
-          } catch (e) {}
+      google.accounts.id.prompt(function (notification) {
+        if (notification && typeof notification.isDismissedMoment === 'function' && notification.isDismissedMoment()) {
+          try { sessionStorage.setItem('col_onetap_dismissed_session', '1') } catch (_e) {}
         }
       })
-
-      // Re-render button if container exists
       const container = document.getElementById('gSignInBtnContainer')
       if (container && !window.AndroidBridge && typeof google.accounts.id.renderButton === 'function') {
         container.innerHTML = ''
@@ -565,216 +332,264 @@ window.closeMo = function () {
     }
   }
 
-  // Expose manual prompt trigger for explicit login actions
-  window.colPromptGoogleOneTap = function (force = false) {
+  window.colPromptGoogleOneTap = function (force) {
     if (force) {
-      try { sessionStorage.removeItem('col_onetap_dismissed_session') } catch (e) {}
+      try { sessionStorage.removeItem('col_onetap_dismissed_session') } catch (_e) {}
       clearOneTapCoolDown()
     }
     initOneTap()
   }
 
+  function scrubAuthParamsFromUrl() {
+    try {
+      const url = new URL(window.location.href)
+      let changed = false
+      ;['code', 'error', 'error_code', 'error_description'].forEach(function (k) {
+        if (url.searchParams.has(k)) {
+          url.searchParams.delete(k)
+          changed = true
+        }
+      })
+      if (url.hash && /access_token=|refresh_token=|expires_in=|provider_token=/i.test(url.hash)) {
+        url.hash = ''
+        changed = true
+      }
+      if (changed) {
+        const cleanHref = url.pathname + (url.searchParams.toString() ? '?' + url.searchParams.toString() : '') + (url.hash || '')
+        window.history.replaceState(window.history.state, '', cleanHref)
+      }
+    } catch (_e) {}
+  }
+
+  function resolveSafeReturnUrl() {
+    try {
+      const rawReturn = localStorage.getItem(RETURN_TO_KEY) || sessionStorage.getItem(RETURN_TO_KEY)
+      if (!rawReturn) return null
+      localStorage.removeItem(RETURN_TO_KEY)
+      sessionStorage.removeItem(RETURN_TO_KEY)
+      const parsed = JSON.parse(rawReturn)
+      if (!parsed || !parsed.url || Date.now() - (parsed.ts || 0) > ALLOWED_RETURN_AGE_MS) return null
+      const targetUrl = new URL(parsed.url, window.location.origin)
+      if (targetUrl.origin !== window.location.origin) return null
+      targetUrl.searchParams.delete('code')
+      targetUrl.searchParams.delete('error')
+      targetUrl.searchParams.delete('error_description')
+      const curKey = window.location.pathname + window.location.search
+      const tgtKey = targetUrl.pathname + targetUrl.search
+      if (curKey === tgtKey) return null
+      return targetUrl.href
+    } catch (_e) {
+      return null
+    }
+  }
+
   function resolveColUserDisplayName(user) {
     if (!user) return 'User'
-    const gName = user.googleFullName || window._lastGoogleName || (function () {
-      try { return sessionStorage.getItem('col_google_full_name') || localStorage.getItem('col_google_full_name') || '' } catch (_e) { return '' }
-    })() || (function () {
-      try {
-        const meta = (user.session && user.session.user && user.session.user.user_metadata) || user.user_metadata || {}
-        const identities = (user.session && user.session.user && user.session.user.identities) || []
-        const gId = identities.find(function (id) { return id.provider === 'google' })
-        const gData = (gId && gId.identity_data) || {}
-        const given = meta.given_name || gData.given_name || ''
-        const family = meta.family_name || gData.family_name || ''
-        const fullFromBoth = (given && family) ? (given + ' ' + family) : (given || family || '')
-        return fullFromBoth || meta.full_name || meta.name || gData.full_name || gData.name || ''
-      } catch (_e) { return '' }
-    })()
+    const cachedGName =
+      user.googleFullName ||
+      window._lastGoogleName ||
+      (function () {
+        try { return sessionStorage.getItem('col_google_full_name') || '' } catch (_e) { return '' }
+      })()
+    const meta = (user.session && user.session.user && user.session.user.user_metadata) || user.user_metadata || {}
+    const identities = (user.session && user.session.user && user.session.user.identities) || []
+    const gId = identities.find(function (id) { return id.provider === 'google' })
+    const gData = (gId && gId.identity_data) || {}
+    const given = meta.given_name || gData.given_name || ''
+    const family = meta.family_name || gData.family_name || ''
+    const gName = cachedGName || (given && family ? given + ' ' + family : given || family || '') || meta.full_name || meta.name || gData.full_name || gData.name || ''
 
     const rawName = (user.name || '').trim()
     const isPlaceholder = !rawName || rawName.length <= 2 || /^(hh|user|test|guest|anon|admin)$/i.test(rawName)
-
-    if (gName && (isPlaceholder || !rawName.includes(' '))) {
-      return gName
-    }
-    if (!isPlaceholder) {
-      return rawName
-    }
+    if (gName && (isPlaceholder || !rawName.includes(' '))) return gName
+    if (!isPlaceholder) return rawName
     if (gName) return gName
-    if (user.email && (/subscriptionfound/i.test(user.email) || /neel/i.test(user.email))) {
-      return 'Neel Badri'
+    return (user.email && user.email.split('@')[0]) || 'Driver'
+  }
+
+  async function applySession(session, event) {
+    const seq = ++authSyncSeq
+    if (event === 'PASSWORD_RECOVERY') {
+      window._colPasswordRecoveryMode = true
+      setTimeout(function () {
+        if (typeof window.openGlobalLogin === 'function') window.openGlobalLogin()
+      }, 150)
     }
-    return rawName || 'User'
+
+    if (session && session.user) {
+      if (event === 'SIGNED_IN') {
+        const redirectTarget = resolveSafeReturnUrl()
+        if (redirectTarget) {
+          window.location.replace(redirectTarget)
+          return
+        }
+      }
+      scrubAuthParamsFromUrl()
+
+      const meta = session.user.user_metadata || {}
+      const appMeta = session.user.app_metadata || {}
+      const identities = session.user.identities || []
+      const googleIdentity = identities.find(function (id) { return id.provider === 'google' })
+      const googleData = (googleIdentity && googleIdentity.identity_data) || {}
+      const userId = session.user.id
+      const email = session.user.email || ''
+      const photo = getSafeImageUrl(meta.avatar_url || meta.picture || googleData.avatar_url || googleData.picture || '')
+
+      const gGiven = meta.given_name || googleData.given_name || ''
+      const gFamily = meta.family_name || googleData.family_name || ''
+      const gFull =
+        (gGiven && gFamily ? gGiven + ' ' + gFamily : gGiven || gFamily || '') ||
+        meta.full_name ||
+        meta.name ||
+        googleData.full_name ||
+        googleData.name ||
+        window._lastGoogleName ||
+        (function () {
+          try { return sessionStorage.getItem('col_google_full_name') || '' } catch (_e) { return '' }
+        })()
+
+      if (gFull) {
+        window._lastGoogleName = gFull
+        try { sessionStorage.setItem('col_google_full_name', gFull) } catch (_e) {}
+      }
+
+      const displayName = gFull || (email ? email.split('@')[0] : 'Driver')
+      const providers = Array.isArray(appMeta.providers) && appMeta.providers.length
+        ? appMeta.providers
+        : identities.map(function (i) { return i.provider }).filter(Boolean)
+
+      window.colUser = {
+        id: userId,
+        email: email,
+        name: displayName,
+        googleFullName: gFull || null,
+        picture: photo || null,
+        session: session,
+        providers: providers,
+        emailConfirmed: Boolean(session.user.email_confirmed_at || session.user.confirmed_at),
+        uid: null
+      }
+
+      if (window.ColUserData) {
+        try {
+          window.ColUserData.setUser({ id: userId, email: email, name: displayName, picture: photo || null })
+        } catch (_ck) {}
+      }
+
+      if (!window._cloudProfilesDisabled) {
+        try {
+          const { data: upProfile, error: upError } = await supabaseClient
+            .from('user_profiles')
+            .select('id, user_id, display_name, username, preferred_vehicle, age, language, student_id, avatar_url, updated_at')
+            .eq('user_id', userId)
+            .maybeSingle()
+
+          if (seq !== authSyncSeq) return
+
+          if (upError && (upError.code === '42501' || upError.status === 403 || upError.status === 401 || upError.code === 'PGRST301')) {
+            window._cloudProfilesDisabled = true
+          } else if (!upError && upProfile) {
+            window.colUser.uid = upProfile.id || upProfile.user_id
+            window.colUser.profile = upProfile
+            window.colUser.username = upProfile.username || window.colUser.username
+            window.colUser.vehicle = upProfile.preferred_vehicle || window.colUser.vehicle
+            const curName = (upProfile.display_name || '').trim()
+            const isPlaceholder = !curName || curName.length <= 2 || /^(hh|user|test|guest)$/i.test(curName)
+            const resolved = resolveColUserDisplayName({
+              name: curName,
+              email: email,
+              googleFullName: gFull,
+              session: session
+            })
+            if (resolved && (isPlaceholder || !curName.includes(' '))) {
+              window.colUser.name = resolved
+            } else if (upProfile.display_name) {
+              window.colUser.name = upProfile.display_name
+            }
+            if (upProfile.avatar_url && !window.colUser.picture) {
+              window.colUser.picture = getSafeImageUrl(upProfile.avatar_url) || null
+            }
+            if (window.ColUserData) {
+              try {
+                window.ColUserData.setUser({
+                  id: userId,
+                  email: email,
+                  name: window.colUser.name,
+                  username: upProfile.username || null,
+                  picture: window.colUser.picture
+                })
+              } catch (_ck) {}
+            }
+          } else if (!window._cloudProfilesDisabled) {
+            const { data: profile, error } = await supabaseClient
+              .from('profiles')
+              .select('id, username, full_name, avatar_url')
+              .eq('id', userId)
+              .maybeSingle()
+            if (seq !== authSyncSeq) return
+            if (error && (error.code === '42501' || error.status === 403 || error.status === 400)) {
+              window._cloudProfilesDisabled = true
+            } else if (profile) {
+              window.colUser.uid = profile.id
+              window.colUser.username = profile.username || window.colUser.username
+              if (profile.full_name && !meta.full_name) window.colUser.name = profile.full_name
+              if (profile.avatar_url && !window.colUser.picture) {
+                window.colUser.picture = getSafeImageUrl(profile.avatar_url) || null
+              }
+            }
+          }
+        } catch (_e) {
+          window._cloudProfilesDisabled = true
+        }
+      }
+
+      if (event === 'SIGNED_IN') broadcastAuth('SIGNED_IN')
+    } else {
+      try { localStorage.removeItem('col_user') } catch (_e) {}
+      if (window.ColUserData) {
+        try { window.ColUserData.clearUser() } catch (_ck) {}
+      }
+      window.colUser = null
+      if (event === 'SIGNED_OUT') broadcastAuth('SIGNED_OUT')
+    }
+
+    if (seq !== authSyncSeq) return
+    dispatchAuthEvent()
+    updateAuthUI()
+
+    if (!session && !window.colUser && !window._oneTapAttempted) {
+      window._oneTapAttempted = true
+      initOneTap()
+    }
   }
 
   function initSupabase(url, key) {
-    supabaseClient = window.supabase.createClient(url, key)
-    window.supabaseClient = supabaseClient
-
-    // Listen for Auth changes
-    supabaseClient.auth.onAuthStateChange(async (event, session) => {
-      if (session && session.user) {
-        const meta = session.user.user_metadata || {}
-        const identities = session.user.identities || []
-        const googleIdentity = identities.find(id => id.provider === 'google')
-        const googleData = (googleIdentity && googleIdentity.identity_data) || {}
-        const userId = session.user.id
-        const email = session.user.email
-        const photo = meta.avatar_url || meta.picture || googleData.avatar_url || googleData.picture || null
-
-        // Derive Google first and last name with priority
-        const gGiven = meta.given_name || googleData.given_name || meta.first_name || googleData.first_name || (function () { try { return sessionStorage.getItem('col_google_given_name') || '' } catch (_e) { return '' } })()
-        const gFamily = meta.family_name || googleData.family_name || meta.last_name || googleData.last_name || (function () { try { return sessionStorage.getItem('col_google_family_name') || '' } catch (_e) { return '' } })()
-        const gFullFromNames = (gGiven && gFamily) ? (gGiven + ' ' + gFamily) : (gGiven || gFamily || '')
-        const cachedFullName = window._lastGoogleName || (function () { try { return sessionStorage.getItem('col_google_full_name') || '' } catch (_e) { return '' } })()
-        const googleFullName = gFullFromNames || meta.full_name || meta.name || googleData.full_name || googleData.name || cachedFullName
-
-        if (googleFullName) {
-          window._lastGoogleName = googleFullName
-          try {
-            sessionStorage.setItem('col_google_full_name', googleFullName)
-            localStorage.setItem('col_google_full_name', googleFullName)
-          } catch (_e) {}
-        }
-
-        const displayName = googleFullName || (email ? email.split('@')[0] : 'User')
-
-        window.colUser = {
-          id: userId,
-          email: email,
-          name: displayName,
-          googleFullName: googleFullName || null,
-          picture: photo,
-          session: session,
-          uid: null // Default until profile is fetched
-        }
-
-        if (window.ColUserData) {
-          try {
-            window.ColUserData.setUser({
-              id: userId,
-              email: email,
-              name: displayName,
-              picture: photo
-            })
-          } catch (_ck) {}
-        }
-
-        if (!window._cloudProfilesDisabled) {
-          try {
-            const { data: upProfile, error: upError } = await supabaseClient
-              .from('user_profiles')
-              .select('id, user_id, display_name, username, preferred_vehicle, age, language, student_id, avatar_url, updated_at')
-              .eq('user_id', userId)
-              .maybeSingle()
-
-            if (upError && (upError.code === '42501' || upError.status === 403 || upError.status === 401 || upError.code === 'PGRST301')) {
-              window._cloudProfilesDisabled = true
-            }
-
-            if (!upError && upProfile) {
-              window.colUser.uid = upProfile.id || upProfile.user_id
-              window.colUser.profile = upProfile
-
-              // If existing display_name is generic/placeholder/short (such as "hh" or single letters),
-              // or user logged in via Google and has a verified Google full name, apply Google First & Last name!
-              const curName = (upProfile.display_name || '').trim()
-              const isPlaceholder = !curName || curName.length <= 2 || /^(hh|user|test|guest)$/i.test(curName)
-              const resolved = resolveColUserDisplayName({
-                name: curName,
-                email: email,
-                googleFullName: googleFullName,
-                session: session
-              })
-              if (resolved && (isPlaceholder || !curName.includes(' ') || isPlaceholder)) {
-                window.colUser.name = resolved
-                try {
-                  supabaseClient.from('user_profiles').update({ display_name: resolved, full_name: resolved }).eq('user_id', userId)
-                } catch (_e) {}
-              } else if (upProfile.display_name) {
-                window.colUser.name = upProfile.display_name
-              }
-              if (window.ColUserData) {
-                try {
-                  window.ColUserData.setUser({
-                    id: userId,
-                    email: email,
-                    name: window.colUser.name,
-                    username: upProfile.username || null,
-                    picture: window.colUser.picture || photo
-                  })
-                } catch (_ck) {}
-              }
-              if (upProfile.display_name || upProfile.username) {
-                try {
-                  const safeTrafficUser = {
-                    id: userId,
-                    name: window.colUser.name || displayName,
-                    username: upProfile.username || ('@' + (window.colUser.name || displayName).toLowerCase().replace(/\s+/g, '')),
-                    vehicle: upProfile.preferred_vehicle || 'Car',
-                    age: upProfile.age || 18,
-                    language: upProfile.language || 'en',
-                    studentId: upProfile.student_id || null,
-                    picture: upProfile.avatar_url || photo || null,
-                    updatedAt: upProfile.updated_at || new Date().toISOString()
-                  }
-                  localStorage.setItem('traffic_local_user', JSON.stringify(safeTrafficUser))
-                  localStorage.setItem('trafficSetupComplete', 'true')
-                } catch (e) {}
-              }
-              if (upProfile.avatar_url && !window.colUser.picture) {
-                window.colUser.picture = upProfile.avatar_url
-              }
-            } else if (!window._cloudProfilesDisabled) {
-              const { data: profile, error } = await supabaseClient
-                .from('profiles')
-                .select('id, username, full_name, avatar_url')
-                .eq('id', userId)
-                .maybeSingle()
-
-              if (error && (error.code === '42501' || error.status === 403 || error.status === 400 || error.code === 'PGRST116')) {
-                window._cloudProfilesDisabled = true
-              } else if (profile) {
-                window.colUser.uid = profile.id
-                if (profile.username && !meta.full_name) {window.colUser.name = profile.username}
-                if (profile.avatar_url && !window.colUser.picture) {
-                  window.colUser.picture = profile.avatar_url
-                }
-              }
-            }
-          } catch (e) {
-            window._cloudProfilesDisabled = true
-          }
-        }
-
-        // Session data remains in memory only. Never persist Supabase
-        // identity or access tokens to browser storage.
-      } else {
-        try {
-          localStorage.removeItem('col_user')
-        } catch (e) {}
-        if (window.ColUserData) {
-          try { window.ColUserData.clearUser() } catch (_ck) {}
-        }
-        window.colUser = null
-      }
-      dispatchAuthEvent()
-      updateAuthUI()
-
-      if (!session && !window.colUser && !window._oneTapAttempted) {
-        window._oneTapAttempted = true
-        initOneTap()
+    supabaseClient = window.supabase.createClient(url, key, {
+      auth: {
+        flowType: 'pkce',
+        detectSessionInUrl: true,
+        persistSession: true,
+        autoRefreshToken: true
       }
     })
+    window.supabaseClient = supabaseClient
+
+    supabaseClient.auth.onAuthStateChange(async function (event, session) {
+      await applySession(session, event)
+    })
+
+    supabaseClient.auth.getSession().then(function (res) {
+      const s = res && res.data ? res.data.session : null
+      if (s && !window.colUser) {
+        applySession(s, 'INITIAL_SESSION')
+      }
+    }).catch(function () {})
 
     injectAuthStyles()
     injectAuthUI()
-
-    // If there's a custom handler provided by the page (like in qr.html to fetch drive data), fire it.
     dispatchAuthEvent()
 
-    // Safety fallback: Ensure One Tap is triggered for unauthenticated visitors if onAuthStateChange was delayed
-    setTimeout(() => {
+    setTimeout(function () {
       if (!window.colUser && !window._oneTapAttempted && !window.AndroidBridge) {
         window._oneTapAttempted = true
         initOneTap()
@@ -783,129 +598,105 @@ window.closeMo = function () {
   }
 
   function dispatchAuthEvent() {
-    const event = new CustomEvent('col-auth-changed', { detail: { user: window.colUser } })
-    window.dispatchEvent(event)
+    window.dispatchEvent(new CustomEvent('col-auth-changed', { detail: { user: window.colUser } }))
   }
 
-  function formatUserFriendlyAuthError(err, context = 'general') {
-    if (!err) {return 'An Unexpected Error Occurred. Please Try Again.'}
-    const raw = typeof err === 'string' ? err : (err.message || '')
+  function formatUserFriendlyAuthError(err, context) {
+    if (!err) return 'Something went wrong. Please try again.'
+    const raw = typeof err === 'string' ? err : err.message || ''
     const msg = raw.toLowerCase()
     const code = err.code || ''
 
-    // Duplicate key / unique constraint
-    if (code === '23505' || msg.includes('unique') || msg.includes('duplicate') || msg.includes('profiles_username_key') || msg.includes('already exists') || msg.includes('already in use') || msg.includes('already registered')) {
+    if (code === '23505' || msg.includes('unique') || msg.includes('duplicate') || msg.includes('already exists') || msg.includes('already registered')) {
       if (context === 'username' || context === 'profile' || context === 'settings') {
-        return 'This Username Is Already Taken By Another Player. Please Choose A Different Username Or Pick A Suggestion Below.'
+        return 'This username is already taken. Choose a different handle or pick one below.'
       }
-      if (msg.includes('user already registered') || context === 'register') {
-        return 'An Account With This Email Already Exists. Please Sign In Instead.'
+      if (msg.includes('user already registered') || context === 'signup') {
+        return 'An account with this email already exists. Try Sign In instead.'
       }
-      return 'This Handle Or Email Is Already Registered. Please Choose Another.'
+      return 'This email or handle is already registered.'
     }
-    // Invalid credentials
+    if (msg.includes('email not confirmed')) {
+      return 'Please confirm your email first using the verification link sent to your inbox.'
+    }
     if (msg.includes('invalid login credentials') || msg.includes('invalid credentials')) {
-      return 'Incorrect Email Or Password. Please Check Your Details And Try Again.'
+      return 'Incorrect email or password. Check your details or use Email Code / Reset Password.'
     }
-    // Invalid email format
-    if (msg.includes('invalid email') || msg.includes('email format') || msg.includes('valid email')) {
-      return 'Please Enter A Valid Email Address.'
+    if (msg.includes('invalid email') || msg.includes('valid email')) {
+      return 'Please enter a valid email address.'
     }
-    // OTP verification
     if (context === 'otp_verify' || msg.includes('otp') || msg.includes('token') || msg.includes('verification code')) {
-      if (msg.includes('expired')) {
-        return 'Verification Code Has Expired. Please Request A New Code.'
-      }
-      return 'Invalid Verification Code. Please Check The 6-Digit Code And Try Again.'
+      if (msg.includes('expired')) return 'That 6-digit code expired. Request a fresh code below.'
+      return 'Invalid 6-digit code. Double-check the email and try again.'
     }
-    // Rate limit
     if (msg.includes('rate limit') || msg.includes('too many requests') || msg.includes('security purposes')) {
-      return 'Too Many Attempts. Please Wait A Minute Before Trying Again.'
+      return 'Too many attempts in a short time. Please wait a minute and try again.'
     }
-    // Network / connection
-    if (msg.includes('failed to fetch') || msg.includes('network') || msg.includes('offline') || msg.includes('timeout') || msg.includes('connection')) {
-      return 'Network Connection Error. Please Check Your Internet Connection And Try Again.'
+    if (msg.includes('failed to fetch') || msg.includes('network') || msg.includes('offline') || msg.includes('timeout')) {
+      return 'Network error while reaching authentication servers. Check your connection.'
     }
-    // Row level security / permission
     if (msg.includes('row-level security') || msg.includes('permission denied')) {
-      return 'Session Expired Or Permission Denied. Please Sign In Again.'
+      return 'Your session expired. Please sign in again.'
     }
-    // Password constraints
-    if (msg.includes('password') && (msg.includes('least 6') || msg.includes('short'))) {
-      return 'Password Must Be At Least 6 Characters Long.'
+    if (msg.includes('password') && (msg.includes('least') || msg.includes('short') || msg.includes('characters'))) {
+      return 'Password must be at least 8 characters long.'
     }
-    // Username / profile context fallback
-    if (context === 'profile' || context === 'username') {
-      return 'This Username Is Unavailable. Please Pick A Different Handle Or Choose A Suggestion.'
-    }
-    if (context === 'otp_send') {
-      return 'Failed To Send Verification Code. Please Verify Your Email And Try Again.'
-    }
-    // Default fallback (Title Case, friendly)
-    return 'Action Could Not Be Completed. Please Try Again.'
+    if (context === 'otp_send') return 'Could not send a verification code. Verify the email address and retry.'
+    return 'Request could not be completed. Please try again.'
+  }
+
+  function evaluatePasswordStrength(pw) {
+    const val = String(pw || '')
+    if (!val) return { score: 0, label: '', color: '#64748b' }
+    let score = 0
+    if (val.length >= 8) score++
+    if (val.length >= 12) score++
+    if (/[a-z]/.test(val) && /[A-Z]/.test(val)) score++
+    if (/[0-9]/.test(val) && /[^a-zA-Z0-9]/.test(val)) score++
+    if (val.length < 8) return { score: 1, label: 'Too short (use 8+ characters)', color: '#ef4444' }
+    if (score <= 2) return { score: 2, label: 'Fair — add uppercase, numbers or symbols', color: '#f59e0b' }
+    if (score === 3) return { score: 3, label: 'Good password', color: '#38bdf8' }
+    return { score: 4, label: 'Strong password', color: '#10b981' }
   }
 
   async function checkUsernameAvailability(rawUsername, currentUserId) {
-    if (!rawUsername) {return { available: false, error: 'Please Enter A Username.' }}
+    if (!rawUsername) return { available: false, error: 'Please enter a username.' }
     let clean = rawUsername.trim()
-    if (!clean.startsWith('@')) {clean = '@' + clean}
+    if (!clean.startsWith('@')) clean = '@' + clean
     clean = '@' + clean.slice(1).replace(/[^a-zA-Z0-9_]/g, '')
-
     const namePart = clean.slice(1)
-    if (namePart.length < 3) {
-      return { available: false, error: 'Username Must Be At Least 3 Characters.', username: clean }
-    }
-    if (namePart.length > 30) {
-      return { available: false, error: 'Username Cannot Exceed 30 Characters.', username: clean }
-    }
-
-    if (!supabaseClient) {
-      return { available: true, username: clean }
-    }
+    if (namePart.length < 3) return { available: false, error: 'Username must be at least 3 characters.', username: clean }
+    if (namePart.length > 30) return { available: false, error: 'Username cannot exceed 30 characters.', username: clean }
+    if (!supabaseClient) return { available: true, username: clean }
 
     try {
-      // 1. Check the leaderboard-safe public directory (checks both @handle and handle).
-      //    `profiles` is own-row only now, so it cannot be used for availability.
-      const { data: dirRows, error: pErr } = await supabaseClient
-        .rpc('public_profile_directory', { p_search: clean, p_limit: 50 })
-
-      if (pErr) {console.warn('[col-auth] username availability check notice:', pErr)}
-      const wantedHandles = [clean.toLowerCase(), namePart.toLowerCase()]
-      const takenInProfiles = (dirRows || []).some(
-        p => p.user_id !== currentUserId && p.username && wantedHandles.includes(String(p.username).toLowerCase())
-      )
-
-      if (takenInProfiles) {
+      const { data: dirRows } = await supabaseClient.rpc('public_profile_directory', { p_search: clean, p_limit: 50 })
+      const wanted = [clean.toLowerCase(), namePart.toLowerCase()]
+      const taken = (dirRows || []).some(function (p) {
+        return p.user_id !== currentUserId && p.username && wanted.includes(String(p.username).toLowerCase())
+      })
+      if (taken) {
         return {
           available: false,
-          error: 'This Username Is Already Taken By Another Player.',
+          error: 'This username is already taken.',
           suggestions: generateUsernameSuggestions(namePart),
           username: clean
         }
       }
-    } catch (e) {
-      console.warn('[col-auth] username availability check failed:', e)
-    }
-
+    } catch (_e) {}
     return { available: true, username: clean }
   }
 
   function generateUsernameSuggestions(base) {
     const clean = (base || 'Learner').replace(/[^a-zA-Z0-9_]/g, '') || 'Learner'
     const rand = getSecureRandomInt(10, 99)
-    return [
-      `@${clean}_${rand}`,
-      `@${clean}_IND`,
-      `@${clean}_2026`
-    ]
+    return ['@' + clean + '_' + rand, '@' + clean + '_IND', '@' + clean + '_COL']
   }
 
-  let usernameCheckDebounce = null
-
   window._onUsernameInput = function (input) {
-    if (!input) {return}
+    if (!input) return
     let val = input.value
-    if (!val.startsWith('@')) {val = '@' + val.replace(/@/g, '')}
+    if (!val.startsWith('@')) val = '@' + val.replace(/@/g, '')
     val = '@' + val.slice(1).replace(/[^a-zA-Z0-9_]/g, '')
     input.value = val
 
@@ -914,57 +705,44 @@ window.closeMo = function () {
     const suggList = document.getElementById('profileSuggestionsList')
     const errDiv = document.getElementById('profileCreateError')
     const btn = document.getElementById('profileCreateBtn')
+    if (errDiv) errDiv.style.display = 'none'
 
-    if (errDiv) {errDiv.style.display = 'none'}
-
-    if (val.length <= 1) {
+    if (val.slice(1).length < 3) {
       if (statusEl) {
-        statusEl.textContent = ''
+        statusEl.textContent = val.length <= 1 ? '' : 'Username must be at least 3 characters.'
         statusEl.style.color = 'var(--dim, #8891AA)'
       }
-      if (suggBox) {suggBox.style.display = 'none'}
-      if (btn) {btn.disabled = true}
-      return
-    }
-
-    const namePart = val.slice(1)
-    if (namePart.length < 3) {
-      if (statusEl) {
-        statusEl.textContent = 'Username Must Be At Least 3 Characters.'
-        statusEl.style.color = 'var(--dim, #8891AA)'
-      }
-      if (suggBox) {suggBox.style.display = 'none'}
-      if (btn) {btn.disabled = true}
+      if (suggBox) suggBox.style.display = 'none'
+      if (btn) btn.disabled = true
       return
     }
 
     if (statusEl) {
-      statusEl.textContent = 'Checking Availability...'
+      statusEl.textContent = 'Checking availability...'
       statusEl.style.color = 'var(--dim, #8891AA)'
     }
 
-    if (usernameCheckDebounce) {clearTimeout(usernameCheckDebounce)}
-    usernameCheckDebounce = setTimeout(async () => {
+    if (usernameCheckDebounce) clearTimeout(usernameCheckDebounce)
+    usernameCheckDebounce = setTimeout(async function () {
       const currentId = window.colUser ? window.colUser.id : null
       const res = await checkUsernameAvailability(val, currentId)
-
       if (res.available) {
         if (statusEl) {
-          statusEl.textContent = '✓ Username Available!'
+          statusEl.textContent = 'Username available'
           statusEl.style.color = '#10b981'
         }
-        if (suggBox) {suggBox.style.display = 'none'}
-        if (btn) {btn.disabled = false}
+        if (suggBox) suggBox.style.display = 'none'
+        if (btn) btn.disabled = false
       } else {
         if (statusEl) {
-          statusEl.textContent = '✕ ' + (res.error || 'Username Taken')
+          statusEl.textContent = res.error || 'Username taken'
           statusEl.style.color = '#ef4444'
         }
-        if (btn) {btn.disabled = true}
+        if (btn) btn.disabled = true
         if (res.suggestions && res.suggestions.length && suggBox && suggList) {
-          suggList.innerHTML = res.suggestions.map(s => `
-            <button type="button" class="col-uname-chip" onclick="window._pickUsernameSuggestion('${s}')">${s}</button>
-          `).join('')
+          suggList.innerHTML = res.suggestions.map(function (s) {
+            return '<button type="button" class="col-uname-chip" data-col-action="pick-suggestion" data-suggestion="' + escapeColHtml(s) + '">' + escapeColHtml(s) + '</button>'
+          }).join('')
           suggBox.style.display = 'block'
         }
       }
@@ -975,549 +753,183 @@ window.closeMo = function () {
     const input = document.getElementById('profileUsername') || document.getElementById('colSettingUsername')
     if (input) {
       input.value = suggestion
-      if (typeof window._onUsernameInput === 'function') {
-        window._onUsernameInput(input)
-      }
+      if (typeof window._onUsernameInput === 'function') window._onUsernameInput(input)
       input.focus()
     }
   }
 
-  async function createProfile(username) {
-    const clean = username.trim()
-    const displayName = window.colUser.name || clean.replace(/^@/, '')
-
-    const { data, error } = await supabaseClient
-      .from('profiles')
-      .insert([{
-        id: window.colUser.id,
-        username: clean,
-        full_name: displayName,
-        email: window.colUser.email
-      }])
-    if (error) {throw error}
-
-    try {
-      await supabaseClient
-        .from('user_profiles')
-        .upsert({
-          user_id: window.colUser.id,
-          username: clean,
-          display_name: displayName,
-          full_name: displayName,
-          email: window.colUser.email,
-          avatar_url: window.colUser.picture,
-          preferred_vehicle: window.colUser.vehicle || 'Car'
-        }, { onConflict: 'user_id' })
-    } catch (upErr) {
-      console.warn('[col-auth] user_profiles sync notice on create:', upErr)
-    }
-
-    return data
-  }
-
-  function promptForUsername() {
-    if (!document.getElementById('colAuthModal')) {injectAuthUI()}
-    const body = document.getElementById('colAuthBody')
-    if (!body) {return}
-
-    const hd = document.querySelector('.col-auth-hd')
-    if (hd) {hd.style.display = 'none'}
-
-    body.innerHTML = `
-      <div style="text-align:center; margin-bottom: 20px; margin-top: 10px; position: relative;">
-        <button type="button" onclick="window.colDoLogout()" aria-label="Cancel" style="position: absolute; top: -10px; right: -10px; background: transparent; border: none; color: var(--dim, #8891AA); font-size: 1.5rem; cursor: pointer; padding: 4px;">&times;</button>
-        <h3 style="font-family: var(--serif, 'Instrument Serif'); font-style: italic; font-size: 2.4rem; color: var(--signal, #F2B84B); margin-bottom: 8px; margin-top: 6px;">Welcome!</h3>
-        <p style="color: var(--dim, #8891AA); font-size: 0.95rem; line-height: 1.4;">Please Choose A Unique Username To Complete Your Profile.</p>
-      </div>
-      <form onsubmit="window._handleProfileCreate(event)" style="display:flex; flex-direction:column; gap:12px;">
-        <div style="position:relative;">
-          <input type="text" id="profileUsername" class="col-auth-inp" placeholder="@username" value="@" oninput="window._onUsernameInput(this)" required maxlength="30" autocomplete="off" style="font-size: 1.1rem; text-align:center; padding: 14px; margin-bottom: 6px;">
-          <div id="profileUsernameStatus" style="font-size: 0.85rem; font-weight: 600; text-align: center; min-height: 20px; transition: color 0.2s;"></div>
-        </div>
-
-        <div id="profileSuggestionsBox" style="display:none; text-align:center; margin-top: 2px; margin-bottom: 8px;">
-          <span style="font-size: 0.8rem; color: var(--dim, #8891AA); display:block; margin-bottom: 6px;">Available Suggestions:</span>
-          <div id="profileSuggestionsList" style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center;"></div>
-        </div>
-
-        <div id="profileCreateError" style="color: #ef4444; font-size: 0.85rem; margin-bottom: 8px; text-align: center; display: none; line-height: 1.4;"></div>
-
-        <button type="submit" class="col-auth-btn" id="profileCreateBtn" style="padding: 14px; font-size: 1.05rem;">Create Profile</button>
-      </form>
-    `
-    const modal = document.getElementById('colAuthModal')
-    if (modal) {
-      modal.classList.add('open')
-      modal.removeAttribute('aria-hidden')
-      modal.removeAttribute('inert')
-    }
-  }
-
-  window._handleProfileCreate = async (e) => {
-    if (e) {e.preventDefault()}
-    const input = document.getElementById('profileUsername')
-    let username = input ? input.value.trim() : ''
-    if (!username.startsWith('@')) {username = '@' + username}
-    username = '@' + username.slice(1).replace(/[^a-zA-Z0-9_]/g, '')
-
-    const btn = document.getElementById('profileCreateBtn')
-    const errDiv = document.getElementById('profileCreateError')
-    const suggBox = document.getElementById('profileSuggestionsBox')
-    const suggList = document.getElementById('profileSuggestionsList')
-
-    if (username.slice(1).length < 3) {
-      if (errDiv) {
-        errDiv.textContent = 'Username Must Be At Least 3 Characters.'
-        errDiv.style.display = 'block'
-      }
-      return
-    }
-
-    if (btn) {
-      btn.textContent = 'Checking & Creating...'
-      btn.disabled = true
-    }
-    if (errDiv) {errDiv.style.display = 'none'}
-
-    try {
-      // Final pre-flight check
-      const currentId = window.colUser ? window.colUser.id : null
-      const check = await checkUsernameAvailability(username, currentId)
-      if (!check.available) {
-        if (errDiv) {
-          errDiv.textContent = 'This Username Is Already In Use. Please Pick A Different Handle Or Choose A Suggestion Below.'
-          errDiv.style.display = 'block'
-        }
-        if (check.suggestions && check.suggestions.length && suggBox && suggList) {
-          suggList.innerHTML = check.suggestions.map(s => `
-            <button type="button" class="col-uname-chip" onclick="window._pickUsernameSuggestion('${s}')">${s}</button>
-          `).join('')
-          suggBox.style.display = 'block'
-        }
-        if (btn) {
-          btn.textContent = 'Create Profile'
-          btn.disabled = false
-        }
-        return
-      }
-
-      await createProfile(username)
-
-      // Update colUser state
-      window.colUser.uid = window.colUser.id
-      window.colUser.username = username
-      if (!window.colUser.name) {window.colUser.name = username.replace(/^@/, '')}
-
-      try {
-        const trProfRaw = localStorage.getItem('traffic_profile')
-        const trProf = trProfRaw ? JSON.parse(trProfRaw) : {}
-        trProf.username = username
-        // Only the display handle is merged into the cached traffic profile; no credential or
-        // session token is present in trProf.
-        // codeql[js/clear-text-storage-of-sensitive-data]
-        localStorage.setItem('traffic_profile', JSON.stringify(trProf))
-      } catch (stErr) {}
-
-      const modal = document.getElementById('colAuthModal')
-      if (modal) {
-        modal.classList.remove('open')
-        modal.setAttribute('aria-hidden', 'true')
-        modal.setAttribute('inert', '')
-      }
-      dispatchAuthEvent()
-      updateAuthUI()
-      if (typeof toast === 'function') {toast('Profile Created Successfully! Welcome, ' + username, '#10b981')}
-    } catch (error) {
-      console.error('[col-auth] Profile creation error:', error)
-      const friendlyMsg = formatUserFriendlyAuthError(error, 'profile')
-      const errMsg = (error.message || '').toLowerCase()
-      const isDuplicate = error.code === '23505' || 
-        errMsg.includes('unique') || errMsg.includes('duplicate') || errMsg.includes('profiles_username_key') || errMsg.includes('already exists')
-      
-      if (errDiv) {
-        errDiv.textContent = friendlyMsg
-        errDiv.style.display = 'block'
-      }
-
-      if (isDuplicate) {
-        const namePart = username.slice(1)
-        const suggestions = generateUsernameSuggestions(namePart)
-        if (suggBox && suggList) {
-          suggList.innerHTML = suggestions.map(s => `
-            <button type="button" class="col-uname-chip" onclick="window._pickUsernameSuggestion('${s}')">${s}</button>
-          `).join('')
-          suggBox.style.display = 'block'
-        }
-      }
-    } finally {
-      if (btn) {
-        btn.textContent = 'Create Profile'
-        btn.disabled = false
-      }
-    }
-  }
-
-  function escapeColHtml(str) {
-    if (!str) {return ''}
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;')
-  }
-
-  function getSafeImageUrl(value) {
-    if (!value) {return ''}
-    try {
-      const parsed = new URL(String(value), window.location.origin)
-      if (['http:', 'https:', 'data:', 'blob:'].includes(parsed.protocol)) {return parsed.href}
-    } catch (error) {}
-    return ''
-  }
-
   function injectAuthStyles() {
-    if (document.getElementById('col-auth-styles')) {return}
+    if (document.getElementById('col-auth-styles')) return
     const style = document.createElement('style')
     style.id = 'col-auth-styles'
-    style.innerHTML = `
-            .col-auth-mo { 
-                position: fixed; 
-                inset: 0; 
-                background: rgba(3, 6, 14, 0.78); 
-                backdrop-filter: blur(16px); 
-                -webkit-backdrop-filter: blur(16px); 
-                z-index: 99999; 
-                display: flex; 
-                align-items: center; 
-                justify-content: center; 
-                opacity: 0; 
-                pointer-events: none; 
-                transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1); 
-                contain: strict; 
-            }
-            .col-auth-mo:not(.open) {
-                display: none !important;
-                pointer-events: none !important;
-            }
-            .col-auth-mo.open { opacity: 1; pointer-events: auto; display: flex !important; }
-            .col-uname-chip {
-                background: rgba(242, 184, 75, 0.12);
-                color: var(--signal, #F2B84B);
-                border: 1px solid rgba(242, 184, 75, 0.3);
-                border-radius: 20px;
-                padding: 4px 12px;
-                font-size: 0.8rem;
-                font-weight: 700;
-                cursor: pointer;
-                transition: all 0.18s ease;
-                font-family: inherit;
-            }
-            .col-uname-chip:hover {
-                background: var(--signal, #F2B84B);
-                color: var(--void, #070A14);
-                transform: translateY(-1px);
-                box-shadow: 0 4px 12px rgba(242, 184, 75, 0.25);
-            }
-            .col-auth-md { 
-                background: linear-gradient(165deg, rgba(17, 24, 39, 0.95) 0%, rgba(9, 13, 23, 0.98) 100%); 
-                border: 1px solid rgba(255, 255, 255, 0.13); 
-                border-radius: 28px; 
-                width: 92%; 
-                max-width: 560px; 
-                max-height: 90vh; 
-                overflow-y: auto; 
-                -webkit-overflow-scrolling: touch; 
-                transform: translateY(18px) scale(0.97); 
-                transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease; 
-                box-shadow: 0 32px 85px -10px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.2); 
-                color: var(--ink, #E8E3D8); 
-                font-family: var(--sans, 'Inter'), sans-serif; 
-                isolation: isolate; 
-                contain: layout style; 
-                box-sizing: border-box; 
-            }
-            #credential_picker_container,
-            div[id*="credential_picker"],
-            iframe[id*="credential_picker"],
-            iframe[src*="accounts.google.com/gsi"] {
-                color-scheme: dark !important;
-                background: transparent !important;
-                background-color: transparent !important;
-            }
-            #credential_picker_iframe {
-                border-radius: 18px !important;
-                box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.14) !important;
-            }
-            .col-auth-mo.open .col-auth-md { transform: translateY(0) scale(1); }
-            .col-auth-hd { padding: 34px 28px 22px; border-bottom: 1px solid rgba(255, 255, 255, 0.07); background: transparent; text-align: center; position: relative;}
-            .col-auth-close { position: absolute; top: 18px; right: 18px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.12); color: var(--dim, #94a3b8); font-size: 1.25rem; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; touch-action: manipulation; will-change: transform; z-index: 2; outline: none; }
-            .col-auth-close:hover { color: #ffffff; background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.28); transform: rotate(90deg) scale(1.06); }
-            .col-auth-close:focus { outline: none; }
-            .col-auth-close:focus-visible { border-color: rgba(245, 158, 11, 0.5); box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25); }
-            .col-av-chip { padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; border: 1px solid var(--lineb, rgba(255,255,255,0.15)); background: rgba(255,255,255,0.05); color: var(--ink, #E8E3D8); display: inline-flex; align-items: center; gap: 6px; transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease; font-family: inherit;}
-            .col-av-chip:hover { transform: translateY(-1px); background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); }
-            .col-av-preset { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--lineb, rgba(255,255,255,0.15)); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; cursor: pointer; transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease; background: var(--void2, rgba(255,255,255,0.04)); padding: 0;}
-            .col-av-preset:hover { transform: scale(1.12); border-color: var(--signal, #F2B84B); box-shadow: 0 4px 12px rgba(242,184,75,0.3); }
-            .col-auth-hd h2 { font-size: 2.35rem; font-weight: 400; font-family: var(--serif, 'Playfair Display', Georgia, serif); font-style: italic; margin: 0; background: linear-gradient(135deg, #fef3c7 0%, #f59e0b 55%, #d97706 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 14px rgba(245, 158, 11, 0.25)); letter-spacing: 0.5px;}
-            .col-auth-hd p { font-size: 0.88rem; color: #94a3b8; margin-top: 6px; letter-spacing: 0.02em; }
-            .col-auth-body { padding: 24px 28px 28px; }
-            .col-auth-lbl { display: block; margin-bottom: 6px; color: var(--dim, #94a3b8); font-size: 0.82rem; font-weight: 600; text-align: left; }
-            .col-auth-inp { 
-                width: 100%; 
-                padding: 13px 16px; 
-                border: 1.5px solid rgba(255, 255, 255, 0.12); 
-                border-radius: 14px; 
-                font-size: 0.94rem; 
-                outline: none; 
-                margin-bottom: 14px; 
-                transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease; 
-                color: #f8fafc; 
-                background: rgba(15, 23, 42, 0.65); 
-                font-family: var(--sans, 'Inter'), sans-serif; 
-                box-sizing: border-box; 
-                text-rendering: optimizeSpeed; 
-            }
-            select.col-auth-inp { appearance: auto; }
-            select.col-auth-inp option { background: #111827; color: #E8E3D8; }
-            .col-auth-inp:focus { 
-                border-color: #f59e0b; 
-                outline: none; 
-                box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.22), 0 0 16px rgba(245, 158, 11, 0.15); 
-                background: rgba(15, 23, 42, 0.85); 
-            }
-            .col-auth-btn { 
-                width: 100%; 
-                padding: 13px 18px; 
-                background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); 
-                border: none; 
-                border-radius: 14px; 
-                font-weight: 700; 
-                font-size: 0.95rem; 
-                letter-spacing: 0.3px; 
-                cursor: pointer; 
-                color: #070a14; 
-                transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease, filter 0.18s ease; 
-                box-shadow: 0 4px 18px rgba(245, 158, 11, 0.35); 
-                font-family: var(--sans, 'Inter'), sans-serif; 
-                box-sizing: border-box; 
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-            }
-            .col-auth-btn:hover { transform: translateY(-1.5px); box-shadow: 0 8px 26px rgba(245, 158, 11, 0.5); filter: brightness(1.04); }
-            .col-auth-btn:active { transform: scale(0.985); }
-            .col-auth-btn.is-verified {
-                background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-                color: #ffffff !important;
-                box-shadow: 0 6px 24px rgba(16, 185, 129, 0.5) !important;
-            }
-            .col-auth-danger { 
-                width: 100%; 
-                padding: 12px 16px; 
-                background: transparent; 
-                border: 1px solid rgba(239, 68, 68, 0.5); 
-                border-radius: 12px; 
-                font-weight: 700; 
-                font-size: 0.95rem; 
-                cursor: pointer; 
-                color: #ef4444; 
-                transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease; 
-                font-family: var(--sans, 'Inter'), sans-serif; 
-                box-sizing: border-box; 
-            }
-            .col-auth-danger:hover { background: rgba(239, 68, 68, 0.1); border-color: #ef4444; transform: translateY(-1px); }
-            .col-auth-gbtn { 
-                width: 100%; 
-                padding: 13px 18px; 
-                background: rgba(255, 255, 255, 0.08); 
-                border: 1px solid rgba(255, 255, 255, 0.16); 
-                border-radius: 14px; 
-                font-weight: 600; 
-                font-size: 0.95rem; 
-                cursor: pointer; 
-                color: var(--ink, #ffffff); 
-                display: flex; 
-                align-items: center; 
-                justify-content: center; 
-                gap: 10px; 
-                margin-bottom: 20px; 
-                transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease, background 0.18s ease; 
-                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3); 
-                font-family: var(--sans, 'Inter'), sans-serif; 
-                box-sizing: border-box; 
-            }
-            .col-auth-gbtn:hover { transform: translateY(-2px); background: rgba(255, 255, 255, 0.14); border-color: rgba(255, 255, 255, 0.3); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45); }
-            .col-auth-gbtn:active { transform: scale(0.985); }
-            body.lm .col-auth-gbtn {
-                background: #ffffff;
-                color: #0f172a;
-                border: 1px solid rgba(15, 23, 42, 0.15);
-                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-            }
-            .col-auth-div { display: flex; align-items: center; text-align: center; color: #64748b; font-size: 0.72rem; margin-bottom: 20px; font-weight: 700; font-family: var(--mono, 'Space Mono'), monospace; letter-spacing: 2px;}
-            .col-auth-div::before, .col-auth-div::after { content: ''; flex: 1; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
-            .col-auth-div:not(:empty)::before { margin-right: 1.1em; }
-            .col-auth-div:not(:empty)::after { margin-left: 1.1em; }
-            .col-auth-tab-group { display: flex; gap: 4px; margin-bottom: 20px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 4px;}
-            .col-auth-tab { flex: 1; text-align: center; padding: 10px; border-radius: 10px; font-size: 0.86rem; font-weight: 600; color: #94a3b8; cursor: pointer; transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);}
-            .col-auth-tab:hover:not(.active) { color: #f8fafc; background: rgba(255, 255, 255, 0.04); }
-            .col-auth-tab.active { background: rgba(245, 158, 11, 0.14); border: 1px solid rgba(245, 158, 11, 0.35); color: #f59e0b; box-shadow: 0 2px 10px rgba(245, 158, 11, 0.15); }
-            
-            /* ── Interactive 6-Cell OTP Grid & Animations ── */
-            .col-otp-grid {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-                margin: 18px 0 20px;
-                position: relative;
-            }
-            .col-otp-cell {
-                width: 44px;
-                height: 54px;
-                border-radius: 13px;
-                background: rgba(15, 23, 42, 0.75);
-                border: 1.5px solid rgba(255, 255, 255, 0.14);
-                color: #f8fafc;
-                font-size: 1.55rem;
-                font-weight: 800;
-                font-family: var(--mono, monospace);
-                text-align: center;
-                outline: none;
-                transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
-                box-sizing: border-box;
-                -webkit-appearance: none;
-            }
-            .col-otp-cell:focus {
-                border-color: #f59e0b;
-                background: rgba(15, 23, 42, 0.95);
-                box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25), 0 0 18px rgba(245, 158, 11, 0.25);
-                transform: translateY(-2px);
-            }
-            .col-otp-cell.filled {
-                border-color: rgba(245, 158, 11, 0.45);
-                background: rgba(245, 158, 11, 0.08);
-            }
-            .col-otp-divider {
-                font-size: 1.6rem;
-                font-weight: 900;
-                color: #64748b;
-                user-select: none;
-                margin: 0 2px;
-            }
+    style.textContent = `
+      .col-auth-mo {
+        position: fixed;
+        inset: 0;
+        background: rgba(3, 6, 14, 0.78);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.22s ease;
+        contain: strict;
+      }
+      .col-auth-mo:not(.open) { display: none !important; pointer-events: none !important; }
+      .col-auth-mo.open { opacity: 1; pointer-events: auto; display: flex !important; }
+      .col-auth-md {
+        background: #0f172a;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        border-radius: 22px;
+        width: 92%;
+        max-width: 480px;
+        max-height: 90vh;
+        overflow-y: auto;
+        transform: translateY(14px) scale(0.98);
+        transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 28px 70px rgba(0, 0, 0, 0.7);
+        color: #f8fafc;
+        font-family: var(--sans, 'Inter', system-ui, -apple-system, sans-serif);
+        box-sizing: border-box;
+      }
+      .col-auth-mo.open .col-auth-md { transform: translateY(0) scale(1); }
+      .col-auth-hd { padding: 28px 26px 18px; border-bottom: 1px solid rgba(148, 163, 184, 0.14); text-align: center; position: relative; }
+      .col-auth-hd h2 { font-size: 1.7rem; font-weight: 700; margin: 0; color: #f8fafc; letter-spacing: -0.02em; font-family: var(--serif, 'Fraunces', Georgia, serif); }
+      .col-auth-hd p { font-size: 0.86rem; color: #94a3b8; margin: 6px 0 0; line-height: 1.45; }
+      .col-auth-close {
+        position: absolute; top: 16px; right: 16px;
+        background: rgba(148, 163, 184, 0.1);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        color: #cbd5e1;
+        width: 34px; height: 34px;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        display: inline-flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        transition: background 0.16s ease, color 0.16s ease;
+      }
+      .col-auth-close:hover { background: rgba(148, 163, 184, 0.2); color: #ffffff; }
+      .col-auth-body { padding: 22px 26px 26px; }
+      .col-auth-lbl { display: block; margin-bottom: 6px; color: #cbd5e1; font-size: 0.8rem; font-weight: 600; text-align: left; }
+      .col-auth-inp {
+        width: 100%; padding: 11px 14px;
+        border: 1.5px solid rgba(148, 163, 184, 0.24);
+        border-radius: 12px;
+        font-size: 0.92rem;
+        margin-bottom: 14px;
+        color: #f8fafc;
+        background: #1e293b;
+        font-family: inherit;
+        box-sizing: border-box;
+        transition: border-color 0.16s ease, box-shadow 0.16s ease;
+      }
+      .col-auth-inp:focus { outline: none; border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2); }
+      .col-pass-wrap { position: relative; margin-bottom: 14px; }
+      .col-pass-wrap .col-auth-inp { margin-bottom: 0; padding-right: 44px; }
+      .col-pass-eye {
+        position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+        background: transparent; border: none; color: #94a3b8;
+        cursor: pointer; padding: 6px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px;
+      }
+      .col-pass-eye:hover { color: #f8fafc; background: rgba(148, 163, 184, 0.12); }
+      .col-pw-meter { margin: -6px 0 14px; }
+      .col-pw-bar-track { height: 4px; background: rgba(148, 163, 184, 0.2); border-radius: 99px; overflow: hidden; margin-bottom: 5px; }
+      .col-pw-bar-fill { height: 100%; width: 0%; border-radius: 99px; transition: width 0.2s ease, background-color 0.2s ease; }
+      .col-pw-bar-txt { font-size: 0.74rem; color: #94a3b8; text-align: left; min-height: 16px; }
+      .col-auth-links-row { display: flex; justify-content: space-between; align-items: center; margin: -6px 0 14px; font-size: 0.8rem; }
+      .col-auth-link { background: none; border: none; color: #f59e0b; font-weight: 600; cursor: pointer; padding: 0; font-family: inherit; font-size: 0.8rem; }
+      .col-auth-link:hover { text-decoration: underline; }
+      .col-auth-link:disabled { opacity: 0.55; cursor: not-allowed; text-decoration: none; }
+      .col-auth-btn {
+        width: 100%; padding: 12px 16px;
+        background: #f59e0b; border: none; border-radius: 12px;
+        font-weight: 700; font-size: 0.94rem; cursor: pointer; color: #0f172a;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+        transition: filter 0.15s ease, transform 0.15s ease;
+        font-family: inherit; box-sizing: border-box;
+      }
+      .col-auth-btn:hover:not(:disabled) { filter: brightness(1.06); }
+      .col-auth-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+      .col-auth-btn.is-verified { background: #10b981 !important; color: #ffffff !important; }
+      .col-auth-danger {
+        width: 100%; padding: 11px 16px;
+        background: transparent; border: 1px solid rgba(239, 68, 68, 0.45);
+        border-radius: 12px; font-weight: 700; font-size: 0.9rem; cursor: pointer; color: #ef4444;
+        font-family: inherit; box-sizing: border-box;
+      }
+      .col-auth-danger:hover { background: rgba(239, 68, 68, 0.12); }
+      .col-auth-gbtn {
+        width: 100%; padding: 11px 16px;
+        background: #1e293b; border: 1px solid rgba(148, 163, 184, 0.25);
+        border-radius: 12px; font-weight: 600; font-size: 0.92rem; cursor: pointer; color: #f8fafc;
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+        margin-bottom: 16px; font-family: inherit; box-sizing: border-box;
+      }
+      .col-auth-gbtn:hover { background: #334155; }
+      .col-auth-div { display: flex; align-items: center; color: #64748b; font-size: 0.72rem; margin-bottom: 16px; font-weight: 700; letter-spacing: 0.08em; }
+      .col-auth-div::before, .col-auth-div::after { content: ''; flex: 1; border-bottom: 1px solid rgba(148, 163, 184, 0.16); }
+      .col-auth-div::before { margin-right: 12px; }
+      .col-auth-div::after { margin-left: 12px; }
+      .col-auth-tab-group { display: flex; gap: 4px; margin-bottom: 16px; background: #1e293b; border: 1px solid rgba(148, 163, 184, 0.16); border-radius: 12px; padding: 4px; }
+      .col-auth-tab { flex: 1; text-align: center; padding: 9px 8px; border-radius: 9px; font-size: 0.84rem; font-weight: 600; color: #94a3b8; cursor: pointer; border: 1px solid transparent; background: transparent; font-family: inherit; }
+      .col-auth-tab.active { background: #0f172a; border-color: rgba(245, 158, 11, 0.4); color: #f59e0b; }
+      .col-otp-guide { font-size: 0.8rem; color: #cbd5e1; background: rgba(148, 163, 184, 0.08); border: 1px solid rgba(148, 163, 184, 0.18); border-radius: 10px; padding: 10px 12px; margin-bottom: 14px; line-height: 1.5; text-align: left; }
+      .col-auth-msg { font-size: 0.83rem; padding: 9px 12px; border-radius: 10px; margin-bottom: 12px; text-align: left; line-height: 1.45; display: none; }
+      .col-auth-msg.err { display: block; background: rgba(239, 68, 68, 0.14); border: 1px solid rgba(239, 68, 68, 0.32); color: #fca5a5; }
+      .col-auth-msg.ok { display: block; background: rgba(16, 185, 129, 0.14); border: 1px solid rgba(16, 185, 129, 0.32); color: #6ee7b7; }
+      .col-auth-msg.info { display: block; background: rgba(245, 158, 11, 0.14); border: 1px solid rgba(245, 158, 11, 0.32); color: #fcd34d; }
+      .col-otp-grid { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 16px 0 18px; }
+      .col-otp-cell {
+        width: 42px; height: 50px; border-radius: 11px;
+        background: #1e293b; border: 1.5px solid rgba(148, 163, 184, 0.25);
+        color: #f8fafc; font-size: 1.4rem; font-weight: 800; font-family: var(--mono, monospace); text-align: center; outline: none;
+      }
+      .col-otp-cell:focus { border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.22); }
+      .col-otp-cell.filled { border-color: rgba(245, 158, 11, 0.55); }
+      .col-otp-divider { font-size: 1.3rem; font-weight: 800; color: #64748b; user-select: none; }
+      .col-otp-grid.is-wrong .col-otp-cell { border-color: #ef4444; background: rgba(239, 68, 68, 0.16); }
+      .col-otp-grid.is-success .col-otp-cell { border-color: #10b981; background: rgba(16, 185, 129, 0.16); }
+      .col-av-chip { padding: 6px 11px; border-radius: 20px; font-size: 0.74rem; font-weight: 700; cursor: pointer; border: 1px solid rgba(148, 163, 184, 0.25); background: rgba(148, 163, 184, 0.1); color: inherit; font-family: inherit; }
+      .col-av-preset { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid rgba(148, 163, 184, 0.25); display: inline-flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 800; color: #ffffff; cursor: pointer; }
+      .col-uname-chip { background: rgba(245, 158, 11, 0.14); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 20px; padding: 4px 12px; font-size: 0.8rem; font-weight: 700; cursor: pointer; font-family: inherit; }
 
-            /* Verifying State - Gentle wave pulse */
-            .col-otp-grid.is-verifying .col-otp-cell {
-                animation: colOtpWave 1.2s ease-in-out infinite;
-                pointer-events: none;
-            }
-            .col-otp-grid.is-verifying .col-otp-cell:nth-child(1) { animation-delay: 0.0s; }
-            .col-otp-grid.is-verifying .col-otp-cell:nth-child(2) { animation-delay: 0.1s; }
-            .col-otp-grid.is-verifying .col-otp-cell:nth-child(3) { animation-delay: 0.2s; }
-            .col-otp-grid.is-verifying .col-otp-cell:nth-child(5) { animation-delay: 0.3s; }
-            .col-otp-grid.is-verifying .col-otp-cell:nth-child(6) { animation-delay: 0.4s; }
-            .col-otp-grid.is-verifying .col-otp-cell:nth-child(7) { animation-delay: 0.5s; }
+      /* Light Mode parity (html.lm + body.lm) */
+      body.lm .col-auth-md, html.lm .col-auth-md { background: #ffffff; border-color: #cbd5e1; color: #0f172a; box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18); }
+      body.lm .col-auth-hd, html.lm .col-auth-hd { border-bottom-color: #e2e8f0; }
+      body.lm .col-auth-hd h2, html.lm .col-auth-hd h2 { color: #0f172a; }
+      body.lm .col-auth-hd p, html.lm .col-auth-hd p { color: #475569; }
+      body.lm .col-auth-lbl, html.lm .col-auth-lbl { color: #334155; }
+      body.lm .col-auth-inp, html.lm .col-auth-inp { background: #f8fafc; border-color: #cbd5e1; color: #0f172a; }
+      body.lm .col-auth-inp:focus, html.lm .col-auth-inp:focus { background: #ffffff; border-color: #b45309; }
+      body.lm .col-auth-gbtn, html.lm .col-auth-gbtn { background: #f8fafc; color: #0f172a; border-color: #cbd5e1; }
+      body.lm .col-auth-gbtn:hover, html.lm .col-auth-gbtn:hover { background: #f1f5f9; }
+      body.lm .col-auth-tab-group, html.lm .col-auth-tab-group { background: #f1f5f9; border-color: #cbd5e1; }
+      body.lm .col-auth-tab, html.lm .col-auth-tab { color: #475569; }
+      body.lm .col-auth-tab.active, html.lm .col-auth-tab.active { background: #ffffff; color: #b45309; border-color: #f59e0b; }
+      body.lm .col-otp-cell, html.lm .col-otp-cell { background: #f8fafc; border-color: #cbd5e1; color: #0f172a; }
+      body.lm .col-otp-guide, html.lm .col-otp-guide { background: #f8fafc; border-color: #cbd5e1; color: #334155; }
+      body.lm .col-auth-close, html.lm .col-auth-close { background: #f1f5f9; border-color: #cbd5e1; color: #475569; }
+      body.lm .col-auth-link, html.lm .col-auth-link { color: #b45309; }
+      body.lm .col-auth-btn, html.lm .col-auth-btn { background: #d97706; color: #ffffff; }
+      body.lm .col-auth-msg.err, html.lm .col-auth-msg.err { color: #b91c1c; background: #fef2f2; border-color: #fecaca; }
+      body.lm .col-auth-msg.ok, html.lm .col-auth-msg.ok { color: #047857; background: #ecfdf5; border-color: #a7f3d0; }
+      body.lm .col-auth-msg.info, html.lm .col-auth-msg.info { color: #92400e; background: #fffbeb; border-color: #fde68a; }
+      body.lm .col-pass-eye, html.lm .col-pass-eye { color: #475569; }
+      body.lm .col-pass-eye:hover, html.lm .col-pass-eye:hover { color: #0f172a; background: #e2e8f0; }
 
-            @keyframes colOtpWave {
-                0%, 100% { transform: translateY(0); border-color: rgba(255, 255, 255, 0.14); }
-                50% { transform: translateY(-4px); border-color: #f59e0b; box-shadow: 0 0 16px rgba(245, 158, 11, 0.4); }
-            }
-
-            /* Wrong State - Physics-based haptic shake + red flash */
-            .col-otp-cell:focus-visible {
-                outline: none !important;
-            }
-            .col-otp-grid.is-wrong {
-                animation: colOtpShake 0.65s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-            }
-            .col-otp-grid.is-wrong .col-otp-cell,
-            .col-otp-grid.is-wrong .col-otp-cell:focus,
-            .col-otp-grid.is-wrong .col-otp-cell:focus-visible {
-                border: 1.5px solid #ef4444 !important;
-                background: rgba(239, 68, 68, 0.18) !important;
-                color: #fca5a5 !important;
-                box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.4), 0 0 24px rgba(239, 68, 68, 0.55) !important;
-                outline: none !important;
-            }
-
-            @keyframes colOtpShake {
-                0%, 100% { transform: translateX(0); }
-                12% { transform: translateX(-11px) rotate(-1.5deg); }
-                24% { transform: translateX(10px) rotate(1.5deg); }
-                36% { transform: translateX(-8px) rotate(-1deg); }
-                48% { transform: translateX(7px) rotate(1deg); }
-                60% { transform: translateX(-5px); }
-                72% { transform: translateX(4px); }
-                84% { transform: translateX(-2px); }
-            }
-
-            /* Success State - Luminous emerald pop + celebratory ripple */
-            .col-otp-grid.is-success .col-otp-cell,
-            .col-otp-grid.is-success .col-otp-cell:focus,
-            .col-otp-grid.is-success .col-otp-cell:focus-visible {
-                animation: colOtpPop 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
-                border: 1.5px solid #10b981 !important;
-                background: rgba(16, 185, 129, 0.22) !important;
-                color: #6ee7b7 !important;
-                box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.45), 0 0 25px rgba(16, 185, 129, 0.65) !important;
-                outline: none !important;
-                pointer-events: none;
-            }
-            .col-otp-grid.is-success .col-otp-cell:nth-child(1) { animation-delay: 0.00s; }
-            .col-otp-grid.is-success .col-otp-cell:nth-child(2) { animation-delay: 0.06s; }
-            .col-otp-grid.is-success .col-otp-cell:nth-child(3) { animation-delay: 0.12s; }
-            .col-otp-grid.is-success .col-otp-cell:nth-child(5) { animation-delay: 0.18s; }
-            .col-otp-grid.is-success .col-otp-cell:nth-child(6) { animation-delay: 0.24s; }
-            .col-otp-grid.is-success .col-otp-cell:nth-child(7) { animation-delay: 0.30s; }
-
-            @keyframes colOtpPop {
-                0% { transform: scale(1); }
-                45% { transform: scale(1.18); }
-                100% { transform: scale(1); }
-            }
-
-            .col-otp-spinner {
-                display: inline-block;
-                width: 14px;
-                height: 14px;
-                border: 2px solid rgba(7, 10, 20, 0.3);
-                border-top-color: #070a14;
-                border-radius: 50%;
-                animation: colSpin 0.7s linear infinite;
-                vertical-align: middle;
-                margin-right: 6px;
-            }
-            @keyframes colSpin {
-                to { transform: rotate(360deg); }
-            }
-
-            @media (max-width: 600px) {
-                .col-auth-mo { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(4, 7, 14, 0.94); }
-                .col-auth-md { width: 95%; border-radius: 22px; }
-                .col-auth-body { padding: 20px; }
-                .col-auth-hd { padding: 24px 20px 16px; }
-                .col-otp-cell { width: 40px; height: 48px; font-size: 1.35rem; }
-            }
-            
-            /* Override existing nav profile logic for global injection */
-            .nav-login-btn { display: flex; align-items: center; gap: 8px; background: transparent; color: var(--page-theme, var(--signal, #F2B84B)); border: 1px solid var(--page-theme, var(--signal, #F2B84B)); padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.3s; text-decoration:none; }
-            body.lm .nav-login-btn { background: transparent; color: var(--page-theme-light, var(--signal, #F2B84B)); border-color: var(--page-theme-light, var(--signal, #F2B84B)); }
-            body.lm .nav-login-btn:hover { background: var(--page-theme-light, var(--signal, #F2B84B)); color: #fff; }
-            .nav-login-btn:hover { background: var(--page-theme, var(--signal, #F2B84B)); color: var(--void, #070A14); box-shadow: 0 0 20px rgba(242,184,75,0.2); }
-            .nav-user-profile { display: none; align-items: center; gap: 10px; padding: 5px 15px 5px 5px; background: transparent; border: 1px solid var(--lineb, rgba(255,255,255,.16)); border-radius: 30px; cursor: pointer; transition: 0.3s; }
-            .nav-user-profile:hover { border-color: var(--page-theme, var(--signal, #F2B84B)); }
-            .nav-user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--page-theme, var(--signal, #F2B84B)); color: var(--void, #070A14); display: flex; justify-content: center; align-items: center; font-weight: 800; overflow: hidden; }
-            .nav-user-avatar img, .pav img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
-        `
+      .nav-login-btn { display: flex; align-items: center; gap: 8px; background: transparent; color: var(--page-theme, var(--signal, #F2B84B)); border: 1px solid var(--page-theme, var(--signal, #F2B84B)); padding: 8px 20px; border-radius: 30px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.2s; text-decoration: none; }
+      .nav-user-profile { display: none; align-items: center; gap: 10px; padding: 5px 15px 5px 5px; background: transparent; border: 1px solid var(--lineb, rgba(255,255,255,.16)); border-radius: 30px; cursor: pointer; }
+      .nav-user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--page-theme, var(--signal, #F2B84B)); color: #070a14; display: flex; justify-content: center; align-items: center; font-weight: 800; overflow: hidden; }
+      .nav-user-avatar img, .pav img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+    `
     document.head.appendChild(style)
   }
 
   function injectAuthUI() {
-    if (document.getElementById('colAuthModal')) {return}
-
+    if (document.getElementById('colAuthModal')) return
     const modal = document.createElement('div')
     modal.className = 'col-auth-mo'
     modal.id = 'colAuthModal'
@@ -1527,23 +939,78 @@ window.closeMo = function () {
     modal.setAttribute('aria-hidden', 'true')
     modal.setAttribute('inert', '')
     modal.innerHTML = `
-            <div class="col-auth-md">
-                <div class="col-auth-hd">
-                    <button type="button" class="col-auth-close" onclick="window.closeGlobalAuth()" aria-label="Close login dialog">&times;</button>
-                    <h2 id="colAuthTitle">Authenticate</h2>
-                    <p id="colAuthSub">Sign in to sync your progress, benchmarks, and settings across devices.</p>
-                </div>
-                <div class="col-auth-body" id="colAuthBody">
-                    <!-- Dynamic Content -->
-                </div>
-            </div>
-        `
+      <div class="col-auth-md">
+        <div class="col-auth-hd">
+          <button type="button" class="col-auth-close" data-col-action="close-auth" aria-label="Close login dialog">&times;</button>
+          <h2 id="colAuthTitle">Sign In</h2>
+          <p id="colAuthSub">Sign in with Google or Email to sync your progress across devices.</p>
+        </div>
+        <div class="col-auth-body" id="colAuthBody"></div>
+      </div>
+    `
     document.body.appendChild(modal)
-    modal.addEventListener('click', function(e) {
-      if (e.target === this) {window.closeGlobalAuth()}
+
+    modal.addEventListener('click', function (e) {
+      if (e.target === this) {
+        closeAuthModal()
+        return
+      }
+      const target = e.target && e.target.closest ? e.target.closest('[data-col-action]') : null
+      if (!target) return
+      const act = target.getAttribute('data-col-action')
+      if (act === 'close-auth') closeAuthModal()
+      else if (act === 'logout') window.colDoLogout()
+      else if (act === 'google') window.colDoGoogle()
+      else if (act === 'tab') window._renderAuthTab(target.getAttribute('data-tab'))
+      else if (act === 'otp-resend') window._handleColOtpSend(null)
+      else if (act === 'otp-reset') window._handleColOtpReset()
+      else if (act === 'toggle-pass') window._toggleAuthPassVis(target)
+      else if (act === 'saved-passwords') window._promptSavedPasswordPicker()
+      else if (act === 'forgot-pass') window._renderAuthTab('reset')
+      else if (act === 'reset-avatar') window._resetToDefaultAvatar()
+      else if (act === 'pick-suggestion') window._pickUsernameSuggestion(target.getAttribute('data-suggestion'))
+      else if (act === 'pick-letter') {
+        window._pickLetterAvatar(target.getAttribute('data-c1'), target.getAttribute('data-c2'), target.getAttribute('data-tc'))
+      } else if (act === 'pick-badge') {
+        window._pickPresetAvatar(target.getAttribute('data-glyph'), target.getAttribute('data-c1'), target.getAttribute('data-c2'))
+      } else if (act === 'restore-google-name') {
+        const gn = target.getAttribute('data-gn') || ''
+        const inp = document.getElementById('colSettingName')
+        if (gn && inp) inp.value = gn
+      }
+    })
+
+    modal.addEventListener('submit', function (e) {
+      const form = e.target && e.target.closest ? e.target.closest('[data-col-submit]') : null
+      if (!form) return
+      const kind = form.getAttribute('data-col-submit')
+      if (kind === 'save-settings') window._handleSaveAccountSettings(e)
+      else if (kind === 'otp-verify') window._handleColOtpVerify(e)
+      else if (kind === 'otp-send') window._handleColOtpSend(e)
+      else if (kind === 'reset-request') window._handleColResetRequest(e)
+      else if (kind === 'update-password') window._handleColUpdatePassword(e)
+      else if (kind === 'auth-form') window._handleColAuthSubmit(e, form.getAttribute('data-mode') || 'login')
+    })
+
+    modal.addEventListener('input', function (e) {
+      const inp = e.target && e.target.closest ? e.target.closest('[data-col-input]') : null
+      if (!inp) return
+      const kind = inp.getAttribute('data-col-input')
+      if (kind === 'profile-username') window._onUsernameInput(inp)
+      else if (kind === 'setting-username') window._onSettingUsernameInput(inp)
+      else if (kind === 'setting-avatar-url') window._onSettingAvatarUrlInput(inp)
+      else if (kind === 'pw-strength') updatePasswordMeter(inp.value, inp.getAttribute('data-meter') || 'colPwMeter')
+    })
+
+    modal.addEventListener('change', function (e) {
+      const inp = e.target && e.target.closest ? e.target.closest('[data-col-change]') : null
+      if (inp && inp.getAttribute('data-col-change') === 'avatar-upload') {
+        window._handleAvatarUpload(inp)
+      }
     })
 
     window.closeGlobalAuth = function () {
+      clearOtpTimer()
       const mo = document.getElementById('colAuthModal')
       if (mo) {
         mo.classList.remove('open')
@@ -1552,7 +1019,6 @@ window.closeMo = function () {
       }
     }
 
-    // Expose global open functions
     window.openGlobalLogin = function () {
       renderAuthPanel()
       const mo = document.getElementById('colAuthModal')
@@ -1560,14 +1026,10 @@ window.closeMo = function () {
         mo.classList.add('open')
         mo.removeAttribute('aria-hidden')
         mo.removeAttribute('inert')
-        // Focus first meaningful input/button (skip close icon)
-        setTimeout(function(){
-          const f = mo.querySelector('.col-auth-body input:not([type="hidden"]), .col-auth-body button') || mo.querySelector('input, button:not(.col-auth-close)');
-          if (f) { f.focus(); }
-        }, 100)
-      }
-      if (!window.colUser && typeof window.colPromptGoogleOneTap === 'function') {
-        window.colPromptGoogleOneTap(true)
+        setTimeout(function () {
+          const f = mo.querySelector('.col-auth-body input:not([type="hidden"]), .col-auth-body button')
+          if (f) f.focus()
+        }, 80)
       }
     }
     window.openLogin = window.openGlobalLogin
@@ -1583,485 +1045,427 @@ window.closeMo = function () {
         mo.classList.add('open')
         mo.removeAttribute('aria-hidden')
         mo.removeAttribute('inert')
-        setTimeout(function(){ const f = mo.querySelector('button, input, [tabindex]:not([tabindex="-1"])'); if(f) {f.focus();} }, 100)
       }
     }
 
-    // Escape key closes modal
-    document.addEventListener('keydown', function(e){
-      if(e.key==='Escape'){
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.classList.contains('open')) {
         window.closeGlobalAuth()
       }
     })
-    // Focus trap
-    modal.addEventListener('keydown', function(e){
-      if(e.key!=='Tab') {return}
-      const focusable = modal.querySelectorAll('button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])')
-      if(!focusable.length) {return}
-      const first = focusable[0], last = focusable[focusable.length-1]
-      if(e.shiftKey){ if(document.activeElement===first){ e.preventDefault(); last.focus(); } }
-      else { if(document.activeElement===last){ e.preventDefault(); first.focus(); } }
+
+    modal.addEventListener('keydown', function (e) {
+      if (e.key !== 'Tab') return
+      const focusable = modal.querySelectorAll('button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])')
+      if (!focusable.length) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault()
+        first.focus()
+      }
     })
   }
 
-  // ── OTP Interactive Inputs & Animation Handlers ──
+  function updatePasswordMeter(val, meterId) {
+    const meter = document.getElementById(meterId)
+    if (!meter) return
+    const fill = meter.querySelector('.col-pw-bar-fill')
+    const txt = meter.querySelector('.col-pw-bar-txt')
+    const res = evaluatePasswordStrength(val)
+    if (fill) {
+      fill.style.width = (res.score * 25) + '%'
+      fill.style.backgroundColor = res.color
+    }
+    if (txt) {
+      txt.textContent = res.label
+      txt.style.color = val ? res.color : '#94a3b8'
+    }
+  }
+
+  function clearOtpTimer() {
+    if (otpCooldownTimer) {
+      clearInterval(otpCooldownTimer)
+      otpCooldownTimer = null
+    }
+  }
+
+  function startOtpCooldownUi() {
+    clearOtpTimer()
+    const btn = document.getElementById('colOtpResendBtn')
+    if (!btn) return
+    function tick() {
+      const rem = Math.ceil((colOtpState.cooldownUntil - Date.now()) / 1000)
+      if (rem > 0) {
+        btn.disabled = true
+        btn.textContent = 'Resend code in ' + rem + 's'
+      } else {
+        btn.disabled = false
+        btn.textContent = 'Resend Code'
+        clearOtpTimer()
+      }
+    }
+    tick()
+    otpCooldownTimer = setInterval(tick, 1000)
+  }
+
   window._initOtpInputs = function () {
     const grid = document.getElementById('colOtpGrid')
-    if (!grid) {return}
+    if (!grid) return
     const cells = Array.from(grid.querySelectorAll('.col-otp-cell'))
     const hiddenToken = document.getElementById('colOtpToken')
 
-    function updateHiddenToken() {
-      const val = cells.map(c => c.value).join('')
-      if (hiddenToken) {hiddenToken.value = val}
-      cells.forEach(c => {
-        if (c.value) {c.classList.add('filled')}
-        else {c.classList.remove('filled')}
-      })
-      if (val.length === 6) {
-        if (typeof window._handleColOtpVerify === 'function') {
-          window._handleColOtpVerify()
-        }
+    function syncToken(autoSubmit) {
+      const val = cells.map(function (c) { return c.value }).join('')
+      if (hiddenToken) hiddenToken.value = val
+      cells.forEach(function (c) { c.classList.toggle('filled', Boolean(c.value)) })
+      if (autoSubmit && val.length === 6 && typeof window._handleColOtpVerify === 'function') {
+        window._handleColOtpVerify()
       }
     }
 
-    cells.forEach((cell, idx) => {
-      cell.addEventListener('input', (e) => {
+    cells.forEach(function (cell, idx) {
+      cell.addEventListener('input', function (e) {
         const val = e.target.value.replace(/[^0-9]/g, '')
         e.target.value = val.slice(-1)
-        if (val) { cell.classList.add('filled'); } else { cell.classList.remove('filled'); }
-        updateHiddenToken()
+        syncToken(false)
         if (e.target.value && idx < cells.length - 1) {
           cells[idx + 1].focus()
           cells[idx + 1].select()
         } else if (idx === cells.length - 1 && e.target.value) {
-          const fullToken = cells.map(c => c.value).join('')
-          if (fullToken.length === 6 && typeof window._handleColOtpVerify === 'function') {
-            setTimeout(() => { window._handleColOtpVerify() }, 60)
-          }
+          syncToken(true)
         }
       })
-
-      cell.addEventListener('keydown', (e) => {
+      cell.addEventListener('keydown', function (e) {
         if (e.key === 'Backspace') {
           if (!cell.value && idx > 0) {
             cells[idx - 1].focus()
             cells[idx - 1].value = ''
-            updateHiddenToken()
+            syncToken(false)
             e.preventDefault()
           } else {
             cell.value = ''
-            updateHiddenToken()
+            syncToken(false)
           }
         } else if (e.key === 'ArrowLeft' && idx > 0) {
           cells[idx - 1].focus()
-          cells[idx - 1].select()
           e.preventDefault()
         } else if (e.key === 'ArrowRight' && idx < cells.length - 1) {
           cells[idx + 1].focus()
-          cells[idx + 1].select()
           e.preventDefault()
         }
       })
-
-      cell.addEventListener('paste', (e) => {
+      cell.addEventListener('paste', function (e) {
         e.preventDefault()
-        const text = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '').slice(0, 6)
-        if (!text) {return}
-        text.split('').forEach((char, i) => {
-          if (cells[i]) {cells[i].value = char}
+        const text = ((e.clipboardData || window.clipboardData).getData('text') || '').replace(/[^0-9]/g, '').slice(0, 6)
+        if (!text) return
+        text.split('').forEach(function (ch, i) {
+          if (cells[i]) cells[i].value = ch
         })
-        updateHiddenToken()
-        const nextIdx = Math.min(text.length, cells.length - 1)
-        if (cells[nextIdx]) {cells[nextIdx].focus()}
-      })
-
-      cell.addEventListener('focus', () => {
-        cell.select()
+        syncToken(text.length === 6)
       })
     })
 
-    setTimeout(() => {
-      const firstEmpty = cells.find(c => !c.value) || cells[0]
-      if (firstEmpty) {
-        firstEmpty.focus()
-        firstEmpty.select()
-      }
-    }, 60)
+    setTimeout(function () {
+      const firstEmpty = cells.find(function (c) { return !c.value }) || cells[0]
+      if (firstEmpty) firstEmpty.focus()
+    }, 50)
   }
 
-  window._triggerOtpAnimation = function (type, message) {
-    const grid = document.getElementById('colOtpGrid')
-    const errDiv = document.getElementById('colAuthError')
-    const btn = document.getElementById('colOtpVerifyBtn')
-    if (!grid) {return}
-    const cells = Array.from(grid.querySelectorAll('.col-otp-cell'))
-
-    // Clear focus ring during animation
-    cells.forEach(c => { if (c && typeof c.blur === 'function') c.blur(); })
-    if (document.activeElement && typeof document.activeElement.blur === 'function') {
-      document.activeElement.blur()
-    }
-
-    grid.classList.remove('is-verifying', 'is-wrong', 'is-success')
-
-    if (type === 'wrong') {
-      grid.classList.add('is-wrong')
-      if (errDiv) {
-        errDiv.innerHTML = '<span style="display:inline-flex; align-items:center; gap:6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg> ' + escapeColHtml(message || 'Invalid or expired verification code') + '</span>'
-        errDiv.style.display = 'block'
-      }
-      if (btn) {
-        btn.textContent = 'Verify & Sign In'
-        btn.disabled = false
-      }
-      setTimeout(() => {
-        grid.classList.remove('is-wrong')
-        cells.forEach(c => { c.value = ''; c.classList.remove('filled') })
-        const hiddenToken = document.getElementById('colOtpToken')
-        if (hiddenToken) {hiddenToken.value = ''}
-        if (cells[0]) { cells[0].focus() }
-      }, 750)
-    } else if (type === 'success' || type === 'correct') {
-      grid.classList.add('is-success')
-      if (errDiv) {
-        errDiv.innerHTML = '<span style="color:#10b981; display:inline-flex; align-items:center; gap:6px; font-weight:700;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Code Verified Successfully!</span>'
-        errDiv.style.display = 'block'
-      }
-      if (btn) {
-        btn.classList.add('is-verified')
-        btn.innerHTML = '<span style="display:inline-flex; align-items:center; gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg> Access Granted</span>'
-      }
-    } else if (type === 'verifying') {
-      grid.classList.add('is-verifying')
-      if (errDiv) {errDiv.style.display = 'none'}
-      if (btn) {
-        btn.disabled = true
-        btn.innerHTML = '<span class="col-otp-spinner"></span> Verifying Code...'
-      }
-    }
+  function showAuthMessage(elId, type, text) {
+    const el = document.getElementById(elId)
+    if (!el) return
+    el.className = 'col-auth-msg ' + (type || 'err')
+    el.textContent = text
   }
 
-  window.triggerTestOtpAnimation = (type, msg) => window._triggerOtpAnimation(type, msg)
-
-  window._setColOtpStateForTesting = function (step, email) {
-    colOtpState = { step: step, email: email || 'alex.founder@learners.edu' };
-    renderAuthPanel('otp');
-    if (step === 'verify') {
-      setTimeout(() => {
-        if (typeof window._initOtpInputs === 'function') {
-          window._initOtpInputs();
-        }
-      }, 50);
-    }
-  }
-
-  let colOtpState = { step: 'send', email: '' }
-
-  function renderAuthPanel(tab = 'login') {
+  function renderAuthPanel(tab) {
+    clearOtpTimer()
+    const activeTab = tab || 'login'
     const body = document.getElementById('colAuthBody')
-    if (!body) {return}
-
-    // promptForUsername() hides .col-auth-hd so the "Choose a username"
-    // screen reads as a welcome card. It never restores the header, so
-    // every later modal opened would have no title and no close button.
-    // Restore it whenever we render a normal panel.
-    const hd = document.querySelector('.col-auth-hd')
-    if (hd) {hd.style.display = ''}
-
+    if (!body) return
     const hdTitle = document.getElementById('colAuthTitle')
-    const hdSub = document.getElementById('colAuthSub') || document.querySelector('.col-auth-hd p')
+    const hdSub = document.getElementById('colAuthSub')
+
+    if (window.colUser && window._colPasswordRecoveryMode) {
+      if (hdTitle) hdTitle.textContent = 'Set New Password'
+      if (hdSub) hdSub.textContent = 'Create a strong new password for your account.'
+      body.innerHTML = `
+        <div id="colAuthError" class="col-auth-msg" role="alert" aria-live="polite"></div>
+        <form id="colResetCompleteForm" data-col-submit="update-password">
+          <input type="text" name="username" autocomplete="username" value="${escapeColHtml(window.colUser.email || '')}" style="display:none;" readonly>
+          <label class="col-auth-lbl" for="colResetNewPass">New Password (Min 8 Characters)</label>
+          <div class="col-pass-wrap">
+            <input type="password" name="new-password" id="colResetNewPass" data-col-input="pw-strength" data-meter="colResetPwMeter" class="col-auth-inp" placeholder="At least 8 characters" required minlength="8" autocomplete="new-password">
+            <button type="button" class="col-pass-eye" data-col-action="toggle-pass" data-target="colResetNewPass" aria-label="Show password" aria-pressed="false">${SVG_EYE_OPEN}</button>
+          </div>
+          <div id="colResetPwMeter" class="col-pw-meter"><div class="col-pw-bar-track"><div class="col-pw-bar-fill"></div></div><div class="col-pw-bar-txt"></div></div>
+          <label class="col-auth-lbl" for="colResetConfirmPass">Confirm Password</label>
+          <div class="col-pass-wrap">
+            <input type="password" name="confirm-password" id="colResetConfirmPass" class="col-auth-inp" placeholder="Re-enter new password" required minlength="8" autocomplete="new-password">
+            <button type="button" class="col-pass-eye" data-col-action="toggle-pass" data-target="colResetConfirmPass" aria-label="Show password" aria-pressed="false">${SVG_EYE_OPEN}</button>
+          </div>
+          <button type="submit" class="col-auth-btn" id="colResetNewPassBtn">Update Password &amp; Continue</button>
+        </form>
+      `
+      return
+    }
 
     if (window.colUser) {
-      // window.colUser only ever holds a verified Supabase session. Offline
-      // profiles live on window.colLocalUser and are rendered by the panel's
-      // own else-branch further down.
       const currentVeh = window.colUser.vehicle || (window.colUser.user_metadata && window.colUser.user_metadata.preferred_vehicle) || 'Car'
       const resolvedName = resolveColUserDisplayName(window.colUser)
-      if (resolvedName && (!window.colUser.name || /^(hh|user|test|guest)$/i.test(window.colUser.name) || !window.colUser.name.includes(' '))) {
-        window.colUser.name = resolvedName
-      }
+      window.colUser.name = resolvedName
 
-      if (tab === 'settings') {
-        if (hdTitle) {hdTitle.textContent = 'Account Settings'}
-        if (hdSub) {hdSub.textContent = 'Customize Profile Details, Avatar, Vehicle, And Security.'}
-
+      if (activeTab === 'settings') {
+        if (hdTitle) hdTitle.textContent = 'Account Settings'
+        if (hdSub) hdSub.textContent = 'Manage your display profile, avatar, and password.'
         const curPic = getSafeImageUrl(window.colUser.picture)
-        const userInitial = escapeColHtml(((resolvedName || window.colUser.username || '?').replace(/^@/,'').charAt(0) || '?').toUpperCase())
+        const userInitial = escapeColHtml(((resolvedName || window.colUser.username || '?').replace(/^@/, '').charAt(0) || '?').toUpperCase())
 
         body.innerHTML = `
           <div style="text-align:left;">
-            <button type="button" onclick="window._renderAuthTab('profile')" style="background:transparent; border:none; color:var(--dim, #8891AA); cursor:pointer; font-size:0.85rem; font-weight:600; padding:0; margin-bottom:16px; display:inline-flex; align-items:center; gap:6px;">
-              &larr; Back To Profile
-            </button>
-            <div id="colSettingsFeedback" style="display:none; font-size:0.85rem; padding:10px 14px; border-radius:12px; margin-bottom:14px; text-align:center; font-weight:600;"></div>
-            <form id="colSettingsForm" onsubmit="window._handleSaveAccountSettings(event)">
-              
-              <!-- Avatar Customizer Section -->
-              <div style="margin-bottom: 18px; padding: 14px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--lineb, rgba(255, 255, 255, 0.1)); border-radius: 16px;">
-                <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 14px;">
-                  <div id="colSettingAvatarPreview" style="width: 72px; height: 72px; border-radius: 50%; background: var(--signal, #F2B84B); display: flex; justify-content: center; align-items: center; font-size: 1.8rem; overflow: hidden; border: 2.5px solid var(--signal, #F2B84B); color: var(--void, #070A14); font-weight: 800; flex-shrink: 0; box-shadow: 0 4px 14px rgba(0,0,0,0.3);">
-                    ${curPic ? `<img src="${escapeColHtml(curPic)}" alt="Avatar Preview" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="this.style.display='none'; this.parentElement.textContent='${userInitial}';">` : userInitial}
+            <button type="button" class="col-auth-link" data-col-action="tab" data-tab="profile" style="margin-bottom:14px;">&larr; Back to Profile</button>
+            <div id="colSettingsFeedback" class="col-auth-msg" role="status" aria-live="polite"></div>
+            <form id="colSettingsForm" data-col-submit="save-settings">
+              <div style="margin-bottom:16px;padding:12px;border:1px solid rgba(148,163,184,0.2);border-radius:14px;">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                  <div id="colSettingAvatarPreview" style="width:62px;height:62px;border-radius:50%;background:#f59e0b;display:flex;justify-content:center;align-items:center;font-size:1.5rem;overflow:hidden;color:#0f172a;font-weight:800;flex-shrink:0;">
+                    ${curPic ? `<img src="${escapeColHtml(curPic)}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;display:block;">` : userInitial}
                   </div>
-                  <div style="flex: 1; min-width: 0;">
-                    <div style="font-size: 0.85rem; font-weight: 700; color: var(--ink, #E8E3D8); margin-bottom: 4px;">Profile Avatar</div>
-                    <div style="font-size: 0.75rem; color: var(--dim, #8891AA); margin-bottom: 8px;">Upload Photo, Pick Annotation Letter, Or Choose A Badge.</div>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                      <label for="colSettingPicFile" class="col-av-chip" style="cursor: pointer; background: rgba(94, 212, 245, 0.15); color: var(--ion, #5ED4F5); border-color: rgba(94, 212, 245, 0.3);">
-                        📷 Choose Device Pic
-                        <input type="file" id="colSettingPicFile" accept="image/*" style="display: none;" onchange="window._handleAvatarUpload(this)">
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-size:0.84rem;font-weight:700;margin-bottom:6px;">Profile Photo</div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                      <label for="colSettingPicFile" class="col-av-chip">Upload Image
+                        <input type="file" id="colSettingPicFile" data-col-change="avatar-upload" accept="image/*" style="display:none;">
                       </label>
-                      <button type="button" class="col-av-chip" onclick="window._resetToDefaultAvatar()">Reset</button>
+                      <button type="button" class="col-av-chip" data-col-action="reset-avatar">Reset</button>
                     </div>
                   </div>
                 </div>
-
-                <!-- Annotation Letter Theme Options -->
-                <div style="margin-bottom: 12px;">
-                  <label class="col-auth-lbl" style="font-size: 0.78rem; margin-bottom: 6px;">Annotation Letter (Initial Color Theme)</label>
-                  <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                    <button type="button" class="col-av-chip" onclick="window._pickLetterAvatar('#F2B84B','#E65100','#070A14','Gold')" style="background: linear-gradient(135deg, #F2B84B, #E65100); color: #070A14; border: none;">● Gold</button>
-                    <button type="button" class="col-av-chip" onclick="window._pickLetterAvatar('#5ED4F5','#0284C7','#070A14','Cyan')" style="background: linear-gradient(135deg, #5ED4F5, #0284C7); color: #070A14; border: none;">● Cyan</button>
-                    <button type="button" class="col-av-chip" onclick="window._pickLetterAvatar('#10B981','#047857','#ffffff','Emerald')" style="background: linear-gradient(135deg, #10B981, #047857); color: #fff; border: none;">● Emerald</button>
-                    <button type="button" class="col-av-chip" onclick="window._pickLetterAvatar('#A855F7','#6B21A8','#ffffff','Purple')" style="background: linear-gradient(135deg, #A855F7, #6B21A8); color: #fff; border: none;">● Purple</button>
-                    <button type="button" class="col-av-chip" onclick="window._pickLetterAvatar('#F43F5E','#BE123C','#ffffff','Coral')" style="background: linear-gradient(135deg, #F43F5E, #BE123C); color: #fff; border: none;">● Coral</button>
-                    <button type="button" class="col-av-chip" onclick="window._pickLetterAvatar('#334155','#0F172A','#E8E3D8','Midnight')" style="background: linear-gradient(135deg, #334155, #0F172A); color: #E8E3D8; border: none;">● Midnight</button>
-                  </div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+                  <button type="button" class="col-av-chip" data-col-action="pick-letter" data-c1="#F2B84B" data-c2="#E65100" data-tc="#070A14" style="background:#F2B84B;color:#070A14;border:none;">Gold</button>
+                  <button type="button" class="col-av-chip" data-col-action="pick-letter" data-c1="#5ED4F5" data-c2="#0284C7" data-tc="#070A14" style="background:#5ED4F5;color:#070A14;border:none;">Cyan</button>
+                  <button type="button" class="col-av-chip" data-col-action="pick-letter" data-c1="#10B981" data-c2="#047857" data-tc="#ffffff" style="background:#10B981;color:#fff;border:none;">Emerald</button>
+                  <button type="button" class="col-av-preset" data-col-action="pick-badge" data-glyph="GT" data-c1="#EF4444" data-c2="#991B1B" style="background:#EF4444;">GT</button>
+                  <button type="button" class="col-av-preset" data-col-action="pick-badge" data-glyph="BS" data-c1="#10B981" data-c2="#047857" style="background:#10B981;">BS</button>
+                  <button type="button" class="col-av-preset" data-col-action="pick-badge" data-glyph="MP" data-c1="#8B5CF6" data-c2="#6D28D9" style="background:#8B5CF6;">MP</button>
                 </div>
-
-                <!-- Preset Character Badges -->
-                <div>
-                  <label class="col-auth-lbl" style="font-size: 0.78rem; margin-bottom: 6px;">Preset Character Badges</label>
-                  <div style="display: flex; gap: 7px; flex-wrap: wrap;">
-                    <button type="button" class="col-av-preset" title="Speed Racer" onclick="window._pickPresetAvatar('🏎️','#EF4444','#991B1B','Racer')">🏎️</button>
-                    <button type="button" class="col-av-preset" title="City Cruiser" onclick="window._pickPresetAvatar('🚗','#3B82F6','#1E40AF','Cruiser')">🚗</button>
-                    <button type="button" class="col-av-preset" title="Mumbai Auto" onclick="window._pickPresetAvatar('🛺','#F59E0B','#B45309','Auto')">🛺</button>
-                    <button type="button" class="col-av-preset" title="BEST Bus" onclick="window._pickPresetAvatar('🚌','#10B981','#047857','Bus')">🚌</button>
-                    <button type="button" class="col-av-preset" title="Royal Tiger" onclick="window._pickPresetAvatar('🐯','#F97316','#C2410C','Tiger')">🐯</button>
-                    <button type="button" class="col-av-preset" title="Cyber Fox" onclick="window._pickPresetAvatar('🦊','#FB923C','#EA580C','Fox')">🦊</button>
-                    <button type="button" class="col-av-preset" title="AI Android" onclick="window._pickPresetAvatar('🤖','#06B6D4','#0E7490','Android')">🤖</button>
-                    <button type="button" class="col-av-preset" title="Rocket Pilot" onclick="window._pickPresetAvatar('🚀','#8B5CF6','#6D28D9','Rocket')">🚀</button>
-                    <button type="button" class="col-av-preset" title="Master Gamer" onclick="window._pickPresetAvatar('🎮','#EC4899','#BE185D','Gamer')">🎮</button>
-                    <button type="button" class="col-av-preset" title="Golden Star" onclick="window._pickPresetAvatar('🌟','#EAB308','#CA8A04','Star')">🌟</button>
-                  </div>
-                </div>
-
-                <details style="margin-top: 12px; font-size: 0.78rem; color: var(--dim, #8891AA);">
-                  <summary style="cursor: pointer; font-weight: 600; margin-bottom: 6px;">Or Paste Custom Image URL</summary>
-                  <input type="url" id="colSettingAvatar" class="col-auth-inp" style="margin-bottom:0;" placeholder="https://example.com/photo.jpg" value="${escapeColHtml(curPic)}" oninput="window._onSettingAvatarUrlInput(this)">
-                </details>
+                <input type="url" id="colSettingAvatar" data-col-input="setting-avatar-url" class="col-auth-inp" style="margin-bottom:0;" placeholder="Or image URL (https://...)" value="${escapeColHtml(curPic)}">
+                <input type="hidden" id="colSettingAvatarVal" value="${escapeColHtml(curPic)}">
               </div>
 
-              <input type="hidden" id="colSettingAvatarVal" value="${escapeColHtml(curPic)}">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <label class="col-auth-lbl" for="colSettingName" style="margin-bottom:0;">Display Name</label>
+                ${window.colUser.googleFullName ? `<button type="button" class="col-auth-link" data-col-action="restore-google-name" data-gn="${escapeColHtml(window.colUser.googleFullName)}">Use Google Name</button>` : ''}
+              </div>
+              <input type="text" id="colSettingName" class="col-auth-inp" value="${escapeColHtml(resolvedName)}" required maxlength="40">
 
-              <div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                  <label class="col-auth-lbl" for="colSettingName" style="margin-bottom: 0;">Display Name</label>
-                  ${(window.colUser && (window.colUser.googleFullName || window._lastGoogleName || (function () { try { return sessionStorage.getItem('col_google_full_name') || '' } catch (_e) { return '' } })())) ? `
-                    <button type="button" onclick="var gn = '${escapeColHtml(window.colUser.googleFullName || window._lastGoogleName || '')}' || (sessionStorage.getItem('col_google_full_name') || ''); if (gn) { document.getElementById('colSettingName').value = gn; if (window.toast) toast('Restored Google Name: ' + gn, '#22c55e'); }" style="background: transparent; border: none; color: var(--signal, #f2b84b); font-size: 0.78rem; cursor: pointer; font-weight: 700; padding: 0; text-decoration: underline; display: inline-flex; align-items: center; gap: 4px;" title="Reset to verified First and Last Name from Google Account">
-                      <span>Use Google Name</span>
-                    </button>
-                  ` : ''}
-                </div>
-                <input type="text" id="colSettingName" class="col-auth-inp" placeholder="Display Name" value="${escapeColHtml(resolvedName)}" required maxlength="40">
+              <label class="col-auth-lbl" for="colSettingUsername">Username (Public Handle)</label>
+              <input type="text" id="colSettingUsername" data-col-input="setting-username" class="col-auth-inp" placeholder="@username" value="${escapeColHtml(window.colUser.username || '')}" maxlength="30" style="margin-bottom:4px;">
+              <div id="colSettingUsernameStatus" style="font-size:0.78rem;font-weight:600;min-height:18px;margin-bottom:10px;"></div>
+
+              <label class="col-auth-lbl" for="colSettingVehicle">Preferred Vehicle</label>
+              <select id="colSettingVehicle" class="col-auth-inp">
+                <option value="Car" ${currentVeh === 'Car' ? 'selected' : ''}>Standard Car</option>
+                <option value="Auto" ${currentVeh === 'Auto' ? 'selected' : ''}>Auto Rickshaw</option>
+                <option value="Bus" ${currentVeh === 'Bus' ? 'selected' : ''}>BEST City Bus</option>
+                <option value="Bike" ${currentVeh === 'Bike' ? 'selected' : ''}>Motorcycle</option>
+                <option value="Truck" ${currentVeh === 'Truck' ? 'selected' : ''}>Heavy Truck</option>
+              </select>
+
+              <label class="col-auth-lbl" for="colSettingPassword">Update Password (Optional)</label>
+              <div class="col-pass-wrap">
+                <input type="password" id="colSettingPassword" data-col-input="pw-strength" data-meter="colSettingPwMeter" class="col-auth-inp" placeholder="Leave blank to keep current password" minlength="8" autocomplete="new-password">
+                <button type="button" class="col-pass-eye" data-col-action="toggle-pass" data-target="colSettingPassword" aria-label="Show password" aria-pressed="false">${SVG_EYE_OPEN}</button>
               </div>
-              <div>
-                <label class="col-auth-lbl" for="colSettingUsername">Username (Public Handle)</label>
-                <input type="text" id="colSettingUsername" class="col-auth-inp" placeholder="@username" value="${escapeColHtml(window.colUser.username || '')}" maxlength="30" oninput="window._onSettingUsernameInput(this)" style="margin-bottom:4px;">
-                <div id="colSettingUsernameStatus" style="font-size:0.8rem; font-weight:600; min-height:18px; margin-bottom:10px;"></div>
-              </div>
-              <div>
-                <label class="col-auth-lbl" for="colSettingVehicle">Preferred Vehicle</label>
-                <select id="colSettingVehicle" class="col-auth-inp" style="cursor:pointer;">
-                  <option value="Car" ${currentVeh === 'Car' ? 'selected' : ''}>Standard Car</option>
-                  <option value="Auto" ${currentVeh === 'Auto' ? 'selected' : ''}>Auto Rickshaw</option>
-                  <option value="Bus" ${currentVeh === 'Bus' ? 'selected' : ''}>BEST City Bus</option>
-                  <option value="Bike" ${currentVeh === 'Bike' ? 'selected' : ''}>Motorcycle</option>
-                  <option value="Truck" ${currentVeh === 'Truck' ? 'selected' : ''}>Heavy Truck</option>
-                </select>
-              </div>
-              <div>
-                <label class="col-auth-lbl" for="colSettingPassword">New Password / PIN (Optional)</label>
-                <input type="password" id="colSettingPassword" class="col-auth-inp" placeholder="Leave Blank To Keep Current" minlength="6">
-              </div>
-              <button type="submit" class="col-auth-btn" id="colSaveSettingsBtn" style="margin-top:6px;">Save Changes</button>
-              <button type="button" class="col-auth-btn" style="margin-top:10px; background:transparent; color:var(--dim, #8891AA); border:1px solid var(--lineb, rgba(255,255,255,.12));" onclick="window._renderAuthTab('profile')">Cancel</button>
+              <div id="colSettingPwMeter" class="col-pw-meter"><div class="col-pw-bar-track"><div class="col-pw-bar-fill"></div></div><div class="col-pw-bar-txt"></div></div>
+
+              <button type="submit" class="col-auth-btn" id="colSaveSettingsBtn">Save Changes</button>
             </form>
           </div>
         `
         return
       }
 
-      // Default Profile Overview
-      if (hdTitle) {hdTitle.textContent = 'Account'}
-      if (hdSub) {hdSub.textContent = 'Connected Account And Session Overview.'}
+      if (hdTitle) hdTitle.textContent = 'Account'
+      if (hdSub) hdSub.textContent = 'Signed in and syncing cleanly across devices.'
+      const providers = Array.isArray(window.colUser.providers) && window.colUser.providers.length ? window.colUser.providers : ['email']
+      const providerBadges = providers.map(function (p) {
+        return '<span style="padding:3px 10px;border-radius:20px;font-size:0.74rem;font-weight:700;background:rgba(16,185,129,0.14);color:#10b981;border:1px solid rgba(16,185,129,0.3);">' + escapeColHtml(p.toUpperCase()) + ' Verified</span>'
+      }).join('')
 
       body.innerHTML = `
-        <div style="text-align:center; margin-bottom: 22px;">
-            <div style="width: 80px; height: 80px; border-radius: 50%; background: var(--signal, #F2B84B); margin: 0 auto 14px; display: flex; justify-content: center; align-items: center; font-size: 2rem; overflow: hidden; border: 2px solid var(--signal, #F2B84B); color: var(--void, #070A14); font-weight: 800;">
-                ${getSafeImageUrl(window.colUser.picture) ? `<img src="${escapeColHtml(getSafeImageUrl(window.colUser.picture))}" alt="${escapeColHtml(resolvedName || 'User')}" referrerpolicy="no-referrer" style="width:100%; height:100%; object-fit:cover; display:block;" onerror="this.style.display='none'; this.parentElement.textContent='${escapeColHtml((resolvedName || '?').charAt(0).toUpperCase())}';">` : escapeColHtml((resolvedName || '?').charAt(0).toUpperCase())}
-            </div>
-            <h3 style="margin-bottom: 4px; font-size: 1.25rem; color: var(--ink, #E8E3D8); font-weight: 700;">${escapeColHtml(resolvedName)}</h3>
-            <p class="col-auth-email" style="color: var(--dim, #8891AA); font-size: 0.9rem; margin-bottom: 6px; text-transform: none !important;">${escapeColHtml(window.colUser.email ? window.colUser.email.toLowerCase() : (window.colUser.username || 'Local Profile'))}</p>
-            <div style="margin-bottom: 12px; display: flex; justify-content: center;">
-                <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 600; color: var(--signal, #F2B84B); background: rgba(242, 184, 75, 0.12); border: 1px solid rgba(242, 184, 75, 0.28); padding: 4px 12px; border-radius: 14px;">
-                    <span>✉️ Studio ID:</span>
-                    <a href="mailto:neelgbadri@col.dpdns.org" style="color: inherit; text-decoration: underline; font-weight: 700;">neelgbadri@col.dpdns.org</a>
-                </span>
-            </div>
-            <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-top:4px;">
-                <span style="padding:4px 10px; background:rgba(242,184,75,0.15); color:var(--signal,#F2B84B); border-radius:20px; font-size:0.75rem; font-weight:700; border:1px solid rgba(242,184,75,0.3);">⚡ Cloud Account</span>
-                ${currentVeh ? `<span style="padding:4px 10px; background:rgba(255,255,255,0.06); color:var(--ink,#E8E3D8); border-radius:20px; font-size:0.75rem; font-weight:600; border:1px solid rgba(255,255,255,0.1);">🚗 ${escapeColHtml(currentVeh)}</span>` : ''}
-            </div>
+        <div style="text-align:center;margin-bottom:20px;">
+          <div style="width:74px;height:74px;border-radius:50%;background:#f59e0b;margin:0 auto 12px;display:flex;justify-content:center;align-items:center;font-size:1.8rem;overflow:hidden;color:#0f172a;font-weight:800;">
+            ${getSafeImageUrl(window.colUser.picture) ? `<img src="${escapeColHtml(getSafeImageUrl(window.colUser.picture))}" alt="${escapeColHtml(resolvedName)}" referrerpolicy="no-referrer" style="width:100%;height:100%;object-fit:cover;display:block;">` : escapeColHtml((resolvedName || '?').charAt(0).toUpperCase())}
+          </div>
+          <h3 style="margin:0 0 4px;font-size:1.2rem;font-weight:700;">${escapeColHtml(resolvedName)}</h3>
+          <p style="font-size:0.86rem;opacity:0.75;margin:0 0 10px;text-transform:none !important;">${escapeColHtml((window.colUser.email || '').toLowerCase())}</p>
+          <div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;">${providerBadges}</div>
         </div>
-        <button type="button" class="col-auth-btn" style="margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="window._renderAuthTab('settings')">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            Change Account Settings
-        </button>
-        <button type="button" class="col-auth-danger" onclick="colDoLogout()">Disconnect Account</button>
+        <button type="button" class="col-auth-btn" data-col-action="tab" data-tab="settings" style="margin-bottom:10px;">Account &amp; Password Settings</button>
+        <button type="button" class="col-auth-danger" data-col-action="logout">Sign Out</button>
       `
       return
     }
 
-    if (hdTitle) {hdTitle.textContent = 'Authenticate'}
-    if (hdSub) {hdSub.textContent = 'Unlock Dashboard Storage And Cloud Sync.'}
+    if (hdTitle) hdTitle.textContent = activeTab === 'reset' ? 'Reset Password' : 'Sign In'
+    if (hdSub) {
+      hdSub.textContent = activeTab === 'reset'
+        ? 'Enter your email and we will send a password reset link.'
+        : 'Sign in with Google or Email to sync your progress across devices.'
+    }
 
-    const isLogin = tab === 'login'
-    const isOtp = tab === 'otp'
-    const isSignup = tab === 'signup'
+    const isLogin = activeTab === 'login'
+    const isOtp = activeTab === 'otp'
+    const isSignup = activeTab === 'signup'
+    const isReset = activeTab === 'reset'
 
     body.innerHTML = `
-            <button class="col-auth-gbtn" onclick="colDoGoogle()">
-                <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-                Continue with Google
-            </button>
-            <div class="col-auth-div">OR EMAIL / USERNAME</div>
-            
-            <div class="col-auth-tab-group">
-                <div class="col-auth-tab ${isLogin ? 'active' : ''}" onclick="window._renderAuthTab('login')">Sign In</div>
-                <div class="col-auth-tab ${isOtp ? 'active' : ''}" onclick="window._renderAuthTab('otp')">Email OTP</div>
-                <div class="col-auth-tab ${isSignup ? 'active' : ''}" onclick="window._renderAuthTab('signup')">Register</div>
+      <button type="button" class="col-auth-gbtn" data-col-action="google">
+        <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Continue with Google
+      </button>
+      <div class="col-auth-div">OR EMAIL</div>
+      <div class="col-auth-tab-group" role="tablist">
+        <button type="button" role="tab" aria-selected="${isLogin || isReset}" class="col-auth-tab ${isLogin || isReset ? 'active' : ''}" data-col-action="tab" data-tab="login">Sign In</button>
+        <button type="button" role="tab" aria-selected="${isOtp}" class="col-auth-tab ${isOtp ? 'active' : ''}" data-col-action="tab" data-tab="otp">Email Code</button>
+        <button type="button" role="tab" aria-selected="${isSignup}" class="col-auth-tab ${isSignup ? 'active' : ''}" data-col-action="tab" data-tab="signup">Register</button>
+      </div>
+      <div id="colAuthError" class="col-auth-msg" role="alert" aria-live="polite"></div>
+
+      ${isReset ? `
+        <form id="colAuthResetForm" data-col-submit="reset-request">
+          <div class="col-otp-guide">Enter your account email below. We will send a reset link that brings you back to this page to set a new password.</div>
+          <label class="col-auth-lbl" for="colResetEmail">Account Email</label>
+          <input type="email" name="email" id="colResetEmail" class="col-auth-inp" placeholder="name@example.com" required autocomplete="email">
+          <button type="submit" class="col-auth-btn" id="colResetSendBtn">Send Password Reset Link</button>
+          <div style="text-align:center;margin-top:12px;">
+            <button type="button" class="col-auth-link" data-col-action="tab" data-tab="login">&larr; Back to Sign In</button>
+          </div>
+        </form>
+      ` : isOtp ? (colOtpState.step === 'verify' ? `
+        <form id="colAuthOtpVerifyForm" data-col-submit="otp-verify">
+          <div class="col-otp-guide">
+            <strong>How to verify:</strong>
+            <div style="margin-top:4px;">1. Check the email sent to <strong>${escapeColHtml((colOtpState.email || '').toLowerCase())}</strong> (including Spam/Promotions).</div>
+            <div>2. Type or paste the <strong>6-digit code</strong> below, or click the sign-in link inside the email.</div>
+          </div>
+          <div class="col-otp-grid" id="colOtpGrid">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="col-otp-cell" data-idx="0" autocomplete="one-time-code" aria-label="Digit 1">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="col-otp-cell" data-idx="1" autocomplete="off" aria-label="Digit 2">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="col-otp-cell" data-idx="2" autocomplete="off" aria-label="Digit 3">
+            <div class="col-otp-divider">&bull;</div>
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="col-otp-cell" data-idx="3" autocomplete="off" aria-label="Digit 4">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="col-otp-cell" data-idx="4" autocomplete="off" aria-label="Digit 5">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="col-otp-cell" data-idx="5" autocomplete="off" aria-label="Digit 6">
+          </div>
+          <input type="hidden" id="colOtpToken" required>
+          <button type="submit" class="col-auth-btn" id="colOtpVerifyBtn">Verify Code &amp; Sign In</button>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;">
+            <button type="button" id="colOtpResendBtn" class="col-auth-link" data-col-action="otp-resend">Resend Code</button>
+            <button type="button" class="col-auth-link" style="opacity:0.75;" data-col-action="otp-reset">Use Different Email</button>
+          </div>
+        </form>
+      ` : `
+        <form id="colAuthOtpSendForm" data-col-submit="otp-send">
+          <div class="col-otp-guide">Enter your email address. We will send a 6-digit login code so you can sign in without a password.</div>
+          <label class="col-auth-lbl" for="colOtpEmail">Email Address</label>
+          <input type="email" name="email" id="colOtpEmail" class="col-auth-inp" placeholder="name@example.com" required autocomplete="email" value="${escapeColHtml(colOtpState.email || '')}">
+          <button type="submit" class="col-auth-btn" id="colOtpSendBtn">Send 6-Digit Code</button>
+        </form>
+      `) : `
+        <form id="colAuthForm" data-col-submit="auth-form" data-mode="${activeTab}" method="post" action="#">
+          ${isSignup ? '<label class="col-auth-lbl" for="colAuthName">Full Name</label><input type="text" name="name" id="colAuthName" class="col-auth-inp" placeholder="Your full name" required maxlength="40" autocomplete="name">' : ''}
+          <label class="col-auth-lbl" for="colAuthEmail">Email Address</label>
+          <input type="email" name="email" id="colAuthEmail" class="col-auth-inp" placeholder="name@example.com" required autocomplete="${isSignup ? 'email' : 'username'}">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <label class="col-auth-lbl" for="colAuthPass" style="margin-bottom:0;">Password</label>
+            ${isLogin ? '<button type="button" class="col-auth-link" data-col-action="saved-passwords">Use Saved Password</button>' : ''}
+          </div>
+          <div class="col-pass-wrap">
+            <input type="password" name="password" id="colAuthPass" ${isSignup ? 'data-col-input="pw-strength" data-meter="colSignupPwMeter"' : ''} class="col-auth-inp" placeholder="${isSignup ? 'Create password (min 8 chars)' : 'Enter your password'}" required minlength="${isSignup ? '8' : '6'}" autocomplete="${isSignup ? 'new-password' : 'current-password'}">
+            <button type="button" class="col-pass-eye" data-col-action="toggle-pass" data-target="colAuthPass" aria-label="Show password" aria-pressed="false">${SVG_EYE_OPEN}</button>
+          </div>
+          ${isSignup ? '<div id="colSignupPwMeter" class="col-pw-meter"><div class="col-pw-bar-track"><div class="col-pw-bar-fill"></div></div><div class="col-pw-bar-txt"></div></div>' : ''}
+          ${isLogin ? `
+            <div class="col-auth-links-row">
+              <span style="opacity:0.7;font-size:0.76rem;">Browser autofill supported</span>
+              <button type="button" class="col-auth-link" data-col-action="forgot-pass">Forgot password?</button>
             </div>
+          ` : ''}
+          <button type="submit" class="col-auth-btn" id="colAuthSubmitBtn">${isLogin ? 'Sign In' : 'Create Account'}</button>
+        </form>
+      `}
+    `
 
-            <div id="colAuthError" style="color: #ef4444; font-size: 0.85rem; margin-bottom: 12px; text-align: center; display: none;"></div>
-
-            ${
-              isOtp
-                ? colOtpState.step === 'verify'
-                  ? `
-                <form id="colAuthOtpVerifyForm" onsubmit="window._handleColOtpVerify(event)">
-                    <p style="font-size: 0.85rem; color: var(--dim, #94a3b8); margin-bottom: 12px; text-align: center; line-height: 1.45;">
-                        Enter The 6-Digit Code Sent To <br><strong class="col-auth-email" style="color:#f8fafc; text-transform:none !important; display:inline-block; font-weight:700;">${escapeColHtml((colOtpState.email || '').toLowerCase())}</strong>
-                    </p>
-                    
-                    <div class="col-otp-grid" id="colOtpGrid">
-                      <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="col-otp-cell" data-idx="0" autocomplete="one-time-code" autofocus />
-                      <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="col-otp-cell" data-idx="1" autocomplete="off" />
-                      <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="col-otp-cell" data-idx="2" autocomplete="off" />
-                      <div class="col-otp-divider">&bull;</div>
-                      <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="col-otp-cell" data-idx="3" autocomplete="off" />
-                      <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="col-otp-cell" data-idx="4" autocomplete="off" />
-                      <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="col-otp-cell" data-idx="5" autocomplete="off" />
-                    </div>
-                    <input type="hidden" id="colOtpToken" required />
-
-                    <button type="submit" class="col-auth-btn" id="colOtpVerifyBtn">Verify &amp; Sign In</button>
-                    
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; font-size:0.85rem;">
-                        <button type="button" onclick="window._handleColOtpSend(null)" style="background:none; border:none; color:var(--page-theme, #f59e0b); cursor:pointer; padding:0; font-weight:600; transition:color 0.15s;">Resend Code</button>
-                        <button type="button" onclick="window._handleColOtpReset()" style="background:none; border:none; color:var(--dim, #94a3b8); cursor:pointer; padding:0; transition:color 0.15s;">Change Email</button>
-                    </div>
-                </form>
-                `
-                  : `
-                <form id="colAuthOtpSendForm" onsubmit="window._handleColOtpSend(event)">
-                    <p style="font-size: 0.85rem; color: var(--dim, #8891AA); margin-bottom: 14px; text-align: center; line-height: 1.4;">
-                        Enter Your Email To Receive A 6-Digit Verification Code To Sign In Password-Free.
-                    </p>
-                    <input type="email" id="colOtpEmail" class="col-auth-inp" placeholder="name@example.com" required value="${escapeColHtml(colOtpState.email || '')}">
-                    <button type="submit" class="col-auth-btn" id="colOtpSendBtn">Send 6-Digit Code</button>
-                </form>
-                `
-                : `
-                <form id="colAuthForm" onsubmit="window._handleColAuthSubmit(event, '${tab}')">
-                    ${isSignup ? `<input type="text" id="colAuthName" class="col-auth-inp" placeholder="Display Name" required>` : ''}
-                    <input type="text" id="colAuthEmail" class="col-auth-inp" placeholder="${isLogin ? 'Email Address or @username' : 'Email Address'}" required>
-                    <input type="password" id="colAuthPass" class="col-auth-inp" placeholder="${isLogin ? 'Password or Local PIN' : 'Password (Min 6 Characters)'}" required minlength="${isLogin ? 1 : 6}">
-                    <button type="submit" class="col-auth-btn" id="colAuthSubmitBtn">${isLogin ? 'Sign In' : 'Create Account'}</button>
-                </form>
-                `
-            }
-        `
-      if (isOtp && colOtpState.step === 'verify') {
+    if (isOtp && colOtpState.step === 'verify') {
       setTimeout(function () {
-        if (typeof window._initOtpInputs === 'function') {
-          window._initOtpInputs()
-        }
+        if (typeof window._initOtpInputs === 'function') window._initOtpInputs()
+        startOtpCooldownUi()
       }, 40)
     }
   }
 
-  window._renderAuthTab = (tab) => {
-    if (tab !== 'otp') {colOtpState = { step: 'send', email: '' }}
+  window._renderAuthTab = function (tab) {
+    if (tab !== 'otp') colOtpState = { step: 'send', email: '', cooldownUntil: 0 }
     renderAuthPanel(tab)
   }
 
   window._onSettingUsernameInput = function (input) {
-    if (!input) {return}
+    if (!input) return
     let val = input.value.trim()
-    if (val && !val.startsWith('@')) {val = '@' + val}
+    if (val && !val.startsWith('@')) val = '@' + val
     val = '@' + val.slice(1).replace(/[^a-zA-Z0-9_]/g, '')
     input.value = val
 
     const statusEl = document.getElementById('colSettingUsernameStatus')
     const btn = document.getElementById('colSaveSettingsBtn')
     const currentUname = (window.colUser && window.colUser.username) || ''
-
     if (!val || val === '@' || val.toLowerCase() === currentUname.toLowerCase()) {
-      if (statusEl) {statusEl.textContent = ''}
-      if (btn) {btn.disabled = false}
+      if (statusEl) statusEl.textContent = ''
+      if (btn) btn.disabled = false
       return
     }
-
     if (val.slice(1).length < 3) {
       if (statusEl) {
-        statusEl.textContent = 'Username Must Be At Least 3 Characters.'
-        statusEl.style.color = 'var(--dim, #8891AA)'
+        statusEl.textContent = 'Username must be at least 3 characters.'
+        statusEl.style.color = '#94a3b8'
       }
-      if (btn) {btn.disabled = true}
+      if (btn) btn.disabled = true
       return
     }
-
     if (statusEl) {
-      statusEl.textContent = 'Checking Availability...'
-      statusEl.style.color = 'var(--dim, #8891AA)'
+      statusEl.textContent = 'Checking availability...'
+      statusEl.style.color = '#94a3b8'
     }
-
-    if (usernameCheckDebounce) {clearTimeout(usernameCheckDebounce)}
-    usernameCheckDebounce = setTimeout(async () => {
-      const currentId = window.colUser ? window.colUser.id : null
-      const res = await checkUsernameAvailability(val, currentId)
+    if (usernameCheckDebounce) clearTimeout(usernameCheckDebounce)
+    usernameCheckDebounce = setTimeout(async function () {
+      const res = await checkUsernameAvailability(val, window.colUser ? window.colUser.id : null)
       if (res.available) {
         if (statusEl) {
-          statusEl.textContent = '✓ Username Available!'
+          statusEl.textContent = 'Username available'
           statusEl.style.color = '#10b981'
         }
-        if (btn) {btn.disabled = false}
+        if (btn) btn.disabled = false
       } else {
         if (statusEl) {
-          statusEl.textContent = '✕ ' + (res.error || 'Username Taken')
+          statusEl.textContent = res.error || 'Username taken'
           statusEl.style.color = '#ef4444'
         }
-        if (btn) {btn.disabled = true}
+        if (btn) btn.disabled = true
       }
     }, 280)
   }
 
   window._handleAvatarUpload = function (input) {
-    if (!input || !input.files || !input.files[0]) {return}
+    if (!input || !input.files || !input.files[0]) return
     const file = input.files[0]
     if (!file.type.startsWith('image/')) {
-      alert('Please Select An Image File (JPEG, PNG, WebP).')
+      showAuthMessage('colSettingsFeedback', 'err', 'Please select a valid image file (PNG, JPEG, or WebP).')
       return
     }
     const reader = new FileReader()
@@ -2073,270 +1477,145 @@ window.closeMo = function () {
         canvas.height = 160
         const ctx = canvas.getContext('2d')
         const minDim = Math.min(img.width, img.height)
-        const sx = (img.width - minDim) / 2
-        const sy = (img.height - minDim) / 2
-        ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, 160, 160)
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.88)
-        window._setAvatarValue(dataUrl, 'Custom Photo')
+        ctx.drawImage(img, (img.width - minDim) / 2, (img.height - minDim) / 2, minDim, minDim, 0, 0, 160, 160)
+        window._setAvatarValue(canvas.toDataURL('image/jpeg', 0.88))
       }
       img.src = e.target.result
     }
     reader.readAsDataURL(file)
   }
 
-  window._setAvatarValue = function (dataUrl, label) {
+  window._setAvatarValue = function (dataUrl) {
+    const safeUrl = getSafeImageUrl(dataUrl)
     const valInp = document.getElementById('colSettingAvatarVal')
     const urlInp = document.getElementById('colSettingAvatar')
     const preview = document.getElementById('colSettingAvatarPreview')
-    if (valInp) {valInp.value = dataUrl || ''}
-    if (urlInp) {urlInp.value = dataUrl && dataUrl.startsWith('http') ? dataUrl : ''}
+    if (valInp) valInp.value = safeUrl
+    if (urlInp) urlInp.value = safeUrl && safeUrl.startsWith('http') ? safeUrl : ''
     if (preview) {
-      if (dataUrl) {
-        preview.innerHTML = `<img src="${dataUrl}" alt="Avatar Preview" style="width:100%; height:100%; object-fit:cover; display:block;">`
+      if (safeUrl) {
+        preview.innerHTML = ''
+        const img = document.createElement('img')
+        img.src = safeUrl
+        img.alt = 'Avatar Preview'
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;'
+        preview.appendChild(img)
       } else {
         const name = (document.getElementById('colSettingName')?.value || (window.colUser && window.colUser.name) || '?').trim()
-        preview.innerHTML = escapeColHtml((name.charAt(0) || '?').toUpperCase())
+        preview.textContent = (name.charAt(0) || '?').toUpperCase()
       }
     }
   }
 
-  window._generateLetterSvg = function (letter, c1, c2, textColor) {
-    const safeLetter = (letter || '?').charAt(0).toUpperCase()
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c2}"/></linearGradient></defs><rect width="120" height="120" rx="60" fill="url(#g)"/><text x="50%" y="54%" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="54" fill="${textColor}" dominant-baseline="middle" text-anchor="middle">${safeLetter}</text></svg>`
-    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg)
+  window._pickLetterAvatar = function (c1, c2, textColor) {
+    const letter = ((document.getElementById('colSettingName')?.value || (window.colUser && window.colUser.name) || '?').trim().charAt(0) || 'U').toUpperCase()
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="${escapeColHtml(c1)}"/><stop offset="100%" stop-color="${escapeColHtml(c2)}"/></linearGradient></defs><rect width="120" height="120" rx="60" fill="url(#g)"/><text x="50%" y="54%" font-family="system-ui,sans-serif" font-weight="800" font-size="54" fill="${escapeColHtml(textColor)}" dominant-baseline="middle" text-anchor="middle">${escapeColHtml(letter)}</text></svg>`
+    window._setAvatarValue('data:image/svg+xml;utf8,' + encodeURIComponent(svg))
   }
 
-  window._generateEmojiSvg = function (emoji, c1, c2) {
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c2}"/></linearGradient></defs><rect width="120" height="120" rx="60" fill="url(#g)"/><text x="50%" y="54%" font-family="system-ui, -apple-system, sans-serif" font-size="52" dominant-baseline="middle" text-anchor="middle">${emoji}</text></svg>`
-    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg)
-  }
-
-  window._pickLetterAvatar = function (c1, c2, textColor, name) {
-    const nameInp = document.getElementById('colSettingName')
-    const letter = (nameInp?.value || (window.colUser && window.colUser.name) || '?').trim().charAt(0) || 'U'
-    const dataUrl = window._generateLetterSvg(letter, c1, c2, textColor)
-    window._setAvatarValue(dataUrl, name)
-  }
-
-  window._pickPresetAvatar = function (emoji, c1, c2, name) {
-    const dataUrl = window._generateEmojiSvg(emoji, c1, c2)
-    window._setAvatarValue(dataUrl, name)
+  window._pickPresetAvatar = function (glyph, c1, c2) {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="${escapeColHtml(c1)}"/><stop offset="100%" stop-color="${escapeColHtml(c2)}"/></linearGradient></defs><rect width="120" height="120" rx="60" fill="url(#g)"/><text x="50%" y="54%" font-family="system-ui,sans-serif" font-weight="800" font-size="44" fill="#ffffff" dominant-baseline="middle" text-anchor="middle">${escapeColHtml(glyph)}</text></svg>`
+    window._setAvatarValue('data:image/svg+xml;utf8,' + encodeURIComponent(svg))
   }
 
   window._onSettingAvatarUrlInput = function (inp) {
-    if (!inp) {return}
-    const url = inp.value.trim()
-    window._setAvatarValue(url, 'URL')
+    if (inp) window._setAvatarValue(inp.value.trim())
   }
 
   window._resetToDefaultAvatar = function () {
-    window._setAvatarValue('', 'Default')
+    window._setAvatarValue('')
   }
 
-  window._handleSaveAccountSettings = async (e) => {
-    if (e) {e.preventDefault()}
-    if (!window.colUser) {return}
+  window._handleSaveAccountSettings = async function (e) {
+    if (e) e.preventDefault()
+    if (!window.colUser || !supabaseClient) return
 
-    const nameInp = document.getElementById('colSettingName')
-    const unameInp = document.getElementById('colSettingUsername')
-    const vehInp = document.getElementById('colSettingVehicle')
-    const avValInp = document.getElementById('colSettingAvatarVal')
-    const avUrlInp = document.getElementById('colSettingAvatar')
-    const passInp = document.getElementById('colSettingPassword')
+    const newName = (document.getElementById('colSettingName')?.value || '').trim()
+    let newUname = (document.getElementById('colSettingUsername')?.value || '').trim()
+    const newVeh = document.getElementById('colSettingVehicle')?.value || 'Car'
+    const newAv = getSafeImageUrl(document.getElementById('colSettingAvatarVal')?.value.trim() || document.getElementById('colSettingAvatar')?.value.trim() || '')
+    const newPass = (document.getElementById('colSettingPassword')?.value || '').trim()
     const btn = document.getElementById('colSaveSettingsBtn')
-    const fb = document.getElementById('colSettingsFeedback')
-
-    const newName = nameInp ? nameInp.value.trim() : ''
-    let newUname = unameInp ? unameInp.value.trim() : ''
-    const newVeh = vehInp ? vehInp.value : 'Car'
-    const newAv = (avValInp ? avValInp.value.trim() : '') || (avUrlInp ? avUrlInp.value.trim() : '')
-    const newPass = passInp ? passInp.value.trim() : ''
 
     if (!newName) {
-      if (fb) {
-        fb.textContent = 'Please Enter A Valid Display Name.'
-        fb.style.background = 'rgba(239, 68, 68, 0.15)'
-        fb.style.color = '#ef4444'
-        fb.style.display = 'block'
-      }
+      showAuthMessage('colSettingsFeedback', 'err', 'Please enter a valid display name.')
       return
     }
-
     if (newUname) {
-      if (!newUname.startsWith('@')) {newUname = '@' + newUname}
+      if (!newUname.startsWith('@')) newUname = '@' + newUname
       newUname = '@' + newUname.slice(1).replace(/[^a-zA-Z0-9_]/g, '')
     }
-
     const currentUname = (window.colUser.username || '').toLowerCase()
     if (newUname && newUname.toLowerCase() !== currentUname) {
-      if (newUname.slice(1).length < 3) {
-        if (fb) {
-          fb.textContent = 'Username Must Be At Least 3 Characters.'
-          fb.style.background = 'rgba(239, 68, 68, 0.15)'
-          fb.style.color = '#ef4444'
-          fb.style.display = 'block'
-        }
-        return
-      }
-
       const check = await checkUsernameAvailability(newUname, window.colUser.id)
       if (!check.available) {
-        if (fb) {
-          fb.textContent = check.error || 'This Username Is Already Taken. Please Choose Another.'
-          fb.style.background = 'rgba(239, 68, 68, 0.15)'
-          fb.style.color = '#ef4444'
-          fb.style.display = 'block'
-        }
-        if (btn) {
-          btn.textContent = 'Save Changes'
-          btn.disabled = false
-        }
+        showAuthMessage('colSettingsFeedback', 'err', check.error || 'This username is already taken.')
         return
       }
     }
-
-    if (newPass && newPass.length < 6) {
-      if (fb) {
-        fb.textContent = 'New Password Must Be At Least 6 Characters.'
-        fb.style.background = 'rgba(239, 68, 68, 0.15)'
-        fb.style.color = '#ef4444'
-        fb.style.display = 'block'
-      }
+    if (newPass && newPass.length < 8) {
+      showAuthMessage('colSettingsFeedback', 'err', 'New password must be at least 8 characters long.')
       return
     }
 
     if (btn) {
-      btn.textContent = 'Saving Changes...'
+      btn.textContent = 'Saving...'
       btn.disabled = true
     }
-    if (fb) {fb.style.display = 'none'}
 
     try {
-      // 1. Resolve live Supabase session if available
-      let activeSession = null
-      if (supabaseClient) {
-        try {
-          const { data: sData } = await supabaseClient.auth.getSession()
-          activeSession = sData?.session || window.colUser.session || null
-        } catch (e) {
-          activeSession = window.colUser.session || null
-        }
+      const { data: sData } = await supabaseClient.auth.getSession()
+      if (!sData || !sData.session) throw new Error('Session expired')
+
+      if (newPass) {
+        const { error: passErr } = await supabaseClient.auth.updateUser({ password: newPass })
+        if (passErr) throw passErr
       }
 
-      if (supabaseClient && activeSession) {
-        if (newPass) {
-          const { error: passErr } = await supabaseClient.auth.updateUser({ password: newPass })
-          if (passErr) {throw passErr}
-        }
+      const metaUpdate = {
+        full_name: newName,
+        name: newName,
+        preferred_vehicle: newVeh,
+        avatar_url: newAv || null,
+        picture: newAv || null
+      }
+      await supabaseClient.auth.updateUser({ data: metaUpdate })
 
-        const metaUpdate = {
-          full_name: newName,
-          name: newName,
-          preferred_vehicle: newVeh
-        }
-        if (newAv !== undefined) {
-          metaUpdate.avatar_url = newAv || null
-          metaUpdate.picture = newAv || null
-        }
-        const { error: metaErr } = await supabaseClient.auth.updateUser({ data: metaUpdate })
-        if (metaErr) {console.warn('[col-auth] User metadata update warning:', metaErr)}
+      const upPayload = {
+        user_id: window.colUser.id,
+        display_name: newName,
+        full_name: newName,
+        preferred_vehicle: newVeh,
+        avatar_url: newAv || null,
+        updated_at: new Date().toISOString()
+      }
+      if (newUname) upPayload.username = newUname
+      await supabaseClient.from('user_profiles').upsert(upPayload, { onConflict: 'user_id' })
 
-        const upPayload = {
-          user_id: window.colUser.id,
-          display_name: newName,
-          full_name: newName,
-          preferred_vehicle: newVeh,
-          avatar_url: newAv || null,
-          updated_at: new Date().toISOString()
-        }
-        if (newUname) {upPayload.username = newUname}
-        const { error: upErr } = await supabaseClient.from('user_profiles').upsert(upPayload, { onConflict: 'user_id' })
-        if (upErr) {console.warn('[col-auth] user_profiles upsert warning:', upErr)}
-
-        const profPayload = {
-          id: window.colUser.id,
-          full_name: newName,
-          avatar_url: newAv || null,
-          updated_at: new Date().toISOString()
-        }
-        if (newUname) {profPayload.username = newUname}
-        const { error: pErr } = await supabaseClient.from('profiles').upsert(profPayload, { onConflict: 'id' })
-        if (pErr) {
-          if (pErr.code === '23505' || (pErr.message && pErr.message.includes('unique'))) {
-            throw new Error('This Username Is Already Taken By Another User.')
-          }
-          console.warn('[col-auth] profiles upsert warning:', pErr)
-        }
+      const profPayload = {
+        id: window.colUser.id,
+        full_name: newName,
+        avatar_url: newAv || null,
+        updated_at: new Date().toISOString()
+      }
+      if (newUname) profPayload.username = newUname
+      const { error: pErr } = await supabaseClient.from('profiles').upsert(profPayload, { onConflict: 'id' })
+      if (pErr && (pErr.code === '23505' || (pErr.message && pErr.message.includes('unique')))) {
+        throw new Error('This username is already taken.')
       }
 
-      // 2. Update live window.colUser in memory
       window.colUser.name = newName
-      if (newUname) {window.colUser.username = newUname}
+      if (newUname) window.colUser.username = newUname
       window.colUser.vehicle = newVeh
       window.colUser.picture = newAv || null
-      if (!window.colUser.user_metadata) {window.colUser.user_metadata = {}}
-      window.colUser.user_metadata.full_name = newName
-      window.colUser.user_metadata.name = newName
-      window.colUser.user_metadata.preferred_vehicle = newVeh
-      window.colUser.user_metadata.avatar_url = newAv || null
-      window.colUser.user_metadata.picture = newAv || null
 
-      // 3. Keep live identity in memory. Only an offline profile may receive
-      // a salted verifier; plaintext credentials are never written to storage.
-      const storedUser = {
-        id: window.colUser.id,
-        name: newName,
-        username: newUname || window.colUser.username,
-        vehicle: newVeh,
-        picture: newAv || null,
-        uid: window.colUser.uid,
-        updatedAt: new Date().toISOString()
-      }
-      if (window.colLocalUser?.isLocal) {
-        if (newPass) {
-          const credential = await createLocalCredential(newPass)
-          if (!credential) {throw new Error('Secure browser storage is unavailable. Please use cloud authentication.')}
-          Object.assign(storedUser, credential)
-        }
-        setActiveLocalUser(storedUser)
-      }
-
-      try {
-        const trProfRaw = localStorage.getItem('traffic_profile')
-        const trProf = trProfRaw ? JSON.parse(trProfRaw) : {}
-        trProf.name = newName
-        trProf.preferred_vehicle = newVeh
-        trProf.vehicle = newVeh
-        if (newAv) {trProf.avatar = newAv}
-        // Display name, vehicle choice and avatar path only.
-        // codeql[js/clear-text-storage-of-sensitive-data]
-        localStorage.setItem('traffic_profile', JSON.stringify(trProf))
-      } catch (e) {}
-
+      broadcastAuth('PROFILE_UPDATED')
       dispatchAuthEvent()
       updateAuthUI()
-
-      if (fb) {
-        fb.textContent = 'Account Settings Saved Successfully!'
-        fb.style.background = 'rgba(16, 185, 129, 0.15)'
-        fb.style.color = '#10b981'
-        fb.style.display = 'block'
-      }
-
-      if (btn) {
-        btn.textContent = 'Saved!'
-      }
-
-      setTimeout(() => {
-        renderAuthPanel('profile')
-      }, 900)
+      showAuthMessage('colSettingsFeedback', 'ok', 'Account settings saved.')
+      setTimeout(function () { renderAuthPanel('profile') }, 800)
     } catch (err) {
-      if (fb) {
-        fb.textContent = formatUserFriendlyAuthError(err, 'settings')
-        fb.style.background = 'rgba(239, 68, 68, 0.15)'
-        fb.style.color = '#ef4444'
-        fb.style.display = 'block'
-      }
+      showAuthMessage('colSettingsFeedback', 'err', formatUserFriendlyAuthError(err, 'settings'))
       if (btn) {
         btn.textContent = 'Save Changes'
         btn.disabled = false
@@ -2344,44 +1623,36 @@ window.closeMo = function () {
     }
   }
 
-  window._handleColOtpSend = async (e) => {
-    if (e) {e.preventDefault()}
+  window._handleColOtpSend = async function (e) {
+    if (e) e.preventDefault()
     const inp = document.getElementById('colOtpEmail')
     const emailInput = (inp ? inp.value : colOtpState.email || '').trim().toLowerCase()
     const btn = document.getElementById('colOtpSendBtn')
-    const errDiv = document.getElementById('colAuthError')
 
-    if (!emailInput) {return}
-    if (!supabaseClient) {
-      if (errDiv) {
-        errDiv.textContent = 'Cloud authentication service unavailable. Check your internet connection.'
-        errDiv.style.display = 'block'
-      }
+    if (!EMAIL_RE.test(emailInput)) {
+      showAuthMessage('colAuthError', 'err', 'Please enter a valid email address.')
       return
     }
-
+    if (colOtpState.cooldownUntil > Date.now() && e === null) return
+    if (!supabaseClient) {
+      showAuthMessage('colAuthError', 'err', 'Cloud authentication service unavailable.')
+      return
+    }
     if (btn) {
       btn.textContent = 'Sending Code...'
       btn.disabled = true
     }
-    if (errDiv) {errDiv.style.display = 'none'}
 
     try {
-      const { data, error } = await supabaseClient.auth.signInWithOtp({
+      const { error } = await supabaseClient.auth.signInWithOtp({
         email: emailInput,
-        options: {
-          shouldCreateUser: true
-        }
+        options: { shouldCreateUser: true }
       })
-      if (error) {throw error}
-
-      colOtpState = { step: 'verify', email: emailInput }
+      if (error) throw error
+      colOtpState = { step: 'verify', email: emailInput, cooldownUntil: Date.now() + OTP_RESEND_SECONDS * 1000 }
       renderAuthPanel('otp')
     } catch (err) {
-      if (errDiv) {
-        errDiv.textContent = formatUserFriendlyAuthError(err, 'otp_send')
-        errDiv.style.display = 'block'
-      }
+      showAuthMessage('colAuthError', 'err', formatUserFriendlyAuthError(err, 'otp_send'))
       if (btn) {
         btn.textContent = 'Send 6-Digit Code'
         btn.disabled = false
@@ -2389,103 +1660,165 @@ window.closeMo = function () {
     }
   }
 
-  window._handleColOtpVerify = async (e) => {
-    if (e) {e.preventDefault()}
-    const tokenInp = document.getElementById('colOtpToken')
-    const token = tokenInp ? tokenInp.value.trim() : ''
+  window._handleColOtpVerify = async function (e) {
+    if (e) e.preventDefault()
+    const token = (document.getElementById('colOtpToken')?.value || '').trim()
+    const grid = document.getElementById('colOtpGrid')
     const btn = document.getElementById('colOtpVerifyBtn')
-    const errDiv = document.getElementById('colAuthError')
 
     if (!token || token.length < 6) {
-      if (typeof window._triggerOtpAnimation === 'function') {
-        window._triggerOtpAnimation('wrong', 'Please enter all 6 verification digits.')
-      }
+      if (grid) grid.classList.add('is-wrong')
+      showAuthMessage('colAuthError', 'err', 'Please enter all 6 digits from your email.')
       return
     }
-
-    if (typeof window._triggerOtpAnimation === 'function') {
-      window._triggerOtpAnimation('verifying')
-    }
-
     if (!supabaseClient) {
-      // In local dev or demo mode, test code 123456, 000000, 777777 simulate instant success
-      const isSuccessCode = token === '123456' || token === '000000' || token === '777777'
-      if (isSuccessCode) {
-        if (typeof window._triggerOtpAnimation === 'function') {
-          window._triggerOtpAnimation('success', 'Code verified! Access unlocked.')
-        }
-        setTimeout(() => {
-          const verifiedEmail = colOtpState.email || 'tester@col.edu'
-          colOtpState = { step: 'send', email: '' }
-          window.colLocalUser = { username: 'Studio Tester', email: verifiedEmail, verified: true }
-          if (typeof closeAuthModal === 'function') closeAuthModal()
-          const colAuthModal = document.getElementById('colAuthModal')
-          if (colAuthModal) colAuthModal.classList.remove('open')
-          if (typeof dispatchAuthEvent === 'function') dispatchAuthEvent()
-          if (typeof updateAuthUI === 'function') updateAuthUI()
-        }, 900)
-        return
-      }
-      if (typeof window._triggerOtpAnimation === 'function') {
-        window._triggerOtpAnimation('wrong', 'Invalid verification code. Enter 123456 to test.')
-      }
+      showAuthMessage('colAuthError', 'err', 'Authentication service unavailable.')
       return
     }
 
+    if (btn) {
+      btn.disabled = true
+      btn.textContent = 'Verifying...'
+    }
     try {
-      const { data, error } = await supabaseClient.auth.verifyOtp({
+      const { error } = await supabaseClient.auth.verifyOtp({
         email: colOtpState.email,
         token: token,
         type: 'email'
       })
-      if (error) {throw error}
-
-      // Celebratory Success Animation
-      if (typeof window._triggerOtpAnimation === 'function') {
-        window._triggerOtpAnimation('success')
+      if (error) throw error
+      if (grid) {
+        grid.classList.remove('is-wrong')
+        grid.classList.add('is-success')
       }
-
-      setTimeout(() => {
-        colOtpState = { step: 'send', email: '' }
+      if (btn) btn.classList.add('is-verified')
+      showAuthMessage('colAuthError', 'ok', 'Verified. Signing you in...')
+      setTimeout(function () {
+        colOtpState = { step: 'send', email: '', cooldownUntil: 0 }
         closeAuthModal()
-        const loginMo = document.getElementById('loginMo')
-        if (loginMo) {loginMo.classList.remove('open')}
         dispatchAuthEvent()
         updateAuthUI()
-      }, 700)
+      }, 650)
     } catch (err) {
-      const msg = formatUserFriendlyAuthError(err, 'otp_verify')
-      if (typeof window._triggerOtpAnimation === 'function') {
-        window._triggerOtpAnimation('wrong', msg)
-      } else {
-        if (errDiv) {
-          errDiv.textContent = msg
-          errDiv.style.display = 'block'
-        }
-        if (btn) {
-          btn.textContent = 'Verify & Sign In'
-          btn.disabled = false
-        }
+      if (grid) grid.classList.add('is-wrong')
+      showAuthMessage('colAuthError', 'err', formatUserFriendlyAuthError(err, 'otp_verify'))
+      if (btn) {
+        btn.disabled = false
+        btn.textContent = 'Verify Code & Sign In'
       }
     }
   }
 
-  window._handleColOtpReset = () => {
-    colOtpState = { step: 'send', email: '' }
+  window._handleColOtpReset = function () {
+    clearOtpTimer()
+    colOtpState = { step: 'send', email: '', cooldownUntil: 0 }
     renderAuthPanel('otp')
   }
 
-  window.colDoGoogle = async () => {    if (window.AndroidBridge) {
+  window._toggleAuthPassVis = function (btn) {
+    const id = btn && btn.getAttribute('data-target')
+    const inp = id ? document.getElementById(id) : null
+    if (!inp) return
+    const nextType = inp.type === 'password' ? 'text' : 'password'
+    inp.type = nextType
+    const isVisible = nextType === 'text'
+    btn.innerHTML = isVisible ? SVG_EYE_OFF : SVG_EYE_OPEN
+    btn.setAttribute('aria-label', isVisible ? 'Hide password' : 'Show password')
+    btn.setAttribute('aria-pressed', isVisible ? 'true' : 'false')
+  }
+
+  window._promptSavedPasswordPicker = async function () {
+    const emailInp = document.getElementById('colAuthEmail')
+    const passInp = document.getElementById('colAuthPass')
+    if (navigator.credentials && typeof navigator.credentials.get === 'function') {
+      try {
+        const cred = await navigator.credentials.get({ password: true, mediation: 'optional' })
+        if (cred && cred.id && cred.password) {
+          if (emailInp) emailInp.value = cred.id
+          if (passInp) passInp.value = cred.password
+          const msg = document.getElementById('colAuthError')
+          if (msg) msg.className = 'col-auth-msg'
+          return
+        }
+      } catch (_e) {}
+    }
+    if (emailInp) emailInp.focus()
+    showAuthMessage('colAuthError', 'info', 'Tap the Email field to open your browser’s saved passwords dropdown.')
+  }
+
+  window._handleColResetRequest = async function (e) {
+    if (e) e.preventDefault()
+    const emailInput = (document.getElementById('colResetEmail')?.value || '').trim().toLowerCase()
+    const btn = document.getElementById('colResetSendBtn')
+    if (!EMAIL_RE.test(emailInput)) {
+      showAuthMessage('colAuthError', 'err', 'Please enter a valid email address.')
+      return
+    }
+    if (!supabaseClient) return
+    if (btn) { btn.textContent = 'Sending Link...'; btn.disabled = true }
+    try {
+      const returnUrl = window.location.origin + window.location.pathname + window.location.search + '#reset-password'
+      const { error } = await supabaseClient.auth.resetPasswordForEmail(emailInput, { redirectTo: returnUrl })
+      if (error) throw error
+      showAuthMessage('colAuthError', 'ok', 'Reset link sent to ' + emailInput + '. Check your inbox and Spam folder.')
+    } catch (err) {
+      showAuthMessage('colAuthError', 'err', formatUserFriendlyAuthError(err, 'reset'))
+    }
+    if (btn) { btn.textContent = 'Send Password Reset Link'; btn.disabled = false }
+  }
+
+  window._handleColUpdatePassword = async function (e) {
+    if (e) e.preventDefault()
+    const newPass = (document.getElementById('colResetNewPass')?.value || '').trim()
+    const confirmPass = (document.getElementById('colResetConfirmPass')?.value || '').trim()
+    const btn = document.getElementById('colResetNewPassBtn')
+
+    if (!newPass || newPass.length < 8) {
+      showAuthMessage('colAuthError', 'err', 'Password must be at least 8 characters long.')
+      return
+    }
+    if (newPass !== confirmPass) {
+      showAuthMessage('colAuthError', 'err', 'Passwords do not match. Please re-enter carefully.')
+      return
+    }
+    if (!supabaseClient) return
+    if (btn) { btn.textContent = 'Updating...'; btn.disabled = true }
+
+    try {
+      const { error } = await supabaseClient.auth.updateUser({ password: newPass })
+      if (error) throw error
+      window._colPasswordRecoveryMode = false
+      if (window.location.hash === '#reset-password') {
+        try { window.history.replaceState(window.history.state, '', window.location.pathname + window.location.search) } catch (_e) {}
+      }
+      closeAuthModal()
+      if (typeof window.toast === 'function') window.toast('Password updated successfully', '#10b981')
+    } catch (err) {
+      showAuthMessage('colAuthError', 'err', formatUserFriendlyAuthError(err, 'reset'))
+    }
+    if (btn) { btn.textContent = 'Update Password & Continue'; btn.disabled = false }
+  }
+
+  window.colDoGoogle = async function () {
+    if (window.AndroidBridge) {
       window.AndroidBridge.signInWithGoogle()
       return
     }
+    if (!supabaseClient) return
+    const returnHref = window.location.origin + window.location.pathname + window.location.search
+    try {
+      const payload = JSON.stringify({ url: returnHref, ts: Date.now() })
+      localStorage.setItem(RETURN_TO_KEY, payload)
+      sessionStorage.setItem(RETURN_TO_KEY, payload)
+    } catch (_e) {}
 
-    if (!supabaseClient) {return}
-    const allowedOrigin = 'https://advancedlogiclabs.dpdns.org'
     const currentOrigin = window.location.origin
-    const isLocal = currentOrigin.includes('localhost') || currentOrigin.includes('127.0.0.1')
-    const isVercel = currentOrigin.includes('vercel.app')
-    const redirectUrl = (currentOrigin === allowedOrigin || isLocal || isVercel) ? window.location.href : allowedOrigin
+    const isAllowed =
+      currentOrigin === 'https://advancedlogiclabs.dpdns.org' ||
+      currentOrigin === 'https://www.advancedlogiclabs.dpdns.org' ||
+      /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(currentOrigin) ||
+      /^https:\/\/[a-z0-9-]+\.(vercel\.app|dpdns\.org)$/i.test(currentOrigin)
+    const redirectUrl = isAllowed ? returnHref : 'https://advancedlogiclabs.dpdns.org'
 
     await supabaseClient.auth.signInWithOAuth({
       provider: 'google',
@@ -2493,343 +1826,132 @@ window.closeMo = function () {
     })
   }
 
-  window._handleColAuthSubmit = async (e, mode) => {
+  window._handleColAuthSubmit = async function (e, mode) {
     e.preventDefault()
-
-    const emailInput = document.getElementById('colAuthEmail').value.trim()
-    const pass = document.getElementById('colAuthPass').value.trim()
+    const emailInput = (document.getElementById('colAuthEmail')?.value || '').trim().toLowerCase()
+    const pass = (document.getElementById('colAuthPass')?.value || '').trim()
     const btn = document.getElementById('colAuthSubmitBtn')
-    const errDiv = document.getElementById('colAuthError')
 
-    btn.textContent = 'Processing...'
-    btn.disabled = true
-    errDiv.style.display = 'none'
+    if (!EMAIL_RE.test(emailInput)) {
+      showAuthMessage('colAuthError', 'err', 'Please enter a valid email address.')
+      return
+    }
+    if (!supabaseClient) {
+      showAuthMessage('colAuthError', 'err', 'Authentication service unavailable.')
+      return
+    }
 
+    if (btn) { btn.textContent = 'Processing...'; btn.disabled = true }
     try {
       if (mode === 'login') {
-        // 1. Check local accounts by username or display name. Local accounts
-        // only contain a salted verifier; plaintext PINs are never accepted
-        // from or written to browser storage.
-        const localAccounts = getLocalAccounts()
-        const normInput = emailInput.toLowerCase()
-        const normUname = normInput.startsWith('@') ? normInput : '@' + normInput
-
-        const matched = localAccounts.find(acc => {
-          if (!acc.authVerifier && !acc.credentialHash) {return false}
-          const accUname = (acc.username || '').toLowerCase()
-          const accName = (acc.name || '').toLowerCase()
-          return accUname === normInput || accUname === normUname || accName === normInput
-        })
-
-        if (matched) {
-          if (!await verifyLocalCredential(matched, pass)) {
-            throw new Error((matched.authVerifier || matched.credentialHash)
-              ? 'Incorrect password or PIN for this local account.'
-              : 'This legacy local account must be recreated with a secure password.')
-          }
-          setActiveLocalUser(matched)
-          closeAuthModal()
-          const loginMo = document.getElementById('loginMo')
-          if (loginMo) {loginMo.classList.remove('open')}
-          dispatchAuthEvent()
-          updateAuthUI()
-          btn.textContent = 'Sign In'
-          btn.disabled = false
-          return
-        }
-
-        // 2. If not found in local accounts, try Supabase account system RPC first
-        if (supabaseClient) {
+        const res = await supabaseClient.auth.signInWithPassword({ email: emailInput, password: pass })
+        if (res.error) throw res.error
+        if (window.PasswordCredential && navigator.credentials && typeof navigator.credentials.store === 'function') {
           try {
-            const rpcRes = await supabaseClient.rpc('authenticate_account', {
-              p_identifier: emailInput,
-              p_pin: pass
-            })
-            if (rpcRes && rpcRes.data && rpcRes.data.success) {
-              const acc = rpcRes.data
-              setActiveLocalUser({
-                id: acc.id,
-                name: acc.display_name || acc.username,
-                username: acc.username,
-                role: acc.role || 'student',
-                vehicle: acc.preferred_vehicle || 'Car',
-                age: acc.age || 18,
-                language: acc.language || 'en',
-                total: acc.total_score || 0,
-                badges: acc.badges || [],
-                updatedAt: new Date().toISOString()
-              })
-              closeAuthModal()
-              const loginMo = document.getElementById('loginMo')
-              if (loginMo) {loginMo.classList.remove('open')}
-              dispatchAuthEvent()
-              updateAuthUI()
-              btn.textContent = 'Sign In'
-              btn.disabled = false
-              return
-            }
-          } catch (rpcErr) {
-            console.warn('[col-auth] Account system RPC auth bypass/error:', rpcErr)
-          }
+            const cred = new window.PasswordCredential({ id: emailInput, password: pass })
+            navigator.credentials.store(cred).catch(function () {})
+          } catch (_ce) {}
         }
-
-        if (!supabaseClient) {
-          throw new Error('Local account not found. Please check your username or PIN.')
-        }
-
-        const res = await supabaseClient.auth.signInWithPassword({
-          email: emailInput,
-          password: pass
-        })
-
-        if (res.error) {throw res.error}
         closeAuthModal()
-        const loginMo = document.getElementById('loginMo')
-        if (loginMo) {loginMo.classList.remove('open')}
+        window.closeMo()
       } else {
-        // Signup mode
-        const name = document.getElementById('colAuthName').value.trim()
-        if (supabaseClient) {
-          try {
-            const res = await supabaseClient.auth.signUp({
-              email: emailInput,
-              password: pass,
-              options: { data: { full_name: name } }
-            })
-            if (res.error) {throw res.error}
-
-            if (res.data.user && !res.data.session) {
-              errDiv.textContent = 'Please check your email to confirm registration.'
-              errDiv.style.color = '#10b981'
-              errDiv.style.display = 'block'
-            } else {
-              closeAuthModal()
-            }
-          } catch (cloudErr) {
-            console.warn('[col-auth] Cloud signup failed, saving to account system:', cloudErr)
-            // Fallback: save as account
-            const uname = '@' + (name.toLowerCase().replace(/\s+/g, '_') || 'driver_' + getSecureRandomInt(100, 999))
-            const credential = await createLocalCredential(pass)
-            if (!credential) {throw new Error('Secure browser storage is unavailable. Please use cloud authentication.')}
-            const newAcc = {
-              id: 'local_' + Date.now(),
-              name: name,
-              username: uname,
-              role: 'student',
-              vehicle: 'Car',
-              createdAt: new Date().toISOString(),
-              authVerifier: credential.authVerifier,
-              authSalt: credential.authSalt
-            }
-            try {
-              const reg = await supabaseClient.rpc('register_account', {
-                p_username: uname,
-                p_pin: pass,
-                p_display_name: name,
-                p_email: emailInput,
-                p_role: 'student',
-                p_vehicle: 'Car'
-              })
-              if (reg && reg.data && reg.data.success) {
-                newAcc.id = reg.data.id
-              }
-            } catch (regErr) {
-              console.warn('[col-auth] Account system cloud registration failed:', regErr)
-            }
-            setActiveLocalUser(newAcc)
-            closeAuthModal()
-            dispatchAuthEvent()
-            updateAuthUI()
-            return
+        if (pass.length < 8) throw new Error('Password must be at least 8 characters long.')
+        const name = (document.getElementById('colAuthName')?.value || '').trim()
+        const res = await supabaseClient.auth.signUp({
+          email: emailInput,
+          password: pass,
+          options: {
+            data: { full_name: name },
+            emailRedirectTo: window.location.origin + window.location.pathname + window.location.search
           }
+        })
+        if (res.error) throw res.error
+        if (res.data.user && !res.data.session) {
+          showAuthMessage('colAuthError', 'ok', 'Account created. Check your email inbox to confirm your address before signing in.')
         } else {
-          // Offline / local only
-          const uname = '@' + (name.toLowerCase().replace(/\s+/g, '_') || 'driver_' + getSecureRandomInt(100, 999))
-          const credential = await createLocalCredential(pass)
-          if (!credential) {throw new Error('Secure browser storage is unavailable. Please use cloud authentication.')}
-          const newAcc = {
-            id: 'local_' + Date.now(),
-            name: name,
-            username: uname,
-            role: 'student',
-            vehicle: 'Car',
-            createdAt: new Date().toISOString(),
-            authVerifier: credential.authVerifier,
-            authSalt: credential.authSalt
-          }
-          setActiveLocalUser(newAcc)
           closeAuthModal()
-          dispatchAuthEvent()
-          updateAuthUI()
         }
       }
     } catch (error) {
-      errDiv.textContent = formatUserFriendlyAuthError(error, mode)
-      errDiv.style.color = '#ef4444'
-      errDiv.style.display = 'block'
+      showAuthMessage('colAuthError', 'err', formatUserFriendlyAuthError(error, mode))
     }
-    btn.textContent = mode === 'login' ? 'Sign In' : 'Create Account'
-    btn.disabled = false
+    if (btn) {
+      btn.textContent = mode === 'login' ? 'Sign In' : 'Create Account'
+      btn.disabled = false
+    }
   }
 
-  window.colDoLogout = async () => {
-    if (window.colLocalUser?.isLocal) {
-      clearActiveLocalUser()
-      closeAuthModal()
-      const loginMo = document.getElementById('loginMo')
-      if (loginMo) {loginMo.classList.remove('open')}
-      dispatchAuthEvent()
-      updateAuthUI()
-      return
-    }
+  window.colDoLogout = async function () {
     if (supabaseClient) {
-      try {
-        await supabaseClient.auth.signOut()
-      } catch (e) {}
+      try { await supabaseClient.auth.signOut() } catch (_e) {}
     }
     clearActiveLocalUser()
     closeAuthModal()
-    const loginMo = document.getElementById('loginMo')
-    if (loginMo) {loginMo.classList.remove('open')}
+    window.closeMo()
     window._oneTapAttempted = false
     try {
       sessionStorage.removeItem('col_onetap_dismissed_session')
       clearOneTapCoolDown()
-    } catch (e) {}
+    } catch (_e) {}
+    broadcastAuth('SIGNED_OUT')
     dispatchAuthEvent()
     updateAuthUI()
   }
   window.doLogout = window.colDoLogout
-  // Legacy inline-handler aliases (about.html + injected modal use bare names)
-  window.gSignIn = function () { try { return window.colDoGoogle && window.colDoGoogle(); } catch (e) {} };
-  window.updateUsername = function () {
+  window.gSignIn = function () {
+    try { return window.colDoGoogle && window.colDoGoogle() } catch (_e) {}
+  }
+
+  window.updateUsername = async function () {
     try {
-      const inp = document.getElementById('miName');
-      const name = inp && inp.value ? inp.value.trim().slice(0, 40) : '';
-      if (!name) { try { toast('Enter A Username First', '#ef4444'); } catch (e) {} return; }
-      const cur = (typeof getActiveLocalUser === 'function' && getActiveLocalUser()) || window.colUser || {};
-      const updated = Object.assign({}, cur, { name });
-      if (typeof setActiveLocalUser === 'function') {setActiveLocalUser(updated);}
-      if (window.colUser) {window.colUser.name = name;}
-      try { toast('Username Saved', '#22c55e'); } catch (e) {}
-      try { if (typeof updateAuthUI === 'function') {updateAuthUI();} } catch (e) {}
-    } catch (e) { console.warn('[col-auth] updateUsername failed:', e); }
-  };
-
-  // --- Secure Profile Linking (Verification Code Flow) ---
-  window.colAuthGenerateCode = async () => {
-    if (!window.supabaseClient || !window.colUser) {
-      if (typeof toast === 'function') {toast('Please log in to generate a linking code', '#ef4444')}
-      return null;
-    }
-    try {
-      const code = getSecureRandomInt(100000, 999999).toString();
-      const { error } = await window.supabaseClient
-        .from('profiles')
-        .update({ verification_code: code })
-        .eq('id', window.colUser.id);
-      if (error) {throw error;}
-      return code;
-    } catch (e) {
-      console.error('[col-auth] Code generation failed:', e);
-      return null;
-    }
-  };
-
-  window.colAuthVerifyCode = async (code) => {
-    if (!window.supabaseClient) {return { success: false, error: 'Auth system unavailable' };}
-    try {
-      const { data, error } = await window.supabaseClient
-        .from('profiles')
-        .select('id')
-        .eq('verification_code', code)
-        .maybeSingle();
-      if (error) {throw error;}
-      if (!data) {return { success: false, error: 'Invalid or expired code' };}
-
-      // Clear code after successful verification
-      await window.supabaseClient
-        .from('profiles')
-        .update({ verification_code: null })
-        .eq('id', data.id);
-
-      return { success: true, userId: data.id };
-    } catch (e) {
-      console.error('[col-auth] Code verification failed:', e);
-      return { success: false, error: e.message };
-    }
-  };
-
-  async function verifyApkCertificate() {
-    if (!window.AndroidBridge) {
-      window.colApkVerified = false
-      window.dispatchEvent(new CustomEvent('col-apk-verified', { detail: { verified: false } }))
-      return
-    }
-    try {
-      const fp = window.AndroidBridge.getCertificateFingerprint()
-      if (!fp) {
-        window.colApkVerified = false
-        window.dispatchEvent(new CustomEvent('col-apk-verified', { detail: { verified: false } }))
+      const inp = document.getElementById('miName')
+      const name = inp && inp.value ? inp.value.trim().slice(0, 40) : ''
+      if (!name) {
+        if (typeof window.toast === 'function') window.toast('Enter a display name first', '#ef4444')
         return
       }
-      window.colApkFingerprint = fp
-      // Fetch expected fingerprint from config (shared request, see window.__colConfigPromise)
-      let expected = null
-      try {
-        window.__colConfigPromise =
-          window.__colConfigPromise ||
-          fetch('/config.json', { signal: AbortSignal.timeout(8000) })
-            .then((r) => (r.ok ? r.json() : null))
-            .catch(() => null)
-        const cfg = await window.__colConfigPromise
-        if (cfg) {expected = cfg.apkCertFingerprint || null}
-      } catch (e) {}
-      if (expected && fp.toUpperCase() === expected.toUpperCase()) {
-        window.colApkVerified = true
-      } else {
-        window.colApkVerified = false
+      if (!supabaseClient || !window.colUser) {
+        if (typeof window.toast === 'function') window.toast('Please sign in first', '#ef4444')
+        return
       }
-      window.dispatchEvent(new CustomEvent('col-apk-verified', { detail: { verified: window.colApkVerified, fingerprint: fp } }))
-    } catch (e) {
-      console.warn('[col-auth] APK verification failed:', e)
-      window.colApkVerified = false
-      window.dispatchEvent(new CustomEvent('col-apk-verified', { detail: { verified: false } }))
-    }
+      await supabaseClient.auth.updateUser({ data: { full_name: name, name: name } })
+      await supabaseClient.from('user_profiles').upsert({ user_id: window.colUser.id, display_name: name, full_name: name }, { onConflict: 'user_id' })
+      window.colUser.name = name
+      broadcastAuth('PROFILE_UPDATED')
+      if (typeof window.toast === 'function') window.toast('Display name updated', '#22c55e')
+      updateAuthUI()
+    } catch (_e) {}
   }
-  verifyApkCertificate()
+
+  function bindAuthTriggerOnce(el) {
+    if (!el || el.dataset.colAuthBound === '1') return
+    el.dataset.colAuthBound = '1'
+    el.addEventListener('click', function () {
+      if (typeof window.openGlobalLogin === 'function') window.openGlobalLogin()
+      else if (typeof window.openLogin === 'function') window.openLogin()
+    })
+  }
 
   function updateAuthUI() {
-    // Find existing UI elements in any page
     const navBtns = document.querySelectorAll('.nav-login-btn, #navLoginBtn, #sbSignBtn')
     const navProfiles = document.querySelectorAll('.nav-user-profile, #navUserProfile, #pCard')
 
     if (window.colUser) {
-      navBtns.forEach((btn) => (btn.style.display = 'none'))
-      navProfiles.forEach((prof) => {
+      navBtns.forEach(function (btn) { btn.style.display = 'none' })
+      navProfiles.forEach(function (prof) {
         prof.style.display = 'flex'
-        if (prof.dataset.preserveClick !== 'true') {
-          prof.onclick = function () {
-            if (window.openGlobalLogin) {window.openGlobalLogin()}
-            else if (window.openLogin) {window.openLogin()}
-          }
-        }
+        if (prof.dataset.preserveClick !== 'true') bindAuthTriggerOnce(prof)
 
-        // Try to find the inner text elements
-        const nameEls = prof.querySelectorAll('span, .pname')
-        const avEls = prof.querySelectorAll('.nav-user-avatar, .pav')
-        const emailEls = prof.querySelectorAll('.pemail')
-
-        const displayName = String(window.colUser.name || window.colUser.username || 'User')
-        nameEls.forEach((el) => (el.textContent = displayName.split(' ')[0]))
-        emailEls.forEach((el) => {
+        const displayName = String(window.colUser.name || window.colUser.username || 'Driver')
+        prof.querySelectorAll('span, .pname').forEach(function (el) { el.textContent = displayName.split(' ')[0] })
+        prof.querySelectorAll('.pemail').forEach(function (el) {
           el.textContent = window.colUser.email ? window.colUser.email.toLowerCase() : ''
           el.style.setProperty('text-transform', 'none', 'important')
         })
 
-        avEls.forEach((av) => {
-          const initial = displayName.replace(/^@/, '').charAt(0).toUpperCase() || 'U'
-          const picture = getSafeImageUrl(window.colUser.picture)
+        const initial = displayName.replace(/^@/, '').charAt(0).toUpperCase() || 'D'
+        const picture = getSafeImageUrl(window.colUser.picture)
+        prof.querySelectorAll('.nav-user-avatar, .pav').forEach(function (av) {
           av.textContent = ''
           if (picture) {
             const image = document.createElement('img')
@@ -2837,7 +1959,7 @@ window.closeMo = function () {
             image.alt = displayName
             image.referrerPolicy = 'no-referrer'
             image.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;'
-            image.addEventListener('error', () => {
+            image.addEventListener('error', function () {
               image.remove()
               av.textContent = initial
             })
@@ -2848,25 +1970,21 @@ window.closeMo = function () {
         })
       })
     } else {
-      navBtns.forEach((btn) => {
+      navBtns.forEach(function (btn) {
         btn.style.display = 'flex'
-        btn.onclick = function () {
-          if (window.openGlobalLogin) {window.openGlobalLogin()}
-          else if (window.openLogin) {window.openLogin()}
-        }
+        bindAuthTriggerOnce(btn)
       })
-      navProfiles.forEach((prof) => (prof.style.display = 'none'))
+      navProfiles.forEach(function (prof) { prof.style.display = 'none' })
     }
 
-    // Sync Traffic UI components if present
-    if (typeof updateTrafficAuthUI === 'function') {
-      try { updateTrafficAuthUI(); } catch (e) {}
+    if (typeof window.updateTrafficAuthUI === 'function') {
+      try { window.updateTrafficAuthUI() } catch (_e) {}
     }
     const topProfBtn = document.getElementById('top-profile-btn')
     const topProfLbl = document.getElementById('top-profile-label')
     if (topProfBtn && topProfLbl) {
       if (window.colUser) {
-        const displayName = String(window.colUser.name || window.colUser.username || 'User').split(' ')[0]
+        const displayName = String(window.colUser.name || window.colUser.username || 'Driver').split(' ')[0]
         topProfLbl.textContent = displayName
         topProfBtn.title = 'Driver Dashboard: ' + (window.colUser.name || 'Driver')
       } else {
@@ -2876,30 +1994,6 @@ window.closeMo = function () {
     }
   }
 
-  // Pre-populate UI immediately from cookies so returning visitors experience zero auth lag
-  function initEarlyUserFromCookies() {
-    try {
-      if (!window.colUser && window.ColUserData) {
-        var cached = window.ColUserData.getUser()
-        if (cached && (cached.name || cached.username)) {
-          window.colUser = {
-            id: cached.id || 'cached_user',
-            name: cached.name || cached.username,
-            username: cached.username || ('@' + (cached.name || 'user').toLowerCase().replace(/\s+/g, '')),
-            email: cached.email || '',
-            picture: cached.picture || null,
-            isCached: true
-          }
-          updateAuthUI()
-        }
-      }
-    } catch (e) {}
-  }
-  initEarlyUserFromCookies()
-
-  // Auto-update UI on load if we have cached elements but Auth hasn't finished loading yet
-  document.addEventListener('DOMContentLoaded', function () {
-    initEarlyUserFromCookies()
-    updateAuthUI()
-  })
+  updateAuthUI()
+  document.addEventListener('DOMContentLoaded', updateAuthUI, { once: true })
 })()

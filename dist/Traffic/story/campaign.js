@@ -457,7 +457,7 @@
         // Road, joined the queue and stopped behind the paint — so the camera is
         // borrowing a world they have already looked at, and Arjun is standing in
         // the exact spot the prologue spent nine shots framing.
-        after: 'wait_red',
+        after: 'reach_signal',
         once: true,
         title: 'Three Hours Later · Same Signal',
 
@@ -469,8 +469,8 @@
         //
         // Arjun stands on the west footpath of Linking Road with the notebook.
         cast: [
-          { id: 'arjun', kind: 'ped', variant: 'normal', x: -6.5, y: 0, z: -19, rotY: -Math.PI / 2 },
-          { id: 'iyer', kind: 'ped', variant: 'elderly', x: 8.6, y: 0, z: -22, rotY: Math.PI / 2 }
+          { id: 'arjun', kind: 'ped', variant: 'normal', x: -12.5, y: 0, z: -19, rotY: -Math.PI / 2 },
+          { id: 'iyer', kind: 'ped', variant: 'elderly', x: 12.5, y: 0, z: -22, rotY: Math.PI / 2 }
         ],
 
         shots: [
@@ -494,8 +494,8 @@
             dur: 8,
             ease: 'linear',
             transition: 'cut',
-            from: [-9.4, 1.9, -22.4], to: [-8.2, 1.7, -20.6],
-            look: [-6.5, 1.4, -19.0],
+            from: [-15.5, 1.9, -22.4], to: [-14.2, 1.7, -20.6],
+            look: [-12.5, 1.4, -19.0],
             fov: 44,
             act: 'day',
             sub: {
@@ -556,7 +556,7 @@
 
         // Both actors are staged under the store's awning on the Bazaar Road
         // frontage — the level's own 'Sharma General Stores' plot sits at
-        // (72, 100), so the awning and its signboard are already in frame.
+        // (44, 114), so the awning and its signboard are already in frame.
         // Arjun is closer to the road, Mrs. Iyer further in: the shot-reverse
         // pattern below works off that depth difference rather than off a
         // cutaway, which is why the two never share a frame again.

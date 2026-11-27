@@ -28,7 +28,7 @@ console.log(`Loaded ${allCareers.length} total careers from careers-data.js`);
 const OCCUPATION_CUSTOM = {
   // Aviation & Airspace
   'airline and commercial pilots': {
-    cat: 'space', catName: 'Aviation & Aerospace', icon: '✈️',
+    cat: 'space', catName: 'Aviation & Aerospace', icon: 'navigation',
     tagline: 'Command commercial jetliners, manage cockpit automation, and fly passengers safely worldwide.',
     aiImpact: 'Legally Mandated Dual Human Flight Deck — FAA and international aviation laws require two certified pilots in every commercial cockpit. While autopilot handles routine high-altitude cruise, pilots manage severe weather diversions, system faults, rapid decompression, and emergency landings.',
     aiTag: 'protected',
@@ -37,7 +37,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['transport', 'machines', 'tech']
   },
   'air traffic controllers': {
-    cat: 'space', catName: 'Aviation & Aerospace', icon: '✈️',
+    cat: 'space', catName: 'Aviation & Aerospace', icon: 'navigation',
     tagline: 'Direct airport runway and airspace movements to maintain safe aircraft separation.',
     aiImpact: 'Real-Time Airspace Separation — NextGen radar automation calculates trajectory alerts, but issuing immediate tactical vector commands and managing high-stress emergency diversions remains strictly in human hands.',
     aiTag: 'protected',
@@ -46,7 +46,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['transport', 'tech', 'numbers']
   },
   'commercial airline pilot & aviation flight operations': {
-    cat: 'space', catName: 'Aviation & Aerospace', icon: '✈️',
+    cat: 'space', catName: 'Aviation & Aerospace', icon: 'navigation',
     tagline: 'Command multi-million dollar passenger and cargo jetliners with cockpit mastery.',
     aiImpact: 'Legally Mandated Dual Human Flight Deck — FAA and international aviation laws require two certified pilots in every commercial cockpit. While autopilot handles routine cruise, pilots manage convective storm diversions, engine flameouts, and off-nominal landings.',
     aiTag: 'protected',
@@ -55,7 +55,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['transport', 'machines', 'tech']
   },
   'aircraft and avionics equipment mechanics and technicians': {
-    cat: 'space', catName: 'Aviation & Aerospace', icon: '✈️',
+    cat: 'space', catName: 'Aviation & Aerospace', icon: 'navigation',
     tagline: 'Inspect, maintain, and repair jet engines, airframes, and flight avionics systems.',
     aiImpact: 'FAA-Certified Airworthiness Inspection — Diagnostic sensors flag error codes, but crawling inside wing spars, borescoping turbine blades, and signing off legal logbooks requires licensed A&P mechanics.',
     aiTag: 'protected',
@@ -64,7 +64,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['machines', 'transport', 'tech']
   },
   'aerospace engineers': {
-    cat: 'eng', catName: 'Engineering & Robotics', icon: '🚀',
+    cat: 'eng', catName: 'Engineering & Robotics', icon: 'zap',
     tagline: 'Design aircraft, spacecraft, propulsion systems, satellites, and missiles.',
     aiImpact: 'Computational Design & Flight Physics — Computational fluid dynamics and finite element tools simulate airflow and stress, but validating structural margins and flight safety certifications remains human work.',
     aiTag: 'automation',
@@ -74,7 +74,7 @@ const OCCUPATION_CUSTOM = {
 
   // Public Safety, Fire & Law Enforcement
   'firefighters': {
-    cat: 'law', catName: 'Public Safety & Defense', icon: '🚒',
+    cat: 'law', catName: 'Public Safety & Defense', icon: 'sparkles',
     tagline: 'Respond to structural fires, medical emergencies, and hazardous material crises.',
     aiImpact: 'Unpredictable Physical Hazard Rescue — Real fires involve thermal flashovers, structural collapse, toxic zero-visibility smoke, and extricating trapped victims where software cannot operate.',
     aiTag: 'protected',
@@ -83,7 +83,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['law', 'people', 'build']
   },
   'police and detectives': {
-    cat: 'law', catName: 'Public Safety & Defense', icon: '👮',
+    cat: 'law', catName: 'Public Safety & Defense', icon: 'shield',
     tagline: 'Protect communities, enforce criminal statutes, investigate crimes, and maintain order.',
     aiImpact: 'Discretionary Judgment & Crisis De-escalation — Automated license readers and crime mapping assist investigations, but de-escalating domestic conflicts, interviewing victims, and exercising legal search discretion require human accountability.',
     aiTag: 'protected',
@@ -92,7 +92,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['law', 'people']
   },
   'correctional officers and bailiffs': {
-    cat: 'law', catName: 'Public Safety & Defense', icon: '🛡️',
+    cat: 'law', catName: 'Public Safety & Defense', icon: 'shield',
     tagline: 'Oversee individuals awaiting trial or serving sentences in correctional facilities.',
     aiImpact: 'Direct Physical Security & Inmate Management — Facility cameras and electronic gates control movement, but maintaining day-to-day interpersonal order, conducting physical cell searches, and resolving inmate conflicts require human officers.',
     aiTag: 'protected',
@@ -101,7 +101,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['law', 'people']
   },
   'security guards and gaming surveillance officers': {
-    cat: 'law', catName: 'Public Safety & Defense', icon: '🛡️',
+    cat: 'law', catName: 'Public Safety & Defense', icon: 'shield',
     tagline: 'Monitor premises, patrol facilities, prevent theft, and respond to security alarms.',
     aiImpact: 'On-Site Physical Incident Response — Video analytics and motion sensors detect unusual movement, but physically inspecting breached doorways, escorting trespassers, and managing emergency evacuations need security staff.',
     aiTag: 'protected',
@@ -112,7 +112,7 @@ const OCCUPATION_CUSTOM = {
 
   // Culinary & Hospitality
   'chefs and head cooks': {
-    cat: 'service', catName: 'Food & Culinary Arts', icon: '👨‍🍳',
+    cat: 'service', catName: 'Food & Culinary Arts', icon: 'sparkles',
     tagline: 'Direct commercial kitchen operations, develop recipes, and lead dinner rush service.',
     aiImpact: 'Palate Tasting & Live Rush Execution — Software tracks ingredient costs and recipe specs, but tasting seasoning balance on the fly, directing a hot line station during dinner service, and creating memorable dining experiences are entirely human.',
     aiTag: 'people',
@@ -121,7 +121,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['food', 'design', 'business']
   },
   'bakers': {
-    cat: 'service', catName: 'Food & Culinary Arts', icon: '🥖',
+    cat: 'service', catName: 'Food & Culinary Arts', icon: 'sparkles',
     tagline: 'Craft artisan breads, pastries, and baked goods using precise dough handling and ovens.',
     aiImpact: 'Tactile Dough Fermentation & Artisan Craft — Commercial proofers and deck ovens assist production, but judging dough hydration by touch, monitoring sourdough fermentation aroma, and hand-shaping pastries are artisan craft skills.',
     aiTag: 'protected',
@@ -130,7 +130,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['food', 'machines']
   },
   'cooks': {
-    cat: 'service', catName: 'Food & Culinary Arts', icon: '🍳',
+    cat: 'service', catName: 'Food & Culinary Arts', icon: 'sparkles',
     tagline: 'Prepare, season, and cook dishes to order in restaurants, hotels, and cafeterias.',
     aiImpact: 'Active Cook Line Execution — Automated fryers and kitchen display monitors organize orders, but multi-tasking across griddles, searing proteins to exact doneness, and plating orders quickly remain human work.',
     aiTag: 'protected',
@@ -139,7 +139,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['food']
   },
   'food preparation workers': {
-    cat: 'service', catName: 'Food & Culinary Arts', icon: '🥗',
+    cat: 'service', catName: 'Food & Culinary Arts', icon: 'sparkles',
     tagline: 'Chop vegetables, slice deli meats, prepare cold dressings, and support kitchen inventory.',
     aiImpact: 'Physical Kitchen Preparation — Industrial slicers assist bulk prep, but handling varied fresh produce, assembling custom salads, and maintaining sanitary prep stations require continuous manual dexterity.',
     aiTag: 'protected',
@@ -148,7 +148,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['food']
   },
   'bartenders': {
-    cat: 'service', catName: 'Food & Culinary Arts', icon: '🍸',
+    cat: 'service', catName: 'Food & Culinary Arts', icon: 'sparkles',
     tagline: 'Mix craft cocktails, serve beverages, and manage hospitality at bars and restaurants.',
     aiImpact: 'Hospitality Presence & Social Connection — Automated cocktail dispensers exist in high-volume venues, but reading guest mood, crafting personalized drinks, creating bar atmosphere, and checking intoxication levels remain human.',
     aiTag: 'people',
@@ -159,7 +159,7 @@ const OCCUPATION_CUSTOM = {
 
   // Transportation, Driving & Logistics
   'delivery truck drivers and driver/sales workers': {
-    cat: 'trades', catName: 'Transportation & Logistics', icon: '🚚',
+    cat: 'trades', catName: 'Transportation & Logistics', icon: 'truck',
     tagline: 'Transport merchandise, parcels, and food products across local and regional delivery routes.',
     aiImpact: 'Dock Navigation & Last-Mile Handling — Routing software plans optimal delivery order, but maneuvering tight alleys, hand-carrying packages through apartment stairwells, and securing customer sign-offs require human physical presence.',
     aiTag: 'protected',
@@ -168,7 +168,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['transport']
   },
   'heavy and tractor-trailer truck drivers': {
-    cat: 'trades', catName: 'Transportation & Logistics', icon: '🚛',
+    cat: 'trades', catName: 'Transportation & Logistics', icon: 'truck',
     tagline: 'Haul freight across interstate highways and industrial distribution corridors.',
     aiImpact: 'Inclement Highway Driving & Cargo Security — Highway cruise assist helps highway lane-keeping, but chaining tires in winter blizzards, managing weight stations, maneuvering 53-foot trailers into tight warehouse bays, and securing straps are human responsibilities.',
     aiTag: 'protected',
@@ -177,7 +177,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['transport', 'machines']
   },
   'bus drivers': {
-    cat: 'trades', catName: 'Transportation & Logistics', icon: '🚌',
+    cat: 'trades', catName: 'Transportation & Logistics', icon: 'bus',
     tagline: 'Transport passengers safely along scheduled municipal transit or school routes.',
     aiImpact: 'Passenger Safety & Route Navigation — Navigating busy urban streets, assisting wheelchair passengers, calming disruptive riders, and monitoring student safety are active human responsibilities.',
     aiTag: 'people',
@@ -186,7 +186,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['transport', 'people']
   },
   'rail transportation workers': {
-    cat: 'trades', catName: 'Transportation & Logistics', icon: '🚆',
+    cat: 'trades', catName: 'Transportation & Logistics', icon: 'sparkles',
     tagline: 'Operate locomotives, conduct freight trains, and manage rail yard switching operations.',
     aiImpact: 'Positive Train Control Oversight — Positive Train Control (PTC) computer systems enforce speed limits, but monitoring track grade conditions, air brake pressure dynamics, and coupling railcars require certified railroad crews.',
     aiTag: 'protected',
@@ -195,7 +195,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['transport', 'machines']
   },
   'water transportation workers': {
-    cat: 'trades', catName: 'Transportation & Logistics', icon: '🚢',
+    cat: 'trades', catName: 'Transportation & Logistics', icon: 'navigation',
     tagline: 'Navigate container ships, tugboats, ferries, and barges across coastal and inland waters.',
     aiImpact: 'Maritime Seamanship & Vessel Maneuvering — Electronic chart displays (ECDIS) guide open-ocean routes, but docking in heavy tidal currents, managing rough ocean swells, line handling, and onboard damage control require experienced mariners.',
     aiTag: 'protected',
@@ -206,7 +206,7 @@ const OCCUPATION_CUSTOM = {
 
   // Retail, Sales & Customer Support
   'cashiers': {
-    cat: 'biz', catName: 'Retail & Consumer Services', icon: '🛒',
+    cat: 'biz', catName: 'Retail & Consumer Services', icon: 'sparkles',
     tagline: 'Process customer transactions, manage checkout registers, and assist retail shoppers.',
     aiImpact: 'Checkout Problem-Solving & Customer Service — Self-checkout kiosks handle straightforward scans, but cashiers resolve scanned price errors, manage returns, look up unbarcoded produce, and assist shoppers directly.',
     aiTag: 'people',
@@ -215,7 +215,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['business', 'people']
   },
   'retail salespersons': {
-    cat: 'biz', catName: 'Retail & Consumer Services', icon: '🛍️',
+    cat: 'biz', catName: 'Retail & Consumer Services', icon: 'package',
     tagline: 'Help customers find, select, and purchase merchandise across retail stores.',
     aiImpact: 'Consultative Customer Guidance — Online shopping handles commodity reordering, but demonstrating physical products, sizing apparel, recommending tech accessories, and guiding in-store shoppers remain human interactions.',
     aiTag: 'people',
@@ -224,7 +224,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['business', 'people']
   },
   'customer service representatives': {
-    cat: 'biz', catName: 'Business & Operations', icon: '🎧',
+    cat: 'biz', catName: 'Business & Operations', icon: 'music',
     tagline: 'Resolve customer account inquiries, handle product complaints, and provide support.',
     aiImpact: 'Complex Dispute Escalation & Customer Empathy — AI chat bots handle routine password resets and shipping tracking, while frustrated callers, billing discrepancies, and complex policy exceptions require empathetic human reps.',
     aiTag: 'people',
@@ -235,7 +235,7 @@ const OCCUPATION_CUSTOM = {
 
   // Social Science & Humanities
   'psychologists': {
-    cat: 'health', catName: 'Psychology & Mental Health', icon: '🧠',
+    cat: 'health', catName: 'Psychology & Mental Health', icon: 'sparkles',
     tagline: 'Assess cognitive processes, diagnose mental disorders, and provide clinical therapy.',
     aiImpact: 'Confidential Human Therapeutic Rapport — While AI tools transcribe session notes, building deep therapeutic trust, parsing non-verbal trauma cues, and guiding emotional healing are fundamentally human.',
     aiTag: 'people',
@@ -244,7 +244,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['people', 'health', 'science']
   },
   'sociologists': {
-    cat: 'service', catName: 'Social Science & Research', icon: '👥',
+    cat: 'service', catName: 'Social Science & Research', icon: 'user',
     tagline: 'Study human society, social behavior, cultural institutions, and community dynamics.',
     aiImpact: 'Social Theory & Fieldwork Synthesis — Statistical packages analyze census surveys, but designing ethnographic field studies, conducting deep participant interviews, and theorizing cultural shifts require human sociologists.',
     aiTag: 'automation',
@@ -253,7 +253,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['people', 'words', 'science']
   },
   'economists': {
-    cat: 'biz', catName: 'Economics & Quantitative Risk', icon: '📈',
+    cat: 'biz', catName: 'Economics & Quantitative Risk', icon: 'barChart',
     tagline: 'Model macroeconomic trends, evaluate public policies, and forecast market behaviour.',
     aiImpact: 'Policy Interpretation & Incentive Modeling — Econometric algorithms run regressions rapidly, but framing behavioral hypotheses, interpreting market shocks, and advising policy makers remain expert human domains.',
     aiTag: 'automation',
@@ -262,7 +262,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['numbers', 'business', 'science']
   },
   'historians': {
-    cat: 'edu', catName: 'History & Archival Studies', icon: '📜',
+    cat: 'edu', catName: 'History & Archival Studies', icon: 'book',
     tagline: 'Research, analyze, and interpret past human events through archival records and artifacts.',
     aiImpact: 'Archival Authentication & Contextual Synthesis — OCR digitizes manuscripts quickly, but interpreting primary source biases, reading faded handwritten records, and contextualizing cultural eras require human scholarship.',
     aiTag: 'automation',
@@ -271,7 +271,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['words', 'teaching', 'science']
   },
   'political scientists': {
-    cat: 'law', catName: 'Public Policy & Governance', icon: '🏛️',
+    cat: 'law', catName: 'Public Policy & Governance', icon: 'building',
     tagline: 'Examine political systems, election trends, public policies, and international relations.',
     aiImpact: 'Geopolitical Analysis & Policy Craft — Poll scrapers aggregate voting data, but analyzing foreign policy leverage, legislative coalition dynamics, and constitutional implications requires political science expertise.',
     aiTag: 'automation',
@@ -280,7 +280,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['law', 'words', 'people']
   },
   'anthropologists and archeologists': {
-    cat: 'edu', catName: 'Anthropology & Archeology', icon: '🏺',
+    cat: 'edu', catName: 'Anthropology & Archeology', icon: 'sparkles',
     tagline: 'Investigate the origins, cultural development, and physical remains of human civilization.',
     aiImpact: 'Archaeological Excavation & Cultural Immersion — Satellite imaging identifies buried ruins, but delicate trench trowel excavation, artifact conservation, and field ethnographic interviews require human researchers.',
     aiTag: 'protected',
@@ -291,7 +291,7 @@ const OCCUPATION_CUSTOM = {
 
   // Care & Direct Patient Support
   'home health and personal care aides': {
-    cat: 'health', catName: 'Healthcare & Nursing', icon: '🩺',
+    cat: 'health', catName: 'Healthcare & Nursing', icon: 'sparkles',
     tagline: 'Assist elderly and disabled individuals with daily living activities in their own homes.',
     aiImpact: 'Dignified Physical Human Presence — Health wearables track vitals, but assisting frail seniors with bathing, dressing, medication management, and warm companionship cannot be automated.',
     aiTag: 'people',
@@ -300,7 +300,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['health', 'people']
   },
   'nursing assistants and orderlies': {
-    cat: 'health', catName: 'Healthcare & Nursing', icon: '🩺',
+    cat: 'health', catName: 'Healthcare & Nursing', icon: 'sparkles',
     tagline: 'Provide basic bedside nursing care, transport hospital patients, and measure vital signs.',
     aiImpact: 'Direct Hospital Bedside Care — Automated beds and monitors assist nursing units, but repositioning patients to prevent bedsores, helping with hygiene, and offering reassurance are human care tasks.',
     aiTag: 'people',
@@ -311,7 +311,7 @@ const OCCUPATION_CUSTOM = {
 
   // Dental & Laboratory Precision
   'dentists': {
-    cat: 'health', catName: 'Healthcare & Medicine', icon: '🦷',
+    cat: 'health', catName: 'Healthcare & Medicine', icon: 'sparkles',
     tagline: 'Diagnose oral diseases, perform restorative dentistry, and carry out surgical extractions.',
     aiImpact: 'Micro-Surgical Tactile Precision — Digital intraoral scanners create 3D tooth models, but excavating decay within millimeters of nerve pulp, placing implants, and crown preparations require micro-millimeter tactile touch.',
     aiTag: 'protected',
@@ -320,7 +320,7 @@ const OCCUPATION_CUSTOM = {
     interests: ['health', 'machines', 'science']
   },
   'dental and ophthalmic laboratory technicians and medical appliance technicians': {
-    cat: 'health', catName: 'Healthcare Technology', icon: '🔬',
+    cat: 'health', catName: 'Healthcare Technology', icon: 'sparkles',
     tagline: 'Fabricate custom dental crowns, orthodontic bridges, prescription eyeglasses, and prostheses.',
     aiImpact: 'Precision Artisan Custom Fabrication — CAD/CAM milling units and 3D resin printers produce dental copings, but color-matching natural tooth enamel, adjusting occlusal fit, and hand-polishing require technician craftsmanship.',
     aiTag: 'protected',
@@ -345,63 +345,63 @@ function refineCareer(c) {
   // General category and icon cleanup
   if (t.includes('pilot') || t.includes('flight') || t.includes('air traffic') || t.includes('avionics')) {
     if (c.cat === 'trades') { c.cat = 'space'; c.catName = 'Aviation & Aerospace'; }
-    if (!c.icon || c.icon === '🛠️') c.icon = '✈️';
+    if (!c.icon || c.icon === '') c.icon = '';
   }
 
   if (t.includes('police') || t.includes('detective') || t.includes('firefighter') || t.includes('bailiff') || t.includes('correctional')) {
     if (c.cat !== 'law') { c.cat = 'law'; c.catName = 'Public Safety & Defense'; }
-    if (t.includes('fire')) c.icon = '🚒';
-    else if (t.includes('police') || t.includes('detective')) c.icon = '👮';
-    else c.icon = '🛡️';
+    if (t.includes('fire')) c.icon = '';
+    else if (t.includes('police') || t.includes('detective')) c.icon = '';
+    else c.icon = '';
   }
 
   if (t.includes('chef') || t.includes('baker') || t.includes('cook') || t.includes('bartender') || t.includes('food preparation') || t.includes('sommelier')) {
     c.cat = 'service';
     c.catName = 'Food & Culinary Arts';
-    if (t.includes('baker')) c.icon = '🥖';
-    else if (t.includes('chef') || t.includes('cook')) c.icon = '👨‍🍳';
-    else if (t.includes('bartender') || t.includes('sommelier')) c.icon = '🍷';
-    else c.icon = '🍳';
+    if (t.includes('baker')) c.icon = '';
+    else if (t.includes('chef') || t.includes('cook')) c.icon = '';
+    else if (t.includes('bartender') || t.includes('sommelier')) c.icon = '';
+    else c.icon = '';
   }
 
   if (t.includes('dentist') || t.includes('dental')) {
-    c.icon = '🦷';
+    c.icon = '';
     c.cat = 'health';
   }
 
   if (t.includes('veterinar') || t.includes('animal care')) {
-    c.icon = '🐾';
+    c.icon = '';
     c.cat = 'health';
   }
 
   if (t.includes('psycholog') || t.includes('counselor') || t.includes('therapist')) {
     if (c.cat === 'space') { c.cat = 'health'; c.catName = 'Psychology & Mental Health'; }
-    if (!c.icon || c.icon === '🔭') c.icon = '🧠';
+    if (!c.icon || c.icon === '') c.icon = '';
   }
 
   if (t.includes('economist')) {
     c.cat = 'biz';
     c.catName = 'Economics & Financial Risk';
-    c.icon = '📈';
+    c.icon = '';
   }
 
   if (t.includes('historian')) {
     c.cat = 'edu';
     c.catName = 'History & Humanities';
-    c.icon = '📜';
+    c.icon = '';
   }
 
   if (t.includes('sociologist') || t.includes('political scientist') || t.includes('anthropolog')) {
     if (c.cat === 'space') { c.cat = 'service'; c.catName = 'Social Science & Policy'; }
-    if (!c.icon || c.icon === '🔭') c.icon = '🏛️';
+    if (!c.icon || c.icon === '') c.icon = '';
   }
 
   if (t.includes('driver') || t.includes('locomotive') || t.includes('water transportation') || t.includes('truck')) {
-    if (!c.icon || c.icon === '🛠️') {
-      if (t.includes('bus')) c.icon = '🚌';
-      else if (t.includes('truck')) c.icon = '🚚';
-      else if (t.includes('locomotive') || t.includes('rail')) c.icon = '🚆';
-      else if (t.includes('water') || t.includes('ship') || t.includes('boat')) c.icon = '🚢';
+    if (!c.icon || c.icon === '') {
+      if (t.includes('bus')) c.icon = '';
+      else if (t.includes('truck')) c.icon = '';
+      else if (t.includes('locomotive') || t.includes('rail')) c.icon = '';
+      else if (t.includes('water') || t.includes('ship') || t.includes('boat')) c.icon = '';
     }
   }
 

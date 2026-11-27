@@ -89,7 +89,7 @@ export interface LevelConfig {
 export const LEVELS: LevelConfig[] = [
   {
     id: 1,
-    icon: '🚥',
+    icon: 'signal',
     name: 'Lesson 1 - Red Light Patience',
     modes: ['pedestrian', 'car'],
     col: '#e74c3c',
@@ -121,7 +121,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 2,
-    icon: '🅿️',
+    icon: 'parking',
     name: 'Lesson 2 - Street Parking',
     modes: ['pedestrian', 'car'],
     col: '#e74c3c',
@@ -153,7 +153,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 3,
-    icon: '🏪',
+    icon: 'building',
     name: 'Lesson 3 - Footpath Respect',
     modes: ['pedestrian'],
     col: '#e74c3c',
@@ -185,7 +185,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 4,
-    icon: '🚶',
+    icon: 'pedestrian',
     name: 'Lesson 4 - Zebra Crossing',
     modes: ['pedestrian'],
     col: '#e74c3c',
@@ -217,7 +217,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 5,
-    icon: '🏫',
+    icon: 'building',
     name: 'Lesson 5 - School Zone Crossing',
     modes: ['pedestrian', 'car'],
     col: '#e74c3c',
@@ -235,7 +235,7 @@ export const LEVELS: LevelConfig[] = [
       fineHi: '₹1000 - ₹5000',
       offHi: 'स्कूल क्षेत्र में तेज़ गति',
     },
-    theory: '<h2>School Zone Crossing</h2><p>School ke paas bachche hain — bahut saare! Yeh sabse khatarnak jagah hai jab school ki chhuti hoti hai.</p><p>Bachche kabhi bhi sadak pe bhaag sakte hain — ball ke peeche, dost ke saath, ya bas bina dekhe bhi. Tumhein 20 km/h se zyada nahi chalna hai, bilkul slow!</p><h3>🏫 Kya karna hai?</h3><ul><li>Bachche parked gaadiyon ke beech se nikal rahe hain — ruk jao!</li><li>School guard traffic sambhal raha hai — uski baat maano.</li><li>Peeche waali gaadiyan overtake karna chahti hain — unki mat suno.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>School zone mein speed karna MV Act Section 196 ke under hai — ₹1000 se ₹5000 tak ka fine aur 3 number katenge license se!</p>',
+    theory: '<h2>School Zone Crossing</h2><p>School ke paas bachche hain — bahut saare! Yeh sabse khatarnak jagah hai jab school ki chhuti hoti hai.</p><p>Bachche kabhi bhi sadak pe bhaag sakte hain — ball ke peeche, dost ke saath, ya bas bina dekhe bhi. Tumhein 20 km/h se zyada nahi chalna hai, bilkul slow!</p><h3> Kya karna hai?</h3><ul><li>Bachche parked gaadiyon ke beech se nikal rahe hain — ruk jao!</li><li>School guard traffic sambhal raha hai — uski baat maano.</li><li>Peeche waali gaadiyan overtake karna chahti hain — unki mat suno.</li></ul><h3> Kanoon kya kehta hai?</h3><p>School zone mein speed karna MV Act Section 196 ke under hai — ₹1000 se ₹5000 tak ka fine aur 3 number katenge license se!</p>',
     pract: 'Drive slowly through the school zone. Stop if children are crossing. Do not honk near the school.',
     mode: 'practical',
     themeType: 'pedestrian_courtesy',
@@ -252,7 +252,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 6,
-    icon: '🚦',
+    icon: 'signal',
     name: 'Lesson 6 - Traffic Light Obedience',
     modes: ['car'],
     col: '#e74c3c',
@@ -284,7 +284,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 7,
-    icon: '🤫',
+    icon: 'volumeX',
     name: 'Lesson 7 - Hospital Zone Silence',
     modes: ['car'],
     col: '#2ecc71',
@@ -302,7 +302,7 @@ export const LEVELS: LevelConfig[] = [
       fineHi: '₹1000 - ₹5000',
       offHi: 'शांति क्षेत्र में हॉर्न बजाना',
     },
-    theory: "<h2>Hospital Zone Silence</h2><p>Hospital ke paas honk karna mana hai — yeh 'Silence Zone' hai! Socho, koi patient recovery kar raha hai aur tumhari horn ki awaaz se uski neend udd jaayegi.</p><p>Aage wali gaadi suddenly brake maar rahi hai — tumhara mann karega horn dabao! Lekin nahi, nahi karna. Slow jao, distance banao, bas!</p><h3>🤫 Kya karna hai?</h3><ul><li>Hospital ke paas gaadi achanak brake maar rahi hai — darr mat, slow ho jao!</li><li>Horn mat dabao chahe kitna bhi mann kare.</li><li>Safe distance banao — ekdum peeche raho.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Silence Zone mein honk karna MV Act Section 118 aur Noise Pollution Rules ke under hai — ₹1000 se ₹5000 tak ka fine!</p>",
+    theory: "<h2>Hospital Zone Silence</h2><p>Hospital ke paas honk karna mana hai — yeh 'Silence Zone' hai! Socho, koi patient recovery kar raha hai aur tumhari horn ki awaaz se uski neend udd jaayegi.</p><p>Aage wali gaadi suddenly brake maar rahi hai — tumhara mann karega horn dabao! Lekin nahi, nahi karna. Slow jao, distance banao, bas!</p><h3> Kya karna hai?</h3><ul><li>Hospital ke paas gaadi achanak brake maar rahi hai — darr mat, slow ho jao!</li><li>Horn mat dabao chahe kitna bhi mann kare.</li><li>Safe distance banao — ekdum peeche raho.</li></ul><h3> Kanoon kya kehta hai?</h3><p>Silence Zone mein honk karna MV Act Section 118 aur Noise Pollution Rules ke under hai — ₹1000 se ₹5000 tak ka fine!</p>",
     pract: 'Do not honk. Slow down, maintain distance, and drive silently past the hospital.',
     mode: 'practical',
     themeType: 'silent_zone',
@@ -319,7 +319,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 8,
-    icon: '🛺',
+    icon: 'auto',
     name: 'Lesson 8 - Auto Rickshaw Lane',
     modes: ['car'],
     col: '#3498db',
@@ -351,7 +351,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 9,
-    icon: '🌧️',
+    icon: 'rain',
     name: 'Lesson 9 - Rain Driving',
     modes: ['car'],
     col: '#3498db',
@@ -383,7 +383,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 10,
-    icon: '🛒',
+    icon: 'sparkles',
     name: 'Lesson 10 - Market Area Parking',
     modes: ['pedestrian', 'car'],
     col: '#3498db',
@@ -401,7 +401,7 @@ export const LEVELS: LevelConfig[] = [
       fineHi: '₹500 - ₹2000',
       offHi: 'बाज़ार क्षेत्र में पार्किंग',
     },
-    theory: '<h2>Market Area Parking</h2><p>Market mein sab kuch ek saath hai — vendors, log, gaadiyan, sab! Jagah bahut kam hai aur sab jagah jaana chahte hain.</p><p>Tight gali hai, dono taraf vendors hain. Auto-rickshaw waale beech mein khade hain. Lekin market ke entrance pe ek paid parking zone hai — wahan lagao!</p><h3>🛒 Kya karna hai?</h3><ul><li>Gali tight hai, vendors dono taraf hain — slowly jao.</li><li>Auto-rickshaw waale road pe khade hain — darr mat, space banao.</li><li>Market entrance pe parking zone hai — wahan ruko!</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Market zone mein bina permission parking karna municipal bye-laws aur MV Act Section 122 ke under illegal hai — ₹500 se ₹2000 tak ka fine!</p>',
+    theory: '<h2>Market Area Parking</h2><p>Market mein sab kuch ek saath hai — vendors, log, gaadiyan, sab! Jagah bahut kam hai aur sab jagah jaana chahte hain.</p><p>Tight gali hai, dono taraf vendors hain. Auto-rickshaw waale beech mein khade hain. Lekin market ke entrance pe ek paid parking zone hai — wahan lagao!</p><h3> Kya karna hai?</h3><ul><li>Gali tight hai, vendors dono taraf hain — slowly jao.</li><li>Auto-rickshaw waale road pe khade hain — darr mat, space banao.</li><li>Market entrance pe parking zone hai — wahan ruko!</li></ul><h3> Kanoon kya kehta hai?</h3><p>Market zone mein bina permission parking karna municipal bye-laws aur MV Act Section 122 ke under illegal hai — ₹500 se ₹2000 tak ka fine!</p>',
     pract: 'Navigate through the market carefully. Park in the designated paid zone. Walk to your destination.',
     mode: 'practical',
     themeType: 'market_street',
@@ -417,7 +417,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 11,
-    icon: '🚏',
+    icon: 'bus',
     name: 'Lesson 11 - Bus Stop Etiquette',
     modes: ['pedestrian'],
     col: '#3498db',
@@ -449,7 +449,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 12,
-    icon: '🚧',
+    icon: 'alert',
     name: 'Lesson 12 - Road Work Zone',
     modes: ['car'],
     col: '#f39c12',
@@ -481,7 +481,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 13,
-    icon: '🌙',
+    icon: 'moon',
     name: 'Lesson 13 - Night Driving',
     modes: ['car'],
     col: '#2c3e50',
@@ -513,7 +513,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 14,
-    icon: '⚖️',
+    icon: 'scale',
     name: 'Lesson 14 - Right of Way',
     modes: ['car'],
     col: '#2ecc71',
@@ -547,7 +547,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 15,
-    icon: '🏘️',
+    icon: 'home',
     name: 'Lesson 15 - Residential Parking',
     modes: ['pedestrian', 'car'],
     col: '#3498db',
@@ -565,7 +565,7 @@ export const LEVELS: LevelConfig[] = [
       fineHi: '₹500 - ₹1000',
       offHi: 'आवासीय गेट को रोकना',
     },
-    theory: '<h2>Residential Parking</h2><p>Residential colony mein parking karna easy nahi hai. Tumne kisi ke gate ke saamne gaadi lagayi hai — woh resident gussa ho raha hai! Socho, unhe emergency mein gaadi nikalni ho toh kya hoga?</p><p>Kisi ka gate block karna matlab unka raasta rokna. Yeh bilkul galat hai! Visitor parking 30 meter aage hai — wahan lagao.</p><h3>🏘️ Kya karna hai?</h3><ul><li>Tumne gate ke saamne gaadi lagayi hai — resident gussa hai — turant hato!</li><li>Visitor parking 30 meter aage hai — wahan lagao.</li><li>NPC residents tumhari gaadi society office mein report kar sakte hain!</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Residential gate block karna MV Act Section 122 aur society rules ke under illegal hai — ₹500 se ₹1000 tak ka fine!</p>',
+    theory: '<h2>Residential Parking</h2><p>Residential colony mein parking karna easy nahi hai. Tumne kisi ke gate ke saamne gaadi lagayi hai — woh resident gussa ho raha hai! Socho, unhe emergency mein gaadi nikalni ho toh kya hoga?</p><p>Kisi ka gate block karna matlab unka raasta rokna. Yeh bilkul galat hai! Visitor parking 30 meter aage hai — wahan lagao.</p><h3> Kya karna hai?</h3><ul><li>Tumne gate ke saamne gaadi lagayi hai — resident gussa hai — turant hato!</li><li>Visitor parking 30 meter aage hai — wahan lagao.</li><li>NPC residents tumhari gaadi society office mein report kar sakte hain!</li></ul><h3> Kanoon kya kehta hai?</h3><p>Residential gate block karna MV Act Section 122 aur society rules ke under illegal hai — ₹500 se ₹1000 tak ka fine!</p>',
     pract: 'Move your car immediately. Park in the visitor parking zone. Walk to the objective.',
     mode: 'practical',
     themeType: 'respectful_parking',
@@ -581,7 +581,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 16,
-    icon: '🛣️',
+    icon: 'highway',
     name: 'Lesson 16 - Highway Entry',
     modes: ['car'],
     col: '#27ae60',
@@ -615,7 +615,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 17,
-    icon: '🏔️',
+    icon: 'map',
     name: 'Lesson 17 - Ghat Road Driving',
     modes: ['car'],
     col: '#27ae60',
@@ -649,7 +649,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 18,
-    icon: '🚌',
+    icon: 'bus',
     name: 'Lesson 18 - Bus Lane Respect',
     modes: ['car'],
     col: '#27ae60',
@@ -683,7 +683,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 19,
-    icon: '🏗️',
+    icon: 'sparkles',
     name: 'Lesson 19 - Construction Zone',
     modes: ['car'],
     col: '#f39c12',
@@ -715,7 +715,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 20,
-    icon: '🧘',
+    icon: 'sparkles',
     name: 'Lesson 20 - Temple & Prayer Zone',
     modes: ['car'],
     col: '#2ecc71',
@@ -733,7 +733,7 @@ export const LEVELS: LevelConfig[] = [
       fineHi: '₹2000 - ₹5000',
       offHi: 'धार्मिक स्थल के पास हॉर्न बजाना',
     },
-    theory: '<h2>Temple & Prayer Zone</h2><p>Aarti ho rahi hai aur temple ke saamne log jama ho gaye hain. Ek gaay seedha road ke beech mein baith gayi hai — peaceful hai, kuch nahi kar rahi. Aur peeche waali gaadiyan honk kar rahi hain — bilkul galat!</p><p>Temple ke paas prayer ke waqt honk karna sirf illegal nahi hai — yeh bahut disrespectful hai. Log prayer kar rahe hain, unki awaaz todo mat!</p><h3>🧘 Kya karna hai?</h3><ul><li>Gaay road pe baithi hai — patience rakho, hil jaayegi!</li><li>Peeche waali gaadiyan honk kar rahi hain — tum mat karo!</li><li>Temple ke paas se slowly aur silently guzar jao.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Temple ke paas honk karna MV Act Section 118 aur Religious Place Rules ke under illegal hai — ₹2000 se ₹5000 tak ka fine!</p>',
+    theory: '<h2>Temple & Prayer Zone</h2><p>Aarti ho rahi hai aur temple ke saamne log jama ho gaye hain. Ek gaay seedha road ke beech mein baith gayi hai — peaceful hai, kuch nahi kar rahi. Aur peeche waali gaadiyan honk kar rahi hain — bilkul galat!</p><p>Temple ke paas prayer ke waqt honk karna sirf illegal nahi hai — yeh bahut disrespectful hai. Log prayer kar rahe hain, unki awaaz todo mat!</p><h3> Kya karna hai?</h3><ul><li>Gaay road pe baithi hai — patience rakho, hil jaayegi!</li><li>Peeche waali gaadiyan honk kar rahi hain — tum mat karo!</li><li>Temple ke paas se slowly aur silently guzar jao.</li></ul><h3> Kanoon kya kehta hai?</h3><p>Temple ke paas honk karna MV Act Section 118 aur Religious Place Rules ke under illegal hai — ₹2000 se ₹5000 tak ka fine!</p>',
     pract: 'Wait for the cow to move. Drive past the temple slowly and silently. Do not honk under any circumstances.',
     mode: 'practical',
     themeType: 'no_honking',
@@ -750,7 +750,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 21,
-    icon: '🚑',
+    icon: 'ambulance',
     name: 'Lesson 21 - Emergency Vehicle',
     modes: ['car'],
     col: '#e74c3c',
@@ -782,7 +782,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 22,
-    icon: '⛽',
+    icon: 'sparkles',
     name: 'Lesson 22 - Fuel Station Safety',
     modes: ['car'],
     col: '#2ecc71',
@@ -814,7 +814,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 23,
-    icon: '🚂',
+    icon: 'truck',
     name: 'Lesson 23 - Railway Crossing',
     modes: ['car'],
     col: '#f39c12',
@@ -846,7 +846,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 24,
-    icon: '🔄',
+    icon: 'sparkles',
     name: 'Lesson 24 - Roundabout',
     modes: ['car'],
     col: '#2ecc71',
@@ -880,7 +880,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 25,
-    icon: '🔶',
+    icon: 'alert',
     name: 'Lesson 25 - Know Your Signs!',
     modes: ['car'],
     col: '#f39c12',
@@ -898,7 +898,7 @@ export const LEVELS: LevelConfig[] = [
       fineHi: '₹500 - ₹2000',
       offHi: 'सड़क संकेतों की अनदेखी',
     },
-    theory: '<h2>Know Your Signs!</h2><p>Teen tarah ke road signs hain — blue, red, aur green. Har ek ka alag matlab hai!</p><p>Blue = Mandatory (karna hi hai). Red = Cautionary (khatra hai, dhyan do). Green = Informational (raasta dikha raha hai). Har sign ko samajhna zaroori hai!</p><h3>🔶 Kya karna hai?</h3><ul><li>Blue sign (mandatory) dekho — uska instruction follow karo!</li><li>Red sign (cautionary) dekho — slow down karo!</li><li>Green sign (informational) dekho — distance/location jaano.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Road signs ignore karna MV Act Section 116 ke under illegal hai — ₹500 se ₹2000 tak ka fine!</p>',
+    theory: '<h2>Know Your Signs!</h2><p>Teen tarah ke road signs hain — blue, red, aur green. Har ek ka alag matlab hai!</p><p>Blue = Mandatory (karna hi hai). Red = Cautionary (khatra hai, dhyan do). Green = Informational (raasta dikha raha hai). Har sign ko samajhna zaroori hai!</p><h3> Kya karna hai?</h3><ul><li>Blue sign (mandatory) dekho — uska instruction follow karo!</li><li>Red sign (cautionary) dekho — slow down karo!</li><li>Green sign (informational) dekho — distance/location jaano.</li></ul><h3> Kanoon kya kehta hai?</h3><p>Road signs ignore karna MV Act Section 116 ke under illegal hai — ₹500 se ₹2000 tak ka fine!</p>',
     pract: 'Obey the blue mandatory sign. Slow down for the red cautionary sign. Read the green informational sign.',
     mode: 'practical',
     themeType: 'signs',
@@ -914,7 +914,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 26,
-    icon: '🚦',
+    icon: 'signal',
     name: 'Lesson 26 - Complex Junction',
     modes: ['car'],
     col: '#e74c3c',
@@ -948,7 +948,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 27,
-    icon: '🚗',
+    icon: 'car',
     name: 'Lesson 27 - Defensive Driving',
     modes: ['car'],
     col: '#2ecc71',
@@ -982,7 +982,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 28,
-    icon: '🌧️',
+    icon: 'rain',
     name: 'Lesson 28 - Flooded Road',
     modes: ['car'],
     col: '#3498db',
@@ -1014,7 +1014,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 29,
-    icon: '🅿️',
+    icon: 'parking',
     name: 'Lesson 29 - Parallel Parking',
     modes: ['car'],
     col: '#3498db',
@@ -1048,7 +1048,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 30,
-    icon: '💳',
+    icon: 'wallet',
     name: 'Lesson 30 - Toll Plaza!',
     modes: ['car'],
     col: '#2ecc71',
@@ -1066,7 +1066,7 @@ export const LEVELS: LevelConfig[] = [
       fineHi: '₹500 - ₹5000',
       offHi: 'टोल चोरी',
     },
-    theory: '<h2>Toll Plaza!</h2><p>Highway pe toll plaza aa raha hai! FASTag lane hai aur cash lane hai — sahi lane choose karo!</p><p>Toll plaza pe slow down karo. FASTag wali gaadiyan FASTag lane mein jao. Cash lane mein ruko aur toll pay karo. Toll evade karna bhaari fine ka hai!</p><h3>💳 Kya karna hai?</h3><ul><li>Toll plaza dekhte hi slow down karo!</li><li>Sahi lane choose karo — FASTag ya cash.</li><li>Booth pe ruko, toll pay karo, aur aage badho.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Toll evade karna National Highway Authority Rules ke under illegal hai — ₹500 se ₹5000 tak ka fine!</p>',
+    theory: '<h2>Toll Plaza!</h2><p>Highway pe toll plaza aa raha hai! FASTag lane hai aur cash lane hai — sahi lane choose karo!</p><p>Toll plaza pe slow down karo. FASTag wali gaadiyan FASTag lane mein jao. Cash lane mein ruko aur toll pay karo. Toll evade karna bhaari fine ka hai!</p><h3> Kya karna hai?</h3><ul><li>Toll plaza dekhte hi slow down karo!</li><li>Sahi lane choose karo — FASTag ya cash.</li><li>Booth pe ruko, toll pay karo, aur aage badho.</li></ul><h3> Kanoon kya kehta hai?</h3><p>Toll evade karna National Highway Authority Rules ke under illegal hai — ₹500 se ₹5000 tak ka fine!</p>',
     pract: 'Slow down on approach. Choose the correct lane. Stop at the booth and pay. Proceed on the highway.',
     mode: 'practical',
     themeType: 'toll',
@@ -1082,7 +1082,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 31,
-    icon: '🌊',
+    icon: 'droplet',
     name: 'Lesson 31 - Coastal Highway',
     modes: ['car'],
     col: '#3498db',
@@ -1116,7 +1116,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 32,
-    icon: '🚕',
+    icon: 'car',
     name: 'Lesson 32 - Taxi Stands',
     modes: ['car'],
     col: '#2ecc71',
@@ -1150,7 +1150,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 33,
-    icon: '🌿',
+    icon: 'leaf',
     name: 'Lesson 33 - Eco Driving',
     modes: ['car'],
     col: '#2ecc71',
@@ -1184,7 +1184,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 34,
-    icon: '🎪',
+    icon: 'building',
     name: 'Lesson 34 - Festival Crowd',
     modes: ['car'],
     col: '#e74c3c',
@@ -1218,7 +1218,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 35,
-    icon: '➡️',
+    icon: 'navigation',
     name: 'Lesson 35 - One-Way Wonder!',
     modes: ['car'],
     col: '#27ae60',
@@ -1236,7 +1236,7 @@ export const LEVELS: LevelConfig[] = [
       fineHi: '₹500 - ₹2000',
       offHi: 'एक तरफ रास्ते का नियम तोड़ना',
     },
-    theory: '<h2>One-Way Wonder!</h2><p>One-way street aa rahi hai — sahi end se ghuste ho aur traffic ke flow mein chalte ho!</p><p>One-way mein galat side se ghusna sabse khatarnak galti hai. Blue rectangular sign dekho — arrow dikha raha hai kis direction mein jaana hai. Flow follow karo!</p><h3>➡️ Kya karna hai?</h3><ul><li>Sahi end se one-way mein ghuste ho.</li><li>Traffic ke flow mein chalo — opposite mat jaao.</li><li>Intersection pe exit karo.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>One-way rules todna MV Act Section 119 ke under illegal hai — ₹500 se ₹2000 tak ka fine!</p>',
+    theory: '<h2>One-Way Wonder!</h2><p>One-way street aa rahi hai — sahi end se ghuste ho aur traffic ke flow mein chalte ho!</p><p>One-way mein galat side se ghusna sabse khatarnak galti hai. Blue rectangular sign dekho — arrow dikha raha hai kis direction mein jaana hai. Flow follow karo!</p><h3> Kya karna hai?</h3><ul><li>Sahi end se one-way mein ghuste ho.</li><li>Traffic ke flow mein chalo — opposite mat jaao.</li><li>Intersection pe exit karo.</li></ul><h3> Kanoon kya kehta hai?</h3><p>One-way rules todna MV Act Section 119 ke under illegal hai — ₹500 se ₹2000 tak ka fine!</p>',
     pract: 'Enter the one-way from the correct end. Follow the traffic flow. Exit at the designated intersection.',
     mode: 'practical',
     themeType: 'one_way',
@@ -1252,7 +1252,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 36,
-    icon: '🏨',
+    icon: 'building',
     name: 'Lesson 36 - Hotel Zone',
     modes: ['car'],
     col: '#2ecc71',
@@ -1286,7 +1286,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 37,
-    icon: '⛽',
+    icon: 'sparkles',
     name: 'Lesson 37 - CNG Station',
     modes: ['car'],
     col: '#2ecc71',
@@ -1318,7 +1318,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 38,
-    icon: '🏫',
+    icon: 'building',
     name: 'Lesson 38 - University Zone',
     modes: ['car'],
     col: '#f39c12',
@@ -1352,7 +1352,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 39,
-    icon: '🛣️',
+    icon: 'highway',
     name: 'Lesson 39 - Lane Discipline',
     modes: ['car'],
     col: '#27ae60',
@@ -1386,7 +1386,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 40,
-    icon: '🏆',
+    icon: 'trophy',
     name: 'Lesson 40 - Grand Test!',
     modes: ['car'],
     col: '#f1c40f',
@@ -1404,7 +1404,7 @@ export const LEVELS: LevelConfig[] = [
       fineHi: '₹500 - ₹5000',
       offHi: 'अनेक उल्लंघन',
     },
-    theory: '<h2>Grand Test!</h2><p>Grand Test ka waqt aa gaya! 39 levels ka sab kuch tumhare saamne hai — signals, pedestrians, speed limits, lane discipline, emergency vehicles — sab ek saath!</p><p>Yeh test tumhari poori driving skill test karega. Sab rules yaad karo — ek ek karke apply karo. Patience aur presence of mind sabse zaroori hai!</p><h3>🏆 Kya karna hai?</h3><ul><li>Sab rules follow karo — red light, speed limit, lane discipline.</li><li>Emergency vehicles ko priority do.</li><li>Pedestrians ko jagah do.</li><li>Signs obey karo — mandatory, cautionary, informational.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Sab MV Act sections applicable hain — violations pe ₹500 se ₹5000 tak ka fine!</p>',
+    theory: '<h2>Grand Test!</h2><p>Grand Test ka waqt aa gaya! 39 levels ka sab kuch tumhare saamne hai — signals, pedestrians, speed limits, lane discipline, emergency vehicles — sab ek saath!</p><p>Yeh test tumhari poori driving skill test karega. Sab rules yaad karo — ek ek karke apply karo. Patience aur presence of mind sabse zaroori hai!</p><h3> Kya karna hai?</h3><ul><li>Sab rules follow karo — red light, speed limit, lane discipline.</li><li>Emergency vehicles ko priority do.</li><li>Pedestrians ko jagah do.</li><li>Signs obey karo — mandatory, cautionary, informational.</li></ul><h3> Kanoon kya kehta hai?</h3><p>Sab MV Act sections applicable hain — violations pe ₹500 se ₹5000 tak ka fine!</p>',
     pract: 'Complete the complex route following all traffic rules. Apply everything from the previous 39 levels. Stay calm and focused.',
     mode: 'practical',
     themeType: 'grand_test',
@@ -1421,7 +1421,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 41,
-    icon: '🌫️',
+    icon: 'rain',
     name: 'Lesson 41 - Foggy Morning',
     modes: ['car'],
     col: '#2c3e50',
@@ -1453,7 +1453,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 42,
-    icon: '🚧',
+    icon: 'alert',
     name: 'Lesson 42 - Detour Navigation',
     modes: ['car'],
     col: '#f39c12',
@@ -1487,7 +1487,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 43,
-    icon: '🚲',
+    icon: 'bike',
     name: 'Lesson 43 - Bicycle Zone',
     modes: ['car'],
     col: '#2ecc71',
@@ -1521,7 +1521,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 44,
-    icon: '⚡',
+    icon: 'zap',
     name: 'Lesson 44 - Emergency Stop',
     modes: ['car'],
     col: '#e74c3c',
@@ -1553,7 +1553,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 45,
-    icon: '👻',
+    icon: 'moon',
     name: 'Lesson 45 - Zero Visibility!',
     modes: ['car'],
     col: '#2c3e50',
@@ -1571,7 +1571,7 @@ export const LEVELS: LevelConfig[] = [
       fineHi: '₹2000 - ₹10000',
       offHi: 'शून्य दृश्यता में ड्राइविंग',
     },
-    theory: '<h2>Zero Visibility!</h2><p>Fog itna gehra hai ki haath bhi nahi dikhta! Baarish bhi ho rahi hai — sab kuch black hai!</p><p>Zero visibility mein fog lights sabse zaroori hain. Headlights ka koi fayda nahi — fog mein reflect hota hai. Fog lights neeche rakhti hain aur kam distance cover karti hain. Speed bilkul minimum — 5-10 km/h. Horn se alert karo — doosre vehicles ko awaaz se pata chalega!</p><h3>👻 Kya karna hai?</h3><ul><li>Fog lights ON — headlights mat lagao.</li><li>Speed 5-10 km/h — bilkul dheere chalo.</li><li>Horn bajao — doosron ko awaaz se pata chale.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Zero visibility mein driving MV Act Section 184 ke under ₹2000 se ₹10000 tak ka fine!</p>',
+    theory: '<h2>Zero Visibility!</h2><p>Fog itna gehra hai ki haath bhi nahi dikhta! Baarish bhi ho rahi hai — sab kuch black hai!</p><p>Zero visibility mein fog lights sabse zaroori hain. Headlights ka koi fayda nahi — fog mein reflect hota hai. Fog lights neeche rakhti hain aur kam distance cover karti hain. Speed bilkul minimum — 5-10 km/h. Horn se alert karo — doosre vehicles ko awaaz se pata chalega!</p><h3> Kya karna hai?</h3><ul><li>Fog lights ON — headlights mat lagao.</li><li>Speed 5-10 km/h — bilkul dheere chalo.</li><li>Horn bajao — doosron ko awaaz se pata chale.</li></ul><h3> Kanoon kya kehta hai?</h3><p>Zero visibility mein driving MV Act Section 184 ke under ₹2000 se ₹10000 tak ka fine!</p>',
     pract: 'Turn on fog lights. Crawl at minimum speed. Use horn to alert others. Navigate by sound and road markings.',
     mode: 'practical',
     themeType: 'zero_visibility',
@@ -1585,7 +1585,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 46,
-    icon: '🏭',
+    icon: 'building',
     name: 'Lesson 46 - Industrial Area',
     modes: ['car'],
     col: '#8B7355',
@@ -1619,7 +1619,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 47,
-    icon: '🛕',
+    icon: 'building',
     name: 'Lesson 47 - Heritage Zone',
     modes: ['car'],
     col: '#2ecc71',
@@ -1653,7 +1653,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 48,
-    icon: '🌾',
+    icon: 'leaf',
     name: 'Lesson 48 - Rural Kacha Road!',
     modes: ['car'],
     col: '#8B7355',
@@ -1671,7 +1671,7 @@ export const LEVELS: LevelConfig[] = [
       fineHi: '₹500 - ₹2000',
       offHi: 'ग्रामीण सड़क उल्लंघन',
     },
-    theory: '<h2>Rural Kacha Road!</h2><p>Gaon ka kacha road — koi signal nahi, koi lane marking nahi, aur sadak pe gaay so rahi hai!</p><p>Kacha roads pe gaadi chalana sabse mushkil hota hai. Potholes chhupi hoti hain, janwar sadak pe sote hain, tractors bade hote hain. Speed bilkul slow — 10-15 km/h. Horn se janwaro ko hatao. Tractor ko space do — unko mudna mushkil hota hai!</p><h3>🌾 Kya karna hai?</h3><ul><li>Speed 10-15 km/h — potholes chhupi hoti hain.</li><li>Horn se janwaro ko hatao.</li><li>Tractors ko space do — unka turning radius bada hai.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Rural road violations MV Act Section 184 ke under ₹500 se ₹2000 tak ka fine!</p>',
+    theory: '<h2>Rural Kacha Road!</h2><p>Gaon ka kacha road — koi signal nahi, koi lane marking nahi, aur sadak pe gaay so rahi hai!</p><p>Kacha roads pe gaadi chalana sabse mushkil hota hai. Potholes chhupi hoti hain, janwar sadak pe sote hain, tractors bade hote hain. Speed bilkul slow — 10-15 km/h. Horn se janwaro ko hatao. Tractor ko space do — unko mudna mushkil hota hai!</p><h3> Kya karna hai?</h3><ul><li>Speed 10-15 km/h — potholes chhupi hoti hain.</li><li>Horn se janwaro ko hatao.</li><li>Tractors ko space do — unka turning radius bada hai.</li></ul><h3> Kanoon kya kehta hai?</h3><p>Rural road violations MV Act Section 184 ke under ₹500 se ₹2000 tak ka fine!</p>',
     pract: 'Crawl on the unpaved road. Honk to move animals. Give tractors space. Reach the village safely.',
     mode: 'practical',
     themeType: 'rural',
@@ -1685,7 +1685,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 49,
-    icon: '🌪️',
+    icon: 'alert',
     name: 'Lesson 49 - Storm Driving',
     modes: ['car'],
     col: '#2c3e50',
@@ -1717,7 +1717,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 50,
-    icon: '🏆',
+    icon: 'trophy',
     name: 'Lesson 50 - Grand Mastery!',
     modes: ['car'],
     col: '#f1c40f',
@@ -1735,7 +1735,7 @@ export const LEVELS: LevelConfig[] = [
       fineHi: '₹500 - ₹10000',
       offHi: 'अनेक उल्लंघन',
     },
-    theory: '<h2>Grand Mastery!</h2><p>Grand Mastery ka waqt! 49 levels ka sab kuch tumhare saamne hai — rain, night, fog, highway, mountain, village, construction — sab ek saath!</p><p>Yeh test tumhe poora master driver banayega. Har cheez apply karo — rules, patience, observation, skill. Agar yeh pass kar liya toh tum real Indian road ke liye ready ho!</p><h3>🏆 Kya karna hai?</h3><ul><li>Sab weather conditions handle karo.</li><li>Har vehicle type ka respect karo.</li><li>Har road type pe safe driving karo.</li><li>Sab rules follow karo — ek bhi mat chhodo!</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Sab MV Act sections applicable — violations pe ₹500 se ₹10000 tak ka fine!</p>',
+    theory: '<h2>Grand Mastery!</h2><p>Grand Mastery ka waqt! 49 levels ka sab kuch tumhare saamne hai — rain, night, fog, highway, mountain, village, construction — sab ek saath!</p><p>Yeh test tumhe poora master driver banayega. Har cheez apply karo — rules, patience, observation, skill. Agar yeh pass kar liya toh tum real Indian road ke liye ready ho!</p><h3> Kya karna hai?</h3><ul><li>Sab weather conditions handle karo.</li><li>Har vehicle type ka respect karo.</li><li>Har road type pe safe driving karo.</li><li>Sab rules follow karo — ek bhi mat chhodo!</li></ul><h3> Kanoon kya kehta hai?</h3><p>Sab MV Act sections applicable — violations pe ₹500 se ₹10000 tak ka fine!</p>',
     pract: 'Complete the ultimate test. Apply every skill from all previous levels. Stay calm, stay safe, stay respectful.',
     mode: 'practical',
     themeType: 'grand_test',
@@ -1750,7 +1750,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 51,
-    icon: '🎓',
+    icon: 'grad',
     name: 'Lesson 51 - Driving Instructor',
     modes: ['car'],
     col: '#2980b9',
@@ -1782,7 +1782,7 @@ export const LEVELS: LevelConfig[] = [
   },
   {
     id: 52,
-    icon: '🎓',
+    icon: 'grad',
     name: 'Lesson 52 - Driving Instructor',
     modes: ['car'],
     col: '#2980b9',
@@ -1801,7 +1801,7 @@ export const LEVELS: LevelConfig[] = [
       fineHi: '₹5000',
       offHi: 'बिना सिग्नल के लेन बदलना / गलत ओवरटेकिंग',
     },
-    theory: '<h2>Driving Instructor - Lane Change Lesson</h2><p>Driving school mein aaj lane change seekh rahe ho. Highway pe ek slow bus hai — usko overtake karna hai, phir wapas apni lane mein aana hai.</p><p>Har step ka order fixed hai: pehle indicator, phir mirror check, phir lane change. Galat order = challan!</p><h3>🚗 Kya karna hai?</h3><ol><li>Right indicator on karo — batana hai ki right side jaana hai.</li><li>Left lane mein jao — bus ko right se overtake karo.</li><li>Bus pass ho jaaye toh left indicator on karo.</li><li>Wapas right lane mein merge karo — smoothly!</li></ol><h3>⚖️ Kanoon kya kehta hai?</h3><p>MV Act Section 136 ke under bina signal ke lane change karna = ₹5,000 fine. Overtake sirf right side se karo (India left-hand drive).</p>',
+    theory: '<h2>Driving Instructor - Lane Change Lesson</h2><p>Driving school mein aaj lane change seekh rahe ho. Highway pe ek slow bus hai — usko overtake karna hai, phir wapas apni lane mein aana hai.</p><p>Har step ka order fixed hai: pehle indicator, phir mirror check, phir lane change. Galat order = challan!</p><h3> Kya karna hai?</h3><ol><li>Right indicator on karo — batana hai ki right side jaana hai.</li><li>Left lane mein jao — bus ko right se overtake karo.</li><li>Bus pass ho jaaye toh left indicator on karo.</li><li>Wapas right lane mein merge karo — smoothly!</li></ol><h3> Kanoon kya kehta hai?</h3><p>MV Act Section 136 ke under bina signal ke lane change karna = ₹5,000 fine. Overtake sirf right side se karo (India left-hand drive).</p>',
     pract: 'Signal right, merge left to overtake the bus, then signal left and merge back to the right lane.',
     mode: 'practical',
     themeType: 'driving_school',

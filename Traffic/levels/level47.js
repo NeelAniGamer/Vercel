@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 47,
-  icon: '🏔️',
+  icon: 'map',
   name: 'Lesson 47 - Mountain Pass!',
   modes: ['car', 'bike'],
   col: '#27ae60',
@@ -16,7 +16,7 @@ window.LVS.push({
     offHi: 'पहाड़ी क्षेत्र ड्राइविंग उल्लंघन'
   },
   theory:
-    '<h2>Mountain Pass!</h2><p>Pahadi raasta hai — hairpin turns, steep slope, aur patthar gir rahe hain! Brakes aur gears dono chahiye!</p><p>Mountain driving mein lower gears sabse zaroori hain. Downhill pe brake mat lagao continuously — overheat hoga. Gear 1 ya 2 pe rakho. Blind curve pe horn bajao — saamne se gaadi aa sakti hai. Edge se door raho — landslide kabhi bhi ho sakta hai!</p><h3>🏔️ Kya karna hai?</h3><ul><li>Downhill pe lower gear — brake continuous mat lagao.</li><li>Blind curves pe horn bajao.</li><li>Edge se door raho — patthar gir sakte hain.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Mountain driving ka violation MV Act Section 184 ke under ₹2000 se ₹10000 tak ka fine!</p>',
+    '<h2>Mountain Pass!</h2><p>Pahadi raasta hai — hairpin turns, steep slope, aur patthar gir rahe hain! Brakes aur gears dono chahiye!</p><p>Mountain driving mein lower gears sabse zaroori hain. Downhill pe brake mat lagao continuously — overheat hoga. Gear 1 ya 2 pe rakho. Blind curve pe horn bajao — saamne se gaadi aa sakti hai. Edge se door raho — landslide kabhi bhi ho sakta hai!</p><h3> Kya karna hai?</h3><ul><li>Downhill pe lower gear — brake continuous mat lagao.</li><li>Blind curves pe horn bajao.</li><li>Edge se door raho — patthar gir sakte hain.</li></ul><h3> Kanoon kya kehta hai?</h3><p>Mountain driving ka violation MV Act Section 184 ke under ₹2000 se ₹10000 tak ka fine!</p>',
   pract: 'Use lower gears on descents. Horn at blind curves. Avoid road edge. Complete the mountain pass.',
   mode: 'practical',
   themeType: 'mountain',

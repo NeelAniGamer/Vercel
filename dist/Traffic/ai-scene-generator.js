@@ -1187,7 +1187,7 @@
           }, 80);
           this.spatialEngine._activeTimers.push(flashTimer);
 
-          if (window.toast) {toast('🚨 AMBULANCE APPROACHING FROM BEHIND! YIELD TO THE LEFT!', '#ef4444', 5000);}
+          if (window.toast) {toast(' AMBULANCE APPROACHING FROM BEHIND! YIELD TO THE LEFT!', '#ef4444', 5000);}
         }
       }, 3500);
     }
@@ -1246,7 +1246,7 @@
           if (this.game.world) {this.game.world.push(barrier);}
         }
       }
-      if (window.toast) {toast('⚠️ ROAD CONSTRUCTION AHEAD: Single Lane Diversion!', '#f59e0b', 4000);}
+      if (window.toast) {toast(' ROAD CONSTRUCTION AHEAD: Single Lane Diversion!', '#f59e0b', 4000);}
     }
 
     _buildBlindCornerScenario(cfg) {
@@ -1346,7 +1346,7 @@
           id: 'ai_downtown',
           name: 'Mumbai Downtown Financial District',
           desc: 'Tiered glass skyscrapers, illuminated corporate towers, 4-lane avenues, and cantilever signals.',
-          icon: '🏙️',
+          icon: 'city',
           sky: 0x82b4db, fog: 700, ground: 0x242b35, amb: 0.88, speedLimit: 50,
           roadWidth: 22, lanes: 4, isNight: false, hasRain: false,
           buildingStyle: 'skyscraper',
@@ -1374,7 +1374,7 @@
           id: 'ai_coastal',
           name: 'Marine Drive Coastal Waterfront Promenade',
           desc: 'High-speed 6-lane seaside promenade, Art Deco apartments, Queen\'s Necklace amber streetlamps, and Sea Link finish.',
-          icon: '🌊',
+          icon: 'droplet',
           sky: 0x70b8e8, fog: 900, ground: 0x1e3a8a, amb: 0.92, speedLimit: 80,
           roadWidth: 26, lanes: 6, isNight: false, hasRain: false, isBridge: true,
           buildingStyle: 'commercial',
@@ -1398,7 +1398,7 @@
           id: 'ai_suburban',
           name: 'Bandra Suburban Neighborhood & School Zone',
           desc: 'Calm residential street network featuring St. Xavier School Zone, 25 km/h strict speed limit, and children crossing prompts.',
-          icon: '🏫',
+          icon: 'building',
           sky: 0x93c5fd, fog: 650, ground: 0x33691e, amb: 0.85, speedLimit: 25,
           roadWidth: 14, lanes: 2, isNight: false, hasRain: false, hasSchool: true,
           buildingStyle: 'residential',
@@ -1423,7 +1423,7 @@
           id: 'ai_monsoon',
           name: 'Monsoon Night Express Corridor',
           desc: 'Torrential rain puddles, wet asphalt reflections, reduced tire grip, and high-beam headlight discipline.',
-          icon: '🌧️',
+          icon: 'rain',
           sky: 0x090d16, fog: 350, ground: 0x0f172a, amb: 0.35, speedLimit: 40,
           roadWidth: 20, lanes: 4, isNight: true, hasRain: true,
           buildingStyle: 'skyscraper',
@@ -1446,7 +1446,7 @@
           id: 'ai_bazaar',
           name: 'Old Town Bazaar & Heritage Gully',
           desc: 'Tight pedestrian-packed market alleys, stray cattle obstacles, handcart vendors, and horn avoidance requirements.',
-          icon: '🛍️',
+          icon: 'package',
           sky: 0xf59e0b, fog: 550, ground: 0x451a03, amb: 0.82, speedLimit: 25,
           roadWidth: 10, lanes: 2, isNight: false, hasRain: false,
           buildingStyle: 'commercial',
@@ -1469,7 +1469,7 @@
           id: 'ai_infinite',
           name: 'Infinite Seeded Procedural City',
           desc: 'Algorithmic procedural seed combining multi-grid intersections, dynamic weather, and unpredictable curriculum hazards.',
-          icon: '🎲',
+          icon: 'sparkles',
           sky: 0x7da4d4, fog: 750, ground: 0x222a36, amb: 0.85, speedLimit: 50,
           roadWidth: 18, lanes: 4, isNight: false, hasRain: false,
           buildingStyle: 'commercial',
@@ -1585,7 +1585,7 @@
       }
 
       if (window.toast) {
-        toast(`✨ AI City Synthesized: ${cfg.name}`, '#00f0cc', 4000);
+        toast(` AI City Synthesized: ${cfg.name}`, '#00f0cc', 4000);
       }
       return cfg;
     }

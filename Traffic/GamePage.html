@@ -11,6 +11,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
     <meta name="google-site-verification" content="bWaer2b60VA1y3RMV48HYGPv8vlMUcvlFGxY3e6SAqU" />
       <link rel="canonical" href="https://advancedlogiclabs.dpdns.org/Traffic/GamePage" />
+  <link rel="stylesheet" href="../col-skeleton.css" />
   <link rel="stylesheet" href="welcome-back.css" />
   <link rel="stylesheet" href="traffic-mobile.css" />
 
@@ -29,6 +30,31 @@
     <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/og/traffic.jpg" />
   </head>
 <body class="bg-[#0b1020] m-0 overflow-hidden text-white">
+<div class="loader col-skeleton-screen sk-theme-sky sk-force-dark" id="loader" role="status" aria-busy="true" aria-label="Loading Driving Simulator React Mode">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+    <div class="sk-traffic-topbar" aria-hidden="true">
+    <div class="sk-pill sk-shimmer-accent" style="width: 180px; height: 18px;"></div>
+    <div style="display:flex;gap:8px;"><div class="sk-pill sk-shimmer" style="width:82px;height:26px;"></div><div class="sk-pill sk-shimmer" style="width:82px;height:26px;"></div></div>
+  </div>
+  <div class="sk-workspace-2col" aria-hidden="true" style="grid-template-columns: minmax(0, 1fr) 280px;">
+    <div class="sk-app-stage" style="min-height: 440px; margin-bottom: 0;">
+      <div class="sk-road-lane" style="height: 55%;"></div>
+    </div>
+    <aside class="sk-sidebar" style="display:flex;">
+      <div class="sk-card"><div class="sk-pill sk-shimmer-accent" style="width:120px;height:16px;"></div><div class="sk-lede-line sk-shimmer" style="width:90%;"></div><div class="sk-lede-line sk-shimmer" style="width:76%;"></div></div>
+      <div class="sk-card"><div class="sk-pill sk-shimmer" style="width:110px;height:16px;"></div><div class="sk-box sk-shimmer" style="width:100%;height:78px;"></div></div>
+    </aside>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>Traffic</span> &middot; React Engine Mode</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
+
   <!-- React will mount into this div (bundle built to dist/ by node build.js;
        root serves Driving.html until then) -->
   <div id="root">

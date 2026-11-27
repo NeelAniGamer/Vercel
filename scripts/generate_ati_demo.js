@@ -1235,7 +1235,7 @@ const htmlContent = `<!doctype html>
               <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
               <line x1="8" y1="21" x2="16" y2="21" />
               <line x1="12" y1="17" x2="12" y2="21" />
-            </svg>Projects <span class="darr">&#9660;</span>
+            </svg>Projects <span class="darr"></span>
           </button>
           <div class="dropdown-content">
             <div class="dropdown-content-inner">
@@ -2635,7 +2635,7 @@ const htmlContent = `<!doctype html>
         const wpm = document.getElementById('resWPM').textContent;
         const acc = document.getElementById('resAcc').textContent;
         const grade = document.getElementById('resGrade').textContent;
-        const text = \`⚡ ATI Velocity Studio: \${wpm} WPM · \${acc} Accuracy · Grade \${grade} · https://advancedlogiclabs.dpdns.org/ati-demo\`;
+        const text = \` ATI Velocity Studio: \${wpm} WPM · \${acc} Accuracy · Grade \${grade} · https://advancedlogiclabs.dpdns.org/ati-demo\`;
         navigator.clipboard.writeText(text).then(() => {
           const btn = document.getElementById('copyBtnText');
           btn.textContent = 'Copied to Clipboard!';

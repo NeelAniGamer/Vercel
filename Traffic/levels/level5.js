@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 5,
-  icon: '🏫',
+  icon: 'building',
   name: 'Lesson 5 - Operation School Bell: The St. Xavier Dismissal (Parel to School Zone)',
   modes: ['car', 'bike', 'pedestrian'],
   veh: 'car',
@@ -153,7 +153,7 @@ window.LVS.push({
     { x: 436.0, z: 380, desc: 'Flashing Amber School Beacon — Reduce to 20 km/h Immediately' },
     { x: 436.0, z: 460, desc: 'St. Xavier School Bus Bay — Parked School Buses' },
     { x: 436.0, z: 540, desc: 'St. Xavier Tabletop Zebra Crossing — Yield to Children & Guard' },
-    { x: 436.0, z: 610, desc: '🏁 St. Xavier High School Campus Dismissal Gate' }
+    { x: 436.0, z: 610, desc: 'St. Xavier High School Campus Dismissal Gate' }
   ],
   story: {
     title: 'Operation School Bell: The St. Xavier Dismissal',
@@ -197,7 +197,7 @@ window.LVS.push({
     offHi: 'स्कूल क्षेत्र में तेज़ गति व पैदल यात्रियों को रास्ता न देना'
   },
   theory:
-    '<h2>Operation School Bell: Mumbai Multi-District Navigation</h2><p>Mumbai ki vibhinn sadko (Residential Colony, Bazar Chawls, Arterial Avenues aur School Precincts) par driving conditions dramatic tareeqe se badalti hain. Har zone ki apni speed limit, turning geometry aur pedestrian hazards hote hain.</p><p>St. Xavier High School campus ke paas ek saath 800+ bachche, school buses aur parents jama hote hain. MV Act Section 183 ke mutabiq amber warning beacon dekhte hi 20 km/h se neeche aana zaroori hai, aur Section 194B ke mutabiq zebra crossing par pedestrians ko priority dena mandatory hai.</p><h3>🏫 Mission Objectives & Rules:</h3><ul><li><strong>Driveway & Society Departure:</strong> Board vehicle [F], pass Shanti Niketan CHS gate and boom barrier.</li><li><strong>Tilak Bazar Turn:</strong> Slow down for the 90° right turn at the chawl corner near Mahalaxmi Kirana and Chai Tapri.</li><li><strong>SV Avenue Cruise:</strong> Maintain steady lane discipline on the 4-lane arterial road (max 50 km/h).</li><li><strong>School Zone Deceleration:</strong> Decelerate to 20 km/h at the flashing amber school beacon.</li><li><strong>Tabletop Crosswalk Yield:</strong> Complete stop behind the white line when Crossing Guard Shinde holds up the STOP sign!</li><li><strong>Silence Zone Enforcement:</strong> Horn strictly prohibited within 100 meters of educational institutions.</li></ul>',
+    '<h2>Operation School Bell: Mumbai Multi-District Navigation</h2><p>Mumbai ki vibhinn sadko (Residential Colony, Bazar Chawls, Arterial Avenues aur School Precincts) par driving conditions dramatic tareeqe se badalti hain. Har zone ki apni speed limit, turning geometry aur pedestrian hazards hote hain.</p><p>St. Xavier High School campus ke paas ek saath 800+ bachche, school buses aur parents jama hote hain. MV Act Section 183 ke mutabiq amber warning beacon dekhte hi 20 km/h se neeche aana zaroori hai, aur Section 194B ke mutabiq zebra crossing par pedestrians ko priority dena mandatory hai.</p><h3> Mission Objectives & Rules:</h3><ul><li><strong>Driveway & Society Departure:</strong> Board vehicle [F], pass Shanti Niketan CHS gate and boom barrier.</li><li><strong>Tilak Bazar Turn:</strong> Slow down for the 90° right turn at the chawl corner near Mahalaxmi Kirana and Chai Tapri.</li><li><strong>SV Avenue Cruise:</strong> Maintain steady lane discipline on the 4-lane arterial road (max 50 km/h).</li><li><strong>School Zone Deceleration:</strong> Decelerate to 20 km/h at the flashing amber school beacon.</li><li><strong>Tabletop Crosswalk Yield:</strong> Complete stop behind the white line when Crossing Guard Shinde holds up the STOP sign!</li><li><strong>Silence Zone Enforcement:</strong> Horn strictly prohibited within 100 meters of educational institutions.</li></ul>',
   pract: 'Walk to garage, drive through Mumbai neighborhoods to St. Xavier High School, slow to 20 km/h at the school flasher, stop for crossing students at the zebra crossing, and park at the school gate.',
   mode: 'practical',
   themeType: 'pedestrian_courtesy',

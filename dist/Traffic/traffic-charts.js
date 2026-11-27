@@ -84,7 +84,7 @@
     if (now - _lastChartWarnTime < 8000) {return;}
     _lastChartWarnTime = now;
     if (typeof toast === 'function') {
-      toast('📊 Chart: ' + msg, '#f59e0b');
+      toast(' Chart: ' + msg, '#f59e0b');
     }
   }
 
@@ -125,7 +125,7 @@
       ctx.font = (h > 40 ? '20px' : '14px') + ' sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('⚠', w / 2, h / 2 - (h > 40 ? 10 : 0));
+      ctx.fillText('', w / 2, h / 2 - (h > 40 ? 10 : 0));
 
       if (h > 50) {
         ctx.fillStyle = '#94a3b8';

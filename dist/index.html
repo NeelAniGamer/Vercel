@@ -43,7 +43,7 @@
     </script>
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" onload="this.onload=null;this.rel='stylesheet'" /><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" /></noscript>
 
     <!-- Anti-flash theme initialization -->
     <script>
@@ -1848,6 +1848,16 @@
       body.lm .ce-bg { background: radial-gradient(circle at 50% 50%, #fdf2f8 0%, #fce7f3 60%, #f8fafc 100%) !important; }
       body.lm .vr { background: radial-gradient(circle at 50% 50%, #f5f3ff 0%, #ede9fe 60%, #faf5ff 100%) !important; }
       body.lm .fri-bg { background: radial-gradient(circle at 50% 50%, #faf5ff 0%, #f3e8ff 60%, #fdf4ff 100%) !important; }
+      body.lm .hero-pill { color: #0369a1 !important; }
+      .bflag-rpg, body.lm .bflag-rpg { background: #047857 !important; color: #ffffff !important; }
+      body.lm .fc { color: #475569 !important; }
+      body.lm .pf-hud-chip, body.lm .qr-hud-chip, body.lm .c-hud-chip, body.lm .db-hud-chip,
+      body.lm .tr-hud-chip, body.lm .cf-hud-chip, body.lm .ce-hud-chip, body.lm .t3-hud-chip,
+      body.lm .rpg-hud-chip, body.lm .fri-hud-chip {
+        color: #f8fafc !important;
+        background: rgba(15, 23, 42, 0.78) !important;
+        border-color: rgba(255, 255, 255, 0.18) !important;
+      }
 
       /* Top Navigation Responsive Rules */
       .top-nav .nav-brand {
@@ -1998,6 +2008,8 @@
           padding: 6px 12px;
         }
       }
+    
+.pc[href="rpg"] .badge, body.lm .pc[href="rpg"] .badge { background: #047857 !important; color: #ffffff !important; }
     </style>
   </head>
   <body>
@@ -2059,7 +2071,7 @@
     <!-- Top Navigation wired to col-nav.js with scroll-pill transformation -->
     <nav class="top-nav" id="topNav" data-page="home" role="navigation" aria-label="Main Navigation">
       <a href="/" class="nav-brand">
-        <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="40" height="40" onerror="this.style.display='none'">
+        <img src="Class.png" alt="Class Of Learners Logo" class="brand-logo" width="40" height="40" onerror="this.style.display='none'" decoding="async">
         <span>Class Of Learners</span>
       </a>
       <div class="nav-links" id="navLinks">
@@ -2114,7 +2126,7 @@
       </div>
       <div class="pgrid">
         <article class="pc cs feat" data-cat="flagship" data-delay="0"
-          ><div class="badge bflag bflag-prime">★ Primary Flagship</div>
+          ><div class="badge bflag bflag-prime">Primary Flagship</div>
           <div class="pv"><img src="ati-1.webp" alt="Advanced Typing Instructor" width="900" height="500" loading="lazy" decoding="async" /></div>
           <div class="pb">
             <div class="pn">01 &mdash; Founding Project</div>

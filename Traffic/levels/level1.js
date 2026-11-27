@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 1,
-  icon: '🚥',
+  icon: 'signal',
   name: 'Lesson 1 - Red Light Patience',
   modes: ['car', 'bike', 'pedestrian'],
   veh: 'car',
@@ -28,7 +28,7 @@ window.LVS.push({
     { type: 'taxi', color: 0xffcc00, profileKey: 'impatient_taxi', route: [{ x: 4, z: -140 }, { x: 4, z: -70 }, { x: 4, z: 40 }] },
     // Negative example: a reckless biker who WILL jump the red light in front of you. Do NOT follow him.
     // F2 RIVAL: "Aarush" runs your whole corridor — jump-free clean driving can still catch him. +500 if you finish first.
-    { type: 'bike', color: 0xcc0000, profileKey: 'reckless_bike', rival: true, name: 'Aarush', route: [{ x: -56, z: -140 }, { x: -52, z: -100 }, { x: -4, z: -60 }, { x: -4, z: 20 }, { x: -4, z: 60 }, { x: 30, z: 100 }] }
+    { type: 'bike', color: 0xcc0000, profileKey: 'reckless_bike', rival: true, name: 'Aarush', forceSignalViolation: true, route: [{ x: -56, z: -140 }, { x: -52, z: -100 }, { x: -4, z: -60 }, { x: -4, z: 20 }, { x: -4, z: 60 }, { x: 30, z: 100 }] }
   ],
   // ── Story Mode cast ──────────────────────────────────────────────────────
   // NONE. The film for this lesson (MUMBAI 4000, "The White Line") is staged on
@@ -63,9 +63,23 @@ window.LVS.push({
   // this lesson teaches. The Colony Cross Lane and Bazaar Road crossings stay
   // unsignalized so traffic flows and NPCs queue only where the player must.
   signalizedJunctions: [[0, 0]],
+  // Hold the Linking Road red for the player's approach so Lesson 1 always
+  // teaches the thing it is named for. The authored phase is a 15s cycle that
+  // starts green, so without this the player can arrive on green and the
+  // `wait_red` objective can never complete. The player's axis stays red while
+  // they approach, releases `waitAfterStop` seconds after they stop at the
+  // line, and never holds again once they cross. Consumed by `_usigs()`.
+  signalHold: {
+    junction: [0, 0],
+    axis: 'v',
+    approachRadius: 120,
+    stopRadius: 40,
+    waitAfterStop: 3.0,
+    crossOffset: 8
+  },
   route: [
     { x: -58, z: -128, desc: 'Back out of the safehouse garage onto Shanti Galli' },
-    { x: -52, z: -100, desc: 'Follow Shanti Galli to Colony Cross Lane' },
+    { x: -60, z: -100, desc: 'Follow Shanti Galli to Colony Cross Lane' },
     { x: 4, z: -96.5, desc: 'Turn left onto Linking Road and keep to the left lane' },
 
     // ── FROM HERE THE ROUTE IS THE FILM'S GEOGRAPHY ──────────────────────
@@ -86,9 +100,9 @@ window.LVS.push({
     { x: 4, z: -30, desc: 'Close on the stop line — a constable is already standing on it' },
     { x: 4, z: -14, desc: 'Stop behind the white line — Ansh is honking, do NOT jump the red signal' },
     { x: 4, z: 20, desc: 'GREEN! Cross the junction cleanly past the zebra' },
-    { x: 4, z: 60, desc: 'Bazaar stretch — potholes + double-parked tempo, stay left' },
-    { x: 20, z: 96.5, desc: 'Turn left into Bazaar Road' },
-    { x: 40, z: 100, desc: '🏁 Park outside Sharma General Stores — question eyewitness Mrs. Iyer' }
+    { x: 4, z: 100, desc: 'Bazaar stretch — potholes + double-parked tempo, stay left' },
+    { x: 20, z: 96.5, desc: 'Bazaar Road — Sharma General Stores ahead' },
+    { x: 40, z: 100, desc: 'Park outside Sharma General Stores — question eyewitness Mrs. Iyer' }
   ],
 
   plots: [
@@ -106,7 +120,9 @@ window.LVS.push({
     { kind: 'shop', x: -22, z: -124, rotY: 0, w: 12, d: 10, h: 6, color: 0xfef08a, text: 'Mahalaxmi Sweets', sub: 'Pure Ghee Mithai • Farsan' },
     { kind: 'apartment', x: -34, z: -142, rotY: 0, w: 18, d: 14, h: 18, color: 0xdbeafe },
     { kind: 'apartment', x: -34, z: -118, rotY: 0, w: 18, d: 14, h: 22, color: 0xf1f5f9 },
-    { kind: 'apartment', x: -34, z: -104, rotY: 0, w: 18, d: 12, h: 18, color: 0x94a3b8 },
+    // NOTE: no apartment at z=-104 any more. A plot there (d=12) reached 8m
+    // into Colony Cross Lane (z=-100, 12m wide) and the route drove straight
+    // into its west wall. Keep plots on this block at z <= -118 or z >= -88.
 
     // ── MID-WEST INNER BLOCK: Shanti Galli to Linking Road (Z = -100 to 0) ──
     { kind: 'shop', x: -34, z: -86, rotY: 0, w: 16, d: 10, h: 10, color: 0xe8b4a0, text: 'Navrang Chawl', sub: 'Tailors • Grocery • Xerox' },
@@ -115,7 +131,8 @@ window.LVS.push({
     { kind: 'shop', x: -22, z: -66, rotY: 0, w: 14, d: 10, h: 8, color: 0xef4444, text: 'Reliance Digital', sub: 'Mobiles & Laptops' },
     { kind: 'apartment', x: -34, z: -46, rotY: 0, w: 16, d: 12, h: 21, color: 0xd4b896 },
     { kind: 'apartment', x: -34, z: -24, rotY: 0, w: 20, d: 16, h: 26, color: 0x8f9aa8 },
-    { kind: 'apartment', x: -32, z: -6, rotY: 0, w: 20, d: 14, h: 24, color: 0x334155 }, // Junction NW corner landmark
+    // No junction-corner tower at z=-6: with d=14 it reached 8m into Signal
+    // Junction Road (z=0, 18m wide). The z=-24 block already frames the corner.
     { kind: 'chai_tapri', x: -47, z: -76, rotY: -Math.PI / 2, w: 3.5, d: 2.5, text: 'Suresh Vada Pav', sub: 'Garam Garam Vada Pav' },
     { kind: 'thela', x: -47, z: -58, rotY: -Math.PI / 2, w: 2.5, d: 2.0, umbrellaColor: 0xf59e0b },
 
@@ -124,7 +141,7 @@ window.LVS.push({
     { kind: 'shop', x: 34, z: -118, rotY: 0, w: 18, d: 14, h: 16, color: 0xb8c8d8, text: 'Bank of Maharashtra', sub: 'Parel Branch • ATM' },
     { kind: 'shop', x: 22, z: -142, rotY: 0, w: 12, d: 10, h: 7, color: 0xdc2626, text: 'Bata Shoes', sub: 'Original Leather Footwear' },
     { kind: 'shop', x: 22, z: -124, rotY: 0, w: 14, d: 10, h: 7, color: 0xfef08a, text: 'Krishna Bhavan', sub: 'Pure South Indian Veg' },
-    { kind: 'apartment', x: 36, z: -104, rotY: 0, w: 18, d: 14, h: 20, color: 0x94a3b8 },
+    // No apartment at (36,-104): it reached 9m into Colony Cross Lane (z=-100).
     { kind: 'thela', x: 14.5, z: -135, rotY: Math.PI / 2, w: 2.5, d: 2.0, umbrellaColor: 0x22c55e },
     { kind: 'chai_tapri', x: 14.5, z: -116, rotY: Math.PI / 2, w: 3.5, d: 2.5, text: 'Linking Road Chai', sub: 'Special Irani Chai' },
 
@@ -133,7 +150,7 @@ window.LVS.push({
     { kind: 'shop', x: 34, z: -68, rotY: 0, w: 18, d: 12, h: 7, color: 0xe0f2fe, text: 'City Clinic', sub: 'Emergency Care' },
     { kind: 'shop', x: 34, z: -46, rotY: 0, w: 16, d: 10, h: 5.5, color: 0xbfdbfe, text: 'LifeCare Medical', sub: '24 Hour Chemist' },
     { kind: 'apartment', x: 34, z: -24, rotY: 0, w: 20, d: 16, h: 28, color: 0x7d8896 },
-    { kind: 'apartment', x: 32, z: -6, rotY: 0, w: 20, d: 14, h: 26, color: 0x1e293b }, // Junction NE corner landmark
+    // No junction-corner tower at z=-6 (see the NW corner note).
     { kind: 'thela', x: 14.5, z: -55, rotY: Math.PI / 2, w: 2.5, d: 2.0, umbrellaColor: 0xeab308 },
 
     // ── LINKING ROAD JUNCTION SOUTH-WEST BLOCK (Z = 0 to 100) ──
@@ -158,7 +175,7 @@ window.LVS.push({
     { kind: 'shop', x: -22, z: 114, rotY: Math.PI, w: 12, d: 9, color: 0xe8b4a0, awning: 0x166534, text: 'Veg Market', sub: 'Fresh Daily' },
     { kind: 'shop', x: -38, z: 114, rotY: Math.PI, w: 12, d: 9, color: 0xf0d878, awning: 0x9a3412, text: 'Ganesh Bakery', sub: 'Since 1987' },
     { kind: 'shop', x: 22, z: 114, rotY: Math.PI, w: 12, d: 9, color: 0xb8c8d8, awning: 0x1e40af, text: 'Sai Medical', sub: 'Open 24 Hours' },
-    { kind: 'shop', x: 64, z: 114, rotY: Math.PI, w: 14, d: 10, color: 0xf5e6d3, awning: 0x166534, text: 'Sharma General Stores', sub: 'Dabba Delivery Point' },
+    { kind: 'shop', x: 44, z: 114, rotY: Math.PI, w: 14, d: 10, color: 0xf5e6d3, awning: 0x166534, text: 'Sharma General Stores', sub: 'Dabba Delivery Point' },
     // South of Bazaar Road occluder towers
     { kind: 'apartment', x: -24, z: 140, rotY: 0, w: 20, d: 14, h: 28, color: 0x64748b },
     { kind: 'apartment', x: -44, z: 140, rotY: 0, w: 18, d: 14, h: 26, color: 0x475569 },
@@ -171,7 +188,7 @@ window.LVS.push({
     { kind: 'house', x: -78, z: 20, rotY: Math.PI / 2, w: 12, d: 10, color: 0xd4b896 },
     { kind: 'house', x: -78, z: 64, rotY: Math.PI / 2, w: 12, d: 10, color: 0xf5e6d3 },
     { kind: 'house', x: 78, z: -40, rotY: -Math.PI / 2, w: 12, d: 10, color: 0xf0d878 },
-    { kind: 'house', x: 78, z: 0, rotY: -Math.PI / 2, w: 12, d: 10, color: 0xe8d5b7 },
+    { kind: 'house', x: 78, z: 20, rotY: -Math.PI / 2, w: 12, d: 10, color: 0xe8d5b7 },
     { kind: 'house', x: 78, z: 40, rotY: -Math.PI / 2, w: 12, d: 10, color: 0xa8c8a8 },
     { kind: 'house', x: 78, z: 72, rotY: -Math.PI / 2, w: 12, d: 10, color: 0xe0f2fe },
 
@@ -218,8 +235,8 @@ window.LVS.push({
   ],
   roadProblems: [
     { kind: 'potholes', x: -4, z: 62, count: 7, spread: 10 },
-    { kind: 'barricade', x: -32, z: -100, rotY: 0 },
-    { kind: 'parked_truck', x: 6, z: 58, rotY: 0 },
+    { kind: 'barricade', x: -32, z: -97, rotY: 0 },
+    { kind: 'parked_truck', x: 8.5, z: 58, rotY: 0 },
     { kind: 'puddle', x: -58, z: -112, r: 4 },
 
     // ── 4-WAY SIGNAL JUNCTION: ALL 4 APPROACH CROSSINGS & STOP LINES ──
@@ -311,7 +328,7 @@ window.LVS.push({
 
     // Authentic Signboards
     { kind: 'signboard', x: -72, z: -102, rotY: Math.PI / 2, text: 'Shanti Galli', sub: 'Sharma Niwas • Lane 2' },
-    { kind: 'signboard', x: 52, z: 110, rotY: 0, text: 'Sharma General Stores', sub: 'Dabba Delivery Point' },
+    { kind: 'signboard', x: 36, z: 110, rotY: 0, text: 'Sharma General Stores', sub: 'Dabba Delivery Point' },
     { kind: 'signboard', x: 12, z: 32, rotY: 0, text: 'Linking Road', sub: 'Andheri West' },
     { kind: 'signboard', x: 13, z: -11, rotY: -Math.PI / 2, text: 'SI Vikram Sawant', sub: 'He held the line • 3:14 AM' },
     { kind: 'signboard', x: 12, z: -36, rotY: -Math.PI / 2, text: 'Mumbai Traffic Police', sub: 'Signal Ahead • Stop At The White Line' },

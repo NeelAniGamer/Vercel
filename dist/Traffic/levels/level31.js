@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 31,
-  icon: '👁️',
+  icon: 'eye',
   name: 'Lesson 31 - Blind Corner!',
   modes: ['car', 'bike'],
   col: '#e74c3c',
@@ -16,7 +16,7 @@ window.LVS.push({
     offHi: 'अंधे कोने पर चेतावनी'
   },
   theory:
-    '<h2>Blind Corner!</h2><p>Andha kona aa raha hai — saamne kya hai dikh nahi raha! Yeh sabse khatarnak situations mein se ek hai!</p><p>Blind corner pe ek baar horn bajao — taaki saamne waale ko pata chale tum aa rahe ho. Phir crawling speed pe corner round karo. Full speed pe mat jaao — collision ho sakti hai!</p><h3>👁️ Kya karna hai?</h3><ul><li>Corner se pehle ek baar HONK bajao!</li><li>Crawling speed pe corner round karo.</li><li>Saamne waali gaadi dikhe toh side do.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Blind corner pe bina warning ke jaana MV Act Section 117-118 ke under illegal hai — ₹1000 se ₹5000 tak ka fine!</p>',
+    '<h2>Blind Corner!</h2><p>Andha kona aa raha hai — saamne kya hai dikh nahi raha! Yeh sabse khatarnak situations mein se ek hai!</p><p>Blind corner pe ek baar horn bajao — taaki saamne waale ko pata chale tum aa rahe ho. Phir crawling speed pe corner round karo. Full speed pe mat jaao — collision ho sakti hai!</p><h3> Kya karna hai?</h3><ul><li>Corner se pehle ek baar HONK bajao!</li><li>Crawling speed pe corner round karo.</li><li>Saamne waali gaadi dikhe toh side do.</li></ul><h3> Kanoon kya kehta hai?</h3><p>Blind corner pe bina warning ke jaana MV Act Section 117-118 ke under illegal hai — ₹1000 se ₹5000 tak ka fine!</p>',
   pract: 'Honk once before the corner. Crawl around the corner at walking speed. Yield to any oncoming vehicle.',
   mode: 'practical',
   themeType: 'blind_corner',

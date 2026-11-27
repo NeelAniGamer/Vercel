@@ -3,7 +3,7 @@
 
 const countryData = {
   "United States of America": {
-    "flag": "🇺🇸",
+    "flag": "US",
     "region": "North America",
     "coordinates": {
       "lat": 38.9072,
@@ -74,7 +74,7 @@ const countryData = {
     }
   },
   "Canada": {
-    "flag": "🇨🇦",
+    "flag": "CA",
     "region": "North America",
     "coordinates": {
       "lat": 45.4215,
@@ -141,7 +141,7 @@ const countryData = {
     }
   },
   "Brazil": {
-    "flag": "🇧🇷",
+    "flag": "BR",
     "region": "South America",
     "coordinates": {
       "lat": -15.8267,
@@ -211,7 +211,7 @@ const countryData = {
     }
   },
   "Argentina": {
-    "flag": "🇦🇷",
+    "flag": "AR",
     "region": "South America",
     "coordinates": {
       "lat": -34.6037,
@@ -281,7 +281,7 @@ const countryData = {
     }
   },
   "Mexico": {
-    "flag": "🇲🇽",
+    "flag": "MX",
     "region": "North America",
     "coordinates": {
       "lat": 19.4326,
@@ -348,7 +348,7 @@ const countryData = {
     }
   },
   "United Kingdom": {
-    "flag": "🇬🇧",
+    "flag": "GB",
     "region": "Europe",
     "coordinates": {
       "lat": 51.5074,
@@ -418,7 +418,7 @@ const countryData = {
     }
   },
   "France": {
-    "flag": "🇫🇷",
+    "flag": "FR",
     "region": "Europe",
     "coordinates": {
       "lat": 48.8566,
@@ -484,7 +484,7 @@ const countryData = {
     }
   },
   "Germany": {
-    "flag": "🇩🇪",
+    "flag": "DE",
     "region": "Europe",
     "coordinates": {
       "lat": 52.52,
@@ -550,7 +550,7 @@ const countryData = {
     }
   },
   "Italy": {
-    "flag": "🇮🇹",
+    "flag": "IT",
     "region": "Europe",
     "coordinates": {
       "lat": 41.9028,
@@ -616,7 +616,7 @@ const countryData = {
     }
   },
   "Spain": {
-    "flag": "🇪🇸",
+    "flag": "ES",
     "region": "Europe",
     "coordinates": {
       "lat": 40.4168,
@@ -685,7 +685,7 @@ const countryData = {
     }
   },
   "Russia": {
-    "flag": "🇷🇺",
+    "flag": "RU",
     "region": "Europe/Asia",
     "coordinates": {
       "lat": 55.7558,
@@ -751,7 +751,7 @@ const countryData = {
     }
   },
   "China": {
-    "flag": "🇨🇳",
+    "flag": "CN",
     "region": "Asia",
     "coordinates": {
       "lat": 39.9042,
@@ -817,7 +817,7 @@ const countryData = {
     }
   },
   "India": {
-    "flag": "🇮🇳",
+    "flag": "IN",
     "region": "Asia",
     "coordinates": {
       "lat": 28.6139,
@@ -885,7 +885,7 @@ const countryData = {
     }
   },
   "Japan": {
-    "flag": "🇯🇵",
+    "flag": "JP",
     "region": "Asia",
     "coordinates": {
       "lat": 35.6762,
@@ -951,7 +951,7 @@ const countryData = {
     }
   },
   "South Korea": {
-    "flag": "🇰🇷",
+    "flag": "KR",
     "region": "Asia",
     "coordinates": {
       "lat": 37.5665,
@@ -1017,7 +1017,7 @@ const countryData = {
     }
   },
   "Australia": {
-    "flag": "🇦🇺",
+    "flag": "AU",
     "region": "Oceania",
     "coordinates": {
       "lat": -25.2744,
@@ -1087,7 +1087,7 @@ const countryData = {
     }
   },
   "Egypt": {
-    "flag": "🇪🇬",
+    "flag": "EG",
     "region": "Africa",
     "coordinates": {
       "lat": 30.0444,
@@ -1153,7 +1153,7 @@ const countryData = {
     }
   },
   "South Africa": {
-    "flag": "🇿🇦",
+    "flag": "ZA",
     "region": "Africa",
     "coordinates": {
       "lat": -25.7479,
@@ -1219,7 +1219,7 @@ const countryData = {
     }
   },
   "Nigeria": {
-    "flag": "🇳🇬",
+    "flag": "NG",
     "region": "Africa",
     "coordinates": {
       "lat": 9.0765,
@@ -1288,7 +1288,7 @@ const countryData = {
     }
   },
   "Kenya": {
-    "flag": "🇰🇪",
+    "flag": "KE",
     "region": "Africa",
     "coordinates": {
       "lat": -1.2921,
@@ -1355,7 +1355,7 @@ const countryData = {
     }
   },
   "Saudi Arabia": {
-    "flag": "🇸🇦",
+    "flag": "SA",
     "region": "Asia",
     "coordinates": {
       "lat": 24.7136,
@@ -1421,7 +1421,7 @@ const countryData = {
     }
   },
   "Turkey": {
-    "flag": "🇹🇷",
+    "flag": "TR",
     "region": "Europe/Asia",
     "coordinates": {
       "lat": 39.9208,
@@ -1487,7 +1487,7 @@ const countryData = {
     }
   },
   "Indonesia": {
-    "flag": "🇮🇩",
+    "flag": "ID",
     "region": "Southeast Asia",
     "coordinates": {
       "lat": -6.2088,
@@ -1557,7 +1557,7 @@ const countryData = {
     }
   },
   "Thailand": {
-    "flag": "🇹🇭",
+    "flag": "TH",
     "region": "Southeast Asia",
     "coordinates": {
       "lat": 13.7563,
@@ -1627,7 +1627,7 @@ const countryData = {
     }
   },
   "Vietnam": {
-    "flag": "🇻🇳",
+    "flag": "VN",
     "region": "Southeast Asia",
     "coordinates": {
       "lat": 21.0285,
@@ -1697,7 +1697,7 @@ const countryData = {
     }
   },
   "Poland": {
-    "flag": "🇵🇱",
+    "flag": "PL",
     "region": "Central Europe",
     "coordinates": {
       "lat": 52.2297,
@@ -1767,7 +1767,7 @@ const countryData = {
     }
   },
   "Ukraine": {
-    "flag": "🇺🇦",
+    "flag": "UA",
     "region": "Eastern Europe",
     "coordinates": {
       "lat": 50.4501,
@@ -1837,7 +1837,7 @@ const countryData = {
     }
   },
   "Norway": {
-    "flag": "🇳🇴",
+    "flag": "NO",
     "region": "Northern Europe",
     "coordinates": {
       "lat": 59.9139,
@@ -1907,7 +1907,7 @@ const countryData = {
     }
   },
   "Sweden": {
-    "flag": "🇸🇪",
+    "flag": "SE",
     "region": "Northern Europe",
     "coordinates": {
       "lat": 59.3293,
@@ -1977,7 +1977,7 @@ const countryData = {
     }
   },
   "Pakistan": {
-    "flag": "🇵🇰",
+    "flag": "PK",
     "region": "South Asia",
     "coordinates": {
       "lat": 33.6844,
@@ -2048,7 +2048,7 @@ const countryData = {
     }
   },
   "Bangladesh": {
-    "flag": "🇧🇩",
+    "flag": "BD",
     "region": "South Asia",
     "coordinates": {
       "lat": 23.8103,
@@ -2118,7 +2118,7 @@ const countryData = {
     }
   },
   "Iran": {
-    "flag": "🇮🇷",
+    "flag": "IR",
     "region": "Middle East / West Asia",
     "coordinates": {
       "lat": 35.6892,
@@ -2188,7 +2188,7 @@ const countryData = {
     }
   },
   "Iraq": {
-    "flag": "🇮🇶",
+    "flag": "IQ",
     "region": "Middle East / West Asia",
     "coordinates": {
       "lat": 33.3152,
@@ -2259,7 +2259,7 @@ const countryData = {
     }
   },
   "Colombia": {
-    "flag": "🇨🇴",
+    "flag": "CO",
     "region": "South America",
     "coordinates": {
       "lat": 4.711,
@@ -2307,7 +2307,7 @@ const countryData = {
     }
   },
   "Peru": {
-    "flag": "🇵🇪",
+    "flag": "PE",
     "region": "South America",
     "coordinates": {
       "lat": -12.0464,
@@ -2356,7 +2356,7 @@ const countryData = {
     }
   },
   "Chile": {
-    "flag": "🇨🇱",
+    "flag": "CL",
     "region": "South America",
     "coordinates": {
       "lat": -33.4489,
@@ -2404,7 +2404,7 @@ const countryData = {
     }
   },
   "New Zealand": {
-    "flag": "🇳🇿",
+    "flag": "NZ",
     "region": "Oceania",
     "coordinates": {
       "lat": -40.9006,
@@ -2472,7 +2472,7 @@ const countryData = {
     }
   },
   "Morocco": {
-    "flag": "🇲🇦",
+    "flag": "MA",
     "region": "Africa",
     "coordinates": {
       "lat": 34.0209,
@@ -2521,7 +2521,7 @@ const countryData = {
     }
   },
   "Ethiopia": {
-    "flag": "🇪🇹",
+    "flag": "ET",
     "region": "Africa",
     "coordinates": {
       "lat": 9.0054,
@@ -2569,7 +2569,7 @@ const countryData = {
     }
   },
   "Democratic Republic of the Congo": {
-    "flag": "🇨🇩",
+    "flag": "CD",
     "region": "Africa",
     "coordinates": {
       "lat": -4.4419,
@@ -2619,7 +2619,7 @@ const countryData = {
     }
   },
   "Algeria": {
-    "flag": "🇩🇿",
+    "flag": "DZ",
     "region": "Africa",
     "coordinates": {
       "lat": 28.0339,
@@ -2687,7 +2687,7 @@ const countryData = {
     }
   },
   "Switzerland": {
-    "flag": "🇨🇭",
+    "flag": "CH",
     "region": "Europe",
     "coordinates": {
       "lat": 46.8182,
@@ -2756,7 +2756,7 @@ const countryData = {
     }
   },
   "Netherlands": {
-    "flag": "🇳🇱",
+    "flag": "NL",
     "region": "Europe",
     "coordinates": {
       "lat": 52.1326,
@@ -2822,7 +2822,7 @@ const countryData = {
     }
   },
   "Singapore": {
-    "flag": "🇸🇬",
+    "flag": "SG",
     "region": "Asia",
     "coordinates": {
       "lat": 1.3521,
@@ -2891,7 +2891,7 @@ const countryData = {
     }
   },
   "Malaysia": {
-    "flag": "🇲🇾",
+    "flag": "MY",
     "region": "Asia",
     "coordinates": {
       "lat": 3.139,
@@ -2957,7 +2957,7 @@ const countryData = {
     }
   },
   "Philippines": {
-    "flag": "🇵🇭",
+    "flag": "PH",
     "region": "Asia",
     "coordinates": {
       "lat": 14.5995,
@@ -3024,7 +3024,7 @@ const countryData = {
     }
   },
   "United Arab Emirates": {
-    "flag": "🇦🇪",
+    "flag": "AE",
     "region": "Asia",
     "coordinates": {
       "lat": 24.4539,
@@ -3091,7 +3091,7 @@ const countryData = {
     }
   },
   "Greece": {
-    "flag": "🇬🇷",
+    "flag": "GR",
     "region": "Europe",
     "coordinates": {
       "lat": 37.9838,
@@ -3157,7 +3157,7 @@ const countryData = {
     }
   },
   "Portugal": {
-    "flag": "🇵🇹",
+    "flag": "PT",
     "region": "Europe",
     "coordinates": {
       "lat": 38.7223,
@@ -3223,7 +3223,7 @@ const countryData = {
     }
   },
   "Angola": {
-    "flag": "🇦🇴",
+    "flag": "AO",
     "region": "Africa",
     "coordinates": {
       "lat": -8.8368,
@@ -3281,7 +3281,7 @@ const countryData = {
     }
   },
   "Benin": {
-    "flag": "🇧🇯",
+    "flag": "BJ",
     "region": "Africa",
     "coordinates": {
       "lat": 6.4969,
@@ -3339,7 +3339,7 @@ const countryData = {
     }
   },
   "Botswana": {
-    "flag": "🇧🇼",
+    "flag": "BW",
     "region": "Africa",
     "coordinates": {
       "lat": -24.658,
@@ -3396,7 +3396,7 @@ const countryData = {
     }
   },
   "Burkina Faso": {
-    "flag": "🇧🇫",
+    "flag": "BF",
     "region": "Africa",
     "coordinates": {
       "lat": 12.3714,
@@ -3454,7 +3454,7 @@ const countryData = {
     }
   },
   "Burundi": {
-    "flag": "🇧🇮",
+    "flag": "BI",
     "region": "Africa",
     "coordinates": {
       "lat": -3.4278,
@@ -3512,7 +3512,7 @@ const countryData = {
     }
   },
   "Cameroon": {
-    "flag": "🇨🇲",
+    "flag": "CM",
     "region": "Africa",
     "coordinates": {
       "lat": 3.848,
@@ -3570,7 +3570,7 @@ const countryData = {
     }
   },
   "Central African Republic": {
-    "flag": "🇨🇫",
+    "flag": "CF",
     "region": "Africa",
     "coordinates": {
       "lat": 4.3947,
@@ -3627,7 +3627,7 @@ const countryData = {
     }
   },
   "Chad": {
-    "flag": "🇹🇩",
+    "flag": "TD",
     "region": "Africa",
     "coordinates": {
       "lat": 12.1348,
@@ -3684,7 +3684,7 @@ const countryData = {
     }
   },
   "Congo": {
-    "flag": "🇨🇬",
+    "flag": "CG",
     "region": "Africa",
     "coordinates": {
       "lat": -4.2634,
@@ -3742,7 +3742,7 @@ const countryData = {
     }
   },
   "Djibouti": {
-    "flag": "🇩🇯",
+    "flag": "DJ",
     "region": "Africa",
     "coordinates": {
       "lat": 11.5721,
@@ -3801,7 +3801,7 @@ const countryData = {
     }
   },
   "Equatorial Guinea": {
-    "flag": "🇬🇶",
+    "flag": "GQ",
     "region": "Africa",
     "coordinates": {
       "lat": 3.7504,
@@ -3860,7 +3860,7 @@ const countryData = {
     }
   },
   "Eritrea": {
-    "flag": "🇪🇷",
+    "flag": "ER",
     "region": "Africa",
     "coordinates": {
       "lat": 15.339,
@@ -3918,7 +3918,7 @@ const countryData = {
     }
   },
   "Eswatini": {
-    "flag": "🇸🇿",
+    "flag": "SZ",
     "region": "Africa",
     "coordinates": {
       "lat": -26.3055,
@@ -3975,7 +3975,7 @@ const countryData = {
     }
   },
   "Gabon": {
-    "flag": "🇬🇦",
+    "flag": "GA",
     "region": "Africa",
     "coordinates": {
       "lat": 0.4162,
@@ -4032,7 +4032,7 @@ const countryData = {
     }
   },
   "Gambia": {
-    "flag": "🇬🇲",
+    "flag": "GM",
     "region": "Africa",
     "coordinates": {
       "lat": 13.4549,
@@ -4090,7 +4090,7 @@ const countryData = {
     }
   },
   "Ghana": {
-    "flag": "🇬🇭",
+    "flag": "GH",
     "region": "Africa",
     "coordinates": {
       "lat": 5.6037,
@@ -4148,7 +4148,7 @@ const countryData = {
     }
   },
   "Guinea": {
-    "flag": "🇬🇳",
+    "flag": "GN",
     "region": "Africa",
     "coordinates": {
       "lat": 9.6412,
@@ -4206,7 +4206,7 @@ const countryData = {
     }
   },
   "Guinea-Bissau": {
-    "flag": "🇬🇼",
+    "flag": "GW",
     "region": "Africa",
     "coordinates": {
       "lat": 11.8632,
@@ -4263,7 +4263,7 @@ const countryData = {
     }
   },
   "Ivory Coast": {
-    "flag": "🇨🇮",
+    "flag": "CI",
     "region": "Africa",
     "coordinates": {
       "lat": 6.8276,
@@ -4321,7 +4321,7 @@ const countryData = {
     }
   },
   "Lesotho": {
-    "flag": "🇱🇸",
+    "flag": "LS",
     "region": "Africa",
     "coordinates": {
       "lat": -29.3134,
@@ -4378,7 +4378,7 @@ const countryData = {
     }
   },
   "Liberia": {
-    "flag": "🇱🇷",
+    "flag": "LR",
     "region": "Africa",
     "coordinates": {
       "lat": 6.3156,
@@ -4436,7 +4436,7 @@ const countryData = {
     }
   },
   "Libya": {
-    "flag": "🇱🇾",
+    "flag": "LY",
     "region": "Africa",
     "coordinates": {
       "lat": 32.8872,
@@ -4493,7 +4493,7 @@ const countryData = {
     }
   },
   "Madagascar": {
-    "flag": "🇲🇬",
+    "flag": "MG",
     "region": "Africa",
     "coordinates": {
       "lat": -18.8792,
@@ -4550,7 +4550,7 @@ const countryData = {
     }
   },
   "Malawi": {
-    "flag": "🇲🇼",
+    "flag": "MW",
     "region": "Africa",
     "coordinates": {
       "lat": -13.9626,
@@ -4607,7 +4607,7 @@ const countryData = {
     }
   },
   "Mali": {
-    "flag": "🇲🇱",
+    "flag": "ML",
     "region": "Africa",
     "coordinates": {
       "lat": 12.6392,
@@ -4664,7 +4664,7 @@ const countryData = {
     }
   },
   "Mauritania": {
-    "flag": "🇲🇷",
+    "flag": "MR",
     "region": "Africa",
     "coordinates": {
       "lat": 18.0735,
@@ -4723,7 +4723,7 @@ const countryData = {
     }
   },
   "Mozambique": {
-    "flag": "🇲🇿",
+    "flag": "MZ",
     "region": "Africa",
     "coordinates": {
       "lat": -25.9692,
@@ -4781,7 +4781,7 @@ const countryData = {
     }
   },
   "Namibia": {
-    "flag": "🇳🇦",
+    "flag": "NA",
     "region": "Africa",
     "coordinates": {
       "lat": -22.5609,
@@ -4840,7 +4840,7 @@ const countryData = {
     }
   },
   "Niger": {
-    "flag": "🇳🇪",
+    "flag": "NE",
     "region": "Africa",
     "coordinates": {
       "lat": 13.5116,
@@ -4899,7 +4899,7 @@ const countryData = {
     }
   },
   "Rwanda": {
-    "flag": "🇷🇼",
+    "flag": "RW",
     "region": "Africa",
     "coordinates": {
       "lat": -1.9403,
@@ -4958,7 +4958,7 @@ const countryData = {
     }
   },
   "Senegal": {
-    "flag": "🇸🇳",
+    "flag": "SN",
     "region": "Africa",
     "coordinates": {
       "lat": 14.7167,
@@ -5015,7 +5015,7 @@ const countryData = {
     }
   },
   "Sierra Leone": {
-    "flag": "🇸🇱",
+    "flag": "SL",
     "region": "Africa",
     "coordinates": {
       "lat": 8.4842,
@@ -5074,7 +5074,7 @@ const countryData = {
     }
   },
   "Somalia": {
-    "flag": "🇸🇴",
+    "flag": "SO",
     "region": "Africa",
     "coordinates": {
       "lat": 2.0469,
@@ -5131,7 +5131,7 @@ const countryData = {
     }
   },
   "South Sudan": {
-    "flag": "🇸🇸",
+    "flag": "SS",
     "region": "Africa",
     "coordinates": {
       "lat": 4.8517,
@@ -5189,7 +5189,7 @@ const countryData = {
     }
   },
   "Sudan": {
-    "flag": "🇸🇩",
+    "flag": "SD",
     "region": "Africa",
     "coordinates": {
       "lat": 15.5007,
@@ -5247,7 +5247,7 @@ const countryData = {
     }
   },
   "Tanzania": {
-    "flag": "🇹🇿",
+    "flag": "TZ",
     "region": "Africa",
     "coordinates": {
       "lat": -6.163,
@@ -5304,7 +5304,7 @@ const countryData = {
     }
   },
   "Togo": {
-    "flag": "🇹🇬",
+    "flag": "TG",
     "region": "Africa",
     "coordinates": {
       "lat": 6.1375,
@@ -5362,7 +5362,7 @@ const countryData = {
     }
   },
   "Tunisia": {
-    "flag": "🇹🇳",
+    "flag": "TN",
     "region": "Africa",
     "coordinates": {
       "lat": 36.8065,
@@ -5419,7 +5419,7 @@ const countryData = {
     }
   },
   "Uganda": {
-    "flag": "🇺🇬",
+    "flag": "UG",
     "region": "Africa",
     "coordinates": {
       "lat": 0.3163,
@@ -5477,7 +5477,7 @@ const countryData = {
     }
   },
   "Zambia": {
-    "flag": "🇿🇲",
+    "flag": "ZM",
     "region": "Africa",
     "coordinates": {
       "lat": -15.4137,
@@ -5535,7 +5535,7 @@ const countryData = {
     }
   },
   "Zimbabwe": {
-    "flag": "🇿🇼",
+    "flag": "ZW",
     "region": "Africa",
     "coordinates": {
       "lat": -17.8252,
@@ -5593,7 +5593,7 @@ const countryData = {
     }
   },
   "Afghanistan": {
-    "flag": "🇦🇫",
+    "flag": "AF",
     "region": "Asia",
     "coordinates": {
       "lat": 34.5553,
@@ -5650,7 +5650,7 @@ const countryData = {
     }
   },
   "Albania": {
-    "flag": "🇦🇱",
+    "flag": "AL",
     "region": "Europe",
     "coordinates": {
       "lat": 41.3275,
@@ -5706,7 +5706,7 @@ const countryData = {
     }
   },
   "Armenia": {
-    "flag": "🇦🇲",
+    "flag": "AM",
     "region": "Asia",
     "coordinates": {
       "lat": 40.1792,
@@ -5762,7 +5762,7 @@ const countryData = {
     }
   },
   "Austria": {
-    "flag": "🇦🇹",
+    "flag": "AT",
     "region": "Central Europe",
     "coordinates": {
       "lat": 48.2082,
@@ -5828,7 +5828,7 @@ const countryData = {
     }
   },
   "Azerbaijan": {
-    "flag": "🇦🇿",
+    "flag": "AZ",
     "region": "Asia",
     "coordinates": {
       "lat": 40.4093,
@@ -5884,7 +5884,7 @@ const countryData = {
     }
   },
   "Belarus": {
-    "flag": "🇧🇾",
+    "flag": "BY",
     "region": "Europe",
     "coordinates": {
       "lat": 53.9006,
@@ -5941,7 +5941,7 @@ const countryData = {
     }
   },
   "Belgium": {
-    "flag": "🇧🇪",
+    "flag": "BE",
     "region": "Western Europe",
     "coordinates": {
       "lat": 50.8503,
@@ -6009,7 +6009,7 @@ const countryData = {
     }
   },
   "Bosnia and Herzegovina": {
-    "flag": "🇧🇦",
+    "flag": "BA",
     "region": "Europe",
     "coordinates": {
       "lat": 43.9159,
@@ -6069,7 +6069,7 @@ const countryData = {
     }
   },
   "Bulgaria": {
-    "flag": "🇧🇬",
+    "flag": "BG",
     "region": "Europe",
     "coordinates": {
       "lat": 42.6977,
@@ -6125,7 +6125,7 @@ const countryData = {
     }
   },
   "Cambodia": {
-    "flag": "🇰🇭",
+    "flag": "KH",
     "region": "Asia",
     "coordinates": {
       "lat": 11.5564,
@@ -6181,7 +6181,7 @@ const countryData = {
     }
   },
   "Croatia": {
-    "flag": "🇭🇷",
+    "flag": "HR",
     "region": "Europe",
     "coordinates": {
       "lat": 45.815,
@@ -6237,7 +6237,7 @@ const countryData = {
     }
   },
   "Czechia": {
-    "flag": "🇨🇿",
+    "flag": "CZ",
     "region": "Central Europe",
     "coordinates": {
       "lat": 50.0755,
@@ -6307,7 +6307,7 @@ const countryData = {
     }
   },
   "Denmark": {
-    "flag": "🇩🇰",
+    "flag": "DK",
     "region": "Europe",
     "coordinates": {
       "lat": 55.6761,
@@ -6363,7 +6363,7 @@ const countryData = {
     }
   },
   "Estonia": {
-    "flag": "🇪🇪",
+    "flag": "EE",
     "region": "Europe",
     "coordinates": {
       "lat": 59.437,
@@ -6419,7 +6419,7 @@ const countryData = {
     }
   },
   "Finland": {
-    "flag": "🇫🇮",
+    "flag": "FI",
     "region": "Northern Europe",
     "coordinates": {
       "lat": 60.1699,
@@ -6486,7 +6486,7 @@ const countryData = {
     }
   },
   "Georgia": {
-    "flag": "🇬🇪",
+    "flag": "GE",
     "region": "Europe",
     "coordinates": {
       "lat": 41.7151,
@@ -6542,7 +6542,7 @@ const countryData = {
     }
   },
   "Hungary": {
-    "flag": "🇭🇺",
+    "flag": "HU",
     "region": "Europe",
     "coordinates": {
       "lat": 47.4979,
@@ -6598,7 +6598,7 @@ const countryData = {
     }
   },
   "Ireland": {
-    "flag": "🇮🇪",
+    "flag": "IE",
     "region": "Europe",
     "coordinates": {
       "lat": 53.3498,
@@ -6655,7 +6655,7 @@ const countryData = {
     }
   },
   "Israel": {
-    "flag": "🇮🇱",
+    "flag": "IL",
     "region": "Asia",
     "coordinates": {
       "lat": 31.7683,
@@ -6712,7 +6712,7 @@ const countryData = {
     }
   },
   "Jordan": {
-    "flag": "🇯🇴",
+    "flag": "JO",
     "region": "Asia",
     "coordinates": {
       "lat": 31.9454,
@@ -6768,7 +6768,7 @@ const countryData = {
     }
   },
   "Kazakhstan": {
-    "flag": "🇰🇿",
+    "flag": "KZ",
     "region": "Central Asia",
     "coordinates": {
       "lat": 51.1694,
@@ -6835,7 +6835,7 @@ const countryData = {
     }
   },
   "Kuwait": {
-    "flag": "🇰🇼",
+    "flag": "KW",
     "region": "Asia",
     "coordinates": {
       "lat": 29.3759,
@@ -6892,7 +6892,7 @@ const countryData = {
     }
   },
   "Kyrgyzstan": {
-    "flag": "🇰🇬",
+    "flag": "KG",
     "region": "Asia",
     "coordinates": {
       "lat": 42.8746,
@@ -6949,7 +6949,7 @@ const countryData = {
     }
   },
   "Laos": {
-    "flag": "🇱🇦",
+    "flag": "LA",
     "region": "Asia",
     "coordinates": {
       "lat": 17.9757,
@@ -7005,7 +7005,7 @@ const countryData = {
     }
   },
   "Latvia": {
-    "flag": "🇱🇻",
+    "flag": "LV",
     "region": "Europe",
     "coordinates": {
       "lat": 56.9496,
@@ -7061,7 +7061,7 @@ const countryData = {
     }
   },
   "Lebanon": {
-    "flag": "🇱🇧",
+    "flag": "LB",
     "region": "Asia",
     "coordinates": {
       "lat": 33.8938,
@@ -7118,7 +7118,7 @@ const countryData = {
     }
   },
   "Lithuania": {
-    "flag": "🇱🇹",
+    "flag": "LT",
     "region": "Europe",
     "coordinates": {
       "lat": 54.6872,
@@ -7174,7 +7174,7 @@ const countryData = {
     }
   },
   "North Macedonia": {
-    "flag": "🇲🇰",
+    "flag": "MK",
     "region": "Europe",
     "coordinates": {
       "lat": 41.9981,
@@ -7231,7 +7231,7 @@ const countryData = {
     }
   },
   "Moldova": {
-    "flag": "🇲🇩",
+    "flag": "MD",
     "region": "Europe",
     "coordinates": {
       "lat": 47.0105,
@@ -7287,7 +7287,7 @@ const countryData = {
     }
   },
   "Mongolia": {
-    "flag": "🇲🇳",
+    "flag": "MN",
     "region": "Asia",
     "coordinates": {
       "lat": 47.8864,
@@ -7343,7 +7343,7 @@ const countryData = {
     }
   },
   "Montenegro": {
-    "flag": "🇲🇪",
+    "flag": "ME",
     "region": "Europe",
     "coordinates": {
       "lat": 42.4304,
@@ -7400,7 +7400,7 @@ const countryData = {
     }
   },
   "Myanmar": {
-    "flag": "🇲🇲",
+    "flag": "MM",
     "region": "Asia",
     "coordinates": {
       "lat": 19.7633,
@@ -7456,7 +7456,7 @@ const countryData = {
     }
   },
   "Nepal": {
-    "flag": "🇳🇵",
+    "flag": "NP",
     "region": "Asia",
     "coordinates": {
       "lat": 27.7172,
@@ -7512,7 +7512,7 @@ const countryData = {
     }
   },
   "North Korea": {
-    "flag": "🇰🇵",
+    "flag": "KP",
     "region": "Asia",
     "coordinates": {
       "lat": 40.3399,
@@ -7566,7 +7566,7 @@ const countryData = {
     }
   },
   "Oman": {
-    "flag": "🇴🇲",
+    "flag": "OM",
     "region": "Asia",
     "coordinates": {
       "lat": 23.5859,
@@ -7622,7 +7622,7 @@ const countryData = {
     }
   },
   "Qatar": {
-    "flag": "🇶🇦",
+    "flag": "QA",
     "region": "Asia",
     "coordinates": {
       "lat": 25.2854,
@@ -7679,7 +7679,7 @@ const countryData = {
     }
   },
   "Romania": {
-    "flag": "🇷🇴",
+    "flag": "RO",
     "region": "Europe",
     "coordinates": {
       "lat": 44.4268,
@@ -7735,7 +7735,7 @@ const countryData = {
     }
   },
   "Serbia": {
-    "flag": "🇷🇸",
+    "flag": "RS",
     "region": "Europe",
     "coordinates": {
       "lat": 44.7866,
@@ -7791,7 +7791,7 @@ const countryData = {
     }
   },
   "Slovakia": {
-    "flag": "🇸🇰",
+    "flag": "SK",
     "region": "Europe",
     "coordinates": {
       "lat": 48.1486,
@@ -7847,7 +7847,7 @@ const countryData = {
     }
   },
   "Slovenia": {
-    "flag": "🇸🇮",
+    "flag": "SI",
     "region": "Europe",
     "coordinates": {
       "lat": 46.0569,
@@ -7903,7 +7903,7 @@ const countryData = {
     }
   },
   "Sri Lanka": {
-    "flag": "🇱🇰",
+    "flag": "LK",
     "region": "Asia",
     "coordinates": {
       "lat": 6.9271,
@@ -7960,7 +7960,7 @@ const countryData = {
     }
   },
   "Syria": {
-    "flag": "🇸🇾",
+    "flag": "SY",
     "region": "Asia",
     "coordinates": {
       "lat": 33.5138,
@@ -8016,7 +8016,7 @@ const countryData = {
     }
   },
   "Taiwan": {
-    "flag": "🇹🇼",
+    "flag": "TW",
     "region": "Asia",
     "coordinates": {
       "lat": 25.033,
@@ -8073,7 +8073,7 @@ const countryData = {
     }
   },
   "Tajikistan": {
-    "flag": "🇹🇯",
+    "flag": "TJ",
     "region": "Asia",
     "coordinates": {
       "lat": 38.5598,
@@ -8129,7 +8129,7 @@ const countryData = {
     }
   },
   "Turkmenistan": {
-    "flag": "🇹🇲",
+    "flag": "TM",
     "region": "Asia",
     "coordinates": {
       "lat": 37.9601,
@@ -8185,7 +8185,7 @@ const countryData = {
     }
   },
   "Uzbekistan": {
-    "flag": "🇺🇿",
+    "flag": "UZ",
     "region": "Central Asia",
     "coordinates": {
       "lat": 41.2995,
@@ -8251,7 +8251,7 @@ const countryData = {
     }
   },
   "Yemen": {
-    "flag": "🇾🇪",
+    "flag": "YE",
     "region": "Asia",
     "coordinates": {
       "lat": 15.3694,
@@ -8307,7 +8307,7 @@ const countryData = {
     }
   },
   "Cyprus": {
-    "flag": "🇨🇾",
+    "flag": "CY",
     "region": "Europe",
     "coordinates": {
       "lat": 35.1856,
@@ -8364,7 +8364,7 @@ const countryData = {
     }
   },
   "Bahamas": {
-    "flag": "🇧🇸",
+    "flag": "BS",
     "region": "North America",
     "coordinates": {
       "lat": 25.0479,
@@ -8421,7 +8421,7 @@ const countryData = {
     }
   },
   "Belize": {
-    "flag": "🇧🇿",
+    "flag": "BZ",
     "region": "North America",
     "coordinates": {
       "lat": 17.251,
@@ -8479,7 +8479,7 @@ const countryData = {
     }
   },
   "Bolivia": {
-    "flag": "🇧🇴",
+    "flag": "BO",
     "region": "South America",
     "coordinates": {
       "lat": -19.0333,
@@ -8538,7 +8538,7 @@ const countryData = {
     }
   },
   "Costa Rica": {
-    "flag": "🇨🇷",
+    "flag": "CR",
     "region": "North America",
     "coordinates": {
       "lat": 9.9281,
@@ -8594,7 +8594,7 @@ const countryData = {
     }
   },
   "Cuba": {
-    "flag": "🇨🇺",
+    "flag": "CU",
     "region": "North America",
     "coordinates": {
       "lat": 23.1136,
@@ -8650,7 +8650,7 @@ const countryData = {
     }
   },
   "Dominican Republic": {
-    "flag": "🇩🇴",
+    "flag": "DO",
     "region": "North America",
     "coordinates": {
       "lat": 18.7357,
@@ -8704,7 +8704,7 @@ const countryData = {
     }
   },
   "Ecuador": {
-    "flag": "🇪🇨",
+    "flag": "EC",
     "region": "South America",
     "coordinates": {
       "lat": -0.1807,
@@ -8762,7 +8762,7 @@ const countryData = {
     }
   },
   "El Salvador": {
-    "flag": "🇸🇻",
+    "flag": "SV",
     "region": "North America",
     "coordinates": {
       "lat": 13.6929,
@@ -8818,7 +8818,7 @@ const countryData = {
     }
   },
   "Guatemala": {
-    "flag": "🇬🇹",
+    "flag": "GT",
     "region": "North America",
     "coordinates": {
       "lat": 14.6349,
@@ -8877,7 +8877,7 @@ const countryData = {
     }
   },
   "Guyana": {
-    "flag": "🇬🇾",
+    "flag": "GY",
     "region": "South America",
     "coordinates": {
       "lat": 6.8013,
@@ -8934,7 +8934,7 @@ const countryData = {
     }
   },
   "Haiti": {
-    "flag": "🇭🇹",
+    "flag": "HT",
     "region": "North America",
     "coordinates": {
       "lat": 18.5944,
@@ -8991,7 +8991,7 @@ const countryData = {
     }
   },
   "Honduras": {
-    "flag": "🇭🇳",
+    "flag": "HN",
     "region": "North America",
     "coordinates": {
       "lat": 14.0723,
@@ -9047,7 +9047,7 @@ const countryData = {
     }
   },
   "Jamaica": {
-    "flag": "🇯🇲",
+    "flag": "JM",
     "region": "North America",
     "coordinates": {
       "lat": 17.9712,
@@ -9104,7 +9104,7 @@ const countryData = {
     }
   },
   "Nicaragua": {
-    "flag": "🇳🇮",
+    "flag": "NI",
     "region": "North America",
     "coordinates": {
       "lat": 12.115,
@@ -9161,7 +9161,7 @@ const countryData = {
     }
   },
   "Panama": {
-    "flag": "🇵🇦",
+    "flag": "PA",
     "region": "North America",
     "coordinates": {
       "lat": 8.9824,
@@ -9218,7 +9218,7 @@ const countryData = {
     }
   },
   "Paraguay": {
-    "flag": "🇵🇾",
+    "flag": "PY",
     "region": "South America",
     "coordinates": {
       "lat": -25.2637,
@@ -9275,7 +9275,7 @@ const countryData = {
     }
   },
   "Suriname": {
-    "flag": "🇸🇷",
+    "flag": "SR",
     "region": "South America",
     "coordinates": {
       "lat": 5.852,
@@ -9333,7 +9333,7 @@ const countryData = {
     }
   },
   "Trinidad and Tobago": {
-    "flag": "🇹🇹",
+    "flag": "TT",
     "region": "North America",
     "coordinates": {
       "lat": 10.6918,
@@ -9387,7 +9387,7 @@ const countryData = {
     }
   },
   "Uruguay": {
-    "flag": "🇺🇾",
+    "flag": "UY",
     "region": "South America",
     "coordinates": {
       "lat": -34.9011,
@@ -9443,7 +9443,7 @@ const countryData = {
     }
   },
   "Venezuela": {
-    "flag": "🇻🇪",
+    "flag": "VE",
     "region": "South America",
     "coordinates": {
       "lat": 10.4806,
@@ -9499,7 +9499,7 @@ const countryData = {
     }
   },
   "Greenland": {
-    "flag": "🇬🇱",
+    "flag": "GL",
     "region": "North America",
     "coordinates": {
       "lat": 64.1743,
@@ -9556,7 +9556,7 @@ const countryData = {
     }
   },
   "Iceland": {
-    "flag": "🇮🇸",
+    "flag": "IS",
     "region": "Northern Europe",
     "coordinates": {
       "lat": 64.1466,
@@ -9622,7 +9622,7 @@ const countryData = {
     }
   },
   "Luxembourg": {
-    "flag": "🇱🇺",
+    "flag": "LU",
     "region": "Western Europe",
     "coordinates": {
       "lat": 49.6116,
@@ -9690,7 +9690,7 @@ const countryData = {
     }
   },
   "Fiji": {
-    "flag": "🇫🇯",
+    "flag": "FJ",
     "region": "Oceania",
     "coordinates": {
       "lat": -17.7134,
@@ -9758,7 +9758,7 @@ const countryData = {
     }
   },
   "Papua New Guinea": {
-    "flag": "🇵🇬",
+    "flag": "PG",
     "region": "Oceania",
     "coordinates": {
       "lat": -6.314993,
@@ -9827,7 +9827,7 @@ const countryData = {
     }
   },
   "Solomon Islands": {
-    "flag": "🇸🇧",
+    "flag": "SB",
     "region": "Oceania",
     "coordinates": {
       "lat": -9.6457,
@@ -9894,7 +9894,7 @@ const countryData = {
     }
   },
   "Vanuatu": {
-    "flag": "🇻🇺",
+    "flag": "VU",
     "region": "Oceania",
     "coordinates": {
       "lat": -15.3767,
@@ -9954,7 +9954,7 @@ const countryData = {
     }
   },
   "Samoa": {
-    "flag": "🇼🇸",
+    "flag": "WS",
     "region": "Oceania",
     "coordinates": {
       "lat": -13.759,
@@ -10009,7 +10009,7 @@ const countryData = {
     }
   },
   "Tonga": {
-    "flag": "🇹🇴",
+    "flag": "TO",
     "region": "Oceania",
     "coordinates": {
       "lat": -21.1789,
@@ -10064,7 +10064,7 @@ const countryData = {
     }
   },
   "Kiribati": {
-    "flag": "🇰🇮",
+    "flag": "KI",
     "region": "Oceania",
     "coordinates": {
       "lat": 1.8709,
@@ -10119,7 +10119,7 @@ const countryData = {
     }
   },
   "Micronesia": {
-    "flag": "🇫🇲",
+    "flag": "FM",
     "region": "Oceania",
     "coordinates": {
       "lat": 6.9248,
@@ -10176,7 +10176,7 @@ const countryData = {
     }
   },
   "Palau": {
-    "flag": "🇵🇼",
+    "flag": "PW",
     "region": "Oceania",
     "coordinates": {
       "lat": 7.515,
@@ -10231,7 +10231,7 @@ const countryData = {
     }
   },
   "Marshall Islands": {
-    "flag": "🇲🇭",
+    "flag": "MH",
     "region": "Oceania",
     "coordinates": {
       "lat": 7.1315,
@@ -10286,7 +10286,7 @@ const countryData = {
     }
   },
   "Nauru": {
-    "flag": "🇳🇷",
+    "flag": "NR",
     "region": "Oceania",
     "coordinates": {
       "lat": -0.5228,
@@ -10337,7 +10337,7 @@ const countryData = {
     }
   },
   "Tuvalu": {
-    "flag": "🇹🇻",
+    "flag": "TV",
     "region": "Oceania",
     "coordinates": {
       "lat": -7.1095,
@@ -10392,7 +10392,7 @@ const countryData = {
     }
   },
   "New Caledonia": {
-    "flag": "🇳🇨",
+    "flag": "NC",
     "region": "Oceania",
     "coordinates": {
       "lat": -20.9043,
@@ -10459,7 +10459,7 @@ const countryData = {
     }
   },
   "N. Caledonia": {
-    "flag": "🇳🇨",
+    "flag": "NC",
     "region": "Oceania",
     "coordinates": {
       "lat": -20.9043,
@@ -10513,7 +10513,7 @@ const countryData = {
     }
   },
   "French Polynesia": {
-    "flag": "🇵🇫",
+    "flag": "PF",
     "region": "Oceania",
     "coordinates": {
       "lat": -17.6797,
@@ -10568,7 +10568,7 @@ const countryData = {
     }
   },
   "Guam": {
-    "flag": "🇬🇺",
+    "flag": "GU",
     "region": "Oceania",
     "coordinates": {
       "lat": 13.4443,
@@ -10622,7 +10622,7 @@ const countryData = {
     }
   },
   "Solomon Is.": {
-    "flag": "🇸🇧",
+    "flag": "SB",
     "region": "Oceania",
     "coordinates": {
       "lat": -9.6457,
@@ -10689,7 +10689,7 @@ const countryData = {
     }
   },
   "Federated States of Micronesia": {
-    "flag": "🇫🇲",
+    "flag": "FM",
     "region": "Oceania",
     "coordinates": {
       "lat": 6.9248,
@@ -10746,7 +10746,7 @@ const countryData = {
     }
   },
   "Marshall Is.": {
-    "flag": "🇲🇭",
+    "flag": "MH",
     "region": "Oceania",
     "coordinates": {
       "lat": 7.1315,
@@ -10801,7 +10801,7 @@ const countryData = {
     }
   },
   "Dem. Rep. Congo": {
-    "flag": "🇨🇩",
+    "flag": "CD",
     "region": "Africa",
     "coordinates": {
       "lat": -4.4419,
@@ -10851,7 +10851,7 @@ const countryData = {
     }
   },
   "Central African Rep.": {
-    "flag": "🇨🇫",
+    "flag": "CF",
     "region": "Africa",
     "coordinates": {
       "lat": 4.3947,
@@ -10908,7 +10908,7 @@ const countryData = {
     }
   },
   "Eq. Guinea": {
-    "flag": "🇬🇶",
+    "flag": "GQ",
     "region": "Africa",
     "coordinates": {
       "lat": 3.7504,
@@ -10967,7 +10967,7 @@ const countryData = {
     }
   },
   "Swaziland": {
-    "flag": "🇸🇿",
+    "flag": "SZ",
     "region": "Africa",
     "coordinates": {
       "lat": -26.3055,
@@ -11024,7 +11024,7 @@ const countryData = {
     }
   },
   "Ivoire": {
-    "flag": "🇨🇮",
+    "flag": "CI",
     "region": "Africa",
     "coordinates": {
       "lat": 6.8276,
@@ -11082,7 +11082,7 @@ const countryData = {
     }
   },
   "S. Sudan": {
-    "flag": "🇸🇸",
+    "flag": "SS",
     "region": "Africa",
     "coordinates": {
       "lat": 4.8517,
@@ -11140,7 +11140,7 @@ const countryData = {
     }
   },
   "Czech Rep.": {
-    "flag": "🇨🇿",
+    "flag": "CZ",
     "region": "Central Europe",
     "coordinates": {
       "lat": 50.0755,
@@ -11210,7 +11210,7 @@ const countryData = {
     }
   },
   "Czech Republic": {
-    "flag": "🇨🇿",
+    "flag": "CZ",
     "region": "Central Europe",
     "coordinates": {
       "lat": 50.0755,
@@ -11280,7 +11280,7 @@ const countryData = {
     }
   },
   "Bosnia and Herz.": {
-    "flag": "🇧🇦",
+    "flag": "BA",
     "region": "Europe",
     "coordinates": {
       "lat": 43.9159,
@@ -11340,7 +11340,7 @@ const countryData = {
     }
   },
   "Dem. Rep. Korea": {
-    "flag": "🇰🇵",
+    "flag": "KP",
     "region": "Asia",
     "coordinates": {
       "lat": 40.3399,
@@ -11394,7 +11394,7 @@ const countryData = {
     }
   },
   "Dominican Rep.": {
-    "flag": "🇩🇴",
+    "flag": "DO",
     "region": "North America",
     "coordinates": {
       "lat": 18.7357,
@@ -11448,7 +11448,7 @@ const countryData = {
     }
   },
   "Trinidad & Tobago": {
-    "flag": "🇹🇹",
+    "flag": "TT",
     "region": "North America",
     "coordinates": {
       "lat": 10.6918,
@@ -11502,7 +11502,7 @@ const countryData = {
     }
   },
   "American Samoa": {
-    "flag": "🇦🇸",
+    "flag": "AS",
     "region": "Oceania",
     "coordinates": {
       "lat": -14.271,
@@ -11556,7 +11556,7 @@ const countryData = {
     }
   },
   "Cook Islands": {
-    "flag": "🇨🇰",
+    "flag": "CK",
     "region": "Oceania",
     "coordinates": {
       "lat": -21.2367,
@@ -11610,7 +11610,7 @@ const countryData = {
     }
   },
   "The Moon": {
-    "flag": "🌕",
+    "flag": "GL",
     "region": "Earth's Orbit / Solar System",
     "coordinates": {
       "lat": 0,
@@ -11676,7 +11676,7 @@ const countryData = {
     }
   },
   "Moon": {
-    "flag": "🌕",
+    "flag": "GL",
     "region": "Earth's Orbit / Solar System",
     "coordinates": {
       "lat": 0,

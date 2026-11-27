@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 43,
-  icon: '🛣️',
+  icon: 'highway',
   name: 'Lesson 43 - Highway Merge Chaos!',
   modes: ['car', 'bike'],
   col: '#3498db',
@@ -16,7 +16,7 @@ window.LVS.push({
     offHi: 'गलत तरीके से लेन बदलना'
   },
   theory:
-    '<h2>Highway Merge Chaos!</h2><p>Highway pe merge karna hai lekin trucks aur buses se bhara hai! Speed match karna hai, gap dhundna hai, aur smoothly merge karna hai!</p><p>Highway merging sabse dangerous hota hai agar speed match nahi kiya. Acceleration pe poori speed pakdo. Side mirror aur blind spot dono check karo. Trucks ke paas mat ruko — unko tum dikhte nahi!</p><h3>🛣️ Kya karna hai?</h3><ul><li>Speed match karo highway ki — slow merge mat karo!</li><li>Blind spot check karo — mirror ke alawa bhi dekho.</li><li>Trucks ke side se turant niklo — unke blind zone mein mat raho.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Improper lane merging MV Act Section 126 ke under ₹1000 se ₹5000 tak ka fine!</p>',
+    '<h2>Highway Merge Chaos!</h2><p>Highway pe merge karna hai lekin trucks aur buses se bhara hai! Speed match karna hai, gap dhundna hai, aur smoothly merge karna hai!</p><p>Highway merging sabse dangerous hota hai agar speed match nahi kiya. Acceleration pe poori speed pakdo. Side mirror aur blind spot dono check karo. Trucks ke paas mat ruko — unko tum dikhte nahi!</p><h3> Kya karna hai?</h3><ul><li>Speed match karo highway ki — slow merge mat karo!</li><li>Blind spot check karo — mirror ke alawa bhi dekho.</li><li>Trucks ke side se turant niklo — unke blind zone mein mat raho.</li></ul><h3> Kanoon kya kehta hai?</h3><p>Improper lane merging MV Act Section 126 ke under ₹1000 se ₹5000 tak ka fine!</p>',
   pract: 'Match speed on the ramp. Check blind spot. Find a gap and merge. Do not linger beside trucks.',
   mode: 'practical',
   themeType: 'highway_merge',

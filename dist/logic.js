@@ -338,7 +338,7 @@ class VisionAndChunkManager {
         if (fpsFrameTrigger) {
             if (!this.elOptStatus) {this.init();}
             if (this.elOptStatus) {
-                this.elOptStatus.innerHTML = `<span class="sb-opt-pill">⚡ OPT: ${this.stats.culledPercent}% CULLED</span> | CHUNKS: <span>${this.stats.activeChunks}/${this.stats.totalChunks}</span>`;
+                this.elOptStatus.innerHTML = `<span class="sb-opt-pill">OPT: ${this.stats.culledPercent}% CULLED</span> | CHUNKS: <span>${this.stats.activeChunks}/${this.stats.totalChunks}</span>`;
             }
         }
     }
@@ -527,7 +527,7 @@ function initMilkyWay() {
     youDiv.style.cssText = `font-family:'Space Mono',monospace;font-size:10px;color:rgba(255,255,200,0.85);
         letter-spacing:2px;pointer-events:none;white-space:nowrap;text-shadow:0 0 6px rgba(255,255,100,0.8);
         padding:2px 6px;border-left:2px solid rgba(255,255,150,0.6);opacity:0;transition:opacity 0.8s;`;
-    youDiv.textContent = '☉ YOU ARE HERE';
+    youDiv.textContent = 'YOU ARE HERE';
     const youLabel = new CSS2DObject(youDiv);
     // Map sun position from texture UV to world coords
     const sunAng = Math.PI * 0.32, sunRad = 110000 * 0.29;
@@ -3969,7 +3969,9 @@ let flyToTarget = null; // used by _resetCamera (already in existing code)
 window.togglePause = function() {
     paused = !paused;
     const b = document.getElementById('btn-pause');
-    b.textContent = paused ? '▶' : '⏸';
+    b.innerHTML = paused
+        ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg>'
+        : '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
     b.classList.toggle('paused', paused);
 };
 window.speedUp   = function() { if (speedIdx < SPEEDS.length - 1) { speedIdx++; _updSpeed(); } };
@@ -4456,7 +4458,7 @@ function renderFavBar() {
     if (!bar) {return;}
     bar.innerHTML = [...favorites]
         .map(n =>
-            `<button class="fav-btn" onclick="window._searchSelect && window._searchSelect('${n.replace(/'/g,"\\'")}')">✦ ${n}</button>`
+            `<button class="fav-btn" onclick="window._searchSelect && window._searchSelect('${n.replace(/'/g,"\\'")}')">${n}</button>`
         ).join('');
     bar.style.display = favorites.size ? 'flex' : 'none';
 }

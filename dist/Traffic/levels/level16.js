@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 16,
-  icon: '🌙',
+  icon: 'moon',
   name: 'Lesson 16 - Residential Night',
   modes: ['car', 'bike'],
   col: '#2ecc71',
@@ -16,7 +16,7 @@ window.LVS.push({
     offHi: 'आवासीय क्षेत्र में रात को हॉर्न बजाना'
   },
   theory:
-    '<h2>Residential Night</h2><p>Raat ko residential colony mein honk karna galat hai aur illegal bhi! Log so rahe hain, aur sadak pe kutte soye hain — horn ki awaaz se sab kharab ho jaayega.</p><p>Tight gali hai, ek kutta road ke beech mein so raha hai. Peeche waali gaadi honk karna chahti hai — tum mat karo! Dheere dheere kutte ke paas se guzar jao.</p><h3>🌙 Kya karna hai?</h3><ul><li>Kutta road pe so raha hai — horn mat bajao, nind se utha dega!</li><li>Peeche waali gaadi honk kar rahi hai — unki mat suno.</li><li>Dheere se kutte ke paas se guzar jao — woh so jaaye!</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Raat ko residential area mein honk karna Noise Pollution Rules aur MV Act Section 118 ke under illegal hai — ₹1000 se ₹5000 tak ka fine!</p>',
+    '<h2>Residential Night</h2><p>Raat ko residential colony mein honk karna galat hai aur illegal bhi! Log so rahe hain, aur sadak pe kutte soye hain — horn ki awaaz se sab kharab ho jaayega.</p><p>Tight gali hai, ek kutta road ke beech mein so raha hai. Peeche waali gaadi honk karna chahti hai — tum mat karo! Dheere dheere kutte ke paas se guzar jao.</p><h3> Kya karna hai?</h3><ul><li>Kutta road pe so raha hai — horn mat bajao, nind se utha dega!</li><li>Peeche waali gaadi honk kar rahi hai — unki mat suno.</li><li>Dheere se kutte ke paas se guzar jao — woh so jaaye!</li></ul><h3> Kanoon kya kehta hai?</h3><p>Raat ko residential area mein honk karna Noise Pollution Rules aur MV Act Section 118 ke under illegal hai — ₹1000 se ₹5000 tak ka fine!</p>',
   pract: 'Drive slowly around the sleeping dog. Do not honk. Reach the main road quietly.',
   mode: 'practical',
   themeType: 'no_honking',

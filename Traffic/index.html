@@ -7,7 +7,8 @@
   <title>Mumbai Traffic Hero — Desktop Edition</title>
   <link rel="icon" type="image/png" href="icon-192.png" />
   <link rel="manifest" href="manifest.webmanifest" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../col-skeleton.css" />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@700&display=swap" onload="this.onload=null;this.rel='stylesheet'" /><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@700&display=swap" /></noscript>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
@@ -340,39 +341,76 @@
     <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/og/traffic.jpg" />
   </head>
 <body>
+<div class="loader col-skeleton-screen sk-theme-sky sk-force-dark" id="loader" role="status" aria-busy="true" aria-label="Loading Mumbai Traffic Hero Desktop Edition">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+    <div class="sk-traffic-topbar" aria-hidden="true">
+    <div style="display:flex;align-items:center;gap:10px;"><div class="sk-circle sk-shimmer-accent" style="width:26px;height:26px;"></div><div class="sk-pill sk-shimmer" style="width:168px;height:16px;"></div><div class="sk-pill sk-shimmer-accent" style="width:84px;height:20px;"></div></div>
+    <div class="sk-nav-links"><div class="sk-pill sk-shimmer-accent" style="width:94px;height:28px;"></div><div class="sk-pill sk-shimmer" style="width:118px;height:28px;"></div><div class="sk-pill sk-shimmer" style="width:110px;height:28px;"></div><div class="sk-pill sk-shimmer" style="width:112px;height:28px;"></div></div>
+    <div style="display:flex;gap:8px;"><div class="sk-box sk-shimmer" style="width:48px;height:28px;"></div><div class="sk-box sk-shimmer" style="width:32px;height:28px;"></div></div>
+  </div>
+  <div class="sk-editorial-wrap" aria-hidden="true" style="padding-top: 28px;">
+    <div class="sk-banner-box" style="padding: 28px;">
+      <div style="flex:1;min-width:220px;display:flex;flex-direction:column;gap:12px;">
+        <div class="sk-title-bar sk-shimmer" style="width: 340px; max-width: 90%; height: 32px;"></div>
+        <div class="sk-lede-line sk-shimmer" style="width: 82%;"></div>
+        <div class="sk-cta-row" style="margin: 8px 0 0;"><div class="sk-btn sk-btn-primary sk-shimmer" style="width:176px;height:42px;"></div><div class="sk-btn sk-btn-secondary sk-shimmer" style="width:154px;height:42px;"></div></div>
+      </div>
+    </div>
+    <div class="sk-kpi-row">
+      <div class="sk-card"><div class="sk-pill sk-shimmer" style="width:82px;height:12px;"></div><div class="sk-title-bar sk-shimmer-accent" style="width:90px;height:28px;"></div></div>
+      <div class="sk-card"><div class="sk-pill sk-shimmer" style="width:88px;height:12px;"></div><div class="sk-title-bar sk-shimmer" style="width:76px;height:28px;"></div></div>
+      <div class="sk-card"><div class="sk-pill sk-shimmer" style="width:74px;height:12px;"></div><div class="sk-title-bar sk-shimmer" style="width:96px;height:28px;"></div></div>
+      <div class="sk-card"><div class="sk-pill sk-shimmer" style="width:92px;height:12px;"></div><div class="sk-title-bar sk-shimmer" style="width:84px;height:28px;"></div></div>
+    </div>
+    <div class="sk-grid sk-grid-3">
+      <div class="sk-card"><div class="sk-title-bar sk-shimmer" style="width:68%;height:18px;"></div><div class="sk-lede-line sk-shimmer" style="width:90%;"></div></div>
+      <div class="sk-card"><div class="sk-title-bar sk-shimmer" style="width:74%;height:18px;"></div><div class="sk-lede-line sk-shimmer" style="width:86%;"></div></div>
+      <div class="sk-card"><div class="sk-title-bar sk-shimmer" style="width:62%;height:18px;"></div><div class="sk-lede-line sk-shimmer" style="width:92%;"></div></div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>Traffic Pro</span> &middot; Desktop Edition</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
+
   <div id="desktop-app">
     <!-- Desktop Header -->
     <header id="desktop-header">
       <div class="brand-section">
-        <span style="font-size: 20px;">🚦</span>
+        <span style="font-size: 20px;"></span>
         <span class="brand-title">MUMBAI TRAFFIC HERO</span>
         <span class="badge-tag">DESKTOP PRO</span>
       </div>
 
       <nav class="nav-tabs">
         <a class="nav-tab" href="traffic-messenger.html" style="text-decoration:none; color: #facc15; border: 1px solid rgba(250, 204, 21, 0.4); background: rgba(250, 204, 21, 0.12);">
-          🌟 Mini Mumbai Messenger
+           Mini Mumbai Messenger
         </a>
         <button class="nav-tab active" data-target="home-hub" onclick="switchView('home-hub')">
-          🏠 Home Hub
+           Home Hub
         </button>
         <button class="nav-tab" data-target="driving-frame" onclick="switchView('driving-frame')">
-          🚗 3D Driving Simulator
+           3D Driving Simulator
         </button>
         <button class="nav-tab" data-target="dashboard-frame" onclick="switchView('dashboard-frame')">
-          📊 Driver Dashboard
+           Driver Dashboard
         </button>
         <button class="nav-tab" data-target="academy-frame" onclick="switchView('academy-frame')">
-          🚶 Pedestrian Academy
+           Pedestrian Academy
         </button>
         <button class="nav-tab" data-target="setup-frame" onclick="switchView('setup-frame')">
-          ⚙️ Vehicle Setup
+           Vehicle Setup
         </button>
       </nav>
 
       <div class="header-actions">
-        <button class="action-btn" title="Toggle Fullscreen" onclick="toggleAppFullscreen()">⛶ F11</button>
-        <button class="action-btn" title="Reload View" onclick="reloadCurrentView()">🔄</button>
+        <button class="action-btn" title="Toggle Fullscreen" onclick="toggleAppFullscreen()"> F11</button>
+        <button class="action-btn" title="Reload View" onclick="reloadCurrentView()"></button>
       </div>
     </header>
 
@@ -387,13 +425,13 @@
           </div>
           <div class="hero-actions">
             <a href="traffic-messenger.html" class="btn-primary" style="text-decoration:none; background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);">
-              🌟 Play Mini Mumbai Messenger
+               Play Mini Mumbai Messenger
             </a>
             <button class="btn-primary" onclick="switchView('driving-frame')">
-              🚗 Launch Simulator
+               Launch Simulator
             </button>
             <button class="btn-secondary" onclick="switchView('dashboard-frame')">
-              📊 Open Dashboard
+               Open Dashboard
             </button>
           </div>
         </div>
@@ -403,7 +441,7 @@
           <div class="stat-card">
             <div class="stat-label">Driver Safety Score</div>
             <div class="stat-value" style="color: var(--green);">100 / 100</div>
-            <div class="stat-sub">🟢 Exemplary Driver Standing</div>
+            <div class="stat-sub"> Exemplary Driver Standing</div>
           </div>
           <div class="stat-card">
             <div class="stat-label">Active Vehicle</div>
@@ -423,11 +461,11 @@
         </div>
 
         <!-- Feature Showcase Cards -->
-        <div class="section-title">✨ Featured Simulator Systems</div>
+        <div class="section-title"> Featured Simulator Systems</div>
         <div class="features-grid">
           <div class="feature-card" onclick="window.location.href='traffic-messenger.html'" style="border-color: rgba(250, 204, 21, 0.5); background: linear-gradient(180deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));">
             <div>
-              <div class="feature-icon">🛺</div>
+              <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 17H3a1 1 0 0 1-1-1v-4l3-6h12l3 6v4a1 1 0 0 1-1 1h-2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M12 6v6"/></svg></div>
               <div class="feature-title" style="color: #facc15;">Mini Mumbai Messenger</div>
               <div class="feature-desc">Explore spherical Planet Mumbai! Deliver hot tiffins on a Dabbawala bicycle or Kaali-Peeli auto-rickshaw with Messenger curved navigation ribbons, traffic rules & stamps!</div>
             </div>
@@ -435,7 +473,7 @@
           </div>
           <div class="feature-card" onclick="switchView('driving-frame')">
             <div>
-              <div class="feature-icon">🏎️</div>
+              <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg></div>
               <div class="feature-title">3D Driving Simulator</div>
               <div class="feature-desc">Drive the high-performance Sports GT Coupe through traffic with authentic Pacejka tire physics and dynamic 4-wheel weight transfer.</div>
             </div>
@@ -444,7 +482,7 @@
 
           <div class="feature-card" onclick="switchView('dashboard-frame')">
             <div>
-              <div class="feature-icon">📊</div>
+              <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg></div>
               <div class="feature-title">Driver Dashboard</div>
               <div class="feature-desc">Real-time driver telemetry, speed compliance charts, lane discipline logs, and official safety certificate issuance.</div>
             </div>
@@ -453,7 +491,7 @@
 
           <div class="feature-card" onclick="switchView('academy-frame')">
             <div>
-              <div class="feature-icon">🚶</div>
+              <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="1.5"/><path d="m9 20 3-6 3 6"/><path d="m6 8 6 2 6-2"/><path d="M12 10v4"/></svg></div>
               <div class="feature-title">Pedestrian Academy</div>
               <div class="feature-desc">Master pedestrian safety, zebra crosswalk rules, jaywalking laws, and pedestrian rights in Mumbai streetscapes.</div>
             </div>
@@ -462,7 +500,7 @@
 
           <div class="feature-card" onclick="switchView('setup-frame')">
             <div>
-              <div class="feature-icon">🛠️</div>
+              <div class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
               <div class="feature-title">Vehicle Customizer</div>
               <div class="feature-desc">Customize suspension stiffness, tire friction coefficients, camera chase offsets, and aerodynamic components.</div>
             </div>
@@ -488,7 +526,7 @@
       <iframe id="academy-frame" class="view-frame" data-src="Academy.html" allow="fullscreen; pointer-lock"></iframe>
 
       <!-- 5. Vehicle Setup Frame -->
-      <iframe id="setup-frame" class="view-frame" data-src="TrafficSetup.html" allow="fullscreen; pointer-lock"></iframe>
+      <iframe id="setup-frame" class="view-frame" data-src="Academy.html?settings=1" allow="fullscreen; pointer-lock"></iframe>
     </main>
   </div>
 

@@ -33,45 +33,45 @@ export interface TimelineEntry {
 }
 
 const EVENT_META: Record<string, EventMeta> = {
-  'NO_HONKING': { label: 'Honked in silence zone', icon: '📢', category: 'Noise', severity: 'warning', tip: 'Silence zones near schools/hospitals require zero honking. Use hand signals instead.' },
-  'MOBILE_USE': { label: 'Used phone while driving', icon: '📱', category: 'Distraction', severity: 'critical', tip: 'Phone use causes 3,412 accidents/year in Mumbai. Pull over if you must use your phone.' },
-  'SAFETY_VIOLATION': { label: 'No seatbelt/helmet', icon: '⛑️', category: 'Safety', severity: 'critical', tip: '67% of fatalities involve unhelmeted riders. Always buckle up!' },
-  'NO_INDICATOR': { label: 'Turned without indicator', icon: '🔄', category: 'Communication', severity: 'warning', tip: 'Use indicators 30m before turning. Prevents 40% of lane-change accidents.' },
-  'RED_LIGHT_VIOLATION': { label: 'Jumped red signal', icon: '🚦', category: 'Signals', severity: 'critical', tip: '12,847 signal-jump challans issued in Mumbai in 2024. Stop completely before the line.' },
-  'SPEED_VIOLATION': { label: 'Exceeded speed limit', icon: '⚡', category: 'Speed', severity: 'warning', tip: 'Over-speeding is the #1 cause of road accidents in India.' },
-  'LITTER_HIT': { label: 'Hit road litter', icon: '🗑️', category: 'Awareness', severity: 'info', tip: 'Road litter can cause skidding or tire damage. Stay alert!' },
-  'CHECKPOINT_EVASION': { label: 'Fled police checkpoint', icon: '🚨', category: 'Compliance', severity: 'critical', tip: 'Fleeing a checkpoint is a serious offense. Always stop and cooperate.' },
+  'NO_HONKING': { label: 'Honked in silence zone', icon: 'volume', category: 'Noise', severity: 'warning', tip: 'Silence zones near schools/hospitals require zero honking. Use hand signals instead.' },
+  'MOBILE_USE': { label: 'Used phone while driving', icon: 'smartphone', category: 'Distraction', severity: 'critical', tip: 'Phone use causes 3,412 accidents/year in Mumbai. Pull over if you must use your phone.' },
+  'SAFETY_VIOLATION': { label: 'No seatbelt/helmet', icon: 'sparkles', category: 'Safety', severity: 'critical', tip: '67% of fatalities involve unhelmeted riders. Always buckle up!' },
+  'NO_INDICATOR': { label: 'Turned without indicator', icon: 'sparkles', category: 'Communication', severity: 'warning', tip: 'Use indicators 30m before turning. Prevents 40% of lane-change accidents.' },
+  'RED_LIGHT_VIOLATION': { label: 'Jumped red signal', icon: 'signal', category: 'Signals', severity: 'critical', tip: '12,847 signal-jump challans issued in Mumbai in 2024. Stop completely before the line.' },
+  'SPEED_VIOLATION': { label: 'Exceeded speed limit', icon: 'zap', category: 'Speed', severity: 'warning', tip: 'Over-speeding is the #1 cause of road accidents in India.' },
+  'LITTER_HIT': { label: 'Hit road litter', icon: 'sparkles', category: 'Awareness', severity: 'info', tip: 'Road litter can cause skidding or tire damage. Stay alert!' },
+  'CHECKPOINT_EVASION': { label: 'Fled police checkpoint', icon: 'alert', category: 'Compliance', severity: 'critical', tip: 'Fleeing a checkpoint is a serious offense. Always stop and cooperate.' },
   'WRONG_SIDE': { label: 'Driving on wrong side', icon: '↩️', category: 'Lane', severity: 'danger', tip: 'Wrong-side driving causes head-on collisions. Stay in your lane.' },
-  'SPLASH': { label: 'Splashed pedestrian', icon: '💦', category: 'Courtesy', severity: 'warning', tip: 'Slow down near puddles. Splashing pedestrians is fined ₹500.' },
-  'ANIMAL_HONK': { label: 'Honked at animals', icon: '🐄', category: 'Courtesy', severity: 'info', tip: 'Honking scares animals. Slow down and wait for them to cross.' },
-  'PEDESTRIAN_HIT': { label: 'Hit pedestrian', icon: '🚶', category: 'Safety', severity: 'critical', tip: 'Pedestrians have right of way. Always yield at crosswalks.' },
-  'COLLISION': { label: 'Vehicle collision', icon: '💥', category: 'Safety', severity: 'danger', tip: 'Maintain safe following distance. Use brake early.' },
-  'BARRICADE_HIT': { label: 'Hit barricade', icon: '🚧', category: 'Awareness', severity: 'warning', tip: 'Slow down in construction zones. Watch for barriers.' },
-  'OFF_ROAD': { label: 'Went off-road', icon: '🌿', category: 'Control', severity: 'danger', tip: 'Stay on marked roads. Off-road driving damages vehicles and terrain.' },
-  'HARD_BRAKE': { label: 'Emergency braking', icon: '🛑', category: 'Control', severity: 'info', tip: 'Anticipate stops. Smooth braking is safer and saves fuel.' },
-  'NEAR_MISS': { label: 'Near miss with NPC', icon: '⚠️', category: 'Awareness', severity: 'warning', tip: 'Keep safe distance from other vehicles. Watch blind spots.' },
-  'SEATBELT_ON': { label: 'Put on seatbelt', icon: '✅', category: 'Safety', severity: 'info', tip: 'Great! Seatbelts reduce fatality risk by 45%.' },
-  'SIGNAL_USED': { label: 'Used turn signal', icon: '✅', category: 'Communication', severity: 'info', tip: 'Excellent! Using indicators makes you a predictable, safe driver.' },
-  'CHECKPOINT_STOP': { label: 'Stopped at checkpoint', icon: '✅', category: 'Compliance', severity: 'info', tip: 'Perfect! Always stop at police checkpoints.' },
-  'YIELDED_PED': { label: 'Yielded to pedestrian', icon: '✅', category: 'Courtesy', severity: 'info', tip: 'Well done! Yielding to pedestrians saves lives.' },
-  'TASK_COMPLETE': { label: 'Task completed', icon: '🎯', category: 'Mission', severity: 'info', tip: '' },
-  'TUTORIAL_SHOWN': { label: 'Viewed tutorial', icon: '📖', category: 'Learning', severity: 'info', tip: '' }
+  'SPLASH': { label: 'Splashed pedestrian', icon: 'droplet', category: 'Courtesy', severity: 'warning', tip: 'Slow down near puddles. Splashing pedestrians is fined ₹500.' },
+  'ANIMAL_HONK': { label: 'Honked at animals', icon: 'alert', category: 'Courtesy', severity: 'info', tip: 'Honking scares animals. Slow down and wait for them to cross.' },
+  'PEDESTRIAN_HIT': { label: 'Hit pedestrian', icon: 'pedestrian', category: 'Safety', severity: 'critical', tip: 'Pedestrians have right of way. Always yield at crosswalks.' },
+  'COLLISION': { label: 'Vehicle collision', icon: 'alert', category: 'Safety', severity: 'danger', tip: 'Maintain safe following distance. Use brake early.' },
+  'BARRICADE_HIT': { label: 'Hit barricade', icon: 'alert', category: 'Awareness', severity: 'warning', tip: 'Slow down in construction zones. Watch for barriers.' },
+  'OFF_ROAD': { label: 'Went off-road', icon: 'leaf', category: 'Control', severity: 'danger', tip: 'Stay on marked roads. Off-road driving damages vehicles and terrain.' },
+  'HARD_BRAKE': { label: 'Emergency braking', icon: 'alert', category: 'Control', severity: 'info', tip: 'Anticipate stops. Smooth braking is safer and saves fuel.' },
+  'NEAR_MISS': { label: 'Near miss with NPC', icon: 'alert', category: 'Awareness', severity: 'warning', tip: 'Keep safe distance from other vehicles. Watch blind spots.' },
+  'SEATBELT_ON': { label: 'Put on seatbelt', icon: 'check', category: 'Safety', severity: 'info', tip: 'Great! Seatbelts reduce fatality risk by 45%.' },
+  'SIGNAL_USED': { label: 'Used turn signal', icon: 'check', category: 'Communication', severity: 'info', tip: 'Excellent! Using indicators makes you a predictable, safe driver.' },
+  'CHECKPOINT_STOP': { label: 'Stopped at checkpoint', icon: 'check', category: 'Compliance', severity: 'info', tip: 'Perfect! Always stop at police checkpoints.' },
+  'YIELDED_PED': { label: 'Yielded to pedestrian', icon: 'check', category: 'Courtesy', severity: 'info', tip: 'Well done! Yielding to pedestrians saves lives.' },
+  'TASK_COMPLETE': { label: 'Task completed', icon: 'target', category: 'Mission', severity: 'info', tip: '' },
+  'TUTORIAL_SHOWN': { label: 'Viewed tutorial', icon: 'book', category: 'Learning', severity: 'info', tip: '' }
 };
 
 const CATEGORIES: Record<string, { icon: string; color: string }> = {
-  'Safety': { icon: '🛡️', color: '#ef4444' },
-  'Speed': { icon: '⚡', color: '#f59e0b' },
-  'Signals': { icon: '🚦', color: '#3b82f6' },
-  'Communication': { icon: '🔄', color: '#8b5cf6' },
-  'Distraction': { icon: '📱', color: '#ef4444' },
-  'Compliance': { icon: '🚨', color: '#dc2626' },
-  'Courtesy': { icon: '🤝', color: '#06b6d4' },
-  'Awareness': { icon: '👁️', color: '#f59e0b' },
-  'Control': { icon: '🎮', color: '#10b981' },
-  'Lane': { icon: '🛤️', color: '#6366f1' },
-  'Noise': { icon: '🔊', color: '#84cc16' },
-  'Mission': { icon: '🎯', color: '#22c55e' },
-  'Learning': { icon: '📖', color: '#a78bfa' }
+  'Safety': { icon: 'shield', color: '#ef4444' },
+  'Speed': { icon: 'zap', color: '#f59e0b' },
+  'Signals': { icon: 'signal', color: '#3b82f6' },
+  'Communication': { icon: 'sparkles', color: '#8b5cf6' },
+  'Distraction': { icon: 'smartphone', color: '#ef4444' },
+  'Compliance': { icon: 'alert', color: '#dc2626' },
+  'Courtesy': { icon: 'sparkles', color: '#06b6d4' },
+  'Awareness': { icon: 'eye', color: '#f59e0b' },
+  'Control': { icon: 'target', color: '#10b981' },
+  'Lane': { icon: 'highway', color: '#6366f1' },
+  'Noise': { icon: 'volume', color: '#84cc16' },
+  'Mission': { icon: 'target', color: '#22c55e' },
+  'Learning': { icon: 'book', color: '#a78bfa' }
 };
 
 export class GameplayRecorder {
@@ -90,7 +90,7 @@ export class GameplayRecorder {
   }
 
   record(type: string, data: any = {}): void {
-    const meta = EVENT_META[type] || { label: type, icon: '📌', category: 'Other', severity: 'info', tip: '' };
+    const meta = EVENT_META[type] || { label: type, icon: 'sparkles', category: 'Other', severity: 'info', tip: '' };
     const event: RecordedEvent = {
       type,
       time: Math.round((performance.now() - this._startTime) / 1000 * 10) / 10,
@@ -195,7 +195,7 @@ export class GameplayRecorder {
 
     const mistakesHtml = mistakes.length > 0 ? `
       <div class="dr-section">
-        <div class="dr-section-title">⚠️ Mistakes (${mistakes.length})</div>
+        <div class="dr-section-title"> Mistakes (${mistakes.length})</div>
         <div class="dr-mistake-list">
           ${mistakes.map(ev => `
             <div class="dr-mistake-row" style="border-left:3px solid ${ev.severity === 'critical' ? '#ef4444' : ev.severity === 'danger' ? '#f97316' : '#f5900b'};">
@@ -206,11 +206,11 @@ export class GameplayRecorder {
           `).join('')}
         </div>
       </div>
-    ` : '<div class="dr-section"><div class="dr-section-title">✅ No mistakes! Perfect driving!</div></div>';
+    ` : '<div class="dr-section"><div class="dr-section-title"> No mistakes! Perfect driving!</div></div>';
 
     const tipsHtml = tipMap.size > 0 ? `
       <div class="dr-section">
-        <div class="dr-section-title">💡 Tips for Next Time</div>
+        <div class="dr-section-title"> Tips for Next Time</div>
         <div class="dr-tips">
           ${[...tipMap.values()].map(t => `
             <div class="dr-tip">
@@ -246,10 +246,10 @@ export class GameplayRecorder {
     const catEntries = Object.entries(summary.byCategory).filter(([k]) => k !== 'Mission' && k !== 'Learning');
     const catBreakdownHtml = catEntries.length > 0 ? `
       <div class="dr-section">
-        <div class="dr-section-title">📊 Category Breakdown</div>
+        <div class="dr-section-title"> Category Breakdown</div>
         <div class="dr-cat-grid">
           ${catEntries.map(([cat, events]: [string, any[]]) => {
-            const catMeta = CATEGORIES[cat] || { icon: '📌', color: '#64748b' };
+            const catMeta = CATEGORIES[cat] || { icon: 'sparkles', color: '#64748b' };
             const warnings = events.filter(e => e.severity === 'warning' || e.severity === 'danger' || e.severity === 'critical').length;
             return `
               <div class="dr-cat-item">
@@ -273,7 +273,7 @@ export class GameplayRecorder {
       <div class="dr-card">
         <div class="dr-header">
           <div class="dr-header-top">
-            <span class="dr-header-title">📋 Driving Review</span>
+            <span class="dr-header-title"> Driving Review</span>
             <button class="dr-close" aria-label="Close">&times;</button>
           </div>
           <div class="dr-header-sub">${summary.levelName ? 'Level ' + summary.levelId + ': ' + summary.levelName : 'Level Review'}</div>

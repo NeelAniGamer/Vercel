@@ -191,7 +191,7 @@ body #gc.on ~ #top-right-hud-stack,
   overflow: visible !important;
 }
 
-/* The "📋 Tasks" caption is redundant now that there is exactly one task and a
+/* The " Tasks" caption is redundant now that there is exactly one task and a
    "2/6" counter. */
 #task-tracker > div:first-child { display: none !important; }
 

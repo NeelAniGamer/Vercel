@@ -183,7 +183,7 @@ export class MumbaiPlanet {
         lat: 0,
         lon: 0,
         color: 0xf59e0b,
-        icon: '🏛️',
+        icon: 'building',
         dialogue: "Namaste, Messenger! The ferry passengers from Alibaug have been waiting for these morning newspapers and post bags. Superb timing!",
         builder: () => this.buildGatewayOfIndia()
       },
@@ -195,7 +195,7 @@ export class MumbaiPlanet {
         lat: 18,
         lon: 25,
         color: 0xef4444,
-        icon: '🍱',
+        icon: 'package',
         dialogue: "Jai Maharashtra, Bhau! The 12:15 local train just arrived. We have 14 hot tiffin dabbas sorted for Nariman Point. Let's roll!",
         builder: () => this.buildCSMTStation()
       },
@@ -207,7 +207,7 @@ export class MumbaiPlanet {
         lat: 8,
         lon: -12,
         color: 0x3b82f6,
-        icon: '🌊',
+        icon: 'droplet',
         dialogue: "Aha! My homemade ghar-ka-dabba delivered right on the dot before my 1:00 PM boardroom meeting. 6-Sigma perfection!",
         builder: () => this.buildMarineDrivePromenade()
       },
@@ -219,7 +219,7 @@ export class MumbaiPlanet {
         lat: 28,
         lon: 5,
         color: 0x10b981,
-        icon: '☕',
+        icon: 'sparkles',
         dialogue: "Arre dost! 10 cutting chai glasses and 6 crispy hot vada pavs are packed tight in the basket. Deliver them piping hot to Sea Link!",
         builder: () => this.buildChaiStall()
       },
@@ -231,7 +231,7 @@ export class MumbaiPlanet {
         lat: 12,
         lon: -28,
         color: 0xec4899,
-        icon: '🏖️',
+        icon: 'sun',
         dialogue: "Kya baat hai! The fresh rose syrup and crushed pistachios are here. Now we can serve the best Malai Kulfi on the beach!",
         builder: () => this.buildChowpattyBeach()
       },
@@ -243,7 +243,7 @@ export class MumbaiPlanet {
         lat: 44,
         lon: 18,
         color: 0x8b5cf6,
-        icon: '🌉',
+        icon: 'sparkles',
         dialogue: "Salute, Courier Hero! The bridge maintenance crew desperately needed these spare electronic fast-tags. Keep driving safe!",
         builder: () => this.buildSeaLinkTollPlaza()
       }

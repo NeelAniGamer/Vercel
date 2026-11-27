@@ -329,15 +329,29 @@ function problem(severity, code, msg, data) {
 
     const pos = () => g.player.position;
     const heading = () => g.player.rotation.y;
+    // True when the car is inside a road corridor. Used to end the garage
+    // extraction as soon as the car is on the street.
+    const onRoad = () => {
+      const x = pos().x, z = pos().z;
+      return (g.roadSegments || []).some(r => {
+        const half = (r.width || 12) / 2;
+        if (r.type === 'v') {
+          return Math.abs(x - r.x) <= half && z >= Math.min(r.z1, r.z2) && z <= Math.max(r.z1, r.z2);
+        }
+        return Math.abs(z - r.z) <= half && x >= Math.min(r.x1, r.x2) && x <= Math.max(r.x1, r.x2);
+      });
+    };
     const normalizeAngle = a => { while (a > Math.PI) a -= Math.PI * 2; while (a < -Math.PI) a += Math.PI * 2; return a; };
     const clamp = (v, lo, hi) => (v < lo ? lo : v > hi ? hi : v);
     const sleep = ms => new Promise(r => setTimeout(r, ms));
 
     function walkToward(dx, dz) {
+      // Bearing minus heading: a target to the LEFT has a positive error, and
+      // the engine turns left with KeyA (tAmt=+1 increases rotation.y).
       const e = normalizeAngle(Math.atan2(dx, dz) - heading());
       ap.key('KeyW', true);
-      ap.key('KeyA', e < -0.15);
-      ap.key('KeyD', e > 0.15);
+      ap.key('KeyA', e > 0.15);
+      ap.key('KeyD', e < -0.15);
     }
 
     function redLightAhead(lookahead) {
@@ -451,7 +465,9 @@ function problem(severity, code, msg, data) {
         const ax = pos().x + (tx / dist) * aim, az = pos().z + (tz / dist) * aim;
         const err = normalizeAngle(Math.atan2(ax - pos().x, az - pos().z) - heading());
 
-        let targetSpeed = clamp(14 - Math.abs(err) * 9, 2.2, 14);
+        // Speeds are the engine's internal units (max ~1.1), not km/h. The old
+        // 2.2–14 band was always above max, so the car never slowed for a turn.
+        let targetSpeed = clamp(1.05 - Math.abs(err) * 0.45, 0.22, 1.05);
 
         // ── EXTRACT FROM THE GARAGE ───────────────────────────────────────
         //
@@ -464,7 +480,10 @@ function problem(severity, code, msg, data) {
         const spawn = (g.mapCfg && (g.mapCfg.playerSpawn || g.mapCfg.garageSpawn)) || null;
         if (spawn && !extracted) {
           const fromSpawn = Math.hypot(pos().x - spawn.x, pos().z - spawn.z);
-          if (fromSpawn < 14 && extractFor < 9) {
+          // Drive straight out of the opening until the car is on a road, then
+          // hand over to checkpoint steering. The old fixed 14m kept going
+          // past the kerb and parked the car in the far-side sidewalk props.
+          if (!onRoad() && fromSpawn < 20 && extractFor < 9) {
             extractFor += 0.033;
             if (extractFor < 0.05) ap.ev({ t, e: 'EXTRACTING', from: +fromSpawn.toFixed(1) });
             ap.key('KeyW', true);
@@ -481,19 +500,19 @@ function problem(severity, code, msg, data) {
 
         const red = redLightAhead(26);
         if (red && red.sg.state === 'red' && red.d < 20) {
-          targetSpeed = Math.min(targetSpeed, Math.max(0, (red.d - 10) * 0.75));
+          targetSpeed = Math.min(targetSpeed, Math.max(0, (red.d - 1.2) * 0.06));
           ap.ev({ t, e: 'RED_LIGHT', d: +red.d.toFixed(1), target: +targetSpeed.toFixed(1) });
         }
 
         const ped = nearestPed(12);
         if (ped) {
-          targetSpeed = Math.min(targetSpeed, clamp(ped.d * 0.7, 0, 9));
+          targetSpeed = Math.min(targetSpeed, clamp(ped.d * 0.05, 0, 0.7));
           ap.ev({ t, e: 'YIELD_PED', d: +ped.d.toFixed(1) });
         }
 
         const ob = obstacleAhead(20);
         if (ob) {
-          targetSpeed = Math.min(targetSpeed, clamp((ob.d - 5.5) * 0.55, 0, 10));
+          targetSpeed = Math.min(targetSpeed, clamp((ob.d - 0.6) * 0.04, 0, 0.7));
           ap.ev({ t, e: 'OBSTACLE_AHEAD', d: +ob.d.toFixed(1), name: String(ob.name) });
         }
 
@@ -528,9 +547,9 @@ function problem(severity, code, msg, data) {
           blockedSince = 0;
         }
 
-        ap.key('KeyW', spd < targetSpeed - 0.35);
-        ap.key('KeyS', spd > targetSpeed + 0.5);
-        const steer = clamp(err * 1.7, -1, 1);
+        ap.key('KeyW', spd < targetSpeed - 0.03);
+        ap.key('KeyS', spd > targetSpeed + 0.05);
+        const steer = clamp(-err * 1.7, -1, 1);
         ap.key('KeyA', steer < -0.06);
         ap.key('KeyD', steer > 0.06);
 

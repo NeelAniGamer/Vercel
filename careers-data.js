@@ -3,7 +3,7 @@ window.CAREERS_ALL = [
     "id": "ai-ml",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "🤖",
+    "icon": "ai",
     "title": "Artificial Intelligence & Machine Learning",
     "tagline": "Build and train machine learning systems that hold up in production",
     "desc": "Design neural networks, fine-tune language and vision models, clean training datasets, and ship reliable inference pipelines.",
@@ -133,7 +133,7 @@ window.CAREERS_ALL = [
     "id": "cybersecurity",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "🛡️",
+    "icon": "shield",
     "title": "Cybersecurity & Ethical Hacking",
     "tagline": "Find security holes before attackers do and defend live systems",
     "desc": "Test networks for vulnerabilities, run incident response, harden cloud permissions, and keep company infrastructure patched and monitored.",
@@ -267,7 +267,7 @@ window.CAREERS_ALL = [
     "id": "fullstack-systems",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "💻",
+    "icon": "code",
     "title": "Full-Stack & Distributed Systems Engineering",
     "tagline": "Build the backend APIs, databases, and interfaces products run on",
     "desc": "Write application backends, model SQL schemas, build responsive frontends in TypeScript or React, and keep live services fast.",
@@ -392,7 +392,7 @@ window.CAREERS_ALL = [
     "id": "cloud-devops",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "☁️",
+    "icon": "code",
     "title": "Cloud Architecture & DevOps / SRE",
     "tagline": "Keep servers, deployments, and cloud bills fast and reliable",
     "desc": "Write Infrastructure-as-Code, run Kubernetes clusters, automate test-and-deploy pipelines, and handle production outages calmly.",
@@ -519,7 +519,7 @@ window.CAREERS_ALL = [
     "id": "data-science",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Data Science & Big Data Engineering",
     "tagline": "Turn messy operational data into clear predictions and decisions",
     "desc": "Build data pipelines, run statistical tests and forecasting models, and help product or finance teams spot what is actually working.",
@@ -649,7 +649,7 @@ window.CAREERS_ALL = [
     "id": "game-dev-xr",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "🎮",
+    "icon": "gamepad",
     "title": "Game Development, XR & Spatial Computing",
     "tagline": "Program game engines, physics loops, and 3D worlds",
     "desc": "Write C++ or C# gameplay systems in Unreal and Unity, tune multiplayer netcode, and hit smooth frame rates on consoles and headsets.",
@@ -774,7 +774,7 @@ window.CAREERS_ALL = [
     "id": "blockchain-web3",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "⛓️",
+    "icon": "ai",
     "title": "Blockchain & Decentralized Web3 Systems",
     "tagline": "Write smart contracts and audit decentralized protocols",
     "desc": "Develop and formally test Solidity or Rust contracts, tune transaction fees, and review on-chain systems for security bugs.",
@@ -897,7 +897,7 @@ window.CAREERS_ALL = [
     "id": "medicine-surgery",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Medicine, Surgery & Clinical Practice",
     "tagline": "Diagnose illness, treat patients, and perform surgical care",
     "desc": "Examine patients, read lab and scan results, prescribe treatments, and perform procedures and operations in hospitals and clinics.",
@@ -1019,7 +1019,7 @@ window.CAREERS_ALL = [
     "id": "biotech-genetics",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🧬",
+    "icon": "dna",
     "title": "Biotechnology & Genetic Engineering",
     "tagline": "Work with DNA, CRISPR, and cell cultures to build therapies",
     "desc": "Run gene-editing experiments, analyze sequencing data, and help move biologics and modified crops safely from lab bench to production.",
@@ -1144,7 +1144,7 @@ window.CAREERS_ALL = [
     "id": "biomedical-robotics",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🦾",
+    "icon": "ai",
     "title": "Biomedical Engineering & Medical Robotics",
     "tagline": "Build medical devices, prosthetics, and surgical equipment",
     "desc": "Design surgical robotics, imaging machines, implants, and patient monitors that meet strict medical safety rules.",
@@ -1261,7 +1261,7 @@ window.CAREERS_ALL = [
     "id": "clinical-psychology",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🧠",
+    "icon": "neuro",
     "title": "Clinical Psychology & Neuropsychology",
     "tagline": "Help people work through mental health conditions and trauma",
     "desc": "Run psychological assessments, provide evidence-based therapy such as CBT or DBT, and support patients through long-term recovery.",
@@ -1381,7 +1381,7 @@ window.CAREERS_ALL = [
     "id": "robotics-mechatronics",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "🤖",
+    "icon": "ai",
     "title": "Robotics, Automation & Mechatronics",
     "tagline": "Build machines with sensors and software that act in physical rooms",
     "desc": "Wire actuators and LiDAR sensors, write control loops and vision software, and test robots outside clean lab floors.",
@@ -1502,7 +1502,7 @@ window.CAREERS_ALL = [
     "id": "aerospace-space",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🚀",
+    "icon": "rocket",
     "title": "Aerospace & Astronautical Engineering",
     "tagline": "Design aircraft, rockets, satellites, and flight control systems",
     "desc": "Model aerodynamics, propulsion, structures, and guidance code for commercial aircraft, launch vehicles, and satellites.",
@@ -1621,7 +1621,7 @@ window.CAREERS_ALL = [
     "id": "semiconductor-vlsi",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "🔬",
+    "icon": "microscope",
     "title": "Semiconductor, VLSI & Chip Architecture",
     "tagline": "Design the silicon chips inside phones, servers, and vehicles",
     "desc": "Write RTL hardware code in SystemVerilog, route billions of transistors, check timing and heat limits, and verify chips before tape-out.",
@@ -1739,7 +1739,7 @@ window.CAREERS_ALL = [
     "id": "renewable-cleantech",
     "cat": "eco",
     "catName": "Sustainability & Energy",
-    "icon": "☀️",
+    "icon": "sun",
     "title": "Renewable Energy & CleanTech Engineering",
     "tagline": "Build solar plants, wind grids, and battery storage systems",
     "desc": "Engineer utility-scale solar and wind projects, battery storage arrays, green hydrogen systems, and smarter power grids.",
@@ -1857,7 +1857,7 @@ window.CAREERS_ALL = [
     "id": "quantum-computing",
     "cat": "science",
     "catName": "Science & DeepTech",
-    "icon": "⚛️",
+    "icon": "chart",
     "title": "Quantum Computing & Quantum Physics",
     "tagline": "Work on quantum algorithms, hardware noise, and physics labs",
     "desc": "Design quantum circuits in tools like Qiskit, calm cryogenic qubit errors, and test post-quantum cryptography or molecular simulations.",
@@ -1976,7 +1976,7 @@ window.CAREERS_ALL = [
     "id": "astrophysics-space",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Astrophysics & Space Science",
     "tagline": "Decode the origins, evolution, and mysteries of the cosmos",
     "desc": "Analyze James Webb Space Telescope data, model black hole gravitational waves, detect habitable exoplanets, and research dark matter and cosmology.",
@@ -2092,7 +2092,7 @@ window.CAREERS_ALL = [
     "id": "quant-finance",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📈",
+    "icon": "trending",
     "title": "Quantitative Finance & Algorithmic Trading",
     "tagline": "Engineer mathematical trading models and arbitrage global financial markets",
     "desc": "Develop high-frequency trading algorithms, build stochastic pricing models for complex derivatives, manage hedge fund portfolios, and optimize risk metrics.",
@@ -2213,7 +2213,7 @@ window.CAREERS_ALL = [
     "id": "corporate-law",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "⚖️",
+    "icon": "scale",
     "title": "Corporate, Tech & Cyber Law",
     "tagline": "Draft contracts, manage compliance, and advise deals and mergers",
     "desc": "Structure commercial agreements, run legal due diligence on acquisitions and fundraises, handle IP rules, and settle business disputes.",
@@ -2331,7 +2331,7 @@ window.CAREERS_ALL = [
     "id": "product-management",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "🎯",
+    "icon": "shield",
     "title": "Product Management & Tech Strategy",
     "tagline": "Decide what a software product should build next and why",
     "desc": "Talk to customers, weigh engineering costs against user impact, write clear specs, and help engineering and design teams ship.",
@@ -2457,7 +2457,7 @@ window.CAREERS_ALL = [
     "id": "ui-ux-design",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "UI/UX & Product Design",
     "tagline": "Design software screens and flows people can use without friction",
     "desc": "Interview users, wireframe flows, build accessible component kits in Figma, and check how shipped interfaces behave in real use.",
@@ -2578,7 +2578,7 @@ window.CAREERS_ALL = [
     "id": "architecture-spatial",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🏛️",
+    "icon": "landmark",
     "title": "Architecture & Sustainable Urban Planning",
     "tagline": "Design buildings, public spaces, and sustainable site plans",
     "desc": "Draw concepts, build BIM models in Revit, coordinate structural and plumbing engineers, and walk construction sites to check builds.",
@@ -2696,7 +2696,7 @@ window.CAREERS_ALL = [
     "id": "investment-banking",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "💼",
+    "icon": "briefcase",
     "title": "Investment Banking & Private Equity",
     "tagline": "Advise companies on mergers, debt raises, and public listings",
     "desc": "Build valuation and cash-flow models, draft investor decks, run buyer auctions, and manage transaction closings for corporate clients.",
@@ -2813,7 +2813,7 @@ window.CAREERS_ALL = [
     "id": "civil-services-diplomacy",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "🏛️",
+    "icon": "landmark",
     "title": "Civil Services, Diplomacy & Public Policy",
     "tagline": "Administer public districts, national policy, and foreign service",
     "desc": "Manage government departments, run disaster response, handle tax and welfare execution, or represent the country abroad.",
@@ -2930,7 +2930,7 @@ window.CAREERS_ALL = [
     "id": "dentistry-maxillofacial",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🦷",
+    "icon": "dental",
     "title": "Dentistry, Orthodontics & Oral Maxillofacial Surgery",
     "tagline": "Treat teeth, gums, jaw alignment, and oral surgery",
     "desc": "Handle preventive care, root canals, crowns, braces, implants, and reconstructive jaw procedures with steady micro-hand skills.",
@@ -3051,7 +3051,7 @@ window.CAREERS_ALL = [
     "id": "nursing-critical-care",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "💉",
+    "icon": "medical",
     "title": "Advanced Practice Nursing, Nurse Anesthesia & Critical Care",
     "tagline": "Manage critical patient care, triage, and bedside recovery",
     "desc": "Monitor ICU vitals, run infusions and ventilators, spot early warning signs, and coordinate treatment directly at the bedside.",
@@ -3176,7 +3176,7 @@ window.CAREERS_ALL = [
     "id": "pharmacy-drug-discovery",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "💊",
+    "icon": "pharma",
     "title": "Pharmacy, Pharmacology & Global Clinical Trials",
     "tagline": "Dispense safe medicine, manage clinical trials, or formulate drugs",
     "desc": "Check drug interactions, design stable dosage forms, coordinate Phase I–IV trials, and oversee strict regulatory safety approvals.",
@@ -3299,7 +3299,7 @@ window.CAREERS_ALL = [
     "id": "physiotherapy-sports-rehab",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🏃",
+    "icon": "medical",
     "title": "Physiotherapy, Sports Medicine & Biomechanical Rehabilitation",
     "tagline": "Help patients rebuild movement, joint strength, and recovery",
     "desc": "Test range of motion, run hands-on therapy, coach progressive exercise plans, and get post-op or injured clients moving safely again.",
@@ -3423,7 +3423,7 @@ window.CAREERS_ALL = [
     "id": "veterinary-animal-surgery",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🐾",
+    "icon": "paw",
     "title": "Veterinary Medicine, Animal Surgery & Wildlife Healthcare",
     "tagline": "Diagnose and treat pets, farm livestock, and zoo wildlife",
     "desc": "Examine animals, run blood tests and X-rays, perform surgery, manage herd health, and watch for diseases jumping across species.",
@@ -3548,7 +3548,7 @@ window.CAREERS_ALL = [
     "id": "public-health-epidemiology",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🌐",
+    "icon": "medical",
     "title": "Public Health, Epidemiology & Global Health Policy",
     "tagline": "Track outbreaks, evaluate vaccines, and shape population health",
     "desc": "Analyze disease spread across communities, design immunization programs, investigate food or viral clusters, and advise health ministries.",
@@ -3673,7 +3673,7 @@ window.CAREERS_ALL = [
     "id": "mechanical-automotive-ev",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "🚗",
+    "icon": "medical",
     "title": "Mechanical Engineering, Automotive & EV Powertrains",
     "tagline": "Design the machines, thermal systems, and electric powertrains that move the world",
     "desc": "Engineer next-generation electric vehicles, battery thermal management systems, hypercars, aerodynamic bodies, and high-precision mechanical machines.",
@@ -3795,7 +3795,7 @@ window.CAREERS_ALL = [
     "id": "civil-structural-smartcity",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "🏗️",
+    "icon": "build",
     "title": "Civil, Structural & Smart Infrastructure Megaprojects",
     "tagline": "Design bridges, buildings, tunnels, transit lines, and water systems",
     "desc": "Calculate structural loads for wind and earthquakes, design rail and road foundations, and sign off on construction safety on site.",
@@ -3918,7 +3918,7 @@ window.CAREERS_ALL = [
     "id": "chemical-materials-nanotech",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "🧪",
+    "icon": "lab",
     "title": "Chemical Engineering, Advanced Materials & Nanotechnology",
     "tagline": "Engineer matter at the molecular level to power the green transition and deep-tech",
     "desc": "Synthesize solid-state battery electrolytes, carbon nanotubes, semiconductor photoresists, green hydrogen catalysts, and industrial chemical manufacturing processes.",
@@ -4037,7 +4037,7 @@ window.CAREERS_ALL = [
     "id": "airline-pilot-aviation",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "✈️",
+    "icon": "plane",
     "title": "Commercial Airline Pilot & Aviation Flight Operations",
     "tagline": "Fly passenger and freight aircraft safely under strict aviation rules",
     "desc": "Run weight checks, weather briefings, flight plans, and takeoffs/landings with co-pilots across commercial routes.",
@@ -4159,7 +4159,7 @@ window.CAREERS_ALL = [
     "id": "merchant-navy-marine",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚓",
+    "icon": "anchor",
     "title": "Merchant Navy, Nautical Navigation & Marine Engineering",
     "tagline": "Navigate ocean cargo ships and maintain giant shipboard engines",
     "desc": "Serve as Deck Officer planning ocean crossings and cargo stability, or Marine Engineer running diesel propulsion and power at sea.",
@@ -4281,7 +4281,7 @@ window.CAREERS_ALL = [
     "id": "nuclear-fusion-energy",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚛️",
+    "icon": "gear",
     "title": "Nuclear Engineering, Reactor Physics & Fusion Energy",
     "tagline": "Work on fission reactors, radiation shielding, and fusion research",
     "desc": "Model reactor core physics, design Small Modular Reactors (SMRs), run safety analyses, and build magnetic confinement fusion hardware.",
@@ -4403,7 +4403,7 @@ window.CAREERS_ALL = [
     "id": "chartered-accountancy-audit",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📑",
+    "icon": "chart",
     "title": "Chartered Accountancy (CA / CPA / ACCA) & Forensic Audit",
     "tagline": "Audit company books, handle tax law, and sign statutory accounts",
     "desc": "Check financial statements against accounting standards, uncover discrepancies, advise tax structure, and carry legal sign-off authority.",
@@ -4530,7 +4530,7 @@ window.CAREERS_ALL = [
     "id": "management-consulting-strategy",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "♟️",
+    "icon": "chart",
     "title": "Management Consulting & Corporate Strategy (MBB)",
     "tagline": "Help leadership teams diagnose operational, cost, and growth problems",
     "desc": "Interview staff, analyze unit costs and market shifts, build clear financial options, and help companies carry out turnarounds.",
@@ -4652,7 +4652,7 @@ window.CAREERS_ALL = [
     "id": "supply-chain-logistics",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📦",
+    "icon": "ai",
     "title": "Global Supply Chain Management, Autonomous Logistics & Procurement",
     "tagline": "Keep parts, factories, warehouses, and freight moving on time",
     "desc": "Manage suppliers, negotiate freight contracts, balance factory inventory, and reroute shipments cleanly when ports or roads stall.",
@@ -4779,7 +4779,7 @@ window.CAREERS_ALL = [
     "id": "marketing-growth-digital",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "🚀",
+    "icon": "rocket",
     "title": "Digital Marketing, Brand Strategy & Growth Hacking",
     "tagline": "Test channels, position brands, and grow measurable customer demand",
     "desc": "Run search and paid acquisition, analyze conversion funnels, talk to buyers, and shape messaging that makes sense to real people.",
@@ -4906,7 +4906,7 @@ window.CAREERS_ALL = [
     "id": "actuarial-risk-science",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📉",
+    "icon": "shield",
     "title": "Actuarial Science & Quantitative Insurance Risk",
     "tagline": "Measure long-term financial risk for insurance and pensions",
     "desc": "Price life, health, and climate policies using probability models and certify statutory financial reserves by law.",
@@ -5030,7 +5030,7 @@ window.CAREERS_ALL = [
     "id": "pure-mathematics-cryptography",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔢",
+    "icon": "chart",
     "title": "Pure & Applied Mathematics, Cryptography & Combinatorics",
     "tagline": "Work on proofs, post-quantum encryption, and number theory",
     "desc": "Develop mathematical proofs, design lattice cryptography or zero-knowledge systems, and teach or advise security research teams.",
@@ -5153,7 +5153,7 @@ window.CAREERS_ALL = [
     "id": "marine-biology-oceanography",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🌊",
+    "icon": "wave",
     "title": "Oceanography, Marine Biology & Deep-Sea Exploration",
     "tagline": "Study ocean ecosystems, currents, and marine life in field and lab",
     "desc": "Survey coastal reefs and open seas, analyze water chemistry and species health, and model ocean currents and fisheries.",
@@ -5274,7 +5274,7 @@ window.CAREERS_ALL = [
     "id": "climate-meteorology-earth",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🌦️",
+    "icon": "medical",
     "title": "Meteorology, Atmospheric Physics & Planetary Climate Modeling",
     "tagline": "Forecast weather systems and study long-term atmospheric physics",
     "desc": "Read Doppler radar and satellite loops, run numerical weather models, issue storm warnings, and analyze multi-decade climate shifts.",
@@ -5397,7 +5397,7 @@ window.CAREERS_ALL = [
     "id": "criminal-litigation-judiciary",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "⚖️",
+    "icon": "scale",
     "title": "Criminal Litigation, Constitutional Advocacy & Judiciary",
     "tagline": "Try cases in court, argue motions, or serve on the judicial bench",
     "desc": "Cross-examine witnesses, argue constitutional and criminal petitions, advise clients under charge, or hear disputes as a judge.",
@@ -5517,7 +5517,7 @@ window.CAREERS_ALL = [
     "id": "international-diplomacy-un",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "🕊️",
+    "icon": "scale",
     "title": "International Relations, Foreign Diplomacy & United Nations",
     "tagline": "Represent national interests, treaties, and relief work abroad",
     "desc": "Serve in embassies and UN missions, draft trade or security briefs, assist citizens overseas, and handle quiet talks between states.",
@@ -5641,7 +5641,7 @@ window.CAREERS_ALL = [
     "id": "public-policy-thinktank",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "📜",
+    "icon": "scale",
     "title": "Public Policy, Legislative Drafting & Economic Governance",
     "tagline": "Research public laws, analyze budgets, and draft usable policy",
     "desc": "Evaluate welfare, healthcare, or tech bills using cost data, write plain policy memos, and brief lawmakers and ministries.",
@@ -5767,7 +5767,7 @@ window.CAREERS_ALL = [
     "id": "filmmaking-cinematography",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎬",
+    "icon": "film",
     "title": "Filmmaking, Directing, Cinematography & Screenwriting",
     "tagline": "Direct actors, light scenes, and write scripts for screen",
     "desc": "Write screenplays, lead crews on set, plan camera lenses and lighting, and shape stories from rough script through final cut.",
@@ -5891,7 +5891,7 @@ window.CAREERS_ALL = [
     "id": "animation-vfx-cgi",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "✨",
+    "icon": "palette",
     "title": "3D Animation, Visual Effects (VFX) & Virtual Production",
     "tagline": "Build 3D models, physics simulations, and composite shots for screen",
     "desc": "Animate rigged characters, simulate cloth, water, and destruction, and blend CGI cleanly into live-action footage.",
@@ -6016,7 +6016,7 @@ window.CAREERS_ALL = [
     "id": "modern-agritech-hydroponics",
     "cat": "eco",
     "catName": "Sustainability & Energy",
-    "icon": "🌱",
+    "icon": "leaf",
     "title": "Precision Agritech, Hydroponics & Controlled-Environment Agriculture",
     "tagline": "Grow crops indoors with sensor-managed water and climate systems",
     "desc": "Run hydroponic nutrient loops, LED light schedules, greenhouse climate controls, and crop sensors with far less land and water.",
@@ -6140,7 +6140,7 @@ window.CAREERS_ALL = [
     "id": "academic-professorship-research",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🎓",
+    "icon": "grad",
     "title": "University Professorship, Tenured Research & Higher Education",
     "tagline": "Run original research programs and teach university students",
     "desc": "Design lab or humanities research, chase competitive grants, supervise master's and PhD scholars, and teach undergraduate courses.",
@@ -6264,7 +6264,7 @@ window.CAREERS_ALL = [
     "id": "master-electrician-automation",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚡",
+    "icon": "bolt",
     "title": "Industrial Automation Specialist & High-Voltage Master Electrician",
     "tagline": "Wire industrial power systems and program factory PLCs",
     "desc": "Install switchgear and conduit, wire motor control centers, program Siemens or Allen-Bradley PLCs, and fix live factory faults.",
@@ -6385,7 +6385,7 @@ window.CAREERS_ALL = [
     "id": "tech-startup-entrepreneur",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "💡",
+    "icon": "palette",
     "title": "Tech Startup Founder, Venture Creation & Product Innovation",
     "tagline": "Find a real customer problem, build the product, and make sales",
     "desc": "Talk to early users, ship small working versions fast, handle hiring and cash runway, and iterate until customers pay repeatedly.",
@@ -6511,7 +6511,7 @@ window.CAREERS_ALL = [
     "id": "clinical-perfusion-cardio",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🫀",
+    "icon": "medical",
     "title": "Clinical Perfusion, Cardiopulmonary Bypass & ECMO Life Support",
     "tagline": "Run the heart-lung machine during open-heart surgery",
     "desc": "Manage blood oxygenation, pressure, and ECMO life support circuits in operating rooms and ICUs alongside cardiac surgeons.",
@@ -6633,7 +6633,7 @@ window.CAREERS_ALL = [
     "id": "space-traffic-orbital",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🛰️",
+    "icon": "satellite",
     "title": "Space Traffic Management, Orbital Mechanics & Satellite Safety",
     "tagline": "Track active satellites and coordinate collision-avoidance burns",
     "desc": "Analyze orbital radar tracks, flag close-approach risks, and coordinate thruster maneuvers for satellite operators and launch control.",
@@ -6758,7 +6758,7 @@ window.CAREERS_ALL = [
     "id": "flavor-chemist-sensory",
     "cat": "eco",
     "catName": "Sustainability & Energy",
-    "icon": "🧪",
+    "icon": "lab",
     "title": "Flavor Chemistry (Certified Flavorist) & Sensory Science",
     "tagline": "Analyze aroma molecules and formulate food and drink flavors",
     "desc": "Test botanical extracts using chromatography, blend natural and synthetic compounds, and match taste specs for food brands.",
@@ -6878,7 +6878,7 @@ window.CAREERS_ALL = [
     "id": "acoustical-architecture-physics",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🔊",
+    "icon": "palette",
     "title": "Architectural Acoustics, Audio Physics & Noise Vibration Control",
     "tagline": "Control sound reflection, insulation, and vibration in buildings",
     "desc": "Model acoustics in concert halls, schools, offices, and transit tunnels so rooms sound clear and cut unwanted noise.",
@@ -7003,7 +7003,7 @@ window.CAREERS_ALL = [
     "id": "carbon-sequestration-geology",
     "cat": "eco",
     "catName": "Sustainability & Energy",
-    "icon": "🌍",
+    "icon": "globe",
     "title": "Carbon Geosequestration, Direct Air Capture & Subsurface Geology",
     "tagline": "Test deep rock formations to store captured industrial carbon",
     "desc": "Model underground sandstone and basalt layers, check well integrity and fault stability, and monitor injected carbon plumes safely.",
@@ -7125,7 +7125,7 @@ window.CAREERS_ALL = [
     "id": "maritime-admiralty-law",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "⚓",
+    "icon": "anchor",
     "title": "Maritime Admiralty Law, High-Seas Salvage & Shipping Litigation",
     "tagline": "Handle shipping disputes, collisions, cargo claims, and sea salvage",
     "desc": "Represent shipping lines, insurers, and port authorities in cargo damage claims, vessel arrests, charterparties, and arbitrations.",
@@ -7247,7 +7247,7 @@ window.CAREERS_ALL = [
     "id": "art-conservation-forensics",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🖼️",
+    "icon": "scale",
     "title": "Fine Art Conservation, Provenance Investigation & Heritage Science",
     "tagline": "Preserve old paintings, sculptures, and museum objects chemically",
     "desc": "Examine layers with XRF and infrared scans, test safe cleaning solvents, stabilize flaking paint, and verify historical provenance.",
@@ -7368,7 +7368,7 @@ window.CAREERS_ALL = [
     "id": "forensic-odontology-pathology",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🔍",
+    "icon": "chart",
     "title": "Forensic Pathology, DVI Identification & Crime Scene Investigation",
     "tagline": "Investigate unexplained deaths and assist disaster victim ID",
     "desc": "Perform medical autopsies, interpret trauma and toxicology reports, match dental records, and give factual expert testimony in court.",
@@ -7490,7 +7490,7 @@ window.CAREERS_ALL = [
     "id": "ooh-0-accountants-and-auditors",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Accountants and Auditors",
     "tagline": "Prepare and examine financial records.",
     "desc": "They ensure that financial records are accurate, that financial and data risks are evaluated, and that taxes are paid properly. They also assess financial operations and work to help ensure that organizations run efficiently.",
@@ -7649,7 +7649,7 @@ window.CAREERS_ALL = [
     "id": "ooh-1-actors",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Actors",
     "tagline": "Express ideas and portray characters in theater, film, television, and other performing arts media.",
     "desc": "They interpret a writer's script to entertain or inform an audience.",
@@ -7808,7 +7808,7 @@ window.CAREERS_ALL = [
     "id": "ooh-2-actuaries",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "💻",
+    "icon": "code",
     "title": "Actuaries",
     "tagline": "Use mathematics, statistics, and financial theory to analyze the economic costs of risk and uncertainty.",
     "desc": "They use mathematics, statistics, and financial theory to assess the risk of potential events, and they help businesses and clients develop policies that minimize the cost of that risk. Actuaries' work is essential to the insurance industry.",
@@ -7962,7 +7962,7 @@ window.CAREERS_ALL = [
     "id": "ooh-3-administrative-services-and-facilities-managers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Administrative Services and Facilities Managers",
     "tagline": "Plan, direct, and coordinate activities that help an organization run efficiently.",
     "desc": "Supervise staff; Set goals and deadlines for their department or facility; Recommend changes to policies or procedures in order to improve operations, such as reassessing supplies or recordkeeping.",
@@ -8114,7 +8114,7 @@ window.CAREERS_ALL = [
     "id": "ooh-4-adult-basic-and-secondary-education-and-esl-teachers",
     "cat": "edu",
     "catName": "Education & Academia",
-    "icon": "🎓",
+    "icon": "grad",
     "title": "Adult Basic and Secondary Education and Esl Teachers",
     "tagline": "Basic and secondary education and ESL (English as a Second Language) teachers instruct adults in fundamental skills, such as reading and speaking English.",
     "desc": "They also help students earn their high school equivalency credential.",
@@ -8270,7 +8270,7 @@ window.CAREERS_ALL = [
     "id": "ooh-5-advertising-promotions-and-marketing-managers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Advertising, Promotions, and Marketing Managers",
     "tagline": "Plan programs to generate interest in products or services.",
     "desc": "They work with art directors, advertising sales agents, financial staff, and others to develop strategies and materials.",
@@ -8447,7 +8447,7 @@ window.CAREERS_ALL = [
     "id": "ooh-6-advertising-sales-agents",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Advertising Sales Agents",
     "tagline": "Sell promotional space to businesses and individuals.",
     "desc": "They contact potential clients, make sales presentations, and maintain client accounts.",
@@ -8604,7 +8604,7 @@ window.CAREERS_ALL = [
     "id": "ooh-7-aerospace-engineering-and-operations-technologists-and-technicians",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Aerospace Engineering and Operations Technologists and Technicians",
     "tagline": "Run and maintain equipment used to develop, test, produce, and sustain aircraft and spacecraft.",
     "desc": "Their work is critical to ensuring the safety and precision of key parts of these vehicles and systems.",
@@ -8751,7 +8751,7 @@ window.CAREERS_ALL = [
     "id": "ooh-8-aerospace-engineers",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "🚀",
+    "icon": "rocket",
     "title": "Aerospace Engineers",
     "tagline": "Design aircraft, spacecraft, propulsion systems, satellites, and missiles.",
     "desc": "In addition, they create and test prototypes to make sure that they function according to design.",
@@ -8908,7 +8908,7 @@ window.CAREERS_ALL = [
     "id": "ooh-9-agricultural-and-food-science-technicians",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Agricultural and Food Science Technicians",
     "tagline": "Help scientists with testing and research related to plants, animals, fibers, and food and beverage products.",
     "desc": "Follow protocols to collect, prepare, analyze, and properly store crop or animal samples; Operate farm equipment and maintain agricultural production areas to conform to scientific testing parameters; Examine animal and crop specimens to determine the presence of diseases or other problems.",
@@ -9066,7 +9066,7 @@ window.CAREERS_ALL = [
     "id": "ooh-10-agricultural-and-food-scientists",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Agricultural and Food Scientists",
     "tagline": "Research ways to improve the efficiency, quality, and safety of agricultural and food production establishments.",
     "desc": "Conduct research to improve the productivity and quality of field crops and farm animals; Develop ways to increase efficiency of resources for crop production; Create new food products and develop new and better ways to safely process, package, and deliver them.",
@@ -9238,7 +9238,7 @@ window.CAREERS_ALL = [
     "id": "ooh-11-agricultural-engineers",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Agricultural Engineers",
     "tagline": "Solve problems concerning power supplies, machine efficiency, the use of structures and facilities, pollution and environmental issues, and the storage and processing of agricultural products.",
     "desc": "Use computer software to design equipment, systems, or structures; Modify environmental factors that affect animal or crop production, such as airflow in a barn or runoff patterns on a field; Test equipment to ensure its safety and reliability.",
@@ -9390,7 +9390,7 @@ window.CAREERS_ALL = [
     "id": "ooh-12-agricultural-workers",
     "cat": "eco",
     "catName": "Sustainability & Energy",
-    "icon": "🌿",
+    "icon": "leaf",
     "title": "Agricultural Workers",
     "tagline": "Maintain crops and tend livestock.",
     "desc": "They perform physical labor and operate machinery under the supervision of farmers, ranchers, and other agricultural managers .",
@@ -9606,7 +9606,7 @@ window.CAREERS_ALL = [
     "id": "ooh-13-aircraft-and-avionics-equipment-mechanics-and-technicians",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "✈️",
+    "icon": "plane",
     "title": "Aircraft and Avionics Equipment Mechanics and Technicians",
     "tagline": "Inspect, maintain, and repair jet engines, airframes, and flight avionics systems.",
     "desc": "Diagnose mechanical or electrical problems; Repair wings, brakes, electrical systems, and other aircraft components; Examine replacement aircraft parts for defects.",
@@ -9772,7 +9772,7 @@ window.CAREERS_ALL = [
     "id": "ooh-14-airline-and-commercial-pilots",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "✈️",
+    "icon": "plane",
     "title": "Airline and Commercial Pilots",
     "tagline": "Command commercial jetliners, manage cockpit automation, and fly passengers safely worldwide.",
     "desc": "Check the overall condition of the aircraft before and after every flight; Ensure that the aircraft is balanced and below its weight limit; Verify that the fuel supply is adequate and that weather conditions are acceptable.",
@@ -9945,7 +9945,7 @@ window.CAREERS_ALL = [
     "id": "ooh-15-air-traffic-controllers",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "✈️",
+    "icon": "plane",
     "title": "Air Traffic Controllers",
     "tagline": "Direct airport runway and airspace movements to maintain safe aircraft separation.",
     "desc": "Monitor and direct the movement of aircraft on the ground and in the air; Control all ground traffic at airport runways and taxiways; Issue takeoff and landing instructions to pilots.",
@@ -10096,7 +10096,7 @@ window.CAREERS_ALL = [
     "id": "ooh-16-animal-care-and-service-workers",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🐾",
+    "icon": "paw",
     "title": "Animal Care and Service Workers",
     "tagline": "Attend to or train animals.",
     "desc": "Working with pets and other nonfarm animals, these caretakers and trainers feed, groom, and exercise the animals or teach them to respond to human commands.",
@@ -10279,7 +10279,7 @@ window.CAREERS_ALL = [
     "id": "ooh-17-announcers-and-djs",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Announcers and Djs",
     "tagline": "Present news and sports or may interview guests on media such as radio and television.",
     "desc": "Disc jockeys (DJs) act as masters of ceremonies (emcees) or play recorded music at weddings, parties, or clubs.",
@@ -10449,7 +10449,7 @@ window.CAREERS_ALL = [
     "id": "ooh-18-anthropologists-and-archeologists",
     "cat": "edu",
     "catName": "Education & Academia",
-    "icon": "🏺",
+    "icon": "grad",
     "title": "Anthropologists and Archeologists",
     "tagline": "Investigate the origins, cultural development, and physical remains of human civilization.",
     "desc": "They study the culture and characteristics of living or past civilizations throughout the world.",
@@ -10603,7 +10603,7 @@ window.CAREERS_ALL = [
     "id": "ooh-19-arbitrators-mediators-and-conciliators",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "⚖️",
+    "icon": "scale",
     "title": "Arbitrators, Mediators, and Conciliators",
     "tagline": "Guide negotiation through dialogue to help resolve conflicts outside of the court system.",
     "desc": "They resolve conflicts outside of the court system by mutual consent of the parties involved.",
@@ -10746,7 +10746,7 @@ window.CAREERS_ALL = [
     "id": "ooh-20-architects",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Architects",
     "tagline": "Plan and design houses, factories, office buildings, and other structures.",
     "desc": "Meet with clients to determine objectives and requirements for structures; Give preliminary estimates on cost and construction time; Prepare structure specifications.",
@@ -10892,7 +10892,7 @@ window.CAREERS_ALL = [
     "id": "ooh-21-architectural-and-engineering-managers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Architectural and Engineering Managers",
     "tagline": "Plan, direct, and coordinate activities in the fields of architecture and engineering.",
     "desc": "Make detailed plans to research and develop products, processes, or designs; Determine staff, training, and equipment needs; Propose budgets for projects and programs.",
@@ -11047,7 +11047,7 @@ window.CAREERS_ALL = [
     "id": "ooh-22-archivists-curators-and-museum-workers",
     "cat": "edu",
     "catName": "Education & Academia",
-    "icon": "🎓",
+    "icon": "grad",
     "title": "Archivists, Curators, and Museum Workers",
     "tagline": "Archivists and curators oversee collections of historic items or artwork.",
     "desc": "Curators oversee collections of artwork and historical items and may conduct public service activities for an institution. Museum technicians and conservators prepare and restore objects and documents in museum collections and exhibits.",
@@ -11218,7 +11218,7 @@ window.CAREERS_ALL = [
     "id": "ooh-23-art-directors",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Art Directors",
     "tagline": "Are responsible for the visual style and images in magazines, newspapers, product packaging, and movie and television productions.",
     "desc": "They create the overall design and direct others who develop artwork or layouts.",
@@ -11364,7 +11364,7 @@ window.CAREERS_ALL = [
     "id": "ooh-24-assemblers-and-fabricators",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Assemblers and Fabricators",
     "tagline": "Build finished products and the parts that go into them.",
     "desc": "They use handtools and machines to make vehicles, toys, electronic devices, and more.",
@@ -11588,7 +11588,7 @@ window.CAREERS_ALL = [
     "id": "ooh-25-athletes-and-sports-competitors",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Athletes and Sports Competitors",
     "tagline": "Participate in organized, officiated sporting events to entertain spectators.",
     "desc": "Practice to develop and improve their skills; Keep their sports equipment in good condition; Exercise, train, and follow special diets to stay in the best physical condition.",
@@ -11776,7 +11776,7 @@ window.CAREERS_ALL = [
     "id": "ooh-26-athletic-trainers",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Athletic Trainers",
     "tagline": "Specialize in preventing, diagnosing, and treating muscle and bone injuries and illnesses.",
     "desc": "Apply protective or injury-preventive devices, such as tape, bandages, and braces; Recognize and evaluate injuries; Provide first aid or emergency care.",
@@ -11923,7 +11923,7 @@ window.CAREERS_ALL = [
     "id": "ooh-27-atmospheric-scientists-including-meteorologists",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Atmospheric Scientists, Including Meteorologists",
     "tagline": "Scientists study, report on, and forecast the weather and climate.",
     "desc": "They may compile data, prepare reports and forecasts, and assist in developing new data collection instruments.",
@@ -12081,7 +12081,7 @@ window.CAREERS_ALL = [
     "id": "ooh-28-audiologists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Audiologists",
     "tagline": "Diagnose, manage, and treat patients who have hearing, balance, or related problems.",
     "desc": "Examine patients who have conditions related to the outer, middle, or inner ear; Assess the results of the examination and diagnose problems; Create treatment plans to meet patients' goals.",
@@ -12230,7 +12230,7 @@ window.CAREERS_ALL = [
     "id": "ooh-29-automotive-body-and-glass-repairers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Automotive Body and Glass Repairers",
     "tagline": "Restore, refinish, and replace vehicle bodies and frames, windshields, and window glass.",
     "desc": "Review damage reports, prepare cost estimates, and plan work; Inspect cars for structural damage; Remove damaged body parts, including bumpers, fenders, hoods, grilles, and trim.",
@@ -12387,7 +12387,7 @@ window.CAREERS_ALL = [
     "id": "ooh-30-automotive-service-technicians-and-mechanics",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Automotive Service Technicians and Mechanics",
     "tagline": "Inspect, maintain, and repair cars and light trucks.",
     "desc": "Identify problems, often by using computerized diagnostic equipment; Test parts and systems to ensure that they work properly; Perform basic care and maintenance, including changing oil, checking fluid levels, and rotating tires.",
@@ -12545,7 +12545,7 @@ window.CAREERS_ALL = [
     "id": "ooh-31-bakers",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🥖",
+    "icon": "users",
     "title": "Bakers",
     "tagline": "Craft artisan breads, pastries, and baked goods using precise dough handling and ovens.",
     "desc": "Prepare workstation for baking; Measure and weigh ingredients; Combine measured ingredients in mixers or blenders.",
@@ -12695,7 +12695,7 @@ window.CAREERS_ALL = [
     "id": "ooh-32-barbers-hairstylists-and-cosmetologists",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🤝",
+    "icon": "users",
     "title": "Barbers, Hairstylists, and Cosmetologists",
     "tagline": "Provide haircutting, hairstyling, and other services related to personal appearance.",
     "desc": "Inspect and analyze hair, scalp, and skin to recommend services or treatment; Discuss hairstyle options; Shampoo, color, lighten, and condition hair.",
@@ -12859,7 +12859,7 @@ window.CAREERS_ALL = [
     "id": "ooh-33-bartenders",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🍷",
+    "icon": "ai",
     "title": "Bartenders",
     "tagline": "Mix craft cocktails, serve beverages, and manage hospitality at bars and restaurants.",
     "desc": "Greet customers, offer menus, and inform them of specials; Take customers' food and drink orders; Pour and serve wine, beer, and other drinks.",
@@ -13005,7 +13005,7 @@ window.CAREERS_ALL = [
     "id": "ooh-34-bill-and-account-collectors",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Bill and Account Collectors",
     "tagline": "Try to recover payment on overdue bills.",
     "desc": "They negotiate repayment plans and help people find solutions to make it easier to pay their overdue bills.",
@@ -13162,7 +13162,7 @@ window.CAREERS_ALL = [
     "id": "ooh-35-biochemists-and-biophysicists",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Biochemists and Biophysicists",
     "tagline": "Study the chemical and physical principles of living things and of biological processes.",
     "desc": "Plan and conduct complex projects in basic and applied research; Manage laboratory teams and monitor the quality of their work; Isolate, analyze, and synthesize proteins, fats, DNA, and other molecules.",
@@ -13310,7 +13310,7 @@ window.CAREERS_ALL = [
     "id": "ooh-36-bioengineers-and-biomedical-engineers",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Bioengineers and Biomedical Engineers",
     "tagline": "Combine engineering principles with sciences to design and create equipment, devices, computer systems, and software.",
     "desc": "Design equipment and devices, such as artificial internal organs, replacements for body parts, and machines for diagnosing medical problems; Install, maintain, or provide technical support for biomedical equipment; Collaborate with manufacturing staff on the safety and effectiveness of biomedical equipment.",
@@ -13462,7 +13462,7 @@ window.CAREERS_ALL = [
     "id": "ooh-37-biological-technicians",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Biological Technicians",
     "tagline": "Assist biological and medical scientists with tasks such as laboratory setup, data collection, and observation.",
     "desc": "They also may analyze organic substances, such as blood, food, and drugs.",
@@ -13613,7 +13613,7 @@ window.CAREERS_ALL = [
     "id": "ooh-38-boilermakers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Boilermakers",
     "tagline": "Assemble, install, maintain, and repair boilers, closed vats, and other large vessels or containers that hold liquids and gases.",
     "desc": "Read blueprints to determine locations, positions, and dimensions of boiler parts; Install small, premade boilers in buildings and manufacturing facilities; Lay out prefabricated parts of large boilers before assembling them.",
@@ -13761,7 +13761,7 @@ window.CAREERS_ALL = [
     "id": "ooh-39-bookkeeping-accounting-and-auditing-clerks",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Bookkeeping, Accounting, and Auditing Clerks",
     "tagline": "Compute, classify, and record data to help organizations keep complete and accurate financial records.",
     "desc": "Use bookkeeping software, spreadsheets, and databases; Enter (post) financial transactions into the appropriate computer software; Receive and record cash, checks, and vouchers.",
@@ -13918,7 +13918,7 @@ window.CAREERS_ALL = [
     "id": "ooh-40-broadcast-sound-and-video-technicians",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Broadcast, Sound, and Video Technicians",
     "tagline": "Set up, operate, and maintain the electrical equipment for media programs.",
     "desc": "Operate, monitor, and adjust audio, video, sound, lighting, and broadcast equipment to ensure consistent quality; Set up and take down equipment for events and live performances; Record speech, music, and other sounds on recording equipment or computers, sometimes using complex software.",
@@ -14097,7 +14097,7 @@ window.CAREERS_ALL = [
     "id": "ooh-41-budget-analysts",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Budget Analysts",
     "tagline": "Help public and private organizations plan their finances.",
     "desc": "They prepare budget reports and monitor organizational spending.",
@@ -14245,7 +14245,7 @@ window.CAREERS_ALL = [
     "id": "ooh-42-bus-drivers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🚌",
+    "icon": "wrench",
     "title": "Bus Drivers",
     "tagline": "Transport passengers safely along scheduled municipal transit or school routes.",
     "desc": "Some drive set routes, and others transport passengers on chartered trips or sightseeing tours. They drive a range of vehicles, from 15-passenger buses to 60-foot articulated buses (with two connected sections) that can carry more than 100 passengers.",
@@ -14397,7 +14397,7 @@ window.CAREERS_ALL = [
     "id": "ooh-43-calibration-technologists-and-technicians",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Calibration Technologists and Technicians",
     "tagline": "Inspect, adjust, and test measurement devices against standards, such as those used in manufacturing, healthcare, and other industries.",
     "desc": "Calibration technologists and technicians inspect, adjust, and test measurement devices against standards, such as those used in manufacturing, healthcare, and other industries.",
@@ -14539,7 +14539,7 @@ window.CAREERS_ALL = [
     "id": "ooh-44-cardiovascular-technologists-and-technicians",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Cardiovascular Technologists and Technicians",
     "tagline": "Conduct tests and assist in procedures involving the heart or lungs.",
     "desc": "They work closely with physicians and surgeons, who use the test results to assess and diagnose medical conditions.",
@@ -14697,7 +14697,7 @@ window.CAREERS_ALL = [
     "id": "ooh-45-career-and-technical-education-teachers",
     "cat": "edu",
     "catName": "Education & Academia",
-    "icon": "🎓",
+    "icon": "grad",
     "title": "Career and Technical Education Teachers",
     "tagline": "Instruct students in various technical and vocational subjects, such as auto repair, healthcare, and culinary arts.",
     "desc": "They teach vocational and technical content to give students the skills and knowledge necessary to enter an occupation.",
@@ -14871,7 +14871,7 @@ window.CAREERS_ALL = [
     "id": "ooh-46-carpenters",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Carpenters",
     "tagline": "Construct, repair, and install building frameworks and structures made from wood and other materials.",
     "desc": "Follow blueprints and building plans to meet the needs of clients; Install structures and fixtures, such as windows and molding; Measure, cut, and shape wood, plastic, and other materials.",
@@ -15027,7 +15027,7 @@ window.CAREERS_ALL = [
     "id": "ooh-47-cartographers-and-photogrammetrists",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Cartographers and Photogrammetrists",
     "tagline": "Collect, analyze, and interpret geographic information to create and update maps and related products.",
     "desc": "Collect and analyze data from surveys, satellite images, and other sources; Create visualizations of data, such as annual precipitation patterns and elevation; Develop maps that integrate Geographic Information System (GIS) data for geospatial context.",
@@ -15181,7 +15181,7 @@ window.CAREERS_ALL = [
     "id": "ooh-48-cashiers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "🛒",
+    "icon": "palette",
     "title": "Cashiers",
     "tagline": "Process customer transactions, manage checkout registers, and assist retail shoppers.",
     "desc": "Greet customers; Scan customers' purchases; Process payment from customers and give change and receipts.",
@@ -15333,7 +15333,7 @@ window.CAREERS_ALL = [
     "id": "ooh-49-chefs-and-head-cooks",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "👨‍🍳",
+    "icon": "users",
     "title": "Chefs and Head Cooks",
     "tagline": "Direct commercial kitchen operations, develop recipes, and lead dinner rush service.",
     "desc": "They direct kitchen staff and handle any food-related concerns.",
@@ -15495,7 +15495,7 @@ window.CAREERS_ALL = [
     "id": "ooh-50-chemical-engineers",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Chemical Engineers",
     "tagline": "Apply the principles of chemistry, physics, and engineering to design equipment and processes for manufacturing products such as gasoline, detergents, and paper.",
     "desc": "Conduct research to develop new and improved manufacturing processes; Design and plan the layout of equipment; Establish safety procedures for working with dangerous chemicals.",
@@ -15648,7 +15648,7 @@ window.CAREERS_ALL = [
     "id": "ooh-51-chemical-technicians",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Chemical Technicians",
     "tagline": "Conduct laboratory tests to help scientists analyze the properties of materials.",
     "desc": "Monitor chemical processes and test product quality to make sure that they meet standards and specifications; Set up, operate, and maintain laboratory instruments and equipment; Maintain production equipment and troubleshoot problems.",
@@ -15792,7 +15792,7 @@ window.CAREERS_ALL = [
     "id": "ooh-52-chemists-and-materials-scientists",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Chemists and Materials Scientists",
     "tagline": "Research and analyze the chemical properties of substances to develop new materials, products, or knowledge.",
     "desc": "Plan and carry out research projects, such as development of products and of testing methods; Direct technicians and other staff in chemical processing and testing, including for ingredients, mixing times, and operating temperatures; Collaborate with engineers and other scientists on experiments, product development, and production processes.",
@@ -15952,7 +15952,7 @@ window.CAREERS_ALL = [
     "id": "ooh-53-childcare-workers",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🤝",
+    "icon": "users",
     "title": "Childcare Workers",
     "tagline": "Attend to children's needs while helping to support early development.",
     "desc": "They may help younger children prepare for kindergarten or assist older children with homework.",
@@ -16118,7 +16118,7 @@ window.CAREERS_ALL = [
     "id": "ooh-54-chiropractors",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Chiropractors",
     "tagline": "Assess, treat, and care for patients by manipulating the spine and musculoskeletal system.",
     "desc": "They may provide spinal adjustment or address sacral or pelvic misalignment.",
@@ -16259,7 +16259,7 @@ window.CAREERS_ALL = [
     "id": "ooh-55-civil-engineering-technologists-and-technicians",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Civil Engineering Technologists and Technicians",
     "tagline": "Help civil engineers plan, design, and build infrastructure and development projects.",
     "desc": "They also help to plan, design, and build commercial, industrial, residential, and land development projects.",
@@ -16413,7 +16413,7 @@ window.CAREERS_ALL = [
     "id": "ooh-56-civil-engineers",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Civil Engineers",
     "tagline": "Plan, design, and supervise the construction and maintenance of building and infrastructure projects.",
     "desc": "These projects may include facilities, bridges, roads, tunnels, and water and sewage systems.",
@@ -16569,7 +16569,7 @@ window.CAREERS_ALL = [
     "id": "ooh-57-claims-adjusters-appraisers-examiners-and-investigators",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Claims Adjusters, Appraisers, Examiners, and Investigators",
     "tagline": "Evaluate insurance claims.",
     "desc": "They decide whether an insurance company must pay a claim and if so, how much.",
@@ -16733,7 +16733,7 @@ window.CAREERS_ALL = [
     "id": "ooh-58-clinical-laboratory-technologists-and-technicians",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Clinical Laboratory Technologists and Technicians",
     "tagline": "Perform medical laboratory tests for the diagnosis, treatment, and prevention of disease.",
     "desc": "Test and analyze body fluids, such as blood, urine, and tissue samples; Operate laboratory equipment, such as microscopes and automated cell counters; Use automated equipment that analyzes multiple samples at the same time.",
@@ -16901,7 +16901,7 @@ window.CAREERS_ALL = [
     "id": "ooh-59-coaches-and-scouts",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Coaches and Scouts",
     "tagline": "Teach amateur or professional athletes the skills they need to succeed at their sport.",
     "desc": "Scouts look for new players, evaluating their skills and likelihood for success at the amateur, college, or professional level. Many coaches also are involved in scouting potential athletes for their team.",
@@ -17068,7 +17068,7 @@ window.CAREERS_ALL = [
     "id": "ooh-60-community-health-workers",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🤝",
+    "icon": "users",
     "title": "Community Health Workers",
     "tagline": "Promote wellness by helping people in their communities adopt healthy behaviors.",
     "desc": "They implement programs and advocate for people who may have limited access to health resources and social services.",
@@ -17224,7 +17224,7 @@ window.CAREERS_ALL = [
     "id": "ooh-61-compensation-benefits-and-job-analysis-specialists",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Compensation, Benefits, and Job Analysis Specialists",
     "tagline": "Oversee wage and nonwage programs that an organization provides to its employees in return for their work.",
     "desc": "They also evaluate position descriptions to determine details such as classification and salary.",
@@ -17380,7 +17380,7 @@ window.CAREERS_ALL = [
     "id": "ooh-62-compensation-and-benefits-managers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Compensation and Benefits Managers",
     "tagline": "Plan, develop, and oversee programs to pay employees.",
     "desc": "Coordinate and supervise the work activities of staff; Set the organization's pay and benefits structure; Monitor competitive wage rates to develop or modify compensation plans.",
@@ -17527,7 +17527,7 @@ window.CAREERS_ALL = [
     "id": "ooh-63-compliance-officers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Compliance Officers",
     "tagline": "Make sure that people and organizations meet legal and regulatory requirements.",
     "desc": "Stay current on relevant laws and regulations and advise individuals and organizations on how to comply with them; Develop and implement policies and procedures; Assess compliance-related risks and find ways to reduce them.",
@@ -17688,7 +17688,7 @@ window.CAREERS_ALL = [
     "id": "ooh-64-computer-and-information-research-scientists",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "💻",
+    "icon": "code",
     "title": "Computer and Information Research Scientists",
     "tagline": "Design innovative uses for new and existing computing technology.",
     "desc": "They study and solve complex problems in computing for business, science, medicine, and other fields.",
@@ -17837,7 +17837,7 @@ window.CAREERS_ALL = [
     "id": "ooh-65-computer-and-information-systems-managers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Computer and Information Systems Managers",
     "tagline": "Plan, coordinate, and direct computer-related activities in an organization.",
     "desc": "They help determine the IT goals of an organization and are responsible for implementing computer systems to meet those goals.",
@@ -17996,7 +17996,7 @@ window.CAREERS_ALL = [
     "id": "ooh-66-computer-hardware-engineers",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Computer Hardware Engineers",
     "tagline": "Research, design, develop, and test computers and related equipment.",
     "desc": "Design new computer hardware, creating schematics of computer equipment to be built; Test the computer hardware after design or installation; Analyze the test results and modify the design as needed.",
@@ -18139,7 +18139,7 @@ window.CAREERS_ALL = [
     "id": "ooh-67-computer-network-architects",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "💻",
+    "icon": "code",
     "title": "Computer Network Architects",
     "tagline": "Design and implement data communication networks, including local area networks (LANs), wide area networks (WANs), and intranets.",
     "desc": "These networks range from small connections between two offices to virtual capabilities such as a cloud infrastructure that serves multiple customers.",
@@ -18289,7 +18289,7 @@ window.CAREERS_ALL = [
     "id": "ooh-68-computer-programmers",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "💻",
+    "icon": "code",
     "title": "Computer Programmers",
     "tagline": "Write, modify, and test code and scripts that allow computer software and applications to function properly.",
     "desc": "They turn the designs created by software developers and engineers into instructions that a computer can follow. In addition, programmers run tests to ensure that newly created applications and software produce the expected results.",
@@ -18444,7 +18444,7 @@ window.CAREERS_ALL = [
     "id": "ooh-69-computer-support-specialists",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "💻",
+    "icon": "code",
     "title": "Computer Support Specialists",
     "tagline": "Maintain computer networks and provide technical help to computer users.",
     "desc": "These specialists either maintain computer networks or provide technical help directly to computer users.",
@@ -18602,7 +18602,7 @@ window.CAREERS_ALL = [
     "id": "ooh-70-computer-systems-analysts",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "💻",
+    "icon": "code",
     "title": "Computer Systems Analysts",
     "tagline": "Study an organization’s current computer systems and design ways to improve efficiency.",
     "desc": "In doing so, these analysts help the organization operate more efficiently.",
@@ -18757,7 +18757,7 @@ window.CAREERS_ALL = [
     "id": "ooh-71-concierges",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🤝",
+    "icon": "users",
     "title": "Concierges",
     "tagline": "Help people at hotels, apartments, or office buildings with a variety of personal services.",
     "desc": "They may take messages, arrange for transportation, give advice on local restaurants and activities, provide business services, or monitor requests for housekeeping or maintenance.",
@@ -18916,7 +18916,7 @@ window.CAREERS_ALL = [
     "id": "ooh-72-conservation-scientists-and-foresters",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Conservation Scientists and Foresters",
     "tagline": "Manage the land quality of forests, parks, rangelands, and other natural resources.",
     "desc": "Oversee conservation and forestry activities to ensure compliance with government regulations and protection of habitats; Negotiate terms and conditions for contracts related to forest harvesting or land use; Establish plans for managing forest lands and resources.",
@@ -19082,7 +19082,7 @@ window.CAREERS_ALL = [
     "id": "ooh-73-construction-and-building-inspectors",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Construction and Building Inspectors",
     "tagline": "Ensure that construction meets building codes and ordinances, zoning regulations, and contract specifications.",
     "desc": "Review building plans and approve those that meet requirements; Monitor construction sites periodically to ensure overall compliance; Use equipment and testing devices, such as moisture meters to check for plumbing leaks or flooding damage and electrical testers to ensure that electrical components are functional.",
@@ -19240,7 +19240,7 @@ window.CAREERS_ALL = [
     "id": "ooh-74-construction-equipment-operators",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Construction Equipment Operators",
     "tagline": "Drive, maneuver, or control the heavy machinery used to construct roads, buildings and other structures.",
     "desc": "Clean and maintain equipment, making basic repairs as necessary; Report malfunctioning equipment to supervisors; Move levers, push pedals, or turn valves to drive and maneuver equipment.",
@@ -19407,7 +19407,7 @@ window.CAREERS_ALL = [
     "id": "ooh-75-construction-laborers-and-helpers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Construction Laborers and Helpers",
     "tagline": "Perform tasks, such as using, supplying, or holding materials or tools and cleaning work areas and equipment, on construction sites.",
     "desc": "Clean and prepare construction sites by removing debris and possible hazards; Load or unload building materials to be used in construction; Build or take apart bracing, scaffolding, and temporary structures.",
@@ -19637,7 +19637,7 @@ window.CAREERS_ALL = [
     "id": "ooh-76-construction-managers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Construction Managers",
     "tagline": "Plan, coordinate, budget, and supervise construction projects from start to finish.",
     "desc": "Prepare cost estimates, budgets, and work timetables; Interpret and explain contracts and technical information to other professionals; Collaborate with architects, engineers, and other construction specialists.",
@@ -19790,7 +19790,7 @@ window.CAREERS_ALL = [
     "id": "ooh-77-cooks",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "👨‍🍳",
+    "icon": "users",
     "title": "Cooks",
     "tagline": "Prepare, season, and cook dishes to order in restaurants, hotels, and cafeterias.",
     "desc": "Ensure the freshness of ingredients; Weigh, measure, and mix ingredients according to recipes; Bake, grill, or fry meats, fish, vegetables, and other foods.",
@@ -19978,7 +19978,7 @@ window.CAREERS_ALL = [
     "id": "ooh-78-correctional-officers-and-bailiffs",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "🛡️",
+    "icon": "shield",
     "title": "Correctional Officers and Bailiffs",
     "tagline": "Oversee individuals awaiting trial or serving sentences in correctional facilities.",
     "desc": "Bailiffs, also known as marshals or court officers, are law enforcement officers who maintain order in courtrooms.",
@@ -20139,7 +20139,7 @@ window.CAREERS_ALL = [
     "id": "ooh-79-cost-estimators",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Cost Estimators",
     "tagline": "Collect and analyze data in order to assess the time, money, materials, and labor required to make a product or provide a service.",
     "desc": "They generally specialize in a particular product or industry.",
@@ -20291,7 +20291,7 @@ window.CAREERS_ALL = [
     "id": "ooh-80-court-reporters-and-simultaneous-captioners",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "⚖️",
+    "icon": "scale",
     "title": "Court Reporters and Simultaneous Captioners",
     "tagline": "Reporters create word-for-word transcriptions at trials, depositions, and other legal proceedings.",
     "desc": "Simultaneous captioners provide similar transcriptions for television or for presentations in other settings, such as press conferences and business meetings, for people who are deaf or hard of hearing.",
@@ -20444,7 +20444,7 @@ window.CAREERS_ALL = [
     "id": "ooh-81-craft-and-fine-artists",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Craft and Fine Artists",
     "tagline": "Use a variety of materials and techniques to create art for sale and exhibition.",
     "desc": "Craft artists create objects, such as pottery, glassware, and textiles, that are designed to be functional. Fine artists, including painters, sculptors, and illustrators, create pieces of art more for aesthetics than for function.",
@@ -20636,7 +20636,7 @@ window.CAREERS_ALL = [
     "id": "ooh-82-credit-counselors",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Credit Counselors",
     "tagline": "Advise and educate individuals or organizations on acquiring and managing debt.",
     "desc": "They may also provide guidance on credit issues and on budgeting, mortgages, or student financial aid packages.",
@@ -20783,7 +20783,7 @@ window.CAREERS_ALL = [
     "id": "ooh-83-customer-service-representatives",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "🎧",
+    "icon": "audio",
     "title": "Customer Service Representatives",
     "tagline": "Resolve customer account inquiries, handle product complaints, and provide support.",
     "desc": "Listen to customers' questions and concerns and provide answers or responses; Provide information about products and services; Take orders, calculate charges, and process billing or payments.",
@@ -20942,7 +20942,7 @@ window.CAREERS_ALL = [
     "id": "ooh-84-dancers-and-choreographers",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Dancers and Choreographers",
     "tagline": "Use dance performances to express ideas and stories.",
     "desc": "There are many types of dance, such as ballet, tango, modern dance, tap, and jazz.",
@@ -21099,7 +21099,7 @@ window.CAREERS_ALL = [
     "id": "ooh-85-database-administrators-and-architects",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "💻",
+    "icon": "code",
     "title": "Database Administrators and Architects",
     "tagline": "Create or organize systems to store and secure data.",
     "desc": "They also make sure that the data are available to authorized users.",
@@ -21257,7 +21257,7 @@ window.CAREERS_ALL = [
     "id": "ooh-86-data-scientists",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "💻",
+    "icon": "code",
     "title": "Data Scientists",
     "tagline": "Use analytical tools and techniques to extract meaningful insights from data.",
     "desc": "Determine which data are available and useful for the project; Collect, categorize, and analyze data; Create, validate, test, and update algorithms and models.",
@@ -21408,7 +21408,7 @@ window.CAREERS_ALL = [
     "id": "ooh-87-delivery-truck-drivers-and-driversales-workers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🚚",
+    "icon": "truck",
     "title": "Delivery Truck Drivers and Driver/sales Workers",
     "tagline": "Transport merchandise, parcels, and food products across local and regional delivery routes.",
     "desc": "They drive trucks weighing less than 26,001 pounds total for vehicle, passengers, and cargo. Delivery truck drivers usually transport merchandise from a distribution center to businesses and households.",
@@ -21567,7 +21567,7 @@ window.CAREERS_ALL = [
     "id": "ooh-88-dental-and-ophthalmic-laboratory-technicians-and-medical-appliance-technicians",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🦷",
+    "icon": "dental",
     "title": "Dental and Ophthalmic Laboratory Technicians and Medical Appliance Technicians",
     "tagline": "Fabricate custom dental crowns, orthodontic bridges, prescription eyeglasses, and prostheses.",
     "desc": "Read and follow detailed work orders and prescriptions; Bend, form, and shape material for appliances or devices; Polish and shape appliances and devices, using handtools or power tools.",
@@ -21742,7 +21742,7 @@ window.CAREERS_ALL = [
     "id": "ooh-89-dental-assistants",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🦷",
+    "icon": "dental",
     "title": "Dental Assistants",
     "tagline": "Provide patient care, take x rays, keep records, and schedule appointments.",
     "desc": "Their duties vary by state and by the dentists' offices in which they work.",
@@ -21904,7 +21904,7 @@ window.CAREERS_ALL = [
     "id": "ooh-90-dental-hygienists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🦷",
+    "icon": "dental",
     "title": "Dental Hygienists",
     "tagline": "Examine patients for signs of oral diseases, such as gingivitis, and provide preventive care, including oral hygiene.",
     "desc": "Dental hygienists examine patients for signs of oral diseases, such as gingivitis, and provide preventive care, including oral hygiene. They also educate patients about oral health.",
@@ -22058,7 +22058,7 @@ window.CAREERS_ALL = [
     "id": "ooh-91-dentists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🦷",
+    "icon": "dental",
     "title": "Dentists",
     "tagline": "Diagnose oral diseases, perform restorative dentistry, and carry out surgical extractions.",
     "desc": "They provide advice and instruction on taking care of the teeth and gums and on diet choices that affect oral health.",
@@ -22221,7 +22221,7 @@ window.CAREERS_ALL = [
     "id": "ooh-92-desktop-publishers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Desktop Publishers",
     "tagline": "Use computer software to design page layouts for items that are printed or published online.",
     "desc": "Review text, graphics, or other materials created by writers and designers; Edit graphics, such as photographs or illustrations; Import text and graphics into publishing software.",
@@ -22376,7 +22376,7 @@ window.CAREERS_ALL = [
     "id": "ooh-93-diagnostic-medical-sonographers",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Diagnostic Medical Sonographers",
     "tagline": "Operate ultrasound equipment to create images of inside the body.",
     "desc": "They work closely with physicians and surgeons, who view the images to assess and diagnose medical conditions.",
@@ -22533,7 +22533,7 @@ window.CAREERS_ALL = [
     "id": "ooh-94-diesel-service-technicians-and-mechanics",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Diesel Service Technicians and Mechanics",
     "tagline": "Inspect, repair, and overhaul buses, trucks, or any vehicle with a diesel engine.",
     "desc": "Inspect and test brake systems, steering mechanisms, transmissions, engines, and other parts of vehicles; Read and interpret diagnostic test results to identify mechanical problems; Follow checklists to ensure that all critical parts are examined.",
@@ -22684,7 +22684,7 @@ window.CAREERS_ALL = [
     "id": "ooh-95-dietitians-and-nutritionists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Dietitians and Nutritionists",
     "tagline": "Plan and conduct food service or nutritional programs to help people lead healthy lives.",
     "desc": "They plan and conduct food service or nutritional programs to help people lead healthy lives.",
@@ -22839,7 +22839,7 @@ window.CAREERS_ALL = [
     "id": "ooh-96-drafters",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Drafters",
     "tagline": "Use software to convert the designs of engineers and architects into technical drawings.",
     "desc": "Most workers specialize in architectural, civil, electrical, or mechanical drafting and use technical drawings to help design everything from microchips to skyscrapers.",
@@ -23014,7 +23014,7 @@ window.CAREERS_ALL = [
     "id": "ooh-97-drywall-installers-ceiling-tile-installers-and-tapers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Drywall Installers, Ceiling Tile Installers, and Tapers",
     "tagline": "And ceiling tile installers hang wallboard and install ceiling tile inside buildings.",
     "desc": "Tapers prepare the wallboard for painting, using tape and other materials. Many workers both install and tape wallboard.",
@@ -23174,7 +23174,7 @@ window.CAREERS_ALL = [
     "id": "ooh-98-economists",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📈",
+    "icon": "trending",
     "title": "Economists",
     "tagline": "Model macroeconomic trends, evaluate public policies, and forecast market behaviour.",
     "desc": "Economists conduct research, prepare reports, and evaluate issues related to monetary and fiscal policy. They also may collect and analyze statistical data.",
@@ -23331,7 +23331,7 @@ window.CAREERS_ALL = [
     "id": "ooh-99-editors",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Editors",
     "tagline": "Plan, review, and revise content for publication.",
     "desc": "Read content and correct spelling, punctuation, and grammatical errors; Rewrite text to make it easier for readers to understand; Verify facts cited in material for publication.",
@@ -23489,7 +23489,7 @@ window.CAREERS_ALL = [
     "id": "ooh-100-electrical-and-electronic-engineering-technologists-and-technicians",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Electrical and Electronic Engineering Technologists and Technicians",
     "tagline": "Help engineers design and develop equipment that is powered by electricity or electric current.",
     "desc": "They often work in product evaluation and testing, using measuring and diagnostic devices to test, adjust, and repair equipment. They are also involved in assembling equipment for automation.",
@@ -23644,7 +23644,7 @@ window.CAREERS_ALL = [
     "id": "ooh-101-electrical-and-electronics-engineers",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Electrical and Electronics Engineers",
     "tagline": "Design, develop, and test electrical and electronic equipment, components, and systems.",
     "desc": "Design and develop electrical and electronic devices, products, and systems; Determine product or system requirements; Use engineering or design software or equipment to create models, diagrams, and layouts.",
@@ -23800,7 +23800,7 @@ window.CAREERS_ALL = [
     "id": "ooh-102-electrical-and-electronics-installers-and-repairers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Electrical and Electronics Installers and Repairers",
     "tagline": "Install, adjust, or maintain a variety of electrical and electronic equipment.",
     "desc": "Discuss problems and requirements with customers; Inspect and test equipment; Reproduce, isolate, and diagnose problems.",
@@ -23971,7 +23971,7 @@ window.CAREERS_ALL = [
     "id": "ooh-103-electrical-power-line-installers-and-repairers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Electrical Power-line Installers and Repairers",
     "tagline": "Install or repair cables or wires used in electrical power or distribution systems.",
     "desc": "Electrical power-line installers and repairers install or repair cables or wires used in electrical power or distribution systems. They also may erect poles or transmission towers.",
@@ -24119,7 +24119,7 @@ window.CAREERS_ALL = [
     "id": "ooh-104-electricians",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Electricians",
     "tagline": "Install, maintain, and repair electrical power, communications, lighting, and control systems.",
     "desc": "Read blueprints or technical diagrams; Install and maintain wiring, control, and lighting systems; Inspect electrical components, such as transformers and circuit breakers.",
@@ -24276,7 +24276,7 @@ window.CAREERS_ALL = [
     "id": "ooh-105-electro-mechanical-and-mechatronics-technologists-and-technicians",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Electro-mechanical and Mechatronics Technologists and Technicians",
     "tagline": "Operate, test, and maintain electromechanical or robotic equipment.",
     "desc": "They operate, test, and maintain unmanned, automated, robotic, or electromechanical equipment.",
@@ -24427,7 +24427,7 @@ window.CAREERS_ALL = [
     "id": "ooh-106-elementary-middle-and-high-school-principals",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Elementary, Middle, and High School Principals",
     "tagline": "Oversee all school operations, including daily school activities.",
     "desc": "They coordinate curriculums, manage staff, and provide a safe and productive learning environment for students.",
@@ -24580,7 +24580,7 @@ window.CAREERS_ALL = [
     "id": "ooh-107-elevator-and-escalator-installers-and-repairers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Elevator and Escalator Installers and Repairers",
     "tagline": "Install, maintain, and fix elevators, escalators, moving walkways, and other lifts.",
     "desc": "Read and interpret blueprints to determine the layout of system components and to select the equipment needed for installation or repair; Assemble elevator cars and components for similar systems; Connect electrical wiring to control panels and motors.",
@@ -24734,7 +24734,7 @@ window.CAREERS_ALL = [
     "id": "ooh-108-emergency-management-directors",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Emergency Management Directors",
     "tagline": "Prepare plans and procedures for responding to natural disasters or other emergencies.",
     "desc": "They also help lead the response during and after emergencies, often in coordination with public safety officials, elected officials, nonprofit organizations, and government agencies.",
@@ -24888,7 +24888,7 @@ window.CAREERS_ALL = [
     "id": "ooh-109-emts-and-paramedics",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Emts and Paramedics",
     "tagline": "Emergency medical technicians (EMTs) and paramedics assess injuries and illnesses, provide emergency medical care, and may transport patients to medical facilities.",
     "desc": "Respond to calls for medical assistance, such as at the scene of a car accident in which someone is injured; Assess people's condition and determine what treatment, if any, is needed; Provide treatment, such as first aid or life support care, to sick or injured patients.",
@@ -25047,7 +25047,7 @@ window.CAREERS_ALL = [
     "id": "ooh-110-entertainment-and-recreation-managers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Entertainment and Recreation Managers",
     "tagline": "Plan, direct, and coordinate activities and operations related to fitness and leisure.",
     "desc": "Plan programs of events or schedules of activities; Write, present, and manage strategies and budgets for events or activities; Manage the daily operation of an event, activity, facility, or program.",
@@ -25203,7 +25203,7 @@ window.CAREERS_ALL = [
     "id": "ooh-111-environmental-engineering-technologists-and-technicians",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Environmental Engineering Technologists and Technicians",
     "tagline": "Implement the plans that environmental engineers develop.",
     "desc": "Set up, test, operate, and modify equipment used to prevent or clean up environmental pollution; Maintain project records and computer program files; Collect and analyze samples, such as of ground water, for monitoring pollution or treatment.",
@@ -25353,7 +25353,7 @@ window.CAREERS_ALL = [
     "id": "ooh-112-environmental-engineers",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Environmental Engineers",
     "tagline": "Use engineering disciplines in developing solutions to problems of planetary health.",
     "desc": "Their work may involve concerns such as waste treatment, site remediation, and pollution control technology.",
@@ -25508,7 +25508,7 @@ window.CAREERS_ALL = [
     "id": "ooh-113-environmental-science-and-protection-technicians",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Environmental Science and Protection Technicians",
     "tagline": "Monitor the environment and investigate sources of pollution and contamination, including those affecting public health.",
     "desc": "Inspect public spaces, businesses, facilities, and other areas to ensure that there are no environmental, health, or safety hazards; Set up and maintain equipment to monitor pollution levels, such as remote sensors that measure emissions from smokestacks; Collect samples of air, soil, water, and other materials for laboratory analysis.",
@@ -25663,7 +25663,7 @@ window.CAREERS_ALL = [
     "id": "ooh-114-environmental-scientists-and-specialists",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Environmental Scientists and Specialists",
     "tagline": "Conduct research or investigations to protect the environment or human health.",
     "desc": "They may collect, study, and report on data of air, food, water and other sources and then recommend action.",
@@ -25816,7 +25816,7 @@ window.CAREERS_ALL = [
     "id": "ooh-115-epidemiologists",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Epidemiologists",
     "tagline": "Are public health workers who investigate patterns and causes of disease and injury.",
     "desc": "They seek to reduce the risk and occurrence of negative health outcomes through research, community education and health policy.",
@@ -25970,7 +25970,7 @@ window.CAREERS_ALL = [
     "id": "ooh-116-exercise-physiologists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Exercise Physiologists",
     "tagline": "Develop fitness and exercise programs to help people improve their health.",
     "desc": "Analyze a client's medical history to assess their risk during exercise and to determine the best exercise and fitness regimen for the client; Perform endurance, stress, and other tests with medical equipment and analyze the resulting data; Measure clients' blood pressure, oxygen usage, heart rhythm, and other key health indicators.",
@@ -26117,7 +26117,7 @@ window.CAREERS_ALL = [
     "id": "ooh-117-farmers-ranchers-and-other-agricultural-managers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Farmers, Ranchers, and Other Agricultural Managers",
     "tagline": "Run establishments that produce crops, livestock, and dairy products.",
     "desc": "Supervise all steps of crop production or ranging, including planting, fertilizing, harvesting, and herding; Make decisions about crops or livestock by evaluating factors such as market conditions, disease, soil conditions, and the availability of federal programs; Choose and buy supplies, such as seed, fertilizer, and farm machinery.",
@@ -26290,7 +26290,7 @@ window.CAREERS_ALL = [
     "id": "ooh-118-fashion-designers",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Fashion Designers",
     "tagline": "Create clothing, accessories, and footwear.",
     "desc": "They sketch designs, select fabrics and patterns, and give instructions on how to make the products they design.",
@@ -26444,7 +26444,7 @@ window.CAREERS_ALL = [
     "id": "ooh-119-film-and-video-editors-and-camera-operators",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Film and Video Editors and Camera Operators",
     "tagline": "Manipulate moving images that entertain or inform an audience.",
     "desc": "Camera operators capture a wide range of material for television, movies, and other media. Editors arrange footage shot by camera operators and collaborate with producers and directors to create the final content.",
@@ -26604,7 +26604,7 @@ window.CAREERS_ALL = [
     "id": "ooh-120-financial-analysts",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Financial Analysts",
     "tagline": "Research and evaluate financial data, forecast future trends, and prepare reports containing recommendations for businesses and investors.",
     "desc": "Research and recommend investments; Evaluate current and historical financial data; Study economic and business trends.",
@@ -26755,7 +26755,7 @@ window.CAREERS_ALL = [
     "id": "ooh-121-financial-clerks",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Financial Clerks",
     "tagline": "Do administrative work, help customers, and carry out transactions that involve money.",
     "desc": "They keep records, help customers, and carry out transactions that involve money.",
@@ -26957,7 +26957,7 @@ window.CAREERS_ALL = [
     "id": "ooh-122-financial-examiners",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Financial Examiners",
     "tagline": "Ensure compliance with laws that govern institutions handling monetary transactions.",
     "desc": "They review balance sheets, evaluate the risk level of loans, and assess bank management.",
@@ -27108,7 +27108,7 @@ window.CAREERS_ALL = [
     "id": "ooh-123-financial-managers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Financial Managers",
     "tagline": "Create financial reports, direct investment activities, and develop plans for the long-term financial goals of their organization.",
     "desc": "They create financial reports, direct investment activities, and develop plans for the long-term financial goals of their organization.",
@@ -27265,7 +27265,7 @@ window.CAREERS_ALL = [
     "id": "ooh-124-firefighters",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "🚒",
+    "icon": "chart",
     "title": "Firefighters",
     "tagline": "Respond to structural fires, medical emergencies, and hazardous material crises.",
     "desc": "Respond to emergencies; Drive firetrucks and other emergency vehicles; Put out fires using water hoses, fire extinguishers, and water pumps.",
@@ -27418,7 +27418,7 @@ window.CAREERS_ALL = [
     "id": "ooh-125-fire-inspectors",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "⚖️",
+    "icon": "scale",
     "title": "Fire Inspectors",
     "tagline": "Detect fire hazards, recommend prevention measures, ensure compliance with state and local fire regulations, and investigate causes of fires.",
     "desc": "Search buildings for fire hazards; Review building blueprints with developers; Ensure that existing buildings and designs comply with fire codes.",
@@ -27589,7 +27589,7 @@ window.CAREERS_ALL = [
     "id": "ooh-126-fishing-and-hunting-workers",
     "cat": "eco",
     "catName": "Sustainability & Energy",
-    "icon": "🌿",
+    "icon": "leaf",
     "title": "Fishing and Hunting Workers",
     "tagline": "Catch and trap various types of animal life.",
     "desc": "The fish and wild animals they catch are for human food, animal feed, bait, and other uses.",
@@ -27754,7 +27754,7 @@ window.CAREERS_ALL = [
     "id": "ooh-127-fitness-trainers-and-instructors",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🤝",
+    "icon": "users",
     "title": "Fitness Trainers and Instructors",
     "tagline": "Lead, instruct, and motivate individuals or groups in exercise activities.",
     "desc": "Fitness trainers and instructors lead, instruct, and motivate individuals or groups in exercise activities, including cardiovascular workouts (for the heart and blood circulation), strength training, and stretching. They work with people of all ages and skill levels.",
@@ -27919,7 +27919,7 @@ window.CAREERS_ALL = [
     "id": "ooh-128-flight-attendants",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "✈️",
+    "icon": "plane",
     "title": "Flight Attendants",
     "tagline": "Provide routine services and respond to emergencies to ensure the safety and comfort of airline passengers.",
     "desc": "Participate in preflight briefings with pilots to discuss cabin conditions and flight details; Conduct preflight inspections of emergency equipment; Demonstrate the location and use of safety equipment and emergency equipment.",
@@ -28072,7 +28072,7 @@ window.CAREERS_ALL = [
     "id": "ooh-129-flooring-installers-and-tile-and-stone-setters",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Flooring Installers and Tile and Stone Setters",
     "tagline": "Lay and finish carpet, wood, vinyl, tile, and other materials.",
     "desc": "Remove existing materials from floors, walls, or other surfaces; Clean and level the surface to be covered; Measure the area and cut material to fit.",
@@ -28248,7 +28248,7 @@ window.CAREERS_ALL = [
     "id": "ooh-130-floral-designers",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Floral Designers",
     "tagline": "Arrange live, dried, and silk flowers and greenery to make decorative displays.",
     "desc": "They also help customers select flowers and containers, ribbons, and other accessories.",
@@ -28400,7 +28400,7 @@ window.CAREERS_ALL = [
     "id": "ooh-131-food-and-beverage-serving-and-related-workers",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🤝",
+    "icon": "users",
     "title": "Food and Beverage Serving and Related Workers",
     "tagline": "Take and prepare orders, clear tables, and do other tasks associated with providing food and drink to customers.",
     "desc": "Greet customers and answer their questions about menu items and specials; Take food and drink orders from customers; Prepare food and drink orders, such as sandwiches and coffee.",
@@ -28579,7 +28579,7 @@ window.CAREERS_ALL = [
     "id": "ooh-132-food-preparation-workers",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🍳",
+    "icon": "users",
     "title": "Food Preparation Workers",
     "tagline": "Chop vegetables, slice deli meats, prepare cold dressings, and support kitchen inventory.",
     "desc": "Their duties include preparing cold foods, slicing meat, peeling and cutting vegetables, brewing coffee or tea, and doing many other food service tasks.",
@@ -28726,7 +28726,7 @@ window.CAREERS_ALL = [
     "id": "ooh-133-food-processing-equipment-workers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Food Processing Equipment Workers",
     "tagline": "Operate machinery that mixes, cooks, or processes ingredients for manufacturing food products.",
     "desc": "Set up, start, or load food processing equipment; Check, weigh, and mix ingredients according to recipes; Set and control temperatures, flow rates, and pressures of machinery.",
@@ -28906,7 +28906,7 @@ window.CAREERS_ALL = [
     "id": "ooh-134-food-service-managers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Food Service Managers",
     "tagline": "Are responsible for the daily operation of restaurants or other establishments that prepare and serve food and beverages.",
     "desc": "They direct staff to ensure that customers are satisfied with their dining experience, and they manage the business to ensure that it runs efficiently.",
@@ -29059,7 +29059,7 @@ window.CAREERS_ALL = [
     "id": "ooh-135-forensic-science-technicians",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Forensic Science Technicians",
     "tagline": "Aid criminal investigations by collecting and analyzing evidence.",
     "desc": "Technicians often specialize in either crime scene or laboratory analysis.",
@@ -29214,7 +29214,7 @@ window.CAREERS_ALL = [
     "id": "ooh-136-forest-and-conservation-workers",
     "cat": "eco",
     "catName": "Sustainability & Energy",
-    "icon": "🌿",
+    "icon": "leaf",
     "title": "Forest and Conservation Workers",
     "tagline": "Perform physical labor to improve the quality of natural areas such as forests, rangelands, and wetlands.",
     "desc": "Under the supervision of conservation scientists and foresters, they develop, maintain, and protect forests.",
@@ -29379,7 +29379,7 @@ window.CAREERS_ALL = [
     "id": "ooh-137-fundraisers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Fundraisers",
     "tagline": "Organize activities to raise money and other kinds of donations for an organization.",
     "desc": "They also may design promotional materials and increase awareness of an organization's work, goals, and financial needs.",
@@ -29524,7 +29524,7 @@ window.CAREERS_ALL = [
     "id": "ooh-138-funeral-service-workers",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🤝",
+    "icon": "users",
     "title": "Funeral Service Workers",
     "tagline": "Organize and manage the details of a ceremony honoring a deceased person.",
     "desc": "Offer counsel and comfort to families and friends of the deceased; Provide information on funeral service options; Arrange for removal of the deceased's body.",
@@ -29674,7 +29674,7 @@ window.CAREERS_ALL = [
     "id": "ooh-139-gambling-services-workers",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🤝",
+    "icon": "users",
     "title": "Gambling Services Workers",
     "tagline": "Serve customers in gambling establishments, such as casinos or racetracks.",
     "desc": "Some workers tend slot machines or deal cards. Others take bets or pay out winnings. Still others supervise or manage gambling workers and operations.",
@@ -29872,7 +29872,7 @@ window.CAREERS_ALL = [
     "id": "ooh-140-general-maintenance-and-repair-workers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "General Maintenance and Repair Workers",
     "tagline": "Fix and maintain machines, mechanical equipment, and buildings.",
     "desc": "They paint, repair flooring, and work on plumbing, electrical, and air-conditioning and heating systems.",
@@ -30024,7 +30024,7 @@ window.CAREERS_ALL = [
     "id": "ooh-141-general-office-clerks",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "General Office Clerks",
     "tagline": "Perform a variety of clerical tasks, including answering telephones, typing documents, and filing records.",
     "desc": "Answer telephone calls, take messages, and respond to emails; Sort and deliver incoming mail and send outgoing mail; Schedule appointments and receive customers or visitors.",
@@ -30181,7 +30181,7 @@ window.CAREERS_ALL = [
     "id": "ooh-142-genetic-counselors",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Genetic Counselors",
     "tagline": "Assess clients&apos; risk for a variety of inherited conditions, such as birth defects.",
     "desc": "They review genetic test results with individuals and families and support them in making decisions based on those results. They also offer information to other healthcare providers.",
@@ -30328,7 +30328,7 @@ window.CAREERS_ALL = [
     "id": "ooh-143-geographers",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Geographers",
     "tagline": "Study the Earth and the distribution of its land, features, and inhabitants.",
     "desc": "They research the interactions between the physical aspects of a region and the human activities within it.",
@@ -30478,7 +30478,7 @@ window.CAREERS_ALL = [
     "id": "ooh-144-geological-and-hydrologic-technicians",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Geological and Hydrologic Technicians",
     "tagline": "Support scientists and engineers in exploring, extracting, and monitoring natural resources.",
     "desc": "Install and maintain laboratory and field equipment; Gather samples in the field, such as mud and water, and prepare them for analysis in the laboratory; Conduct scientific tests on samples to determine their content and characteristics.",
@@ -30636,7 +30636,7 @@ window.CAREERS_ALL = [
     "id": "ooh-145-geoscientists",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Geoscientists",
     "tagline": "Study the physical aspects of the Earth.",
     "desc": "Plan and carry out field studies, in which they visit locations to collect samples and conduct surveys; Analyze aerial photographs, rock samples, and other data sources to locate deposits of natural resources and estimate their size; Conduct laboratory tests on samples collected in the field.",
@@ -30804,7 +30804,7 @@ window.CAREERS_ALL = [
     "id": "ooh-146-glaziers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Glaziers",
     "tagline": "Install glass in windows, skylights, and other fixtures in buildings.",
     "desc": "Follow blueprints and specifications; Remove any existing glass before installing replacement glass; Cut glass to the specified size and shape.",
@@ -30956,7 +30956,7 @@ window.CAREERS_ALL = [
     "id": "ooh-147-graphic-designers",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Graphic Designers",
     "tagline": "Create visual concepts, using computer software or by hand, to communicate ideas that inspire, inform, and captivate consumers.",
     "desc": "They develop the overall layout and production design for applications such as advertisements, brochures, magazines, and reports.",
@@ -31100,7 +31100,7 @@ window.CAREERS_ALL = [
     "id": "ooh-148-grounds-maintenance-workers",
     "cat": "eco",
     "catName": "Sustainability & Energy",
-    "icon": "🌿",
+    "icon": "leaf",
     "title": "Grounds Maintenance Workers",
     "tagline": "Install and maintain landscapes, prune trees or shrubs, and do other tasks to ensure that vegetation is attractive, orderly, and safe.",
     "desc": "Mow, edge, and fertilize lawns; Weed and mulch landscape beds; Trim hedges, shrubs, and small trees.",
@@ -31278,7 +31278,7 @@ window.CAREERS_ALL = [
     "id": "ooh-149-hand-laborers-and-material-movers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Hand Laborers and Material Movers",
     "tagline": "Manually move freight, stock, or other materials.",
     "desc": "Some of these workers feed or remove material to or from machines, clean vehicles, pick up unwanted household goods, and pack materials for moving.",
@@ -31486,7 +31486,7 @@ window.CAREERS_ALL = [
     "id": "ooh-150-hazardous-materials-removal-workers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Hazardous Materials Removal Workers",
     "tagline": "Identify and dispose of harmful substances such as asbestos, lead, and radioactive waste.",
     "desc": "They also neutralize and clean up materials that are flammable, corrosive, or toxic.",
@@ -31637,7 +31637,7 @@ window.CAREERS_ALL = [
     "id": "ooh-151-health-and-safety-engineers",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Health and Safety Engineers",
     "tagline": "Apply their knowledge of industrial processes, mechanics, psychology, and other disciplines to promote worksite or product safety.",
     "desc": "Apply knowledge of current policies, regulations, and industrial processes related to health and safety; Review plans for new machinery and equipment to make sure that they meet safety requirements; Inspect facilities, machinery, safety equipment, or products to identify and recommend corrective action for potential hazards.",
@@ -31788,7 +31788,7 @@ window.CAREERS_ALL = [
     "id": "ooh-152-health-education-specialists",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🤝",
+    "icon": "users",
     "title": "Health Education Specialists",
     "tagline": "Develop programs to teach people about conditions affecting well-being.",
     "desc": "They develop strategies to improve the well-being of individuals and communities.",
@@ -31938,7 +31938,7 @@ window.CAREERS_ALL = [
     "id": "ooh-153-health-information-technologists-and-medical-registrars",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Health Information Technologists and Medical Registrars",
     "tagline": "Advise organizations on computerized healthcare systems and analyze clinical data.",
     "desc": "Help to determine requirements for computerized healthcare systems; Evaluate and support implementation of health information systems; Organize and update information in clinical databases or registries.",
@@ -32088,7 +32088,7 @@ window.CAREERS_ALL = [
     "id": "ooh-154-heating-air-conditioning-and-refrigeration-mechanics-and-installers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Heating, Air Conditioning, and Refrigeration Mechanics and Installers",
     "tagline": "Work on heating, ventilation, cooling, and refrigeration systems.",
     "desc": "Install, maintain, and repair HVACR systems; Install electrical components and wiring; Inspect and test HVACR systems and components.",
@@ -32241,7 +32241,7 @@ window.CAREERS_ALL = [
     "id": "ooh-155-heavy-and-tractor-trailer-truck-drivers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🚛",
+    "icon": "ai",
     "title": "Heavy and Tractor-trailer Truck Drivers",
     "tagline": "Haul freight across interstate highways and industrial distribution corridors.",
     "desc": "Most tractor-trailer drivers are long-haul drivers and operate trucks with a total weight exceeding 26,000 pounds for the vehicle, passengers, and cargo. These drivers deliver goods over intercity routes that sometimes span several states.",
@@ -32400,7 +32400,7 @@ window.CAREERS_ALL = [
     "id": "ooh-156-heavy-vehicle-and-mobile-equipment-service-technicians",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Heavy Vehicle and Mobile Equipment Service Technicians",
     "tagline": "Inspect, maintain, and repair vehicles and machinery used in construction, farming, and other industries.",
     "desc": "Consult equipment operating manuals, blueprints, and drawings; Perform scheduled maintenance, such as cleaning and lubricating parts; Diagnose and identify malfunctions, using computerized tools and equipment.",
@@ -32569,7 +32569,7 @@ window.CAREERS_ALL = [
     "id": "ooh-157-high-school-teachers",
     "cat": "edu",
     "catName": "Education & Academia",
-    "icon": "🎓",
+    "icon": "grad",
     "title": "High School Teachers",
     "tagline": "Teach academic lessons and various skills that students will need to attend college and to enter the job market.",
     "desc": "They teach academic lessons and various skills that students will need to attend college or to enter the job market.",
@@ -32724,7 +32724,7 @@ window.CAREERS_ALL = [
     "id": "ooh-158-historians",
     "cat": "edu",
     "catName": "Education & Academia",
-    "icon": "📜",
+    "icon": "grad",
     "title": "Historians",
     "tagline": "Research, analyze, and interpret past human events through archival records and artifacts.",
     "desc": "Gather historical data from various sources, including archives, books, and newspapers; Analyze and interpret historical information to determine its authenticity and significance; Engage with the public through educational programs and presentations.",
@@ -32868,7 +32868,7 @@ window.CAREERS_ALL = [
     "id": "ooh-159-home-health-and-personal-care-aides",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Home Health and Personal Care Aides",
     "tagline": "Assist elderly and disabled individuals with daily living activities in their own homes.",
     "desc": "They often help older adults who need assistance. Under the direction of a nurse or other healthcare practitioner, home health aides may be allowed to give a client medication or to check the client's vital signs.",
@@ -33030,7 +33030,7 @@ window.CAREERS_ALL = [
     "id": "ooh-160-human-resources-managers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Human Resources Managers",
     "tagline": "Plan, coordinate, and direct the administrative functions of an organization.",
     "desc": "They oversee the recruiting, interviewing, and hiring of new staff; consult with top executives on strategic planning; and serve as a link between an organization's management and its employees.",
@@ -33182,7 +33182,7 @@ window.CAREERS_ALL = [
     "id": "ooh-161-human-resources-specialists",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Human Resources Specialists",
     "tagline": "Recruit, screen, and interview job applicants and place newly hired workers in jobs.",
     "desc": "They also may handle compensation and benefits, training, and employee relations.",
@@ -33343,7 +33343,7 @@ window.CAREERS_ALL = [
     "id": "ooh-162-hydrologists",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Hydrologists",
     "tagline": "Study water and how it moves across and through the Earth’s crust.",
     "desc": "They research the distribution, circulation, and physical properties of surface water and groundwater. They also study the form and intensity of precipitation and its rate of evaporation into the atmosphere, infiltration into soil, or return to the ocean.",
@@ -33486,7 +33486,7 @@ window.CAREERS_ALL = [
     "id": "ooh-163-industrial-designers",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Industrial Designers",
     "tagline": "Combine art, business, and engineering to develop the concepts for manufactured products.",
     "desc": "They combine art, business, and engineering to make products that people use every day. Industrial designers consider the function, aesthetics, production costs, and usability of products when developing new product concepts.",
@@ -33646,7 +33646,7 @@ window.CAREERS_ALL = [
     "id": "ooh-164-industrial-engineering-technologists-and-technicians",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Industrial Engineering Technologists and Technicians",
     "tagline": "Help engineers solve problems affecting manufacturing layout or production.",
     "desc": "They prepare machinery and equipment plans, design workflows, conduct statistical production studies, and analyze production costs.",
@@ -33797,7 +33797,7 @@ window.CAREERS_ALL = [
     "id": "ooh-165-industrial-engineers",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Industrial Engineers",
     "tagline": "Design, develop, and test integrated systems for managing industrial production processes.",
     "desc": "They assess workers, quality control, logistics, and other factors involved in coordinating production.",
@@ -33943,7 +33943,7 @@ window.CAREERS_ALL = [
     "id": "ooh-166-industrial-machinery-mechanics-machinery-maintenance-workers-and-millwrights",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Industrial Machinery Mechanics, Machinery Maintenance Workers, and Millwrights",
     "tagline": "Install, maintain, and repair factory equipment and other industrial machinery.",
     "desc": "Millwrights install, dismantle, repair, reassemble, and move machinery in factories, power plants, and construction sites.",
@@ -34099,7 +34099,7 @@ window.CAREERS_ALL = [
     "id": "ooh-167-industrial-production-managers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Industrial Production Managers",
     "tagline": "Oversee the operations of manufacturing and related plants.",
     "desc": "They coordinate, plan, and direct activities involved in creating a range of goods, such as cars, computer equipment, and paper products.",
@@ -34253,7 +34253,7 @@ window.CAREERS_ALL = [
     "id": "ooh-168-information-clerks",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Information Clerks",
     "tagline": "Perform routine clerical duties, maintain records, collect data, and provide information to customers.",
     "desc": "Prepare routine reports, claims, bills, or orders; Collect and record data from customers, staff, and the public; Answer questions from customers and the public about products or services.",
@@ -34470,7 +34470,7 @@ window.CAREERS_ALL = [
     "id": "ooh-169-information-security-analysts",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "💻",
+    "icon": "code",
     "title": "Information Security Analysts",
     "tagline": "Plan and carry out security measures to protect an organization’s computer networks and systems.",
     "desc": "Monitor their organization's networks for security breaches and investigate when one occurs; Use and maintain software, such as firewalls and data encryption programs, to protect sensitive information; Check for vulnerabilities in computer and network systems.",
@@ -34623,7 +34623,7 @@ window.CAREERS_ALL = [
     "id": "ooh-170-instructional-coordinators",
     "cat": "edu",
     "catName": "Education & Academia",
-    "icon": "🎓",
+    "icon": "grad",
     "title": "Instructional Coordinators",
     "tagline": "Oversee school curriculums and teaching standards.",
     "desc": "They develop educational material, implement it with teachers and principals, and assess its effectiveness.",
@@ -34777,7 +34777,7 @@ window.CAREERS_ALL = [
     "id": "ooh-171-insulation-workers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Insulation Workers",
     "tagline": "Install and replace the materials used to insulate buildings or mechanical systems.",
     "desc": "Remove and dispose of old insulation; Review blueprints and specifications to determine the amount and type of insulation needed; Measure and cut insulation to fit into walls and around pipes.",
@@ -34934,7 +34934,7 @@ window.CAREERS_ALL = [
     "id": "ooh-172-insurance-sales-agents",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Insurance Sales Agents",
     "tagline": "Contact potential customers and sell one or more types of insurance.",
     "desc": "These agents explain various insurance policies and help clients choose the plans that suit them.",
@@ -35085,7 +35085,7 @@ window.CAREERS_ALL = [
     "id": "ooh-173-insurance-underwriters",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Insurance Underwriters",
     "tagline": "Evaluate insurance applications and decide whether to approve them.",
     "desc": "For approved applications, underwriters determine coverage amounts and premiums.",
@@ -35239,7 +35239,7 @@ window.CAREERS_ALL = [
     "id": "ooh-174-interior-designers",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Interior Designers",
     "tagline": "Make indoor spaces functional, safe, and beautiful by determining space requirements and selecting essential and decorative items.",
     "desc": "They must be able to draw, read, and edit blueprints. They also must be aware of building codes, inspection regulations, and other considerations, such as accessibility standards.",
@@ -35391,7 +35391,7 @@ window.CAREERS_ALL = [
     "id": "ooh-175-interpreters-and-translators",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Interpreters and Translators",
     "tagline": "Convert information from one language into another language.",
     "desc": "Interpreters work in spoken or sign language; translators work in written language.",
@@ -35541,7 +35541,7 @@ window.CAREERS_ALL = [
     "id": "ooh-176-ironworkers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Ironworkers",
     "tagline": "Install structural and reinforcing iron and steel to form and support buildings, bridges, and roads.",
     "desc": "Read and follow blueprints, sketches, and other instructions; Unload and stack prefabricated iron and steel so that it can be lifted with slings; Signal crane operators who lift and position structural and reinforcing iron and steel.",
@@ -35707,7 +35707,7 @@ window.CAREERS_ALL = [
     "id": "ooh-177-janitors-and-building-cleaners",
     "cat": "eco",
     "catName": "Sustainability & Energy",
-    "icon": "🌿",
+    "icon": "leaf",
     "title": "Janitors and Building Cleaners",
     "tagline": "Keep many types of buildings clean, sanitary, orderly, and in good condition.",
     "desc": "Gather and empty trash; Sweep, mop, or vacuum building floors; Clean restrooms and stock them with supplies.",
@@ -35868,7 +35868,7 @@ window.CAREERS_ALL = [
     "id": "ooh-178-jewelers-and-precious-stone-and-metal-workers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Jewelers and Precious Stone and Metal Workers",
     "tagline": "Design, construct, adjust, repair, appraise and sell jewelry and related products.",
     "desc": "Design and create jewelry from precious metals and stones; Examine, identify, and grade diamonds and other gems; Clean and polish jewelry.",
@@ -36032,7 +36032,7 @@ window.CAREERS_ALL = [
     "id": "ooh-179-judges-and-hearing-officers",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "⚖️",
+    "icon": "scale",
     "title": "Judges and Hearing Officers",
     "tagline": "Oversee legal matters in court or administrative proceedings.",
     "desc": "They may conduct pretrial hearings, guide negotiations between opposing parties, and issue legal decisions.",
@@ -36196,7 +36196,7 @@ window.CAREERS_ALL = [
     "id": "ooh-180-kindergarten-and-elementary-school-teachers",
     "cat": "edu",
     "catName": "Education & Academia",
-    "icon": "🎓",
+    "icon": "grad",
     "title": "Kindergarten and Elementary School Teachers",
     "tagline": "Instruct young students in basic subjects in order to prepare them for future schooling.",
     "desc": "Create lesson plans to teach students subjects, such as reading, science, and math; Teach students how to interact with others; Observe students to evaluate their abilities, strengths, and weaknesses.",
@@ -36351,7 +36351,7 @@ window.CAREERS_ALL = [
     "id": "ooh-181-labor-relations-specialists",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Labor Relations Specialists",
     "tagline": "Resolve employee-management disputes and negotiate labor contracts.",
     "desc": "They may offer input on issues such as wages and salaries, nonwage benefits, and union or management practices.",
@@ -36502,7 +36502,7 @@ window.CAREERS_ALL = [
     "id": "ooh-182-landscape-architects",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Landscape Architects",
     "tagline": "Design parks and other outdoor spaces.",
     "desc": "Meet with clients, engineers, and building architects to understand the requirements of a project; Prepare site plans, specifications, and cost estimates; Coordinate the arrangement of existing and proposed land features and structures.",
@@ -36650,7 +36650,7 @@ window.CAREERS_ALL = [
     "id": "ooh-183-lawyers",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "⚖️",
+    "icon": "scale",
     "title": "Lawyers",
     "tagline": "Advise and represent clients on legal proceedings or transactions.",
     "desc": "Advise and represent clients in criminal or civil proceedings and in other legal matters; Communicate with clients, colleagues, judges, and others involved in a case; Conduct research and analysis of legal issues.",
@@ -36828,7 +36828,7 @@ window.CAREERS_ALL = [
     "id": "ooh-184-librarians-and-library-media-specialists",
     "cat": "edu",
     "catName": "Education & Academia",
-    "icon": "🎓",
+    "icon": "grad",
     "title": "Librarians and Library Media Specialists",
     "tagline": "Help people find information and conduct research for personal and professional use.",
     "desc": "Their job duties may change based on the type of setting they work in, such as public, school, or medical libraries.",
@@ -37000,7 +37000,7 @@ window.CAREERS_ALL = [
     "id": "ooh-185-library-technicians-and-assistants",
     "cat": "edu",
     "catName": "Education & Academia",
-    "icon": "🎓",
+    "icon": "grad",
     "title": "Library Technicians and Assistants",
     "tagline": "Help librarians with all aspects of running a library.",
     "desc": "They assist patrons, organize library materials and information, and do clerical and administrative tasks.",
@@ -37162,7 +37162,7 @@ window.CAREERS_ALL = [
     "id": "ooh-186-licensed-practical-and-licensed-vocational-nurses",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Licensed Practical and Licensed Vocational Nurses",
     "tagline": "Practical nurses (LPNs) and licensed vocational nurses (LVNs) provide basic medical care..",
     "desc": "Responsibilities for LPNs and LVNs are nearly identical; their title depends on the state in which they work.",
@@ -37322,7 +37322,7 @@ window.CAREERS_ALL = [
     "id": "ooh-187-loan-officers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Loan Officers",
     "tagline": "Evaluate, authorize, or recommend approval of loan applications.",
     "desc": "Contact businesses or people to ask if they need a loan; Talk with loan applicants to gather information and answer questions; Explain to applicants the different types of loans and the terms of each type.",
@@ -37475,7 +37475,7 @@ window.CAREERS_ALL = [
     "id": "ooh-188-lodging-managers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Lodging Managers",
     "tagline": "Ensure that guests have a pleasant experience at an accommodations facility.",
     "desc": "Lodging managers also plan, direct, or coordinate activities to ensure that the facility is efficient and profitable.",
@@ -37627,7 +37627,7 @@ window.CAREERS_ALL = [
     "id": "ooh-189-logging-workers",
     "cat": "eco",
     "catName": "Sustainability & Energy",
-    "icon": "🌿",
+    "icon": "leaf",
     "title": "Logging Workers",
     "tagline": "Harvest trees to provide the raw material for many consumer goods and industrial products.",
     "desc": "Others inspect, grade, or estimate the market value of harvested trees, which provide the raw material for consumer and industrial products.",
@@ -37818,7 +37818,7 @@ window.CAREERS_ALL = [
     "id": "ooh-190-logisticians",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Logisticians",
     "tagline": "Analyze and coordinate an organization’s supply chain.",
     "desc": "They manage a product's entire life cycle, from design to disposal.",
@@ -37968,7 +37968,7 @@ window.CAREERS_ALL = [
     "id": "ooh-191-machinists-and-tool-and-die-makers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Machinists and Tool and Die Makers",
     "tagline": "Set up and operate equipment to produce precision metal parts, instruments, and tools.",
     "desc": "Read detailed drawings or files, such as blueprints, sketches, and those for computer-aided design (CAD) and computer-aided manufacturing (CAM); Set up, operate, and disassemble manual, automatic, and computer numerically controlled (CNC) machine tools; Align, secure, and adjust cutting tools and workpieces.",
@@ -38128,7 +38128,7 @@ window.CAREERS_ALL = [
     "id": "ooh-192-management-analysts",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Management Analysts",
     "tagline": "Recommend ways to improve an organization’s efficiency.",
     "desc": "They advise managers on how to make organizations more profitable through reduced costs and increased revenues.",
@@ -38284,7 +38284,7 @@ window.CAREERS_ALL = [
     "id": "ooh-193-manicurists-and-pedicurists",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🤝",
+    "icon": "users",
     "title": "Manicurists and Pedicurists",
     "tagline": "Clean, shape, and beautify fingernails and toenails.",
     "desc": "Discuss nail treatments and services available; Remove clients' nail polish, if any; Clean, trim, and file nails.",
@@ -38429,7 +38429,7 @@ window.CAREERS_ALL = [
     "id": "ooh-194-marine-engineers-and-naval-architects",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Marine Engineers and Naval Architects",
     "tagline": "Design, develop, and evaluate the operation of marine vessels, ship machinery, and related equipment.",
     "desc": "Study design proposals and specifications to establish basic characteristics of a marine vessel, such as its size, weight, and speed; Design ship hulls and superstructures, following standards for safety, efficiency and economy; Prepare system layouts and detailed drawings and schematics.",
@@ -38579,7 +38579,7 @@ window.CAREERS_ALL = [
     "id": "ooh-195-market-research-analysts",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Market Research Analysts",
     "tagline": "Study consumer preferences, business conditions, and other factors to assess potential sales of a product or service.",
     "desc": "They help companies understand what products people want, who will buy them, and at what price.",
@@ -38733,7 +38733,7 @@ window.CAREERS_ALL = [
     "id": "ooh-196-marriage-and-family-therapists",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🤝",
+    "icon": "users",
     "title": "Marriage and Family Therapists",
     "tagline": "Diagnose and treat cognitive, behavioral, or similar disorders in the context of couples and other relationships.",
     "desc": "Assess clients to identify their emotional, behavioral, and psychological needs; Ask questions that encourage clients to discuss their emotions and experiences; Help clients process their reactions and adjust to difficult changes that relate to marriage and family dynamics, such as divorce.",
@@ -38884,7 +38884,7 @@ window.CAREERS_ALL = [
     "id": "ooh-197-masonry-workers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Masonry Workers",
     "tagline": "Use bricks, concrete and concrete blocks, and natural and manmade stones to build structures.",
     "desc": "Read blueprints or drawings to calculate materials needed; Lay out patterns, forms, or foundations according to plans; Break or cut materials to required size.",
@@ -39069,7 +39069,7 @@ window.CAREERS_ALL = [
     "id": "ooh-198-massage-therapists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Massage Therapists",
     "tagline": "Treat clients by applying pressure to manipulate the body&apos soft tissues and joints.",
     "desc": "This treatment may help to relieve pain, heal injuries, relieve stress, and aid in the general wellness of clients.",
@@ -39232,7 +39232,7 @@ window.CAREERS_ALL = [
     "id": "ooh-199-material-moving-machine-operators",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Material Moving Machine Operators",
     "tagline": "Use equipment to transport objects.",
     "desc": "For example, some operators move goods around factories and storage areas or onto container ships. Others move construction materials around building sites.",
@@ -39410,7 +39410,7 @@ window.CAREERS_ALL = [
     "id": "ooh-200-material-recording-clerks",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Material Recording Clerks",
     "tagline": "Track product information in order to keep businesses and supply chains on schedule.",
     "desc": "They ensure proper scheduling, recordkeeping, and inventory control.",
@@ -39594,7 +39594,7 @@ window.CAREERS_ALL = [
     "id": "ooh-201-materials-engineers",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Materials Engineers",
     "tagline": "Develop, process, and test materials used to create a wide range of products.",
     "desc": "They study the properties and structures of metals, polymers, and other substances to develop new materials. They also help select materials for specific products and identify ways to use existing materials.",
@@ -39747,7 +39747,7 @@ window.CAREERS_ALL = [
     "id": "ooh-202-mathematicians-and-statisticians",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "💻",
+    "icon": "code",
     "title": "Mathematicians and Statisticians",
     "tagline": "Analyze data and apply computational techniques to solve problems.",
     "desc": "Decide what data are needed to answer specific questions or problems; Apply mathematical theories and techniques to solve practical problems in business, engineering, the sciences, and other fields; Design surveys, experiments, or opinion polls to collect data.",
@@ -39915,7 +39915,7 @@ window.CAREERS_ALL = [
     "id": "ooh-203-meat-poultry-and-fish-processing-workers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Meat, Poultry, and Fish Processing Workers",
     "tagline": "Cut, trim, and prepare meat and seafood for wholesale and retail sale.",
     "desc": "Receive, inspect, and store meat and seafood; Cut and debone fish or whole animal carcasses and grind pieces of meat; Weigh and wrap meat, fish, or related products for display or shipment.",
@@ -40088,7 +40088,7 @@ window.CAREERS_ALL = [
     "id": "ooh-204-mechanical-engineering-technologists-and-technicians",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Mechanical Engineering Technologists and Technicians",
     "tagline": "Help mechanical engineers design, develop, test, and manufacture machines and other devices.",
     "desc": "They may make sketches and rough layouts, record and analyze data, and report their findings.",
@@ -40238,7 +40238,7 @@ window.CAREERS_ALL = [
     "id": "ooh-205-mechanical-engineers",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Mechanical Engineers",
     "tagline": "Design, develop, build, and test mechanical and thermal sensors and devices.",
     "desc": "Analyze problems to see how mechanical and thermal devices might help solve a particular problem; Design or redesign mechanical and thermal devices or subsystems, using analysis and computer-aided design; Investigate equipment failures or difficulties to diagnose faulty operation and to recommend remedies.",
@@ -40390,7 +40390,7 @@ window.CAREERS_ALL = [
     "id": "ooh-206-medical-and-health-services-managers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Medical and Health Services Managers",
     "tagline": "Plan, direct, and coordinate the business activities of healthcare providers.",
     "desc": "They may manage an entire facility, a specific clinical area or department, or a medical practice for a group of physicians. Medical and health services managers must adapt to changes in healthcare laws, regulations, and technology.",
@@ -40562,7 +40562,7 @@ window.CAREERS_ALL = [
     "id": "ooh-207-medical-assistants",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Medical Assistants",
     "tagline": "Complete administrative and clinical tasks, such as scheduling appointments and taking patients’ vital signs.",
     "desc": "Medical assistants complete administrative and clinical tasks, such as scheduling appointments and taking patients' vital signs. Their duties vary by location, specialty, and employer.",
@@ -40719,7 +40719,7 @@ window.CAREERS_ALL = [
     "id": "ooh-208-medical-dosimetrists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Medical Dosimetrists",
     "tagline": "Calculate doses of radiation and design and oversee treatment plans for patients with cancer and other serious diseases.",
     "desc": "Review a patient's documents, such as their CT and MRI scans; Calculate the proper dose of radiation to be administered to a patient; Consult with other members of the radiation oncology team and design the radiation-delivery plan for patients.",
@@ -40862,7 +40862,7 @@ window.CAREERS_ALL = [
     "id": "ooh-209-medical-equipment-repairers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Medical Equipment Repairers",
     "tagline": "Install, maintain, and repair patient care equipment.",
     "desc": "Install medical equipment; Test and calibrate parts and equipment; Repair and replace parts.",
@@ -41023,7 +41023,7 @@ window.CAREERS_ALL = [
     "id": "ooh-210-medical-records-specialists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Medical Records Specialists",
     "tagline": "Compile, process, and maintain patient files.",
     "desc": "They also may classify and enter patients' medical information into the healthcare industry's numerical coding system.",
@@ -41169,7 +41169,7 @@ window.CAREERS_ALL = [
     "id": "ooh-211-medical-scientists",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Medical Scientists",
     "tagline": "Conduct research aimed at improving overall human health.",
     "desc": "They often use clinical trials and other investigative methods to reach their findings.",
@@ -41327,7 +41327,7 @@ window.CAREERS_ALL = [
     "id": "ooh-212-medical-transcriptionists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Medical Transcriptionists",
     "tagline": "Use electronic devices to convert voice recordings from physicians and other healthcare workers into formal reports.",
     "desc": "Transcriptionists also may edit medical records for accuracy and return documents for review and approval.",
@@ -41480,7 +41480,7 @@ window.CAREERS_ALL = [
     "id": "ooh-213-meeting-convention-and-event-planners",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Meeting, Convention, and Event Planners",
     "tagline": "Arrange all aspects of events and professional gatherings.",
     "desc": "They arrange meeting locations, transportation, and other details.",
@@ -41644,7 +41644,7 @@ window.CAREERS_ALL = [
     "id": "ooh-214-metal-and-plastic-machine-workers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Metal and Plastic Machine Workers",
     "tagline": "Set up and operate machines that cut, shape, and form metal and plastic materials or pieces.",
     "desc": "Set up and adjust machines according to blueprints; Monitor machines status to ensure proper functioning; Insert material into machines, either manually or using material handling equipment.",
@@ -41901,7 +41901,7 @@ window.CAREERS_ALL = [
     "id": "ooh-215-microbiologists",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Microbiologists",
     "tagline": "Study microorganisms such as bacteria, viruses, algae, fungi, and some types of parasites.",
     "desc": "They investigate the growth, structure, and other characteristics of these organisms.",
@@ -42052,7 +42052,7 @@ window.CAREERS_ALL = [
     "id": "ooh-216-middle-school-teachers",
     "cat": "edu",
     "catName": "Education & Academia",
-    "icon": "🎓",
+    "icon": "grad",
     "title": "Middle School Teachers",
     "tagline": "Educate students, typically in sixth through eighth grades.",
     "desc": "Middle school teachers help students build on the fundamentals taught in elementary school and prepare students for high school.",
@@ -42198,7 +42198,7 @@ window.CAREERS_ALL = [
     "id": "ooh-217-military-careers",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "⚖️",
+    "icon": "scale",
     "title": "Military Careers",
     "tagline": "Members of the U.",
     "desc": "S. military service maintain the U. S. national defense. Although some service members work in occupations specific to the military, such as fighter pilots or infantrymen, many work in occupations that also exist in the civilian workplace, such as nurses, doctors, and lawyers.",
@@ -42382,7 +42382,7 @@ window.CAREERS_ALL = [
     "id": "ooh-218-mining-and-geological-engineers",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Mining and Geological Engineers",
     "tagline": "Use geological and engineering principles to design ways to safely and efficiently extract minerals and other resources.",
     "desc": "Design open-pit and underground mines; Supervise the construction of mine shafts and tunnels; Devise methods for transporting minerals to processing plants.",
@@ -42532,7 +42532,7 @@ window.CAREERS_ALL = [
     "id": "ooh-219-models",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Models",
     "tagline": "Pose for artists, photographers, and other clients to help advertise products.",
     "desc": "Models also work as a fit or fitting model, enabling the manufacturer or fashion designer to achieve the best fit for new styles.",
@@ -42687,7 +42687,7 @@ window.CAREERS_ALL = [
     "id": "ooh-220-music-directors-and-composers",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Music Directors and Composers",
     "tagline": "Directors lead musical groups during performances and recording sessions.",
     "desc": "Composers write and arrange music in a variety of musical styles.",
@@ -42846,7 +42846,7 @@ window.CAREERS_ALL = [
     "id": "ooh-221-musicians-and-singers",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Musicians and Singers",
     "tagline": "Play instruments or sing for live audiences and in recording studios.",
     "desc": "They perform a variety of genres, such as classical, jazz, and rock.",
@@ -43026,7 +43026,7 @@ window.CAREERS_ALL = [
     "id": "ooh-222-natural-sciences-managers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Natural Sciences Managers",
     "tagline": "Plan, supervise, or coordinate research and other activities in fields such as life sciences, physical sciences, mathematics, and statistics.",
     "desc": "They direct work related to research and development and coordinate activities such as testing, quality control, and production.",
@@ -43174,7 +43174,7 @@ window.CAREERS_ALL = [
     "id": "ooh-223-network-and-computer-systems-administrators",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "💻",
+    "icon": "code",
     "title": "Network and Computer Systems Administrators",
     "tagline": "Are responsible for the day-to-day operation of computer networks.",
     "desc": "Determine an organization's network and system needs and install operating and application hardware and software; Provide input on hardware or software for an organization's purchasing decisions; Make needed upgrades and repairs to networks and ensure that systems are operating correctly.",
@@ -43333,7 +43333,7 @@ window.CAREERS_ALL = [
     "id": "ooh-224-news-analysts-reporters-and-journalists",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "News Analysts, Reporters, and Journalists",
     "tagline": "Keep the public updated about current events and noteworthy information.",
     "desc": "They report international, national, and local news for newspapers, magazines, websites, television, and radio.",
@@ -43498,7 +43498,7 @@ window.CAREERS_ALL = [
     "id": "ooh-225-nuclear-engineers",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Nuclear Engineers",
     "tagline": "Research and develop projects or address problems concerning the release, control, and use of nuclear energy and nuclear waste disposal.",
     "desc": "Some of these engineers research new reactor designs. Others may specialize in the development of safety regulations related to the handling of nuclear materials or operation of nuclear power.",
@@ -43651,7 +43651,7 @@ window.CAREERS_ALL = [
     "id": "ooh-226-nuclear-medicine-technologists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Nuclear Medicine Technologists",
     "tagline": "Prepare and administer radioactive drugs for imaging or treatment.",
     "desc": "They provide technical support to physicians or others who diagnose, care for, and treat patients and to researchers who investigate uses of radioactive drugs. They also may act as emergency responders in the event of a nuclear disaster.",
@@ -43802,7 +43802,7 @@ window.CAREERS_ALL = [
     "id": "ooh-227-nuclear-technicians",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Nuclear Technicians",
     "tagline": "Assist physicists, engineers, and other scientists in nuclear power generation and production activities, such as operating or maintaining nuclear testing equipment.",
     "desc": "They may operate, maintain, or provide quality control for nuclear testing and research equipment and monitor radiation levels.",
@@ -43946,7 +43946,7 @@ window.CAREERS_ALL = [
     "id": "ooh-228-nurse-anesthetists-nurse-midwives-and-nurse-practitioners",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Nurse Anesthetists, Nurse Midwives, and Nurse Practitioners",
     "tagline": "Coordinate patient care and may provide primary and specialty healthcare.",
     "desc": "Nurse anesthetists, nurse midwives, and nurse practitioners, also referred to as advanced practice registered nurses (APRNs), coordinate patient care and may provide primary and specialty healthcare. The scope of practice varies from state to state.",
@@ -44117,7 +44117,7 @@ window.CAREERS_ALL = [
     "id": "ooh-229-nursing-assistants-and-orderlies",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Nursing Assistants and Orderlies",
     "tagline": "Provide basic bedside nursing care, transport hospital patients, and measure vital signs.",
     "desc": "Nursing assistants, sometimes called nursing aides, provide basic care and help patients with activities of daily living. Orderlies transport patients and clean treatment areas.",
@@ -44295,7 +44295,7 @@ window.CAREERS_ALL = [
     "id": "ooh-230-occupational-health-and-safety-specialists-and-technicians",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Occupational Health and Safety Specialists and Technicians",
     "tagline": "Collect data on, analyze, and design improvements to work environments and procedures.",
     "desc": "Specialists inspect workplaces and enforce adherence to regulations on safety, health, and the environment. Technicians work with specialists to implement and evaluate programs aimed at mitigating risks to workers, property, the environment, and the public.",
@@ -44465,7 +44465,7 @@ window.CAREERS_ALL = [
     "id": "ooh-231-occupational-therapists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Occupational Therapists",
     "tagline": "Evaluate and treat people who have injuries, illnesses, or disabilities to help them with vocational, daily living, and other skills that promote independence.",
     "desc": "They help clients meet goals to develop, recover, improve, and maintain skills needed for daily living and working.",
@@ -44618,7 +44618,7 @@ window.CAREERS_ALL = [
     "id": "ooh-232-occupational-therapy-assistants-and-aides",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Occupational Therapy Assistants and Aides",
     "tagline": "Help occupational therapists provide treatments and procedures to clients, or they do routine tasks such as preparing treatment rooms.",
     "desc": "Occupational therapy aides do select or routine tasks, such as preparing treatment rooms, under the direction of occupational therapists or occupational therapy assistants.",
@@ -44787,7 +44787,7 @@ window.CAREERS_ALL = [
     "id": "ooh-233-oil-and-gas-workers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Oil and Gas Workers",
     "tagline": "Assemble, operate, and maintain equipment used for oil and gas exploration, extraction, and related activities.",
     "desc": "Set up or operate equipment, such as drills and pumps, used in oil and gas exploration and extraction; Coordinate rig movement and processes with crew members; Maintain equipment, including inspecting for defects or safety concerns.",
@@ -44957,7 +44957,7 @@ window.CAREERS_ALL = [
     "id": "ooh-234-operations-research-analysts",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "💻",
+    "icon": "code",
     "title": "Operations Research Analysts",
     "tagline": "Use mathematics and logic to help solve complex issues.",
     "desc": "Identify problems in areas such as business, logistics, healthcare, or other fields; Collect and organize information from a variety of sources, such as databases, sales histories, and customer feedback; Gather input from workers or subject-matter experts.",
@@ -45106,7 +45106,7 @@ window.CAREERS_ALL = [
     "id": "ooh-235-opticians",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Opticians",
     "tagline": "Help fit eyeglasses and contact lenses, following prescriptions from ophthalmologists and optometrists.",
     "desc": "Receive customers' prescriptions for eyeglasses or contact lenses; Measure customers' eyes and faces, such as the distance between their pupils; Help customers choose eyeglass frames and lens treatments that best fit their vision needs and lifestyle.",
@@ -45262,7 +45262,7 @@ window.CAREERS_ALL = [
     "id": "ooh-236-optometrists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Optometrists",
     "tagline": "Diagnose, manage, and treat conditions and diseases of the human eye and visual system, including examining eyes and prescribing corrective lenses.",
     "desc": "Perform vision tests and analyze results; Diagnose vision problems, such as nearsightedness or farsightedness, and eye diseases, such as glaucoma; Prescribe eyeglasses, contact lenses, and other visual aids.",
@@ -45411,7 +45411,7 @@ window.CAREERS_ALL = [
     "id": "ooh-237-orthotists-and-prosthetists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Orthotists and Prosthetists",
     "tagline": "Measure, design, fit, and adapt medical devices, such as supportive braces and artificial limbs, for patients who have disabling conditions.",
     "desc": "These devices include artificial limbs and orthopedic braces.",
@@ -45564,7 +45564,7 @@ window.CAREERS_ALL = [
     "id": "ooh-238-painters-construction-and-maintenance",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Painters, Construction and Maintenance",
     "tagline": "Painters apply paint, stain, and coatings to walls and ceilings, buildings, large machinery and equipment, and bridges and other structures.",
     "desc": "Protect floors, furniture, and trim by covering surfaces with drop cloths and tarps and securing with tape; Install scaffolding and raise ladders; Fill holes and cracks with putty or plaster.",
@@ -45721,7 +45721,7 @@ window.CAREERS_ALL = [
     "id": "ooh-239-painting-and-coating-workers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Painting and Coating Workers",
     "tagline": "Apply finishes, often using machines, to a range of products.",
     "desc": "Set up and operate machines that paint or coat products; Select the paint or coating needed for the job; Clean and prepare products to be painted or coated.",
@@ -45885,7 +45885,7 @@ window.CAREERS_ALL = [
     "id": "ooh-240-paralegals-and-legal-assistants",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "⚖️",
+    "icon": "scale",
     "title": "Paralegals and Legal Assistants",
     "tagline": "Perform a variety of tasks to support lawyers.",
     "desc": "Investigate and gather the facts of a case; Research laws, regulations, and legal articles that are relevant to a case; Gather, organize, and maintain legal documents.",
@@ -46041,7 +46041,7 @@ window.CAREERS_ALL = [
     "id": "ooh-241-personal-financial-advisors",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Personal Financial Advisors",
     "tagline": "Provide advice to help individuals manage their money and plan for their financial future.",
     "desc": "Meet with clients to discuss their financial goals; Explain to potential clients the types of financial services they provide; Educate clients and answer questions about investment options and potential risks.",
@@ -46195,7 +46195,7 @@ window.CAREERS_ALL = [
     "id": "ooh-242-pest-control-workers",
     "cat": "eco",
     "catName": "Sustainability & Energy",
-    "icon": "🌿",
+    "icon": "leaf",
     "title": "Pest Control Workers",
     "tagline": "Remove insects, rodents, and other pests that infest buildings and surrounding areas.",
     "desc": "Inspect buildings and premises for signs of pests or infestation; Determine the type of treatment needed to eliminate pests; Measure the dimensions of the area needing treatment.",
@@ -46353,7 +46353,7 @@ window.CAREERS_ALL = [
     "id": "ooh-243-petroleum-engineers",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Petroleum Engineers",
     "tagline": "Devise methods to improve oil and gas extraction and production.",
     "desc": "Petroleum engineers devise methods to improve oil and gas extraction and production. They also oversee drilling and offer technical advice.",
@@ -46500,7 +46500,7 @@ window.CAREERS_ALL = [
     "id": "ooh-244-pharmacists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Pharmacists",
     "tagline": "Dispense prescription medications and provide information to patients about the drugs and their use.",
     "desc": "They also advise physicians and other healthcare workers on the selection, dosage, interactions, and side effects of medications to treat health problems. They may help patients with their overall health through activities such as providing immunizations.",
@@ -46650,7 +46650,7 @@ window.CAREERS_ALL = [
     "id": "ooh-245-pharmacy-technicians",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Pharmacy Technicians",
     "tagline": "Help pharmacists dispense prescription medication to patients or health professionals.",
     "desc": "Collect information needed to fill a prescription from patients or health professionals; Measure amounts of medication for prescriptions; Package and label prescriptions.",
@@ -46810,7 +46810,7 @@ window.CAREERS_ALL = [
     "id": "ooh-246-phlebotomists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Phlebotomists",
     "tagline": "Draw blood for tests, transfusions, research, or blood donations.",
     "desc": "They help patients or donors who are anxious before or have an adverse reaction after the blood draw.",
@@ -46956,7 +46956,7 @@ window.CAREERS_ALL = [
     "id": "ooh-247-photographers",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Photographers",
     "tagline": "Use their technical expertise and creativity to produce and preserve images of people, landscapes, merchandise, or other subjects.",
     "desc": "Market or advertise services to attract clients; Analyze and plan the composition of photographs; Use various photographic techniques and lighting equipment.",
@@ -47114,7 +47114,7 @@ window.CAREERS_ALL = [
     "id": "ooh-248-physical-therapist-assistants-and-aides",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Physical Therapist Assistants and Aides",
     "tagline": "Work under the direction and supervision of physical therapists.",
     "desc": "They help patients who are recovering from injuries and illnesses to regain movement and manage pain.",
@@ -47283,7 +47283,7 @@ window.CAREERS_ALL = [
     "id": "ooh-249-physical-therapists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Physical Therapists",
     "tagline": "Help injured or ill people improve movement and manage pain.",
     "desc": "They are often an important part of preventive care, rehabilitation, and treatment for patients with chronic conditions, illnesses, or injuries.",
@@ -47437,7 +47437,7 @@ window.CAREERS_ALL = [
     "id": "ooh-250-physician-assistants",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Physician Assistants",
     "tagline": "Examine, diagnose, and treat patients under the supervision of a physician.",
     "desc": "Obtain and review patients' medical histories; Examine patients; Order and interpret diagnostic tests, such as x rays or blood tests.",
@@ -47589,7 +47589,7 @@ window.CAREERS_ALL = [
     "id": "ooh-251-physicians-and-surgeons",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Physicians and Surgeons",
     "tagline": "Diagnose and treat injuries or illnesses and address health maintenance.",
     "desc": "Physicians examine patients; take medical histories; prescribe medications; and order, perform, and interpret diagnostic tests. They often counsel patients on diet, hygiene, and preventive healthcare.",
@@ -47822,7 +47822,7 @@ window.CAREERS_ALL = [
     "id": "ooh-252-physicists-and-astronomers",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Physicists and Astronomers",
     "tagline": "Study the interactions of matter and energy.",
     "desc": "Theoretical physicists and astronomers may study the nature of time or the origin of the universe. Some physicists design and perform experiments with sophisticated equipment such as particle accelerators, electron microscopes, and lasers.",
@@ -47993,7 +47993,7 @@ window.CAREERS_ALL = [
     "id": "ooh-253-plumbers-pipefitters-and-steamfitters",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Plumbers, Pipefitters, and Steamfitters",
     "tagline": "Install and repair piping fixtures and systems.",
     "desc": "Prepare cost estimates for clients; Read blueprints and follow state and local building codes; Determine the materials and equipment needed for a job.",
@@ -48153,7 +48153,7 @@ window.CAREERS_ALL = [
     "id": "ooh-254-podiatrists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Podiatrists",
     "tagline": "Provide medical and surgical care for people with foot, ankle, and lower leg problems.",
     "desc": "Diagnose and assess patients' conditions by reviewing medical histories, performing physical exams, and reviewing x rays and medical laboratory tests; Provide nonsurgical treatment for foot, ankle, and lower leg ailments, such as prescribing special shoe inserts (orthotics) to improve a patient's mobility; Perform foot and ankle surgeries, such as removing bone spurs, repairing fractures, and correcting other foot and ankle problems.",
@@ -48306,7 +48306,7 @@ window.CAREERS_ALL = [
     "id": "ooh-255-police-and-detectives",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "👮",
+    "icon": "scale",
     "title": "Police and Detectives",
     "tagline": "Protect communities, enforce criminal statutes, investigate crimes, and maintain order.",
     "desc": "Detectives and criminal investigators, who are sometimes called agents or special agents, gather facts and collect evidence of crimes.",
@@ -48496,7 +48496,7 @@ window.CAREERS_ALL = [
     "id": "ooh-256-political-scientists",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "🏛️",
+    "icon": "landmark",
     "title": "Political Scientists",
     "tagline": "Examine political systems, election trends, public policies, and international relations.",
     "desc": "They may research topics such as public opinion, political decision-making, and ideology. They also may analyze the structure of governments and political entities.",
@@ -48646,7 +48646,7 @@ window.CAREERS_ALL = [
     "id": "ooh-257-postal-service-workers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Postal Service Workers",
     "tagline": "Sell postal products and collect, sort, and deliver mail.",
     "desc": "Collect letters and parcels; Sort incoming letters and parcels; Sell stamps and other postal products.",
@@ -48813,7 +48813,7 @@ window.CAREERS_ALL = [
     "id": "ooh-258-postsecondary-education-administrators",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Postsecondary Education Administrators",
     "tagline": "Oversee student services, academics, and faculty research at colleges and universities.",
     "desc": "Their job duties vary depending on the department in which they work, such as admissions, student affairs, or the registrar's office.",
@@ -48965,7 +48965,7 @@ window.CAREERS_ALL = [
     "id": "ooh-259-postsecondary-teachers",
     "cat": "edu",
     "catName": "Education & Academia",
-    "icon": "🎓",
+    "icon": "grad",
     "title": "Postsecondary Teachers",
     "tagline": "Instruct students in a variety of academic subjects beyond the high school level.",
     "desc": "They may also conduct research and publish scholarly papers and books.",
@@ -49345,7 +49345,7 @@ window.CAREERS_ALL = [
     "id": "ooh-260-power-plant-operators-distributors-and-dispatchers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Power Plant Operators, Distributors, and Dispatchers",
     "tagline": "Control the systems that generate and distribute electric power.",
     "desc": "Control power-generating, distribution, or transmission equipment; Read charts, meters, and gauges to monitor voltage and electricity flows; Check equipment and indicators to detect evidence of operating problems.",
@@ -49499,7 +49499,7 @@ window.CAREERS_ALL = [
     "id": "ooh-261-preschool-and-childcare-center-directors",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Preschool and Childcare Center Directors",
     "tagline": "Supervise and lead their staffs, design program plans, oversee daily activities, and prepare budgets.",
     "desc": "They are responsible for all aspects of their center's program, which may include before- and after-school care.",
@@ -49650,7 +49650,7 @@ window.CAREERS_ALL = [
     "id": "ooh-262-preschool-teachers",
     "cat": "edu",
     "catName": "Education & Academia",
-    "icon": "🎓",
+    "icon": "grad",
     "title": "Preschool Teachers",
     "tagline": "Educate and care for children younger than age 5 who have not yet entered kindergarten.",
     "desc": "They teach language, motor, and social skills to young children.",
@@ -49805,7 +49805,7 @@ window.CAREERS_ALL = [
     "id": "ooh-263-private-detectives-and-investigators",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "👮",
+    "icon": "grad",
     "title": "Private Detectives and Investigators",
     "tagline": "Gather, analyze, and report information to clients regarding legal or personal matters.",
     "desc": "Their services include verifying people's backgrounds, finding missing persons, and investigating crimes.",
@@ -49957,7 +49957,7 @@ window.CAREERS_ALL = [
     "id": "ooh-264-probation-officers-and-correctional-treatment-specialists",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "🛡️",
+    "icon": "shield",
     "title": "Probation Officers and Correctional Treatment Specialists",
     "tagline": "Assist in rehabilitating law offenders in custody or on probation or parole.",
     "desc": "Interview probationers and parolees, their friends, and their relatives in an office or at a residence to assess progress; Evaluate probationers and parolees to determine the best course of rehabilitation; Connect probationers and parolees with resources, such as job training.",
@@ -50105,7 +50105,7 @@ window.CAREERS_ALL = [
     "id": "ooh-265-producers-and-directors",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Producers and Directors",
     "tagline": "Make business and creative decisions about film, television, stage, and other productions.",
     "desc": "They interpret a writer's script to entertain, inform, or instruct an audience.",
@@ -50276,7 +50276,7 @@ window.CAREERS_ALL = [
     "id": "ooh-266-project-management-specialists",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Project Management Specialists",
     "tagline": "Coordinate the budget, schedule, staffing, and other details of a project.",
     "desc": "They lead and guide the work of technical staff. Project management specialists also may serve as a point of contact for the client or customer.",
@@ -50419,7 +50419,7 @@ window.CAREERS_ALL = [
     "id": "ooh-267-property-real-estate-and-community-association-managers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Property, Real Estate, and Community Association Managers",
     "tagline": "Oversee many aspects of residential, commercial, or industrial properties.",
     "desc": "They ensure that the property is well maintained, has a nice appearance, operates smoothly, and preserves its resale value.",
@@ -50576,7 +50576,7 @@ window.CAREERS_ALL = [
     "id": "ooh-268-property-appraisers-and-assessors",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Property Appraisers and Assessors",
     "tagline": "Provide a value estimate on real estate and on tangible personal and business property.",
     "desc": "Verify descriptions of property, such as by consulting public records; Inspect property, noting its characteristics; Photograph items or real estate.",
@@ -50731,7 +50731,7 @@ window.CAREERS_ALL = [
     "id": "ooh-269-psychiatric-technicians-and-aides",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Psychiatric Technicians and Aides",
     "tagline": "Care for people who have mental conditions or developmental disabilities.",
     "desc": "Technicians typically monitor patients' conditions and provide therapeutic care, such as overseeing their medications. Aides help patients in their daily activities and ensure a safe and clean environment.",
@@ -50882,7 +50882,7 @@ window.CAREERS_ALL = [
     "id": "ooh-270-psychologists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🧠",
+    "icon": "neuro",
     "title": "Psychologists",
     "tagline": "Assess cognitive processes, diagnose mental disorders, and provide clinical therapy.",
     "desc": "They use their findings to help improve processes and behaviors.",
@@ -51047,7 +51047,7 @@ window.CAREERS_ALL = [
     "id": "ooh-271-public-relations-and-fundraising-managers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Public Relations and Fundraising Managers",
     "tagline": "Relations managers direct the creation of materials that will enhance the public image of their employer or client.",
     "desc": "Fundraising managers coordinate campaigns that bring in donations for their organization.",
@@ -51202,7 +51202,7 @@ window.CAREERS_ALL = [
     "id": "ooh-272-public-relations-specialists",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Public Relations Specialists",
     "tagline": "Create and maintain a positive public image for the clients they represent.",
     "desc": "They craft media releases and develop social media programs to shape public perception of their clients and to increase awareness of each client's work and goals.",
@@ -51360,7 +51360,7 @@ window.CAREERS_ALL = [
     "id": "ooh-273-public-safety-telecommunicators",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Public Safety Telecommunicators",
     "tagline": "Including 911 operators and fire dispatchers, answer emergency and nonemergency calls and provide resources to assist those in need.",
     "desc": "Answer 9-1-1 emergency and nonemergency requests from different sources, such as phone calls, text messages, social media, and alarm systems; Determine the type of emergency and its location and decide the appropriate response based on agency procedures; Relay information to the appropriate first-responder agency.",
@@ -51518,7 +51518,7 @@ window.CAREERS_ALL = [
     "id": "ooh-274-purchasing-managers-buyers-and-purchasing-agents",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Purchasing Managers, Buyers, and Purchasing Agents",
     "tagline": "Buyers and purchasing agents buy products and services for organizations.",
     "desc": "They evaluate suppliers, negotiate contracts, and review the quality of products. Purchasing managers oversee the work of buyers and purchasing agents and typically handle more complex procurement tasks.",
@@ -51687,7 +51687,7 @@ window.CAREERS_ALL = [
     "id": "ooh-275-quality-control-inspectors",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Quality Control Inspectors",
     "tagline": "Examine products and materials for defects or deviations from specifications.",
     "desc": "Read blueprints and specifications; Monitor operations to ensure that they meet production standards; Recommend adjustments to the assembly or production process.",
@@ -51839,7 +51839,7 @@ window.CAREERS_ALL = [
     "id": "ooh-276-radiation-therapists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Radiation Therapists",
     "tagline": "Administer doses of radiation to patients who have cancer or other serious diseases.",
     "desc": "Explain treatment plans to the patient and answer questions about treatment; Protect the patients and themselves from improper exposure to radiation; Determine the location of tumors to ensure correct positioning of patients for administering each treatment.",
@@ -51981,7 +51981,7 @@ window.CAREERS_ALL = [
     "id": "ooh-277-radiologic-and-mri-technologists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Radiologic and Mri Technologists",
     "tagline": "Technologists perform diagnostic imaging examinations on patients.",
     "desc": "MRI technologists operate magnetic resonance imaging (MRI) scanners to create diagnostic images.",
@@ -52135,7 +52135,7 @@ window.CAREERS_ALL = [
     "id": "ooh-278-railroad-workers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Railroad Workers",
     "tagline": "Ensure that passenger and freight trains operate safely.",
     "desc": "Some workers drive trains, some coordinate the activities of the trains, and others operate signals and switches in the rail yard.",
@@ -52303,7 +52303,7 @@ window.CAREERS_ALL = [
     "id": "ooh-279-real-estate-brokers-and-sales-agents",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Real Estate Brokers and Sales Agents",
     "tagline": "Help clients buy, sell, and rent properties.",
     "desc": "Although brokers and agents do similar work, brokers are licensed to manage their own real estate businesses. Sales agents must work with a real estate broker.",
@@ -52455,7 +52455,7 @@ window.CAREERS_ALL = [
     "id": "ooh-280-receptionists",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Receptionists",
     "tagline": "Do tasks such as answering phones, receiving visitors, and providing information about their organization to the public.",
     "desc": "Answer the telephone and take messages or forward calls; Schedule and confirm appointments and maintain calendars; Greet customers, clients, and other visitors.",
@@ -52604,7 +52604,7 @@ window.CAREERS_ALL = [
     "id": "ooh-281-recreational-protective-service-workers",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "⚖️",
+    "icon": "scale",
     "title": "Recreational Protective Service Workers",
     "tagline": "Monitor recreational areas, such as pools, beaches, or ski slopes, to provide aid and protection to participants.",
     "desc": "Patrol or monitor recreational areas, such as trails, slopes, or swimming areas; Rescue distressed people from hazardous situations using rescue techniques and equipment; Warn individuals about rule violations or safety concerns.",
@@ -52760,7 +52760,7 @@ window.CAREERS_ALL = [
     "id": "ooh-282-recreational-therapists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Recreational Therapists",
     "tagline": "Plan, direct, and coordinate recreation-based medical treatment programs for people with disabilities, injuries, or illnesses.",
     "desc": "These therapists use a variety of techniques, including art expression; drama, music, and dance; sports and games; aquatics; and community outings.",
@@ -52917,7 +52917,7 @@ window.CAREERS_ALL = [
     "id": "ooh-283-recreation-workers",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🤝",
+    "icon": "users",
     "title": "Recreation Workers",
     "tagline": "Organize, conduct, and promote a variety of group activities for leisure and other purposes.",
     "desc": "Recreation workers organize, conduct, and promote a variety of group activities for leisure and other purposes. Activities may include arts and crafts, sports, or music.",
@@ -53066,7 +53066,7 @@ window.CAREERS_ALL = [
     "id": "ooh-284-registered-nurses",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Registered Nurses",
     "tagline": "(RNs) provide and coordinate patient care and educate patients and the public about various health conditions.",
     "desc": "Assess patients' conditions; Record patients' medical histories and symptoms; Observe patients and record the observations.",
@@ -53235,7 +53235,7 @@ window.CAREERS_ALL = [
     "id": "ooh-285-rehabilitation-counselors",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🤝",
+    "icon": "users",
     "title": "Rehabilitation Counselors",
     "tagline": "Work with clients to overcome or manage the personal, social, or psychological effects of disabilities on employment or independent living.",
     "desc": "Provide individual and group counseling to help clients with a variety of issues; Evaluate clients' abilities, interests, experiences, skills, health, and education; Develop a rehabilitation plan for clients, and, if necessary, consult with doctors, therapists, or other healthcare workers.",
@@ -53396,7 +53396,7 @@ window.CAREERS_ALL = [
     "id": "ooh-286-respiratory-therapists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Respiratory Therapists",
     "tagline": "Care for patients who have trouble breathing, for example, because of a chronic condition such as asthma.",
     "desc": "Their patients range from premature infants with undeveloped lungs to older adults whose lungs are diseased.",
@@ -53556,7 +53556,7 @@ window.CAREERS_ALL = [
     "id": "ooh-287-retail-sales-workers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Retail Sales Workers",
     "tagline": "Sell merchandise, spare and replacement parts, and equipment to customers.",
     "desc": "Retail sales workers sell merchandise, such as furniture, motor vehicles, appliances, or apparel, to customers. They also sell spare and replacement parts and equipment.",
@@ -53722,7 +53722,7 @@ window.CAREERS_ALL = [
     "id": "ooh-288-roofers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Roofers",
     "tagline": "Replace, repair, and install the roofs of buildings.",
     "desc": "Inspect problem roofs to determine the best way to repair them; Measure roofs to calculate the quantities of materials needed; Replace damaged or rotting joists or plywood.",
@@ -53878,7 +53878,7 @@ window.CAREERS_ALL = [
     "id": "ooh-289-sales-engineers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Sales Engineers",
     "tagline": "Sell business products or services, such as software or support, that require technical expertise.",
     "desc": "Prepare and deliver presentations explaining technical products to existing and prospective customers; Talk with customers, the sales team, and engineers to determine product needs and system requirements; Provide customers with product sales support.",
@@ -54024,7 +54024,7 @@ window.CAREERS_ALL = [
     "id": "ooh-290-sales-managers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Sales Managers",
     "tagline": "Plan, direct, or coordinate the delivery of a product or service to the customer.",
     "desc": "They set sales goals, analyze data, and develop training programs for organizations' sales representatives.",
@@ -54180,7 +54180,7 @@ window.CAREERS_ALL = [
     "id": "ooh-291-school-and-career-counselors-and-advisors",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🤝",
+    "icon": "users",
     "title": "School and Career Counselors and Advisors",
     "tagline": "Counselors help students develop academic and social skills.",
     "desc": "Career counselors and advisors help students and other clients develop skills, explore an occupation, or choose an educational program that will lead to a career.",
@@ -54338,7 +54338,7 @@ window.CAREERS_ALL = [
     "id": "ooh-292-secretaries-and-administrative-assistants",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Secretaries and Administrative Assistants",
     "tagline": "Do routine clerical and organizational tasks.",
     "desc": "They arrange files, prepare documents, schedule appointments, and support other staff.",
@@ -54498,7 +54498,7 @@ window.CAREERS_ALL = [
     "id": "ooh-293-securities-commodities-and-financial-services-sales-agents",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Securities, Commodities, and Financial Services Sales Agents",
     "tagline": "Connect buyers and sellers in financial markets.",
     "desc": "They sell securities or commodities to clients, advise companies in search of investors, and conduct trades.",
@@ -54653,7 +54653,7 @@ window.CAREERS_ALL = [
     "id": "ooh-294-security-guards-and-gambling-surveillance-officers",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "⚖️",
+    "icon": "scale",
     "title": "Security Guards and Gambling Surveillance Officers",
     "tagline": "Patrol and protect property from illegal activity.",
     "desc": "Patrol property; Enforce rules and regulations of an employer's property; Monitor alarms and video-surveillance systems.",
@@ -54815,7 +54815,7 @@ window.CAREERS_ALL = [
     "id": "ooh-295-semiconductor-processing-technicians",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Semiconductor Processing Technicians",
     "tagline": "Perform tasks in the manufacture of electronic semiconductors, commonly known as integrated circuits or microchips, that are used in cars, smartphones, and other everyday devices.",
     "desc": "Throughout production, these workers process silicon crystals into flat wafers, the primary material used in manufacturing semiconductors.",
@@ -54960,7 +54960,7 @@ window.CAREERS_ALL = [
     "id": "ooh-296-set-and-exhibit-designers",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Set and Exhibit Designers",
     "tagline": "Develop visual and tactile spaces for entertainment productions or for a variety of displays.",
     "desc": "Set designers work on movies, television, theater, and other productions. Exhibit designers create spaces to showcase products, art, artifacts, or other displays.",
@@ -55107,7 +55107,7 @@ window.CAREERS_ALL = [
     "id": "ooh-297-sheet-metal-workers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Sheet Metal Workers",
     "tagline": "Fabricate or install products that are made from thin metal sheets.",
     "desc": "Select types of sheet metal according to building or design plans; Measure and mark dimensions and reference lines on metal sheets; Drill holes in metal for screws, bolts, and rivets.",
@@ -55262,7 +55262,7 @@ window.CAREERS_ALL = [
     "id": "ooh-298-skincare-specialists",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🤝",
+    "icon": "users",
     "title": "Skincare Specialists",
     "tagline": "Provide cleansing and other face and body treatments to enhance a person’s appearance.",
     "desc": "Disinfect equipment and clean work areas before and after procedures; Evaluate clients' skin condition and appearance; Discuss available treatments and determine which products will improve clients' skin quality.",
@@ -55417,7 +55417,7 @@ window.CAREERS_ALL = [
     "id": "ooh-299-small-engine-mechanics",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Small Engine Mechanics",
     "tagline": "Inspect, service, and repair motorized power equipment.",
     "desc": "Mechanics often specialize in one type of equipment, such as motorcycles, motorboats, or outdoor power equipment.",
@@ -55585,7 +55585,7 @@ window.CAREERS_ALL = [
     "id": "ooh-300-social-and-community-service-managers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Social and Community Service Managers",
     "tagline": "Coordinate and supervise programs and organizations that support public well-being.",
     "desc": "They direct workers who provide these services to the public.",
@@ -55738,7 +55738,7 @@ window.CAREERS_ALL = [
     "id": "ooh-301-social-and-human-service-assistants",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🤝",
+    "icon": "users",
     "title": "Social and Human Service Assistants",
     "tagline": "Provide client services in a variety of fields, such as psychology, rehabilitation, and social work.",
     "desc": "They assist other workers, such as social workers, and they help clients find benefits or community services.",
@@ -55896,7 +55896,7 @@ window.CAREERS_ALL = [
     "id": "ooh-302-social-workers",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🤝",
+    "icon": "users",
     "title": "Social Workers",
     "tagline": "Help people prevent and cope with problems in their everyday lives.",
     "desc": "Clinical social workers diagnose and treat mental, behavioral, and emotional problems.",
@@ -56075,7 +56075,7 @@ window.CAREERS_ALL = [
     "id": "ooh-303-sociologists",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "👥",
+    "icon": "users",
     "title": "Sociologists",
     "tagline": "Study human society, social behavior, cultural institutions, and community dynamics.",
     "desc": "They also may study specific groups, trace their origin and growth, and analyze the influence of group activities on individual members.",
@@ -56223,7 +56223,7 @@ window.CAREERS_ALL = [
     "id": "ooh-304-software-developers-quality-assurance-analysts-and-testers",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "💻",
+    "icon": "code",
     "title": "Software Developers, Quality Assurance Analysts, and Testers",
     "tagline": "Developers design computer applications or programs.",
     "desc": "Software quality assurance analysts and testers design and execute software tests to identify problems and learn how the software works.",
@@ -56395,7 +56395,7 @@ window.CAREERS_ALL = [
     "id": "ooh-305-solar-photovoltaic-installers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Solar Photovoltaic Installers",
     "tagline": "Photovoltaic (PV) installers assemble, set up, and maintain rooftop or other systems that convert sunlight into energy.",
     "desc": "Plan PV system configurations based on customer needs and site conditions; Measure, cut, and assemble the support structure for solar PV panels; Install solar modules, panels, and support structures according to building codes and standards.",
@@ -56539,7 +56539,7 @@ window.CAREERS_ALL = [
     "id": "ooh-306-special-education-teachers",
     "cat": "edu",
     "catName": "Education & Academia",
-    "icon": "🎓",
+    "icon": "grad",
     "title": "Special Education Teachers",
     "tagline": "Work with students who have a wide range of learning, mental, emotional, and physical disabilities.",
     "desc": "They adapt general education lessons and teach various subjects to students with mild to moderate disabilities. They also teach basic skills to students with severe disabilities.",
@@ -56698,7 +56698,7 @@ window.CAREERS_ALL = [
     "id": "ooh-307-special-effects-artists-and-animators",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Special Effects Artists and Animators",
     "tagline": "Create images that appear to move and visual effects for various forms of media and entertainment.",
     "desc": "Use computer programs and illustrations to create graphics and animation (images that appear to move); Work with a team of animators and artists to create a movie, game, or visual effect; Research upcoming projects to help create realistic designs or animation.",
@@ -56844,7 +56844,7 @@ window.CAREERS_ALL = [
     "id": "ooh-308-speech-language-pathologists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Speech-language Pathologists",
     "tagline": "Assess and treat people who have communication disorders.",
     "desc": "Speech-language pathologists (sometimes called speech therapists ) assess and treat people who have speech, language, voice, and fluency disorders. They also treat clients who have problems swallowing.",
@@ -56997,7 +56997,7 @@ window.CAREERS_ALL = [
     "id": "ooh-309-stationary-engineers-and-boiler-operators",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Stationary Engineers and Boiler Operators",
     "tagline": "Control stationary engines, boilers, or other mechanical equipment.",
     "desc": "Operate engines, boilers, and auxiliary equipment; Read gauges, meters, and charts to track boiler operations; Monitor boiler water, chemical, and fuel levels.",
@@ -57144,7 +57144,7 @@ window.CAREERS_ALL = [
     "id": "ooh-310-substance-abuse-behavioral-disorder-and-mental-health-counselors",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🤝",
+    "icon": "users",
     "title": "Substance Abuse, Behavioral Disorder, and Mental Health Counselors",
     "tagline": "Advise people on a range of issues, such as those relating to alcoholism, addictions, or depression.",
     "desc": "They provide support, including for prevention, to help clients recover from addiction, modify problem behaviors, or improve mental health.",
@@ -57307,7 +57307,7 @@ window.CAREERS_ALL = [
     "id": "ooh-311-surgical-assistants-and-technologists",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🩺",
+    "icon": "medical",
     "title": "Surgical Assistants and Technologists",
     "tagline": "Help with surgical operations.",
     "desc": "Surgical assistants, also called surgical first assistants, help surgeons with tasks such as making incisions, placing clamps, and closing surgical sites. Surgical technologists, also called operating room technicians, prepare operating rooms, arrange equipment, and help doctors and first assistants during surgeries.",
@@ -57464,7 +57464,7 @@ window.CAREERS_ALL = [
     "id": "ooh-312-surveying-and-mapping-technicians",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Surveying and Mapping Technicians",
     "tagline": "Collect data and make maps of the Earth&apos; surface.",
     "desc": "They may calculate mapmaking information and create maps from surveying notes, satellite data, or other sources to show features such as topography and boundaries. They assist surveyors and cartographers and photogrammetrists .",
@@ -57628,7 +57628,7 @@ window.CAREERS_ALL = [
     "id": "ooh-313-surveyors",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚙️",
+    "icon": "gear",
     "title": "Surveyors",
     "tagline": "Make precise measurements to determine property boundaries.",
     "desc": "They provide data relevant to features of the Earth's surface, such as shape and contour, for engineering, mapmaking, construction, and other purposes.",
@@ -57783,7 +57783,7 @@ window.CAREERS_ALL = [
     "id": "ooh-314-survey-researchers",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Survey Researchers",
     "tagline": "Design and conduct surveys and analyze data.",
     "desc": "Surveys are used to collect factual data, such as employment and salary information, or to ask questions in order to understand people's opinions, preferences, beliefs, or desires.",
@@ -57926,7 +57926,7 @@ window.CAREERS_ALL = [
     "id": "ooh-315-tax-examiners-and-collectors-and-revenue-agents",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Tax Examiners and Collectors, and Revenue Agents",
     "tagline": "Determine how much is owed in taxes and collect tax from individuals and businesses on behalf of the government.",
     "desc": "They review tax returns, conduct audits, identify taxes owed, and collect overdue tax payments.",
@@ -58084,7 +58084,7 @@ window.CAREERS_ALL = [
     "id": "ooh-316-taxi-drivers-shuttle-drivers-and-chauffeurs",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Taxi Drivers, Shuttle Drivers, and Chauffeurs",
     "tagline": "Drivers (including ride-hailing drivers), shuttle drivers, and chauffeurs transport people to and from the places they need to go.",
     "desc": "Drive taxicabs, vans, limousines, or other motor vehicles to transport passengers; Pick up passengers and listen to where they want to go; Help passengers load and unload their luggage, packages, or other belongings.",
@@ -58248,7 +58248,7 @@ window.CAREERS_ALL = [
     "id": "ooh-317-teacher-assistants",
     "cat": "edu",
     "catName": "Education & Academia",
-    "icon": "🎓",
+    "icon": "grad",
     "title": "Teacher Assistants",
     "tagline": "Work with a licensed teacher to give students additional attention and instruction.",
     "desc": "Reinforce lessons by reviewing material with students one-on-one or in small groups; Follow school and class rules to teach students proper behavior; Help teachers with recordkeeping, such as taking attendance and calculating grades.",
@@ -58428,7 +58428,7 @@ window.CAREERS_ALL = [
     "id": "ooh-318-technical-writers",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Technical Writers",
     "tagline": "Prepare instruction manuals, how-to guides, journal articles, and other supporting documents to communicate complex and technical information more easily.",
     "desc": "They also develop, gather, and disseminate technical information through an organization's communications channels.",
@@ -58578,7 +58578,7 @@ window.CAREERS_ALL = [
     "id": "ooh-319-telecommunications-technicians",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Telecommunications Technicians",
     "tagline": "Install, maintain, and repair radio, internet, and other telecommunications infrastructure.",
     "desc": "They set up and fix different types of devices or equipment that carry communications signals, such as internet routers and fiber optic lines.",
@@ -58738,7 +58738,7 @@ window.CAREERS_ALL = [
     "id": "ooh-320-tellers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Tellers",
     "tagline": "Process routine transactions, such as cashing checks and depositing money, at a bank or credit union.",
     "desc": "Count the cash in their drawer at the start of their shift; Accept checks, cash, and other forms of payment from customers; Answer questions from customers about their accounts.",
@@ -58894,7 +58894,7 @@ window.CAREERS_ALL = [
     "id": "ooh-321-top-executives",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Top Executives",
     "tagline": "Plan strategies and policies to ensure that an organization meets its goals.",
     "desc": "They coordinate and direct work activities of companies and organizations.",
@@ -59070,7 +59070,7 @@ window.CAREERS_ALL = [
     "id": "ooh-322-tour-and-travel-guides",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🤝",
+    "icon": "users",
     "title": "Tour and Travel Guides",
     "tagline": "Lead individuals or groups on excursions to various points of interest, including historical locations, museums, and monuments.",
     "desc": "Arrange services or reservations for clients; Research topics related to their tour, such as site history or local attractions; Plan routes and talking points for tours.",
@@ -59227,7 +59227,7 @@ window.CAREERS_ALL = [
     "id": "ooh-323-training-and-development-managers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Training and Development Managers",
     "tagline": "Plan, coordinate, and direct skills- and knowledge-enhancement programs for an organization’s staff.",
     "desc": "Oversee training and development staff; Assess employees' needs for training; Align training with the organization's goals.",
@@ -59373,7 +59373,7 @@ window.CAREERS_ALL = [
     "id": "ooh-324-training-and-development-specialists",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Training and Development Specialists",
     "tagline": "Plan and administer programs that improve the skills and knowledge of their employees.",
     "desc": "Assess training needs through surveys, interviews with employees, or consultations with managers or instructors; Design and create training manuals, online learning modules, and course materials; Review training materials from multiple sources and choose appropriate materials.",
@@ -59529,7 +59529,7 @@ window.CAREERS_ALL = [
     "id": "ooh-325-transportation-storage-and-distribution-managers",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Transportation, Storage, and Distribution Managers",
     "tagline": "Plan, direct, or coordinate the movement of people and goods.",
     "desc": "Plan, organize, and oversee staff to ensure efficient operations; Collaborate with other departments, such as sales, accounting, and human resources; Prepare and manage departmental budgets.",
@@ -59687,7 +59687,7 @@ window.CAREERS_ALL = [
     "id": "ooh-326-travel-agents",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Travel Agents",
     "tagline": "Sell transportation, lodging, and entertainment activities to individuals and groups planning trips.",
     "desc": "They offer advice on destinations, plan trip itineraries, and make travel arrangements for clients.",
@@ -59840,7 +59840,7 @@ window.CAREERS_ALL = [
     "id": "ooh-327-tutors",
     "cat": "edu",
     "catName": "Education & Academia",
-    "icon": "🎓",
+    "icon": "grad",
     "title": "Tutors",
     "tagline": "Instruct students individually or in small groups to support formal class instruction or improve academic performance.",
     "desc": "Some tutors prepare students for standardized or admissions tests.",
@@ -59995,7 +59995,7 @@ window.CAREERS_ALL = [
     "id": "ooh-328-umpires-referees-and-other-sports-officials",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Umpires, Referees, and Other Sports Officials",
     "tagline": "Preside over competitive athletic or sporting events to help maintain standards of play.",
     "desc": "They detect infractions and decide penalties according to the rules of the game.",
@@ -60152,7 +60152,7 @@ window.CAREERS_ALL = [
     "id": "ooh-329-urban-and-regional-planners",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Urban and Regional Planners",
     "tagline": "Develop full plans and programs for use of land and physical facilities in cities, counties, metropolitan areas, and other jurisdictions.",
     "desc": "Meet with stakeholders such as government officials, developers, and the public regarding development plans and land use; Gather and analyze data from field investigations and sources such as market research, censuses, and environmental studies; Assess the feasibility of site plans submitted by developers and identify needed changes.",
@@ -60298,7 +60298,7 @@ window.CAREERS_ALL = [
     "id": "ooh-330-veterinarians",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🐾",
+    "icon": "paw",
     "title": "Veterinarians",
     "tagline": "Care for the health of animals and work to protect public health.",
     "desc": "They diagnose, treat, and research medical conditions and diseases of pets, livestock, and other animals.",
@@ -60451,7 +60451,7 @@ window.CAREERS_ALL = [
     "id": "ooh-331-veterinary-assistants-and-laboratory-animal-caretakers",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🐾",
+    "icon": "paw",
     "title": "Veterinary Assistants and Laboratory Animal Caretakers",
     "tagline": "Handle routine animal care and help scientists, veterinarians, and others with their daily tasks.",
     "desc": "Feed, bathe, and exercise animals; Clean and disinfect cages, kennels, and examination and operating rooms; Restrain animals during examination and laboratory procedures.",
@@ -60599,7 +60599,7 @@ window.CAREERS_ALL = [
     "id": "ooh-332-veterinary-technologists-and-technicians",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🐾",
+    "icon": "paw",
     "title": "Veterinary Technologists and Technicians",
     "tagline": "Do medical tests that help diagnose animals’ injuries and illnesses.",
     "desc": "Observe the behavior and condition of animals; Provide nursing care or emergency first aid to recovering or injured animals; Bathe animals, clip nails or claws, and brush or cut animals' hair.",
@@ -60764,7 +60764,7 @@ window.CAREERS_ALL = [
     "id": "ooh-333-waiters-and-waitresses",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🤝",
+    "icon": "users",
     "title": "Waiters and Waitresses",
     "tagline": "Take orders and serve food and beverages to customers in dining establishments.",
     "desc": "Greet customers, explain daily specials, and answer questions related to the menu; Take orders from customers for food and beverages; Relay food and beverage orders to the kitchen, such as via a point-of-sale system.",
@@ -60912,7 +60912,7 @@ window.CAREERS_ALL = [
     "id": "ooh-334-water-and-wastewater-treatment-plant-and-system-operators",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Water and Wastewater Treatment Plant and System Operators",
     "tagline": "Manage a system of machines to transfer or treat water or wastewater.",
     "desc": "Add chemicals, such as chlorine, to disinfect water or other liquids; Inspect equipment on a regular basis; Monitor operating conditions, meters, and gauges.",
@@ -61062,7 +61062,7 @@ window.CAREERS_ALL = [
     "id": "ooh-335-water-transportation-workers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🚢",
+    "icon": "wrench",
     "title": "Water Transportation Workers",
     "tagline": "Navigate container ships, tugboats, ferries, and barges across coastal and inland waters.",
     "desc": "The vessels travel to and from foreign ports across the ocean and to domestic ports along the coasts, across the Great Lakes, and along the country's many inland waterways.",
@@ -61252,7 +61252,7 @@ window.CAREERS_ALL = [
     "id": "ooh-336-web-developers-and-digital-designers",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "💻",
+    "icon": "code",
     "title": "Web Developers and Digital Designers",
     "tagline": "Web developers design and create websites.",
     "desc": "They are also responsible for the site's technical aspects, such as its performance and capacity, which are measures of a website's speed and how much traffic the site can handle. In addition, web developers may create content for the site.",
@@ -61414,7 +61414,7 @@ window.CAREERS_ALL = [
     "id": "ooh-337-welders-cutters-solderers-and-brazers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Welders, Cutters, Solderers, and Brazers",
     "tagline": "Use hand-held or remotely controlled equipment to join, repair, or cut metal parts and products.",
     "desc": "They also fill holes, indentations, or seams in metal products.",
@@ -61572,7 +61572,7 @@ window.CAREERS_ALL = [
     "id": "ooh-338-wholesale-and-manufacturing-sales-representatives",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Wholesale and Manufacturing Sales Representatives",
     "tagline": "Sell goods for wholesalers or manufacturers to businesses, government agencies, and other organizations.",
     "desc": "They contact customers, explain the features of the products they are selling, negotiate prices, and answer any questions that their customers may have about the products.",
@@ -61735,7 +61735,7 @@ window.CAREERS_ALL = [
     "id": "ooh-339-wind-turbine-technicians",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Wind Turbine Technicians",
     "tagline": "Turbine service technicians maintain and repair wind turbines.",
     "desc": "Assist engineers and ironworkers in installing new wind turbines; Inspect the exterior and physical integrity of wind turbine towers; Climb wind turbine towers to inspect or repair wind turbine equipment.",
@@ -61880,7 +61880,7 @@ window.CAREERS_ALL = [
     "id": "ooh-340-woodworkers",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛠️",
+    "icon": "wrench",
     "title": "Woodworkers",
     "tagline": "Manufacture a variety of products, such as cabinets and furniture, using wood, veneers, and laminates.",
     "desc": "They often combine and incorporate different materials into wood.",
@@ -62055,7 +62055,7 @@ window.CAREERS_ALL = [
     "id": "ooh-341-writers-and-authors",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Writers and Authors",
     "tagline": "Develop written content for various types of media.",
     "desc": "Choose subjects that interests readers; Write fiction or nonfiction scripts, biographies, and other formats; Conduct research to get factual information and authentic detail.",
@@ -62223,7 +62223,7 @@ window.CAREERS_ALL = [
     "id": "ooh-342-zoologists-and-wildlife-biologists",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🔭",
+    "icon": "telescope",
     "title": "Zoologists and Wildlife Biologists",
     "tagline": "Study animals, those both in captivity and in the wild, and how they interact with their ecosystems.",
     "desc": "They focus primarily on undomesticated animals and their behavior, as well as on the impact humans have on wildlife and natural habitats.",
@@ -62379,7 +62379,7 @@ window.CAREERS_ALL = [
     "id": "x-content-creator",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "📹",
+    "icon": "medical",
     "title": "Content Creator & YouTuber",
     "tagline": "Make things people choose to watch.",
     "desc": "Plan, shoot, edit and publish videos, shorts or newsletters, then read the numbers to work out what to make next. Income comes from ads, sponsorships, affiliate links and your own products rather than one employer.",
@@ -62506,7 +62506,7 @@ window.CAREERS_ALL = [
     "id": "x-podcast-producer",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎤",
+    "icon": "palette",
     "title": "Podcast Producer & Audio Storytelling",
     "tagline": "Turn a conversation into something worth an hour.",
     "desc": "Book guests, run the interview, cut the tape and shape the episode so it holds attention. Small shows are one person doing all of it; big shows split research, production and sound design across a team.",
@@ -62626,7 +62626,7 @@ window.CAREERS_ALL = [
     "id": "x-esports-streamer",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎮",
+    "icon": "gamepad",
     "title": "Esports Athlete & Streamer",
     "tagline": "Play competitively, or play in public.",
     "desc": "Two related routes: train and compete on a team for prize money, or stream gameplay live and build an audience that pays through subscriptions, donations and sponsorships. Most people do some of both.",
@@ -62743,7 +62743,7 @@ window.CAREERS_ALL = [
     "id": "x-voice-actor",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🗣",
+    "icon": "palette",
     "title": "Voice Actor & Dubbing Artist",
     "tagline": "Be a whole cast of people with one voice.",
     "desc": "Record narration, characters, ads, audiobooks and dubbing tracks from a script. Work arrives as short sessions, so most voice actors jingle together many small clients, often from a home booth.",
@@ -62859,7 +62859,7 @@ window.CAREERS_ALL = [
     "id": "x-sommelier",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🍷",
+    "icon": "palette",
     "title": "Sommelier & Beverage Director",
     "tagline": "Know the bottle, and know the table.",
     "desc": "Choose, buy and serve the drinks list for a restaurant or hotel, train the floor staff on it, and taste far more wine than you can afford. The best part is matching a bottle to a person, not the medal on the wall.",
@@ -62974,7 +62974,7 @@ window.CAREERS_ALL = [
     "id": "x-craft-brewer",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🍺",
+    "icon": "wrench",
     "title": "Craft Brewer & Distiller",
     "tagline": "Biology, patience and a very clean floor.",
     "desc": "Run the mash, boil, ferment, condition and package beer or spirits to a recipe, keeping yields and cleanliness tight. Small breweries mean the brewer also does the ordering, the cleaning and often the serving.",
@@ -63095,7 +63095,7 @@ window.CAREERS_ALL = [
     "id": "x-beekeeper",
     "cat": "eco",
     "catName": "Sustainability & Energy",
-    "icon": "🐝",
+    "icon": "leaf",
     "title": "Beekeeper & Apiary Manager",
     "tagline": "Keep forty thousand insects alive and working.",
     "desc": "Manage hives through the seasons: inspecting for disease, controlling swarms, harvesting honey and moving colonies to orchards for pollination. Many beekeepers run this beside another job until the apiary pays for itself.",
@@ -63209,7 +63209,7 @@ window.CAREERS_ALL = [
     "id": "x-locksmith",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🔑",
+    "icon": "wrench",
     "title": "Locksmith & Security Hardware Technician",
     "tagline": "Open, install, upgrade, and answer at 2am.",
     "desc": "Fit and repair locks, safes, door closers and access control, and cut keys for homes, cars and offices. Emergency call-outs and security upgrades mean a locksmith is part craftsperson, part first responder for locked-out people.",
@@ -63323,7 +63323,7 @@ window.CAREERS_ALL = [
     "id": "x-funeral-director",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🚴",
+    "icon": "shield",
     "title": "Funeral Director & Embalmer",
     "tagline": "Hold the worst day of someone’s life together.",
     "desc": "Care for the deceased, prepare the body, arrange the service and guide families through paperwork, costs and decisions they are in no state to make. It is a regulated profession with real training behind it.",
@@ -63437,7 +63437,7 @@ window.CAREERS_ALL = [
     "id": "x-park-ranger",
     "cat": "eco",
     "catName": "Sustainability & Energy",
-    "icon": "🌳",
+    "icon": "leaf",
     "title": "Park Ranger & Conservation Officer",
     "tagline": "Protect the place, and the people in it.",
     "desc": "Patrol parks and protected areas, enforce rules, run education programmes, fight fires and rescue visitors. Some roles lean toward law enforcement, others toward teaching school groups on a trail.",
@@ -63553,7 +63553,7 @@ window.CAREERS_ALL = [
     "id": "x-commercial-diver",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🌊",
+    "icon": "wave",
     "title": "Commercial Diver & Underwater Technician",
     "tagline": "Work that happens where you cannot stand.",
     "desc": "Weld, inspect, repair and cut underwater on rigs, bridges, dams and ships. It is a trade with a short training pipeline, high pay for the hours, and an uncommon amount of risk.",
@@ -63669,7 +63669,7 @@ window.CAREERS_ALL = [
     "id": "x-doula",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "👶",
+    "icon": "medical",
     "title": "Doula & Birth Support Worker",
     "tagline": "Be the calm person in the room.",
     "desc": "Support people through pregnancy, labour and the first weeks after birth: practical help, pain-coping techniques and an advocate who is not part of the medical team. Training takes months, not years, and most start while working something else.",
@@ -63784,7 +63784,7 @@ window.CAREERS_ALL = [
     "id": "drone-uav",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🚁",
+    "icon": "rocket",
     "title": "Drone Pilot, UAV Operations & Aerial Robotics",
     "tagline": "Fly commercial drones for mapping, inspection, farming, and film",
     "desc": "Capture LiDAR topography, check power lines and wind turbines, run thermal search sweeps, and follow aviation clearance rules.",
@@ -63972,7 +63972,7 @@ window.CAREERS_ALL = [
     "id": "spatial-computing-arvr",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "🥽",
+    "icon": "ai",
     "title": "AR/VR, Spatial Computing & Metaverse Architect",
     "tagline": "Build 3D mixed-reality apps and training simulators",
     "desc": "Code spatial hand and gaze interfaces in Unity, Unreal, C++, or Swift for headsets used in medical training, engineering, and gaming.",
@@ -64158,7 +64158,7 @@ window.CAREERS_ALL = [
     "id": "game-designer",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎮",
+    "icon": "gamepad",
     "title": "Video Game Designer & Gameplay Mechanics Lead",
     "tagline": "Design game rules, pacing, progression curves, and levels",
     "desc": "Prototype mechanics, build economy spreadsheets, script quests, watch playtesters get stuck, and refine systems until play clicks.",
@@ -64339,7 +64339,7 @@ window.CAREERS_ALL = [
     "id": "venture-capital",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "💼",
+    "icon": "briefcase",
     "title": "Venture Capital & Private Equity Investor",
     "tagline": "Back early startups, test unit economics, and support founders",
     "desc": "Meet founders, check market size and customer retention honestly, negotiate term sheets, and help companies hire or raise next rounds.",
@@ -64520,7 +64520,7 @@ window.CAREERS_ALL = [
     "id": "ma-investment-banking",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "🏛️",
+    "icon": "landmark",
     "title": "Mergers & Acquisitions (M&A) Investment Banker",
     "tagline": "Execute corporate buyouts, mergers, and fairness valuations",
     "desc": "Build merger accretion models, coordinate buyer due diligence, negotiate purchase agreements, and manage deal closings.",
@@ -64697,7 +64697,7 @@ window.CAREERS_ALL = [
     "id": "corporate-sustainability-esg",
     "cat": "eco",
     "catName": "Sustainability & Energy",
-    "icon": "🌱",
+    "icon": "leaf",
     "title": "ESG & Corporate Sustainability Director",
     "tagline": "Track company emissions, supply chain risks, and disclosure rules",
     "desc": "Measure Scope 1–3 carbon inventories, prepare CSRD/climate audits, negotiate green energy contracts, and cut operational waste.",
@@ -64876,7 +64876,7 @@ window.CAREERS_ALL = [
     "id": "solar-grid-engineer",
     "cat": "eco",
     "catName": "Sustainability & Energy",
-    "icon": "☀️",
+    "icon": "sun",
     "title": "Solar Photovoltaic & Renewable Grid Engineer",
     "tagline": "Design utility solar farms, substations, and grid storage",
     "desc": "Lay out PV arrays, size inverters and transformers, run grid stability checks, and connect battery systems reliably.",
@@ -65055,7 +65055,7 @@ window.CAREERS_ALL = [
     "id": "ev-powertrain",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "⚡",
+    "icon": "bolt",
     "title": "Electric Vehicle (EV) Powertrain & Battery Engineer",
     "tagline": "Design electric motors, inverters, and high-voltage battery packs",
     "desc": "Engineer lithium battery cooling loops, traction inverters, battery management algorithms, and dyno validation for EVs.",
@@ -65231,7 +65231,7 @@ window.CAREERS_ALL = [
     "id": "patent-attorney",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "⚖️",
+    "icon": "scale",
     "title": "Patent Attorney & Intellectual Property Litigator",
     "tagline": "Secure and defend patents on engineering and biotech inventions",
     "desc": "Draft detailed technical patent claims, search prior art, handle patent office rejections, and litigate IP disputes in court.",
@@ -65408,7 +65408,7 @@ window.CAREERS_ALL = [
     "id": "dermatologist",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🔬",
+    "icon": "microscope",
     "title": "Dermatologist & Cutaneous Surgeon",
     "tagline": "Diagnose skin conditions, allergies, and perform skin surgery",
     "desc": "Treat eczema, psoriasis, and skin infections, run biopsies, and excise skin cancers using Mohs micrographic surgery.",
@@ -65583,7 +65583,7 @@ window.CAREERS_ALL = [
     "id": "epidemiologist",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Epidemiologist & Disease Surveillance Scientist",
     "tagline": "Investigate disease clusters and model public health data",
     "desc": "Calculate outbreak spread metrics, run surveillance studies, verify contact clusters, and report clear guidance to health agencies.",
@@ -65760,7 +65760,7 @@ window.CAREERS_ALL = [
     "id": "chief-ai-officer",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "🧠",
+    "icon": "neuro",
     "title": "Chief AI Officer, AI Safety & Governance Lead",
     "tagline": "Oversee company AI adoption, security risks, and governance rules",
     "desc": "Set evaluation gates, guard against data leakage and compliance fines, audit vendors, and measure real cost savings cleanly.",
@@ -65937,7 +65937,7 @@ window.CAREERS_ALL = [
     "id": "bioinformatics",
     "cat": "science",
     "catName": "Science & DeepTech",
-    "icon": "🧬",
+    "icon": "dna",
     "title": "Bioinformatics & Computational Biologist",
     "tagline": "Write code pipelines that decode genomic and biological data",
     "desc": "Build Nextflow and Python workflows processing sequencing reads, variant calls, and protein targets for research and pharma.",
@@ -66115,7 +66115,7 @@ window.CAREERS_ALL = [
     "id": "forensic-accountant",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "🔍",
+    "icon": "medical",
     "title": "Forensic Accountant & Financial Fraud Investigator",
     "tagline": "Trace hidden money trails, embezzlement, and financial fraud",
     "desc": "Untangle broken ledgers, reconstruct shell transfers, audit bankruptcy records, and testify clearly as a fraud examiner in court.",
@@ -66293,7 +66293,7 @@ window.CAREERS_ALL = [
     "id": "sports-physiotherapist",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🏃",
+    "icon": "chart",
     "title": "Sports Physiotherapist & High-Performance Athletic Coach",
     "tagline": "Rehabilitate athlete injuries and guide safe return to play",
     "desc": "Assess ligament and tendon damage on field and in clinic, track strength recovery, and prevent repeat injuries calmly.",
@@ -66472,7 +66472,7 @@ window.CAREERS_ALL = [
     "id": "music-producer-sound",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎧",
+    "icon": "audio",
     "title": "Music Producer, Audio Engineer & Sound Designer",
     "tagline": "Record, arrange, mix, and design sound for music, games, and film",
     "desc": "Run tracking sessions, edit multi-track recordings cleanly, mix spatial and stereo tracks, and craft custom sound effects.",
@@ -66651,7 +66651,7 @@ window.CAREERS_ALL = [
     "id": "space-mission-ops",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🛰️",
+    "icon": "satellite",
     "title": "Space Operations & Mission Control Flight Director",
     "tagline": "Monitor spacecraft telemetry and command satellites from ground rooms",
     "desc": "Watch live health links from orbit, plan thruster burns, hand off ground antennas, and follow anomaly recovery checklists calmly.",
@@ -66828,7 +66828,7 @@ window.CAREERS_ALL = [
     "id": "food-science-altprotein",
     "cat": "science",
     "catName": "Science & DeepTech",
-    "icon": "🔬",
+    "icon": "microscope",
     "title": "Food Science & Novel Protein Technologist",
     "tagline": "Formulate safe foods, shelf stability, and plant or fermented proteins",
     "desc": "Test ingredient texture, extrusion, fermentation yields, safety microbes, and scale recipes reliably from kitchen test to factory.",
@@ -67005,7 +67005,7 @@ window.CAREERS_ALL = [
     "id": "rpa-automation",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "🤖",
+    "icon": "ai",
     "title": "Robotic Process Automation (RPA) & Intelligent Automation Architect",
     "tagline": "Automate repetitive invoice, HR, and back-office data workflows",
     "desc": "Build reliable software bots and API scripts that move structured records between legacy ERPs, spreadsheets, and portals without errors.",
@@ -67183,7 +67183,7 @@ window.CAREERS_ALL = [
     "id": "gis-geospatial",
     "cat": "science",
     "catName": "Science & DeepTech",
-    "icon": "🗺️",
+    "icon": "ai",
     "title": "GIS & Geospatial Intelligence Analyst",
     "tagline": "Analyze satellite imagery, LiDAR, and location maps for planning",
     "desc": "Build spatial databases, map flood zones, power grids, or urban transit flows, and verify ground truth carefully.",
@@ -67364,7 +67364,7 @@ window.CAREERS_ALL = [
     "title": "Tailoring, Embroidery & Handloom Weaving",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🧵",
+    "icon": "ai",
     "tagline": "Clothes made to a person, not to a size chart.",
     "desc": "Cutting, stitching and finishing garments by hand or on machines, from a single alteration on a Tuesday morning to a full handloom bolt of cloth. Includes tailoring, dressmaking, embroidery, weaving, block printing and upholstery.",
     "stream": "Any Stream (Artistic & Manual Aptitude)",
@@ -67521,7 +67521,7 @@ window.CAREERS_ALL = [
     "title": "Ayurvedic, Unani & Homeopathic Practice",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🌿",
+    "icon": "leaf",
     "tagline": "Medicine from a tradition, licensed to practise it.",
     "desc": "Diagnosing, treating and dispensing herbal or constitutional remedies under AYUSH regulation. Requires a recognised degree from a Ministry of AYUSH institution plus registration with the relevant state council to practise legally.",
     "stream": "Science (PCB / Biology)",
@@ -67664,7 +67664,7 @@ window.CAREERS_ALL = [
     "title": "Food Delivery & Gig Platform Rider",
     "cat": "trades",
     "catName": "Skilled Trades & Craft",
-    "icon": "🛵",
+    "icon": "wrench",
     "tagline": "The largest entry point into independent work in Indian cities.",
     "desc": "On-demand delivery and ride-hailing work for food, groceries, pharmacy and parcels. The dominant first job for people entering urban employment without a degree or a contact, and a genuine small business when run as one.",
     "stream": "Any Stream",
@@ -67802,7 +67802,7 @@ window.CAREERS_ALL = [
     "title": "Freelance & Independent Professional",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🧑‍💻",
+    "icon": "grad",
     "tagline": "Your skill is the business. Nothing is guaranteed, and nothing is imposed.",
     "desc": "Independent contracting across writing, design, development, video, marketing, translation and consulting. Fee-based project work without a single employer, built one client at a time.",
     "stream": "Any Stream",
@@ -67943,7 +67943,7 @@ window.CAREERS_ALL = [
     "title": "Homestay & Short-Let Host",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "🏡",
+    "icon": "chart",
     "tagline": "Rent out the rooms you are not using. Then learn how to do it properly.",
     "desc": "Short-stay accommodation for visitors - a spare room, an entire flat, a serviced apartment, a homestay property, or a portfolio of them. Includes listing management, guest communication, cleaning operations and regulatory compliance.",
     "stream": "Any Stream",
@@ -68078,7 +68078,7 @@ window.CAREERS_ALL = [
     "id": "legislator-public-representative",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "🏛️",
+    "icon": "landmark",
     "title": "Legislator, Politician & Public Representative",
     "tagline": "Represent voters, scrutinize budgets, and debate public laws",
     "desc": "Draft and vote on bills, sit on legislative committees, manage constituent casework, and build practical coalitions across parties.",
@@ -68210,7 +68210,7 @@ window.CAREERS_ALL = [
     "id": "paralegal-legal-ops",
     "cat": "law",
     "catName": "Law & Public Safety",
-    "icon": "⚖️",
+    "icon": "scale",
     "title": "Paralegal, Legal Operations & eDiscovery Specialist",
     "tagline": "Manage legal case files, discovery pipelines, and contract workflows",
     "desc": "Organize trial evidence, check legal citations, coordinate discovery software, and keep filings cleanly on schedule for lawyers.",
@@ -68338,7 +68338,7 @@ window.CAREERS_ALL = [
     "id": "archaeology-anthropology",
     "cat": "science",
     "catName": "Science & DeepTech",
-    "icon": "🏺",
+    "icon": "scale",
     "title": "Archaeologist & Cultural Anthropologist",
     "tagline": "Excavate historical sites, preserve finds, and study cultures",
     "desc": "Survey land with ground radar and LiDAR, run careful trenches, lab-date materials, and study human societies past and present.",
@@ -68467,7 +68467,7 @@ window.CAREERS_ALL = [
     "id": "paleontology-evolutionary-bio",
     "cat": "science",
     "catName": "Science & DeepTech",
-    "icon": "🦖",
+    "icon": "medical",
     "title": "Paleontologist & Evolutionary Biologist",
     "tagline": "Excavate fossils, scan rock layers, and study ancient life",
     "desc": "Dig and prep museum specimens, analyze microfossils for ancient climate clues, and reconstruct evolutionary trees.",
@@ -68590,7 +68590,7 @@ window.CAREERS_ALL = [
     "id": "sociology-demography-research",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "📊",
+    "icon": "chart",
     "title": "Sociologist, Demographer & Public Opinion Researcher",
     "tagline": "Study population shifts, surveys, and social trends with data",
     "desc": "Run census and survey analysis, design interview studies, track migration and fertility shifts, and publish clear public reports.",
@@ -68720,7 +68720,7 @@ window.CAREERS_ALL = [
     "id": "ecommerce-quickcommerce-lead",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "⚡",
+    "icon": "bolt",
     "title": "E-Commerce & Quick-Commerce Category Manager",
     "tagline": "Manage online retail stock, pricing, and brand partnerships",
     "desc": "Own product category margins, keep fast-moving items in dark stores, negotiate vendor deals, and fix sell-through drops.",
@@ -68849,7 +68849,7 @@ window.CAREERS_ALL = [
     "id": "business-analyst-process-ops",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "📈",
+    "icon": "trending",
     "title": "Business Analyst & Enterprise Process Specialist",
     "tagline": "Bridge business teams and software engineers with clear requirements",
     "desc": "Map messy company workflows, talk to operations staff, write exact feature specs, and test fixes before rollout.",
@@ -68980,7 +68980,7 @@ window.CAREERS_ALL = [
     "id": "army-officer-defense-commander",
     "cat": "safety",
     "catName": "Law & Public Safety",
-    "icon": "🪖",
+    "icon": "shield",
     "title": "Army Officer & Defense Commander (Land Forces)",
     "tagline": "Lead military units, training, logistics, and defense operations",
     "desc": "Command platoons or battalions, oversee readiness and gear maintenance, lead disaster relief, and carry legal accountability for troops.",
@@ -69109,7 +69109,7 @@ window.CAREERS_ALL = [
     "id": "firefighter-smokejumper-rescue",
     "cat": "safety",
     "catName": "Law & Public Safety",
-    "icon": "🚒",
+    "icon": "shield",
     "title": "Firefighter, Wildfire Smokejumper & Technical Rescue Specialist",
     "tagline": "Respond first to fires, car wrecks, floods, and wilderness blazes",
     "desc": "Operate hoses and extrication tools, enter smoke-filled structures, jump into wildfire lines, and run urgent medical care.",
@@ -69240,7 +69240,7 @@ window.CAREERS_ALL = [
     "id": "bomb-disposal-eod-technician",
     "cat": "safety",
     "catName": "Law & Public Safety",
-    "icon": "💣",
+    "icon": "briefcase",
     "title": "Bomb Disposal (EOD) & Explosive Ordnance Specialist",
     "tagline": "Inspect and render safe unexploded ordnance and explosive threats",
     "desc": "Operate bomb-disposal robots, run portable X-rays, handle chemical or improvised devices, and clear historic wartime shells.",
@@ -69368,7 +69368,7 @@ window.CAREERS_ALL = [
     "id": "manga-webtoon-comic-artist",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎨",
+    "icon": "palette",
     "title": "Manga, Webtoon & Graphic Novel Artist",
     "tagline": "Write, draw, ink, and pace serialized comics and webtoons",
     "desc": "Sketch character sheets, ink sequential panels, format scrolling webtoon episodes, and hit strict weekly publishing deadlines.",
@@ -69495,7 +69495,7 @@ window.CAREERS_ALL = [
     "id": "retail-buyer-fashion-merchandiser",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "👗",
+    "icon": "ai",
     "title": "Retail Fashion Buyer & Luxury Merchandiser",
     "tagline": "Choose seasonal clothing lines and manage store inventory budgets",
     "desc": "Meet apparel suppliers, pick fabric weights and color assortments, negotiate factory prices, and watch sell-through rates closely.",
@@ -69624,7 +69624,7 @@ window.CAREERS_ALL = [
     "id": "executive-ghostwriter-author",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "✍️",
+    "icon": "pen",
     "title": "Executive Ghostwriter & Bestseller Collaborator",
     "tagline": "Interview founders and experts to write books under their name",
     "desc": "Record long interviews, organize tangled life experiences into readable chapters, match a client's voice, and manage editorial deadlines.",
@@ -69751,7 +69751,7 @@ window.CAREERS_ALL = [
     "id": "keynote-political-speechwriter",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎙️",
+    "icon": "palette",
     "title": "Presidential, Political & Keynote Speechwriter",
     "tagline": "Write spoken remarks and keynotes tailored to real speakers",
     "desc": "Draft speeches, debate briefs, and public statements shaped around a speaker's pacing, policy stakes, and live audience.",
@@ -69878,7 +69878,7 @@ window.CAREERS_ALL = [
     "id": "lexicographer-knowledge-architect",
     "cat": "edu",
     "catName": "Education & Academia",
-    "icon": "📖",
+    "icon": "book",
     "title": "Lexicographer & Knowledge-Graph Editor",
     "tagline": "Document changing language in dictionaries and structured graphs",
     "desc": "Check billion-word usage corpora, write clear plain definitions, trace word origins, and maintain clean semantic data graphs.",
@@ -70006,7 +70006,7 @@ window.CAREERS_ALL = [
     "id": "martial-arts-self-defense-master",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🥋",
+    "icon": "shield",
     "title": "Martial Arts Master & Combat Defensive Instructor",
     "tagline": "Coach martial arts, practical self-defense, and physical discipline",
     "desc": "Teach grappling, striking, and footwork safely across beginners, youth, and competitors while keeping classes injury-free.",
@@ -70136,7 +70136,7 @@ window.CAREERS_ALL = [
     "id": "sports-agent-athlete-manager",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "🏅",
+    "icon": "shield",
     "title": "Sports Agent & Athlete Commercial Negotiator",
     "tagline": "Negotiate player contracts, endorsements, and post-career plans",
     "desc": "Review team salary rules, pitch brand sponsors, guard athlete finances carefully, and support clients through injuries or trades.",
@@ -70266,7 +70266,7 @@ window.CAREERS_ALL = [
     "id": "cruise-ship-hotel-director",
     "cat": "hosp",
     "catName": "Hospitality & Tourism",
-    "icon": "🚢",
+    "icon": "briefcase",
     "title": "Cruise Ship Hotel Director & Maritime Hospitality Officer",
     "tagline": "Manage dining, housekeeping, and guest operations aboard large ships",
     "desc": "Lead hundreds of onboard hospitality crew, balance port provisioning, enforce strict maritime sanitation rules, and handle guest issues.",
@@ -70395,7 +70395,7 @@ window.CAREERS_ALL = [
     "id": "food-critic-michelin-inspector",
     "cat": "hosp",
     "catName": "Hospitality & Tourism",
-    "icon": "🍽️",
+    "icon": "food",
     "title": "Food Critic, Travel Essayist & Restaurant Inspector",
     "tagline": "Eat anonymously, judge kitchens honestly, and write sharp reviews",
     "desc": "Evaluate seasoning, technique, consistency, and room pacing across street stalls and formal dining rooms for editorial guides.",
@@ -70524,7 +70524,7 @@ window.CAREERS_ALL = [
     "id": "tea-coffee-wine-estate-director",
     "cat": "agri",
     "catName": "Agriculture, Forestry & Food",
-    "icon": "☕",
+    "icon": "briefcase",
     "title": "Tea, Specialty Coffee & Wine Estate Manager (Viticulturist)",
     "tagline": "Run plantations or vineyards from soil health through harvest processing",
     "desc": "Manage pruning, soil moisture, seasonal plucking or crush schedules, factory curing or fermentation, and export buyer contracts.",
@@ -70654,7 +70654,7 @@ window.CAREERS_ALL = [
     "id": "humanitarian-aid-un-officer",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🕊️",
+    "icon": "ai",
     "title": "Humanitarian Aid & UN International Development Officer",
     "tagline": "Coordinate food, shelter, and relief logistics in conflict or disaster zones",
     "desc": "Set up emergency camps, arrange water and medical supplies, deal with local officials safely, and file clear donor audits.",
@@ -70784,7 +70784,7 @@ window.CAREERS_ALL = [
     "id": "ngo-social-enterprise-director",
     "cat": "biz",
     "catName": "Business & Finance",
-    "icon": "🌱",
+    "icon": "leaf",
     "title": "NGO & Social Enterprise Executive Director",
     "tagline": "Run nonprofits and social businesses serving communities sustainably",
     "desc": "Raise grants or impact capital, keep CSR and tax compliance clean, lead field teams, and prove programs actually help.",
@@ -70913,7 +70913,7 @@ window.CAREERS_ALL = [
     "id": "institutional-chaplain-counselor",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "🕯️",
+    "icon": "ai",
     "title": "Institutional Chaplain & Multifaith Spiritual Counselor",
     "tagline": "Support patients, families, and service members in serious crises",
     "desc": "Sit alongside people facing loss, trauma, or hospital emergencies across diverse faiths or no religion at all.",
@@ -71039,7 +71039,7 @@ window.CAREERS_ALL = [
     "id": "celebrity-personal-stylist",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "👠",
+    "icon": "ai",
     "title": "Celebrity Personal Stylist & Executive Image Consultant",
     "tagline": "Build wardrobes and red-carpet looks for public figures",
     "desc": "Source garments from showrooms, handle fittings and tailoring on tight turnarounds, and dress clients for tours, shoots, and events.",
@@ -71165,7 +71165,7 @@ window.CAREERS_ALL = [
     "id": "professional-organizer-declutter",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "✨",
+    "icon": "grad",
     "title": "Professional Space Organizer & Declutter Consultant",
     "tagline": "Turn cluttered homes and offices into systems people can keep",
     "desc": "Sort belongings beside overwhelmed clients, design practical storage zones, coordinate donations, and set simple upkeep habits.",
@@ -71292,7 +71292,7 @@ window.CAREERS_ALL = [
     "id": "wedding-officiant-celebrant",
     "cat": "service",
     "catName": "Human Care & Services",
-    "icon": "💍",
+    "icon": "rocket",
     "title": "Wedding Officiant & Ceremonial Celebrant",
     "tagline": "Write personal ceremonies and legally solemnize marriages",
     "desc": "Meet couples, write warm, personal scripts that fit both families, keep ceremonies calm on the day, and file legal marriage paperwork.",
@@ -71418,7 +71418,7 @@ window.CAREERS_ALL = [
     "id": "master-perfumer-fragrance-chemist",
     "cat": "science",
     "catName": "Science & DeepTech",
-    "icon": "✨",
+    "icon": "briefcase",
     "title": "Master Perfumer ('The Nose') & Fragrance Chemist",
     "tagline": "Train your nose for years to compose commercial fragrances",
     "desc": "Memorize hundreds of natural oils and synthetic aroma chemicals, balance evaporation over hours, and develop scents for consumer brands.",
@@ -71545,7 +71545,7 @@ window.CAREERS_ALL = [
     "id": "stage-magician-mentalist",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎩",
+    "icon": "palette",
     "title": "Stage Illusionist, Close-Up Magician & Mentalist",
     "tagline": "Perform sleight of hand, stage illusions, and audience mentalism",
     "desc": "Practice mechanics relentlessly, build live shows for events and theaters, read crowds cleanly, and turn technical skill into surprise.",
@@ -71671,7 +71671,7 @@ window.CAREERS_ALL = [
     "id": "museum-taxidermist-osteologist",
     "cat": "science",
     "catName": "Science & DeepTech",
-    "icon": "🦉",
+    "icon": "chart",
     "title": "Museum Taxidermist & Natural History Specimen Preparator",
     "tagline": "Preserve wildlife specimens and articulate skeletons for museums",
     "desc": "Clean bones, prepare scientific study skins, sculpt accurate anatomy forms, and maintain natural history research collections.",
@@ -71798,7 +71798,7 @@ window.CAREERS_ALL = [
     "id": "live-streamer-interactive-host",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎮",
+    "icon": "gamepad",
     "title": "Live Streamer & Interactive Gaming Broadcaster",
     "tagline": "Run live broadcasts and manage interactive chat communities",
     "desc": "Stream gaming, IRL trips, coding, or commentary live for hours, handle live chat moderation, and balance sponsorships with steady schedules.",
@@ -71925,7 +71925,7 @@ window.CAREERS_ALL = [
     "id": "standup-comedian-humor-writer",
     "cat": "creative",
     "catName": "Creative Arts & Design",
-    "icon": "🎤",
+    "icon": "medical",
     "title": "Stand-Up Comedian & Television Comedy Writer",
     "tagline": "Write jokes, bomb cleanly at open mics, and build live sets",
     "desc": "Test new material nightly in clubs, tighten punchlines word by word, write for television or tours, and record specials.",
@@ -72050,7 +72050,7 @@ window.CAREERS_ALL = [
     "id": "agentic-ai-multi-agent-architect",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "🤖",
+    "icon": "ai",
     "title": "Agentic AI & Multi-Agent Systems (MAS) Architect",
     "tagline": "Build software workflows where AI models call tools safely",
     "desc": "Connect models to APIs, databases, and sandboxes via MCP and tool schemas, add guardrails, and test where multi-step loops fail.",
@@ -72179,7 +72179,7 @@ window.CAREERS_ALL = [
     "id": "vla-humanoid-robotics-scientist",
     "cat": "eng",
     "catName": "Engineering & Robotics",
-    "icon": "🦾",
+    "icon": "ai",
     "title": "Vision-Language-Action (VLA) Humanoid Robotics Scientist",
     "tagline": "Train vision-and-language models that control robot movement",
     "desc": "Connect camera feeds and natural commands directly to joint trajectories in simulation and physical robot labs.",
@@ -72309,7 +72309,7 @@ window.CAREERS_ALL = [
     "id": "bci-neural-decoder-engineer",
     "cat": "health",
     "catName": "Healthcare & Medicine",
-    "icon": "🧠",
+    "icon": "neuro",
     "title": "Brain-Computer Interface (BCI) Neural Decoder Engineer",
     "tagline": "Process brain signals to restore movement and communication",
     "desc": "Filter noisy electrode recordings, build low-latency decoding models, and test assistive neural hardware safely alongside patients.",
@@ -72438,7 +72438,7 @@ window.CAREERS_ALL = [
     "id": "post-quantum-cryptography-architect",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "🔐",
+    "icon": "shield",
     "title": "Post-Quantum Cryptography (PQC) & Algorithmic Resilience Architect",
     "tagline": "Upgrade networks from RSA/ECC to quantum-resistant encryption",
     "desc": "Implement NIST-standardized lattice algorithms across banking, cloud TLS, and hardware keys without breaking legacy systems.",
@@ -72568,7 +72568,7 @@ window.CAREERS_ALL = [
     "id": "direct-air-capture-mineralization",
     "cat": "eco",
     "catName": "Sustainability & Energy",
-    "icon": "🍃",
+    "icon": "ai",
     "title": "Direct Air Capture (DAC) & Carbon Mineralization Engineer",
     "tagline": "Engineer chemical plants that scrub CO₂ from air and store it",
     "desc": "Design industrial air-contactors, chemical sorbents, compression pumps, and underground storage pipelines for carbon removal.",
@@ -72695,7 +72695,7 @@ window.CAREERS_ALL = [
     "id": "orbital-station-logistics-director",
     "cat": "space",
     "catName": "Aviation & Aerospace",
-    "icon": "🛰️",
+    "icon": "satellite",
     "title": "Commercial Space Station Habitation & Orbital Logistics Director",
     "tagline": "Manage crew habitats, life support, and cargo schedules in orbit",
     "desc": "Plan closed-loop water and oxygen systems, cargo manifests, and crew procedures for commercial orbital stations and NASA contracts.",
@@ -72824,7 +72824,7 @@ window.CAREERS_ALL = [
     "id": "synthetic-biology-cellular-agriculture",
     "cat": "science",
     "catName": "Science & DeepTech",
-    "icon": "🧬",
+    "icon": "dna",
     "title": "Synthetic Biology & Cellular Agriculture Bioengineer",
     "tagline": "Program microbes and bioreactors to grow proteins and materials",
     "desc": "Engineer fermentation strains, scale sterile bioreactor tanks, and bring precision-fermented dairy, enzymes, or materials to cost targets.",
@@ -72952,7 +72952,7 @@ window.CAREERS_ALL = [
     "id": "deepfake-forensics-provenance",
     "cat": "tech",
     "catName": "Technology & AI",
-    "icon": "🔍",
+    "icon": "medical",
     "title": "Deepfake Forensics & Digital Provenance Investigator",
     "tagline": "Verify digital media and detect synthetic audio or video fraud",
     "desc": "Check cryptographic C2PA provenance signatures, inspect frame compression and audio artifacts, and document evidence for courts or banks.",
@@ -73075,5 +73075,3756 @@ window.CAREERS_ALL = [
       "uk",
       "me"
     ]
+  },
+  {
+    "id": "quantum-computing-engineer",
+    "cat": "tech",
+    "catName": "Technology & AI",
+    "icon": "chart",
+    "era": "new",
+    "title": "Quantum Computing & Cryptography Engineer",
+    "tagline": "Write algorithms and control hardware for quantum processors",
+    "desc": "Build quantum circuits, error-correction decoders, and post-quantum encryption protocols for next-generation computing.",
+    "stream": "Science (PCM / Physics & Math)",
+    "salary": "Entry: $110K / ₹16-24 LPA · Mid: $175K / ₹35-60 LPA · Lead: $300K+ / ₹95 LPA+",
+    "growth": "28% (Emerging frontier)",
+    "demand": "High (Specialized)",
+    "aiImpact": "AI-assisted calibration: Machine learning tunes qubit pulses, while physicists and algorithm engineers design the hardware and math.",
+    "overview": "Quantum engineers split between cryogenics/microwave hardware labs and software stacks like Qiskit or Cirq. A typical week means debugging noisy qubits, testing error-correction codes, or migrating enterprise networks to post-quantum cryptography.",
+    "education": {
+      "highSchoolPrereqs": "Physics, Linear Algebra, Complex Numbers, Calculus, Computer Science.",
+      "entranceExams": "JEE Advanced, GATE (PH/CS), GRE Physics/CS, JAM.",
+      "undergradDegrees": [
+        "B.Tech / B.S. in Engineering Physics",
+        "B.S. in Physics & Computer Science",
+        "B.Tech in Electronics & Communication"
+      ],
+      "postgradDegrees": [
+        "M.S. / M.Tech in Quantum Technology",
+        "Ph.D. in Quantum Information Science"
+      ],
+      "certifications": [
+        "IBM Qiskit Developer Certification",
+        "Post-Quantum Cryptography (NIST PQC) Workshops"
+      ],
+      "topInstitutes": [
+        "MIT (USA)",
+        "ETH Zurich",
+        "IISc Bengaluru",
+        "IIT Madras",
+        "TU Delft",
+        "University of Waterloo"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Master linear algebra, quantum mechanics basics, Python, and Qiskit/Cirq simulators.",
+      "phase2": "Years 2–5: Work on qubit control electronics, superconducting/trapped-ion labs, or post-quantum security.",
+      "phase3": "Years 5–10+: Lead quantum hardware architecture or fault-tolerant algorithm research."
+    },
+    "skills": {
+      "hardSkills": [
+        "Linear Algebra",
+        "Qiskit / Cirq",
+        "Quantum Error Correction",
+        "Cryogenic Microwave Control",
+        "Post-Quantum Cryptography",
+        "Python & C++"
+      ],
+      "softSkills": [
+        "Mathematical Patience",
+        "Experimental Rigor",
+        "Cross-Disciplinary Translation"
+      ]
+    },
+    "roles": [
+      "Quantum Software Engineer",
+      "Qubit Hardware Physicist",
+      "Post-Quantum Cryptography Specialist",
+      "Quantum Algorithm Researcher"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Deep comfort with abstract math",
+        "Patience for noisy hardware"
+      ],
+      "workStyle": "Lab-hybrid or research-lab environment with heavy simulation work.",
+      "pros": [
+        "Cutting edge of computing",
+        "Very high compensation and research funding"
+      ],
+      "cons": [
+        "Often requires a Master’s or Ph.D.",
+        "Commercial timelines are long"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Quantum Computing & Cryptography Engineer even on routine weeks?",
+      "Are you prepared for the training path (B.Tech / B.S. in Engineering Physics) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Quantum Computing Engineer",
+      "Quantum Algorithm Researcher",
+      "Quantum Hardware Physicist",
+      "Post-Quantum Cryptographer",
+      "Quantum Error Correction Engineer",
+      "Qubit Calibration Engineer",
+      "Quantum Systems Architect",
+      "Photonic Quantum Engineer",
+      "Quantum Control Software Developer",
+      "Quantum Research Scientist"
+    ],
+    "edu": "master",
+    "interests": [
+      "tech",
+      "science",
+      "machines"
+    ],
+    "degrees": [
+      "engineering",
+      "computing",
+      "science"
+    ],
+    "aiTag": "augmented"
+  },
+  {
+    "id": "bci-neurotech-engineer",
+    "cat": "eng",
+    "catName": "Engineering & Robotics",
+    "icon": "neuro",
+    "era": "new",
+    "title": "Brain-Computer Interface & Neurotech Engineer",
+    "tagline": "Decode neural signals to restore movement, speech, and sight",
+    "desc": "Design biocompatible microelectrodes, neural signal decoders, and assistive neuroprosthetics for clinical and research use.",
+    "stream": "Science (PCM or PCB + Math)",
+    "salary": "Entry: $95K / ₹12-18 LPA · Mid: $155K / ₹28-48 LPA · Lead: $240K+ / ₹75 LPA+",
+    "growth": "24% (Rapid growth)",
+    "demand": "High (Niche)",
+    "aiImpact": "AI decodes spike trains: Deep learning translates raw brainwaves into cursor motion or speech, guided by neural engineers.",
+    "overview": "Neurotech engineers sit where neuroscience meets embedded systems and signal processing. You might spend mornings filtering EEG/ECoG noise in Python and afternoons testing low-power implants or clinical rehab interfaces.",
+    "education": {
+      "highSchoolPrereqs": "Biology, Physics, Calculus, Signal Processing basics.",
+      "entranceExams": "JEE, GATE (BM/EE), GRE, NEET (for clinical neuro-tracks).",
+      "undergradDegrees": [
+        "B.Tech / B.S. in Biomedical Engineering",
+        "B.S. in Neural Engineering / Neuroscience",
+        "B.Tech in Electrical Engineering"
+      ],
+      "postgradDegrees": [
+        "M.S. in Neuroengineering",
+        "Ph.D. in Computational Neuroscience / Bioelectronics"
+      ],
+      "certifications": [
+        "Good Clinical Practice (GCP)",
+        "ISO 13485 Medical Device Quality"
+      ],
+      "topInstitutes": [
+        "ETH Zurich",
+        "Johns Hopkins University",
+        "Stanford University",
+        "IIT Bombay",
+        "EPFL"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Build EEG/EMG hardware prototypes, learn DSP, Python, and neuroanatomy.",
+      "phase2": "Years 2–5: Develop neural decoders, biocompatible packaging, or FDA/CDSCO clinical trial pipelines.",
+      "phase3": "Years 5–10+: Direct neuroprosthetic product lines or academic neurotech labs."
+    },
+    "skills": {
+      "hardSkills": [
+        "Neural Signal Processing (EEG/ECoG)",
+        "Embedded C/C++",
+        "Biocompatible Materials",
+        "PyTorch / Decoding Models",
+        "Analog Front-End PCB Design"
+      ],
+      "softSkills": [
+        "Clinical Empathy",
+        "Regulatory Discipline",
+        "Interdisciplinary Teamwork"
+      ]
+    },
+    "roles": [
+      "Neural Signal Engineer",
+      "BCI Firmware Engineer",
+      "Neuroprosthetics Researcher",
+      "Clinical Neurotechnologist"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Fascination with the brain and hardware",
+        "Careful safety-first engineering"
+      ],
+      "workStyle": "Cleanroom, wet-lab, or clinical trial collaboration.",
+      "pros": [
+        "Life-changing impact for paralyzed patients",
+        "Rapidly growing startup and medtech investment"
+      ],
+      "cons": [
+        "Strict medical regulatory cycles",
+        "Long R&D timelines"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Brain-Computer Interface & Neurotech Engineer even on routine weeks?",
+      "Are you prepared for the training path (B.Tech / B.S. in Biomedical Engineering) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Brain-Computer Interface Engineer",
+      "Neurotechnology Engineer",
+      "Neural Decoder Scientist",
+      "Neuroprosthetics Engineer",
+      "EEG Signal Processing Engineer",
+      "Bioelectronics Engineer",
+      "Neural Implant Firmware Developer",
+      "Clinical Neurotechnologist",
+      "Computational Neuroscientist"
+    ],
+    "edu": "master",
+    "interests": [
+      "tech",
+      "health",
+      "science",
+      "machines"
+    ],
+    "degrees": [
+      "engineering",
+      "health",
+      "science"
+    ],
+    "aiTag": "augmented"
+  },
+  {
+    "id": "agentic-ai-architect",
+    "cat": "tech",
+    "catName": "Technology & AI",
+    "icon": "ai",
+    "era": "new",
+    "title": "Agentic AI & Multi-Agent Systems Architect",
+    "tagline": "Design autonomous software agents that plan, verify, and act safely",
+    "desc": "Build tool-using AI workflows, evaluation harnesses, guardrails, and human-in-the-loop orchestration systems.",
+    "stream": "Science (PCM) / Any with Computing",
+    "salary": "Entry: $100K / ₹14-22 LPA · Mid: $170K / ₹35-65 LPA · Lead: $290K+ / ₹90 LPA+",
+    "growth": "40% (Fastest growing tech niche)",
+    "demand": "Extreme",
+    "aiImpact": "You orchestrate the AI: Your core job is making autonomous systems predictable, auditable, and bounded.",
+    "overview": "Beyond single-prompt chatbots, agentic architects design systems where models call APIs, write code, query databases, and check their own work. Most time goes into failure-mode analysis, deterministic guardrails, latency budgets, and eval suites.",
+    "education": {
+      "highSchoolPrereqs": "Mathematics, Programming, Systems Thinking.",
+      "entranceExams": "JEE, GATE, SAT, GRE.",
+      "undergradDegrees": [
+        "B.Tech / B.S. in Computer Science",
+        "B.S. in AI & Data Science",
+        "BCA / B.Sc. Computer Science"
+      ],
+      "postgradDegrees": [
+        "M.S. in Machine Learning",
+        "M.Tech in AI Systems"
+      ],
+      "certifications": [
+        "Cloud Architecture Certifications",
+        "AI Safety & Evaluation Fellowships"
+      ],
+      "topInstitutes": [
+        "CMU",
+        "Stanford",
+        "IIT Delhi",
+        "IIIT Hyderabad",
+        "University of Toronto"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Master backend APIs, TypeScript/Python, structured outputs, and RAG pipelines.",
+      "phase2": "Years 2–5: Build multi-agent orchestration, sandboxed tool execution, and automated red-teaming evals.",
+      "phase3": "Years 5–10+: Lead enterprise AI platform architecture and safety governance."
+    },
+    "skills": {
+      "hardSkills": [
+        "Python & TypeScript",
+        "Tool/Function Calling Architectures",
+        "Eval Harnesses & Red-Teaming",
+        "Distributed Queues",
+        "Sandboxing & Permissions"
+      ],
+      "softSkills": [
+        "Adversarial Thinking",
+        "Product Sense",
+        "Clear Risk Communication"
+      ]
+    },
+    "roles": [
+      "Agentic Systems Architect",
+      "AI Evaluation Engineer",
+      "LLM Infrastructure Lead",
+      "AI Safety Engineer"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Obsession with edge cases",
+        "Systems-level curiosity"
+      ],
+      "workStyle": "Fast-paced product engineering teams, remote/hybrid.",
+      "pros": [
+        "Massive demand across every industry",
+        "Direct product leverage"
+      ],
+      "cons": [
+        "Models and APIs change every few months",
+        "Debugging non-deterministic failures"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Agentic AI & Multi-Agent Systems Architect even on routine weeks?",
+      "Are you prepared for the training path (B.Tech / B.S. in Computer Science) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Agentic AI Architect",
+      "Multi-Agent Systems Engineer",
+      "AI Workflow Engineer",
+      "AI Evaluation Engineer",
+      "LLM Orchestration Engineer",
+      "AI Guardrails & Safety Engineer",
+      "Autonomous Agent Developer",
+      "Context Engineer",
+      "Applied AI Systems Lead"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "tech",
+      "build",
+      "machines"
+    ],
+    "degrees": [
+      "computing",
+      "engineering"
+    ],
+    "aiTag": "augmented"
+  },
+  {
+    "id": "synthetic-biology-engineer",
+    "cat": "science",
+    "catName": "Science & Deep Tech",
+    "icon": "dna",
+    "era": "new",
+    "title": "Synthetic Biology & Genome Foundry Engineer",
+    "tagline": "Program living cells to make medicines, materials, and clean fuels",
+    "desc": "Design DNA circuits, automate wet-lab biofoundries, and engineer microbes for therapeutics, enzymes, and sustainable chemicals.",
+    "stream": "Science (PCB or PCMB)",
+    "salary": "Entry: $80K / ₹8-14 LPA · Mid: $135K / ₹22-40 LPA · Lead: $210K+ / ₹60 LPA+",
+    "growth": "18% (Faster than average)",
+    "demand": "High",
+    "aiImpact": "AI predicts protein folding: Tools like AlphaFold speed up design, while bioengineers run wet-lab validation and scale fermentation.",
+    "overview": "Synthetic biologists treat DNA parts like modular engineering components. You design genetic constructs on screen, run liquid-handling robots in a biofoundry, and test whether engineered yeast or bacteria actually produce the target molecule at scale.",
+    "education": {
+      "highSchoolPrereqs": "Biology, Chemistry, Statistics, basic Python.",
+      "entranceExams": "NEET, IAT (IISER), GATE (BT/XL), GRE.",
+      "undergradDegrees": [
+        "B.Tech in Biotechnology",
+        "B.S. in Synthetic Biology / Bioengineering",
+        "B.Sc. in Molecular Biology"
+      ],
+      "postgradDegrees": [
+        "M.S. / M.Tech in Biochemical Engineering",
+        "Ph.D. in Synthetic Biology"
+      ],
+      "certifications": [
+        "Biosafety Level (BSL) Training",
+        "cGMP Biomanufacturing"
+      ],
+      "topInstitutes": [
+        "MIT",
+        "Imperial College London",
+        "IISc Bengaluru",
+        "IIT Madras",
+        "NCBS Bengaluru"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Learn molecular cloning, CRISPR, Python/R for bioinformatics, and aseptic lab skills.",
+      "phase2": "Years 2–5: Automate high-throughput screening or optimize bioreactor scale-up.",
+      "phase3": "Years 5–10+: Lead strain engineering or biomanufacturing R&D."
+    },
+    "skills": {
+      "hardSkills": [
+        "CRISPR & Gene Editing",
+        "Liquid-Handling Robotics",
+        "Bioinformatics (Python/R)",
+        "Bioreactor Fermentation",
+        "Metabolic Pathway Modeling"
+      ],
+      "softSkills": [
+        "Experimental Patience",
+        "Biosafety Rigor",
+        "Cross-Team Collaboration"
+      ]
+    },
+    "roles": [
+      "Strain Engineer",
+      "Biofoundry Automation Engineer",
+      "Bioprocess Scientist",
+      "Protein Design Engineer"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Comfort with wet labs and code",
+        "Precision and patience"
+      ],
+      "workStyle": "Biofoundry wet-lab paired with computational analysis.",
+      "pros": [
+        "Solves climate, food, and medicine problems simultaneously",
+        "High growth in biomanufacturing"
+      ],
+      "cons": [
+        "Living organisms behave unpredictably",
+        "High lab safety compliance"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Synthetic Biology & Genome Foundry Engineer even on routine weeks?",
+      "Are you prepared for the training path (B.Tech in Biotechnology) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Synthetic Biologist",
+      "Genome Foundry Engineer",
+      "Strain Development Engineer",
+      "Protein Design Scientist",
+      "CRISPR Research Associate",
+      "Metabolic Engineer",
+      "Bioprocess Scale-Up Engineer",
+      "Bioautomation Engineer",
+      "Computational Biologist"
+    ],
+    "edu": "master",
+    "interests": [
+      "science",
+      "health",
+      "tech",
+      "eco"
+    ],
+    "degrees": [
+      "science",
+      "engineering",
+      "health"
+    ],
+    "aiTag": "augmented"
+  },
+  {
+    "id": "fusion-energy-engineer",
+    "cat": "eco",
+    "catName": "Sustainability & Energy",
+    "icon": "sun",
+    "era": "new",
+    "title": "Fusion Energy & Plasma Physicist",
+    "tagline": "Contain star-hot plasma to build zero-carbon baseload power",
+    "desc": "Work on superconducting magnets, tokamak/stellarator plasma control, tritium breeding blankets, and high-heat-flux materials.",
+    "stream": "Science (PCM)",
+    "salary": "Entry: $95K / ₹12-20 LPA · Mid: $150K / ₹28-45 LPA · Lead: $230K+ / ₹65 LPA+",
+    "growth": "20% (Private fusion surge)",
+    "demand": "Growing Fast",
+    "aiImpact": "AI stabilizes plasma: Real-time ML controllers predict plasma disruptions milliseconds ahead; physicists and magnet engineers build the machine.",
+    "overview": "Private fusion startups and international projects like ITER need both plasma physicists and practical mechanical, cryogenic, and RF engineers. Days involve magnetic diagnostics, vacuum vessel thermal modeling, or control-room plasma shots.",
+    "education": {
+      "highSchoolPrereqs": "Physics, Electromagnetism, Thermodynamics, Differential Equations.",
+      "entranceExams": "JEE Advanced, GATE (PH/ME), JEST, GRE Physics.",
+      "undergradDegrees": [
+        "B.Tech in Engineering Physics",
+        "B.Tech in Mechanical / Nuclear / Electrical Engineering",
+        "B.S. in Physics"
+      ],
+      "postgradDegrees": [
+        "M.S. / M.Tech in Nuclear or Plasma Engineering",
+        "Ph.D. in Plasma Physics"
+      ],
+      "certifications": [
+        "Radiation & Cryogenic Safety Certifications"
+      ],
+      "topInstitutes": [
+        "MIT PSFC",
+        "Princeton University",
+        "IPR Gandhinagar (India)",
+        "IITs",
+        "Oxford / Culham"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Build strong electromagnetism, FEM/CFD simulation, or cryogenic/vacuum skills.",
+      "phase2": "Years 2–5: Specialize in HTS magnets, plasma diagnostics, or real-time control.",
+      "phase3": "Years 5–10+: Lead reactor subsystem design or fusion power plant engineering."
+    },
+    "skills": {
+      "hardSkills": [
+        "Magnetohydrodynamics (MHD)",
+        "High-Temperature Superconductors",
+        "Vacuum & Cryogenic Systems",
+        "ANSYS / COMSOL",
+        "Plasma Diagnostics"
+      ],
+      "softSkills": [
+        "Long-Horizon Persistence",
+        "Systems Integration",
+        "Precision Documentation"
+      ]
+    },
+    "roles": [
+      "Plasma Control Physicist",
+      "Fusion Magnet Engineer",
+      "Cryogenic Systems Engineer",
+      "Neutronics & Shielding Engineer"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Excited by mega-scale physics engineering",
+        "Patient with multi-year builds"
+      ],
+      "workStyle": "National labs or deep-tech fusion startups.",
+      "pros": [
+        "Historic clean-energy mission",
+        "Deeply technical, non-routine work"
+      ],
+      "cons": [
+        "Commercial power plants are still scaling up",
+        "Heavy physics/math prerequisites"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Fusion Energy & Plasma Physicist even on routine weeks?",
+      "Are you prepared for the training path (B.Tech in Engineering Physics) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Fusion Energy Engineer",
+      "Plasma Physicist",
+      "Tokamak Operations Engineer",
+      "Superconducting Magnet Engineer",
+      "Neutronics Engineer",
+      "Vacuum Vessel Engineer",
+      "Fusion Reactor Architect",
+      "RF Heating Systems Engineer"
+    ],
+    "edu": "master",
+    "interests": [
+      "science",
+      "eco",
+      "machines",
+      "tech"
+    ],
+    "degrees": [
+      "engineering",
+      "science"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "space-habitat-isru-engineer",
+    "cat": "space",
+    "catName": "Aviation & Aerospace",
+    "icon": "satellite",
+    "era": "new",
+    "title": "Space Habitat & Lunar ISRU Engineer",
+    "tagline": "Design life-support systems and extract water or oxygen off-Earth",
+    "desc": "Develop closed-loop ECLSS life support, radiation shielding, and lunar regolith processing systems for orbital stations and bases.",
+    "stream": "Science (PCM)",
+    "salary": "Entry: $90K / ₹10-16 LPA · Mid: $145K / ₹25-42 LPA · Lead: $220K+ / ₹60 LPA+",
+    "growth": "16% (Commercial space expansion)",
+    "demand": "High (Specialized)",
+    "aiImpact": "Low automation risk: Extreme spaceflight reliability requires human systems architects and physical hardware qualification.",
+    "overview": "As commercial space stations and lunar programs expand, engineers are needed to recycle 98% of cabin water/air, keep astronauts shielded from solar radiation, and turn lunar soil into breathable oxygen or propellant.",
+    "education": {
+      "highSchoolPrereqs": "Physics, Chemistry, Mathematics, Thermodynamics.",
+      "entranceExams": "JEE, IIST Admission, GATE (AE/ME/CH), GRE.",
+      "undergradDegrees": [
+        "B.Tech in Aerospace Engineering",
+        "B.Tech in Chemical / Mechanical Engineering",
+        "B.S. in Space Systems"
+      ],
+      "postgradDegrees": [
+        "M.S. / M.Tech in Space Architecture or Systems Engineering"
+      ],
+      "certifications": [
+        "NASA / ESA Systems Engineering Standards",
+        "Cleanroom Assembly Certification"
+      ],
+      "topInstitutes": [
+        "IIST Thiruvananthapuram",
+        "MIT",
+        "Caltech",
+        "University of Colorado Boulder",
+        "Cranfield University"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Work on thermal/fluid systems, CubeSats, or chemical process rigs.",
+      "phase2": "Years 2–5: Qualify ECLSS hardware, vacuum chambers, or regolith simulant testbeds.",
+      "phase3": "Years 5–10+: Architect orbital habitats or planetary surface infrastructure."
+    },
+    "skills": {
+      "hardSkills": [
+        "ECLSS Life Support",
+        "Thermal & Vacuum Testing",
+        "Electrochemistry & ISRU",
+        "Systems Engineering (MBSE)",
+        "Radiation Shielding"
+      ],
+      "softSkills": [
+        "Zero-Failure Mindset",
+        "Cross-Discipline Coordination"
+      ]
+    },
+    "roles": [
+      "ECLSS Engineer",
+      "Space Architect",
+      "Lunar ISRU Process Engineer",
+      "Planetary Surface Systems Lead"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Obsessed with self-sustaining systems",
+        "Calm under strict flight reviews"
+      ],
+      "workStyle": "Aerospace cleanrooms, thermal-vacuum test facilities, mission control.",
+      "pros": [
+        "Directly enables human spaceflight",
+        "High engineering prestige"
+      ],
+      "cons": [
+        "Strict export/citizenship rules in many countries",
+        "Slow hardware qualification cycles"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Space Habitat & Lunar ISRU Engineer even on routine weeks?",
+      "Are you prepared for the training path (B.Tech in Aerospace Engineering) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Space Habitat Architect",
+      "ECLSS Life Support Engineer",
+      "Lunar ISRU Engineer",
+      "Asteroid Mining Systems Engineer",
+      "Orbital Station Systems Engineer",
+      "Planetary Robotics Engineer",
+      "Space Radiation Shielding Engineer"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "space",
+      "science",
+      "machines",
+      "build"
+    ],
+    "degrees": [
+      "engineering",
+      "aviation"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "carbon-removal-engineer",
+    "cat": "eco",
+    "catName": "Sustainability & Energy",
+    "icon": "leaf",
+    "era": "new",
+    "title": "Carbon Removal & Direct Air Capture Engineer",
+    "tagline": "Capture CO2 from ambient air and lock it underground permanently",
+    "desc": "Design chemical sorbents, modular DAC contactors, mineralization plants, and MRV carbon accounting systems.",
+    "stream": "Science (PCM)",
+    "salary": "Entry: $80K / ₹9-15 LPA · Mid: $130K / ₹20-36 LPA · Lead: $195K+ / ₹52 LPA+",
+    "growth": "26% (Rapid climate-tech growth)",
+    "demand": "High",
+    "aiImpact": "Low automation risk: Building physical chemical plants and verifying geological storage stays hands-on.",
+    "overview": "Direct Air Capture (DAC) and enhanced rock weathering engineers bridge chemical engineering and climate policy. Weeks involve testing amine sorbents, cutting fan energy consumption, and auditing measurement, reporting, and verification (MRV) data.",
+    "education": {
+      "highSchoolPrereqs": "Chemistry, Thermodynamics, Physics, Calculus.",
+      "entranceExams": "JEE, GATE (CH/ME), GRE.",
+      "undergradDegrees": [
+        "B.Tech / B.S. in Chemical Engineering",
+        "B.S. in Environmental Engineering",
+        "B.Tech in Mechanical Engineering"
+      ],
+      "postgradDegrees": [
+        "M.S. in Carbon Management / Climate Engineering"
+      ],
+      "certifications": [
+        "ISO 14064 GHG Accounting",
+        "Process Safety Management (PSM)"
+      ],
+      "topInstitutes": [
+        "ETH Zurich",
+        "TU Delft",
+        "IIT Bombay",
+        "Stanford University",
+        "University of Edinburgh"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Master chemical process simulation (Aspen Plus), heat transfer, and LCA.",
+      "phase2": "Years 2–5: Scale pilot DAC skids or geological CO2 injection sites.",
+      "phase3": "Years 5–10+: Direct commercial gigaton-scale carbon removal facilities."
+    },
+    "skills": {
+      "hardSkills": [
+        "Chemical Process Design",
+        "Sorbent & Membrane Chemistry",
+        "Life Cycle Assessment (LCA)",
+        "Thermodynamics",
+        "MRV Verification"
+      ],
+      "softSkills": [
+        "Climate Pragmatism",
+        "Techno-Economic Rigor"
+      ]
+    },
+    "roles": [
+      "Direct Air Capture Engineer",
+      "Carbon Mineralization Scientist",
+      "Carbon MRV Auditor",
+      "CCUS Process Engineer"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Wants tangible climate solutions",
+        "Strong chemical/process intuition"
+      ],
+      "workStyle": "Pilot plants, industrial sites, and process-modeling offices.",
+      "pros": [
+        "Measurable climate impact",
+        "Strong global policy and corporate backing"
+      ],
+      "cons": [
+        "Energy-cost economics are tough",
+        "Field plants are often in remote locations"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Carbon Removal & Direct Air Capture Engineer even on routine weeks?",
+      "Are you prepared for the training path (B.Tech / B.S. in Chemical Engineering) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Direct Air Capture Engineer",
+      "Carbon Removal Engineer",
+      "CCUS Process Engineer",
+      "Carbon MRV Specialist",
+      "Enhanced Weathering Agronomist",
+      "CO2 Sequestration Geologist",
+      "Carbon Credit Verifier"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "eco",
+      "science",
+      "build",
+      "machines"
+    ],
+    "degrees": [
+      "engineering",
+      "science"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "merchant-navy-deck-officer",
+    "cat": "marine",
+    "catName": "Marine & Ocean",
+    "icon": "ai",
+    "era": "ongoing",
+    "title": "Merchant Navy Officer & Master Mariner",
+    "tagline": "Command ocean-going cargo, tanker, and container vessels worldwide",
+    "desc": "Navigate international sea lanes, manage bridge radar/ECDIS, oversee cargo stability, and lead shipboard crews.",
+    "stream": "Science (PCM)",
+    "salary": "Entry: $45K / ₹8-14 LPA · Mid: $110K / ₹30-55 LPA · Master: $180K+ / ₹80 LPA+ (Tax-exempt sea time)",
+    "growth": "6% (Steady global trade)",
+    "demand": "High (Officer shortage)",
+    "aiImpact": "Protected: International maritime law requires licensed human watchkeepers and Masters onboard.",
+    "overview": "Deck officers start as cadets, earn their Second Mate Certificate of Competency (CoC), and climb to Chief Officer and Master (Captain). Life at sea runs on 4-on/8-off bridge watches, port cargo operations, weather routing, and crew safety drills.",
+    "education": {
+      "highSchoolPrereqs": "Physics, Chemistry, Mathematics (PCM 60%+), 6/6 vision (no color blindness).",
+      "entranceExams": "IMU-CET (India), Sponsor Shipping Exams, MCA / USCG Officer Exams.",
+      "undergradDegrees": [
+        "B.Sc. in Nautical Science",
+        "Diploma in Nautical Science (DNS)",
+        "B.S. in Marine Transportation"
+      ],
+      "postgradDegrees": [
+        "Master Mariner (FG) Certificate of Competency",
+        "M.Sc. in Maritime Affairs"
+      ],
+      "certifications": [
+        "STCW Basic Safety",
+        "GMDSS",
+        "ECDIS",
+        "Advanced Fire Fighting",
+        "Officer of the Watch (OOW) CoC"
+      ],
+      "topInstitutes": [
+        "Indian Maritime University (IMU)",
+        "T.S. Chanakya",
+        "Warsash Maritime School (UK)",
+        "USMMA Kings Point",
+        "World Maritime University"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Complete DNS/B.Sc. Nautical + 12–18 months sea-time as Deck Cadet; pass 2nd Mate CoC.",
+      "phase2": "Years 2–6: Sail as 3rd and 2nd Officer, then earn Chief Mate CoC.",
+      "phase3": "Years 6–10+: Pass Master Mariner CoC to command vessels, or move ashore as Marine Superintendent / Harbor Pilot."
+    },
+    "skills": {
+      "hardSkills": [
+        "Celestial & ECDIS Navigation",
+        "COLREGs & Maritime Law",
+        "Cargo Stowage & Stability",
+        "Radar / ARPA",
+        "Bridge Resource Management"
+      ],
+      "softSkills": [
+        "Command Presence",
+        "Mental Resilience at Sea",
+        "Multicultural Crew Leadership"
+      ]
+    },
+    "roles": [
+      "Master Mariner (Captain)",
+      "Chief Officer",
+      "Second Mate",
+      "Harbor Pilot",
+      "Marine Superintendent"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Loves the ocean and travel",
+        "Comfortable months away from home"
+      ],
+      "workStyle": "4–6 month contracts onboard international ships, followed by months of paid leave ashore.",
+      "pros": [
+        "Tax-free high earnings in many jurisdictions",
+        "Early command responsibility and long shore leave"
+      ],
+      "cons": [
+        "Months away from family",
+        "Rough weather and strict maritime hierarchy"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Merchant Navy Officer & Master Mariner even on routine weeks?",
+      "Are you prepared for the training path (B.Sc. in Nautical Science) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Merchant Navy Captain",
+      "Master Mariner",
+      "Deck Officer",
+      "Nautical Officer",
+      "Third Officer",
+      "Chief Mate",
+      "Harbor Pilot",
+      "Maritime Pilot",
+      "Marine Superintendent",
+      "Dynamic Positioning (DPO) Officer"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "transport",
+      "outdoors",
+      "machines",
+      "law"
+    ],
+    "degrees": [
+      "engineering",
+      "vocational",
+      "science"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "marine-chief-engineer",
+    "cat": "marine",
+    "catName": "Marine & Ocean",
+    "icon": "gear",
+    "era": "ongoing",
+    "title": "Marine Engineer & Ship Propulsion Specialist",
+    "tagline": "Keep massive ship engines, boilers, and power grids running mid-ocean",
+    "desc": "Operate and overhaul two-stroke marine diesels, LNG dual-fuel engines, desalination plants, and shipboard automation.",
+    "stream": "Science (PCM)",
+    "salary": "Entry: $48K / ₹9-15 LPA · Mid: $115K / ₹35-60 LPA · Chief Eng: $185K+ / ₹85 LPA+",
+    "growth": "7% (Steady)",
+    "demand": "High",
+    "aiImpact": "Protected: Telemetry monitors vibration, but physical overhauls in mid-ocean engine rooms require human engineers.",
+    "overview": "A ship is a floating city with its own power plant, freshwater maker, sewage treatment, and 80,000-horsepower engine. Marine engineers troubleshoot mechanical, hydraulic, and electrical faults far from any repair yard.",
+    "education": {
+      "highSchoolPrereqs": "Physics, Chemistry, Mathematics, Mechanical aptitude.",
+      "entranceExams": "IMU-CET, GATE (ME), GME (Graduate Marine Engineering) Sponsorships.",
+      "undergradDegrees": [
+        "B.Tech / B.E. in Marine Engineering",
+        "B.E. Mechanical + Graduate Marine Engineering (GME)"
+      ],
+      "postgradDegrees": [
+        "MEO Class I (Chief Engineer) CoC",
+        "M.Sc. in Marine Engineering"
+      ],
+      "certifications": [
+        "STCW Engine Room Watchkeeping",
+        "High Voltage Shipboard Safety",
+        "MEO Class IV to Class I CoC"
+      ],
+      "topInstitutes": [
+        "DMET / IMU Kolkata",
+        "Tolani Maritime Institute",
+        "Massachusetts Maritime Academy",
+        "South Shields Marine School"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Graduate in Marine/Mechanical Eng, complete 6 months sea-time as Engine Cadet, pass Class IV CoC.",
+      "phase2": "Years 2–6: Serve as 4th, 3rd, and 2nd Engineer managing main propulsion and auxiliary machinery.",
+      "phase3": "Years 6–10+: Earn Chief Engineer CoC or transition ashore to Technical Superintendent / Classification Surveyor."
+    },
+    "skills": {
+      "hardSkills": [
+        "Marine Diesel & Dual-Fuel Engines",
+        "Shipboard Electrical & PLCs",
+        "Refrigeration & HVAC",
+        "Boilers & Purifiers",
+        "Emergency Damage Control"
+      ],
+      "softSkills": [
+        "Calm Troubleshooting Under Heat/Noise",
+        "Preventive Discipline"
+      ]
+    },
+    "roles": [
+      "Chief Marine Engineer",
+      "Second Engineer",
+      "Electro-Technical Officer (ETO)",
+      "Classification Society Surveyor"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Hands-on mechanical fixer",
+        "Thrives in high-responsibility machinery spaces"
+      ],
+      "workStyle": "Ship engine rooms (hot, loud, disciplined) with rotational shore leave.",
+      "pros": [
+        "High tax-advantaged pay",
+        "Strong onshore transition into power plants and maritime tech"
+      ],
+      "cons": [
+        "Physically demanding, hot/noisy engine spaces",
+        "Months at sea"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Marine Engineer & Ship Propulsion Specialist even on routine weeks?",
+      "Are you prepared for the training path (B.Tech / B.E. in Marine Engineering) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Marine Engineer",
+      "Chief Marine Engineer",
+      "Electro-Technical Officer (ETO)",
+      "Ship Propulsion Engineer",
+      "Marine Surveyor",
+      "Port Engineer",
+      "Offshore Rig Mechanic"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "machines",
+      "build",
+      "transport"
+    ],
+    "degrees": [
+      "engineering"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "naval-architect",
+    "cat": "marine",
+    "catName": "Marine & Ocean",
+    "icon": "briefcase",
+    "era": "ongoing",
+    "title": "Naval Architect & Offshore Vessel Designer",
+    "tagline": "Design ships, submarines, yachts, and floating offshore wind platforms",
+    "desc": "Model hull hydrodynamics, structural stability, propulsion efficiency, and wave-load survival for marine vessels.",
+    "stream": "Science (PCM)",
+    "salary": "Entry: $72K / ₹7-12 LPA · Mid: $115K / ₹18-32 LPA · Lead: $165K+ / ₹45 LPA+",
+    "growth": "6% (Green-shipping retrofits rising)",
+    "demand": "Steady to High",
+    "aiImpact": "AI-assisted CFD: Simulation speeds up hull shape testing; architects own seaworthiness and class approval.",
+    "overview": "Naval architects balance buoyancy, structural steel/composite weight, cargo capacity, and fuel burn. With shipping decarbonizing (methanol, ammonia, wind-assisted rotors, offshore wind floaters), hull redesigns are booming.",
+    "education": {
+      "highSchoolPrereqs": "Physics, Calculus, Mechanics.",
+      "entranceExams": "JEE Main & Advanced, GATE (NM), SAT.",
+      "undergradDegrees": [
+        "B.Tech / B.S. in Naval Architecture & Ocean Engineering"
+      ],
+      "postgradDegrees": [
+        "M.Tech / M.S. in Naval Architecture / Offshore Structures"
+      ],
+      "certifications": [
+        "Chartered Engineer (CEng / MRINA)",
+        "DNV / Lloyd’s Register Rules Training"
+      ],
+      "topInstitutes": [
+        "IIT Madras",
+        "IIT Kharagpur",
+        "CUSAT Kochi",
+        "University of Michigan",
+        "University of Southampton",
+        "TU Delft"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Master CAD (Rhino, AutoCAD), hydrostatics, and stability calculations.",
+      "phase2": "Years 2–5: Run CFD hull drag studies and FEA structural checks for shipyards or class societies.",
+      "phase3": "Years 5–10+: Lead vessel design programs or offshore renewable platform engineering."
+    },
+    "skills": {
+      "hardSkills": [
+        "Hydrodynamics & Stability",
+        "CFD & FEA Modeling",
+        "Rhino / Maxsurf / NAPA",
+        "Marine Structural Design",
+        "Class Society Rules (DNV/ABS)"
+      ],
+      "softSkills": [
+        "Spatial Geometry Intuition",
+        "Safety Accountability"
+      ]
+    },
+    "roles": [
+      "Naval Architect",
+      "Hydrodynamics Engineer",
+      "Offshore Structural Engineer",
+      "Yacht Designer",
+      "Subsea Pipeline Engineer"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Loves fluid physics and large structures",
+        "Detail-oriented designer"
+      ],
+      "workStyle": "Design offices mixed with towing-tank testing and shipyard dry-docks.",
+      "pros": [
+        "Tangible, awe-inspiring engineering products",
+        "Global shipyard & offshore mobility"
+      ],
+      "cons": [
+        "Cyclical shipbuilding markets",
+        "Long project timelines"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Naval Architect & Offshore Vessel Designer even on routine weeks?",
+      "Are you prepared for the training path (B.Tech / B.S. in Naval Architecture & Ocean Engineering) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Naval Architect",
+      "Ocean Engineer",
+      "Marine Structural Engineer",
+      "Yacht Designer",
+      "Subsea Engineer",
+      "Offshore Wind Platform Engineer",
+      "Hydrodynamics Specialist"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "build",
+      "machines",
+      "science",
+      "outdoors"
+    ],
+    "degrees": [
+      "engineering"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "commercial-diver-rov",
+    "cat": "marine",
+    "catName": "Marine & Ocean",
+    "icon": "palette",
+    "era": "ongoing",
+    "title": "Commercial Diver & Subsea ROV Pilot",
+    "tagline": "Weld, inspect, and operate robots deep underwater",
+    "desc": "Perform underwater structural welding, subsea cable repair, salvage, and remotely operated vehicle (ROV) piloting.",
+    "stream": "Any (Physical fitness + technical aptitude)",
+    "salary": "Entry: $55K / ₹6-12 LPA · Mid: $105K / ₹18-35 LPA · Saturation: $180K+ / ₹55 LPA+",
+    "growth": "8% (Offshore energy & subsea internet cables)",
+    "demand": "Steady",
+    "aiImpact": "Protected: Unpredictable currents, silt, and emergency subsea repairs demand human divers and pilots.",
+    "overview": "Commercial divers and ROV pilots keep offshore wind turbines, bridges, dams, and undersea fiber-optic cables intact. Saturation divers live in pressurized habitats for weeks to work at 100–300m depths.",
+    "education": {
+      "highSchoolPrereqs": "Strong swimming, hyperbaric medical fitness, mechanical/electronics basics.",
+      "entranceExams": "Commercial Diving Medical (HSE / ADCI / IMCA).",
+      "undergradDegrees": [
+        "Commercial Diving Diploma (ADCI / IMCA / HSE)",
+        "Associate Degree in Marine Technology / Robotics"
+      ],
+      "postgradDegrees": [
+        "Optional: ROV Electronics & Fiber-Optic Telemetry Specializations"
+      ],
+      "certifications": [
+        "IMCA / ADCI Commercial Diver",
+        "Saturation Diver Ticket",
+        "Subsea Underwater Welding (AWS D3.6)",
+        "ROV Pilot Technician"
+      ],
+      "topInstitutes": [
+        "Commercial Diving Academy",
+        "Professional Diving Centre",
+        "Heriot-Watt Marine Tech",
+        "NIOT Training"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Earn commercial air-diver or ROV tender certification; work on inland dams/ports.",
+      "phase2": "Years 2–5: Move offshore for subsea inspection, NDT testing, or ROV manipulator piloting.",
+      "phase3": "Years 5–10+: Qualify as Saturation Diver, Dive Supervisor, or Offshore Subsea Superintendent."
+    },
+    "skills": {
+      "hardSkills": [
+        "Surface-Supplied Diving",
+        "Underwater Cutting & Welding",
+        "ROV Sonar & Manipulator Control",
+        "Hydraulics & Fiber Optics",
+        "Hyperbaric Decompression"
+      ],
+      "softSkills": [
+        "Extreme Composure in Zero Visibility",
+        "Team Trust"
+      ]
+    },
+    "roles": [
+      "Commercial Diver",
+      "Saturation Diver",
+      "Subsea ROV Pilot",
+      "Underwater Welder",
+      "Marine Salvage Specialist"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Thrives in high-stakes physical environments",
+        "Mechanically handy"
+      ],
+      "workStyle": "Offshore vessels, ports, dams, rotational hitches.",
+      "pros": [
+        "No 4-year degree required",
+        "High offshore/saturation day rates"
+      ],
+      "cons": [
+        "Physically hazardous",
+        "Strict medical/age limits for saturation diving"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Commercial Diver & Subsea ROV Pilot even on routine weeks?",
+      "Are you prepared for the training path (Commercial Diving Diploma (ADCI / IMCA / HSE)) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Commercial Diver",
+      "Saturation Diver",
+      "Underwater Welder",
+      "Subsea ROV Pilot",
+      "Marine Salvage Diver",
+      "Offshore Inspection Diver",
+      "Hydrographic Sonar Technician"
+    ],
+    "edu": "diploma",
+    "interests": [
+      "outdoors",
+      "machines",
+      "build"
+    ],
+    "degrees": [
+      "vocational",
+      "engineering"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "marine-biologist",
+    "cat": "marine",
+    "catName": "Marine & Ocean",
+    "icon": "medical",
+    "era": "ongoing",
+    "title": "Marine Biologist & Oceanographer",
+    "tagline": "Study ocean ecosystems, coral resilience, and deep-sea biodiversity",
+    "desc": "Conduct marine field surveys, track ocean acidification, conserve fisheries, and analyze marine genetics.",
+    "stream": "Science (PCB)",
+    "salary": "Entry: $50K / ₹5-9 LPA · Mid: $85K / ₹12-22 LPA · Lead: $130K+ / ₹35 LPA+",
+    "growth": "7% (Climate & ocean conservation)",
+    "demand": "Moderate",
+    "aiImpact": "Protected field work: Autonomous buoys collect data, while biologists dive, sample, and interpret ecosystem health.",
+    "overview": "Marine biologists split between research vessels, coastal stations, and lab/data analysis (R, GIS, eDNA). Work spans coral restoration, whale acoustics, deep-sea hydrothermal vents, and sustainable fisheries.",
+    "education": {
+      "highSchoolPrereqs": "Biology, Chemistry, Statistics.",
+      "entranceExams": "NEET / IAT / CUET (India), GRE.",
+      "undergradDegrees": [
+        "B.Sc. in Marine Biology / Zoology / Oceanography"
+      ],
+      "postgradDegrees": [
+        "M.Sc. in Marine Science / Oceanography",
+        "Ph.D. in Marine Ecology"
+      ],
+      "certifications": [
+        "PADI / AAUS Scientific Diver",
+        "GIS Spatial Mapping"
+      ],
+      "topInstitutes": [
+        "Scripps Institution of Oceanography",
+        "Woods Hole (WHOI)",
+        "James Cook University",
+        "CUSAT",
+        "NIO Goa"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Assist coastal surveys, learn R/GIS, and get Scientific Diver certified.",
+      "phase2": "Years 2–5: Lead reef, fisheries, or acoustic monitoring programs.",
+      "phase3": "Years 5–10+: Direct marine conservation NGOs, national ocean institutes, or policy."
+    },
+    "skills": {
+      "hardSkills": [
+        "Scientific Scuba Diving",
+        "eDNA & Water Chemistry",
+        "R / Python Ecology Stats",
+        "GIS Mapping",
+        "Acoustic Telemetry"
+      ],
+      "softSkills": [
+        "Field Endurance",
+        "Grant Writing",
+        "Public Science Storytelling"
+      ]
+    },
+    "roles": [
+      "Marine Biologist",
+      "Physical Oceanographer",
+      "Coral Reef Ecologist",
+      "Fisheries Conservationist"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Deep love for ocean life",
+        "Patient with grant-funded research"
+      ],
+      "workStyle": "Mix of coastal field stations, research ships, and labs.",
+      "pros": [
+        "Meaningful conservation work",
+        "Travel to unique marine ecosystems"
+      ],
+      "cons": [
+        "Academic/NGO pay starts modest",
+        "Competitive grant funding"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Marine Biologist & Oceanographer even on routine weeks?",
+      "Are you prepared for the training path (B.Sc. in Marine Biology / Zoology / Oceanography) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Marine Biologist",
+      "Oceanographer",
+      "Coral Reef Scientist",
+      "Marine Ecologist",
+      "Fisheries Biologist",
+      "Marine Conservationist",
+      "Deep-Sea Researcher",
+      "Marine Mammalogist"
+    ],
+    "edu": "master",
+    "interests": [
+      "outdoors",
+      "science",
+      "eco"
+    ],
+    "degrees": [
+      "science"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "precision-agronomist",
+    "cat": "agri",
+    "catName": "Agriculture & Food Systems",
+    "icon": "leaf",
+    "era": "new",
+    "title": "Precision Agronomist & Agri-Drone Specialist",
+    "tagline": "Use satellite NDVI, soil sensors, and drones to grow more with less water",
+    "desc": "Optimize crop yields, variable-rate irrigation, and pest targeting using GIS, IoT soil telemetry, and agronomy.",
+    "stream": "Science (PCB / PCM / Agriculture)",
+    "salary": "Entry: $58K / ₹5-10 LPA · Mid: $95K / ₹14-24 LPA · Lead: $140K+ / ₹38 LPA+",
+    "growth": "14% (AgTech adoption)",
+    "demand": "High",
+    "aiImpact": "AI-augmented farming: Vision models spot crop blight early; agronomists prescribe treatments and advise farmers.",
+    "overview": "Precision agronomists combine muddy boots with drone multispectral maps. You visit farms, calibrate soil moisture probes, prescribe exact fertilizer zones, and cut chemical runoff by 30–50%.",
+    "education": {
+      "highSchoolPrereqs": "Biology, Chemistry, Geography/Math.",
+      "entranceExams": "ICAR AIEEA, State Agri CETs, SAT.",
+      "undergradDegrees": [
+        "B.Sc. (Hons) Agriculture",
+        "B.Tech in Agricultural Engineering"
+      ],
+      "postgradDegrees": [
+        "M.Sc. in Agronomy / Precision Agriculture",
+        "MBA in Agribusiness"
+      ],
+      "certifications": [
+        "FAA Part 107 / DGCA RPC Drone Pilot",
+        "Certified Crop Adviser (CCA)"
+      ],
+      "topInstitutes": [
+        "IARI New Delhi",
+        "GBPUAT Pantnagar",
+        "Wageningen University (Netherlands)",
+        "UC Davis",
+        "Cornell University"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Learn crop physiology, soil sampling, and drone/GIS mapping.",
+      "phase2": "Years 2–5: Manage regional farm tech deployments or ag-input R&D.",
+      "phase3": "Years 5–10+: Lead national agronomy strategy or AgTech product teams."
+    },
+    "skills": {
+      "hardSkills": [
+        "GIS & Multispectral NDVI",
+        "Drone Spraying & Mapping",
+        "Soil & Irrigation Telemetry",
+        "Crop Pathology"
+      ],
+      "softSkills": [
+        "Farmer Trust & Plain Communication",
+        "Field Problem-Solving"
+      ]
+    },
+    "roles": [
+      "Precision Agronomist",
+      "AgTech Solutions Lead",
+      "Agri-Drone Operations Manager",
+      "Soil Health Consultant"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Enjoys both outdoors and data",
+        "Practical problem solver"
+      ],
+      "workStyle": "50% rural farmland, 50% GIS/agronomy analytics.",
+      "pros": [
+        "Directly improves farmer income and food security",
+        "Rapid AgTech growth in India & globally"
+      ],
+      "cons": [
+        "Seasonal harvest crunch",
+        "Hot/dusty field conditions"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Precision Agronomist & Agri-Drone Specialist even on routine weeks?",
+      "Are you prepared for the training path (B.Sc. (Hons) Agriculture) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Precision Agronomist",
+      "Agri-Drone Pilot",
+      "Crop Scientist",
+      "Agronomist",
+      "Soil Scientist",
+      "Farm Management Consultant",
+      "Smart Farming Engineer",
+      "Irrigation Specialist"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "outdoors",
+      "science",
+      "eco",
+      "tech"
+    ],
+    "degrees": [
+      "science",
+      "engineering"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "vertical-farming-director",
+    "cat": "agri",
+    "catName": "Agriculture & Food Systems",
+    "icon": "leaf",
+    "era": "new",
+    "title": "Vertical Farming & Hydroponics Systems Engineer",
+    "tagline": "Grow pesticide-free crops indoors year-round using 95% less water",
+    "desc": "Design hydroponic, aeroponic, and aquaponic climate-controlled farms with LED spectrum recipes and nutrient dosing.",
+    "stream": "Science (PCM / PCB)",
+    "salary": "Entry: $60K / ₹6-10 LPA · Mid: $100K / ₹16-28 LPA · Lead: $150K+ / ₹42 LPA+",
+    "growth": "15% (Urban food resilience)",
+    "demand": "Growing",
+    "aiImpact": "Sensor-automated: Climate algorithms tune humidity and PPFD light, while growers manage plant health and unit economics.",
+    "overview": "Controlled Environment Agriculture (CEA) engineers balance HVAC energy costs, EC/pH nutrient loops, and crop turns inside urban warehouses or desert greenhouses.",
+    "education": {
+      "highSchoolPrereqs": "Biology, Physics, Chemistry.",
+      "entranceExams": "ICAR, JEE, State Engineering/Agri Entrance.",
+      "undergradDegrees": [
+        "B.Sc. Horticulture / Agriculture",
+        "B.Tech Agricultural / Biological Engineering"
+      ],
+      "postgradDegrees": [
+        "M.S. in Controlled Environment Agriculture"
+      ],
+      "certifications": [
+        "CEA Grower Certification",
+        "HACCP / GlobalG.A.P. Food Safety"
+      ],
+      "topInstitutes": [
+        "Wageningen University",
+        "University of Arizona CEAC",
+        "TNAU Coimbatore",
+        "Cornell"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Run small hydroponic racks, master EC/pH dosing and HVAC airflow.",
+      "phase2": "Years 2–5: Scale commercial greenhouse/vertical farm yields and cut kWh/kg.",
+      "phase3": "Years 5–10+: Direct multi-site urban farm operations."
+    },
+    "skills": {
+      "hardSkills": [
+        "Hydroponics & Aeroponics",
+        "HVAC & Psychrometrics",
+        "LED Photobiology",
+        "Nutrient Chemistry (EC/pH)",
+        "Food Safety (GAP)"
+      ],
+      "softSkills": [
+        "Unit-Economics Discipline",
+        "Operations Leadership"
+      ]
+    },
+    "roles": [
+      "CEA Farm Director",
+      "Hydroponics Engineer",
+      "Greenhouse Grower",
+      "Aquaponics Specialist"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Combines plant care with engineering",
+        "Resource-efficiency mindset"
+      ],
+      "workStyle": "Indoor climate-controlled farms and greenhouses.",
+      "pros": [
+        "Zero weather/monsoon risk",
+        "Massive water savings"
+      ],
+      "cons": [
+        "High electricity costs require tight margins",
+        "7-day biological monitoring"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Vertical Farming & Hydroponics Systems Engineer even on routine weeks?",
+      "Are you prepared for the training path (B.Sc. Horticulture / Agriculture) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Vertical Farming Engineer",
+      "Hydroponics Specialist",
+      "Aeroponics Grower",
+      "Aquaponics Manager",
+      "Controlled Environment Agriculture Director",
+      "Greenhouse Horticulturist"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "eco",
+      "build",
+      "science",
+      "food"
+    ],
+    "degrees": [
+      "science",
+      "engineering"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "food-scientist-alt-protein",
+    "cat": "agri",
+    "catName": "Agriculture & Food Systems",
+    "icon": "lab",
+    "era": "ongoing",
+    "title": "Food Scientist & Fermentation Technologist",
+    "tagline": "Engineer safer, tastier, longer-lasting food and alternative proteins",
+    "desc": "Formulate nutrition products, optimize shelf life, scale precision fermentation, and enforce HACCP/FSSAI/FDA food safety.",
+    "stream": "Science (PCB / PCM)",
+    "salary": "Entry: $62K / ₹5-9 LPA · Mid: $98K / ₹14-26 LPA · Lead: $150K+ / ₹45 LPA+",
+    "growth": "8% (Steady + alt-protein surge)",
+    "demand": "High",
+    "aiImpact": "Protected lab & sensory work: Tasting panels, texture physics, and plant hygiene cannot be virtualized.",
+    "overview": "Every packaged snack, baby formula, plant-based burger, or fortified grain went through a food scientist. Days mix pilot-kitchen formulation, rheology/texture testing, microbiology swabs, and sensory panels.",
+    "education": {
+      "highSchoolPrereqs": "Chemistry, Biology, Mathematics.",
+      "entranceExams": "JEE / GATE (XE-G Food Tech) / CFTRI Entrance.",
+      "undergradDegrees": [
+        "B.Tech / B.Sc. in Food Technology & Engineering",
+        "B.S. in Food Science"
+      ],
+      "postgradDegrees": [
+        "M.Tech / M.Sc. in Food Science (CFTRI / ICT)"
+      ],
+      "certifications": [
+        "HACCP / ISO 22000 Lead Auditor",
+        "PCQI (FDA Preventive Controls)"
+      ],
+      "topInstitutes": [
+        "CSIR-CFTRI Mysuru",
+        "ICT Mumbai",
+        "NIFTEM Kundli",
+        "UC Davis",
+        "Cornell University"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Work in QA/QC labs or R&D formulation kitchens learning shelf-life and sensory testing.",
+      "phase2": "Years 2–5: Lead new product launches from bench to factory extrusion/retort lines.",
+      "phase3": "Years 5–10+: Direct R&D or Food Safety & Quality across FMCG brands."
+    },
+    "skills": {
+      "hardSkills": [
+        "Food Chemistry & Microbiology",
+        "Sensory & Rheology Testing",
+        "HACCP / FSSAI / FDA Compliance",
+        "Thermal Processing & Extrusion"
+      ],
+      "softSkills": [
+        "Culinary Curiosity",
+        "Zero-Compromise Hygiene Ethics"
+      ]
+    },
+    "roles": [
+      "Food R&D Scientist",
+      "Flavor Chemist",
+      "Quality Assurance Manager",
+      "Alt-Protein Formulation Lead"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Curious about how food is made",
+        "Detail-oriented in lab safety"
+      ],
+      "workStyle": "Pilot kitchens, food labs, and factory floor trials.",
+      "pros": [
+        "Recession-proof FMCG demand",
+        "Tangible products on every shelf"
+      ],
+      "cons": [
+        "Factory QA shifts can be early/late",
+        "Strict recall liability"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Food Scientist & Fermentation Technologist even on routine weeks?",
+      "Are you prepared for the training path (B.Tech / B.Sc. in Food Technology & Engineering) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Food Scientist",
+      "Food Technologist",
+      "Flavor Chemist",
+      "Sensory Analyst",
+      "Dairy Technologist",
+      "Alternative Protein Scientist",
+      "Food Safety Auditor",
+      "Quality Control Food Chemist"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "food",
+      "science",
+      "health"
+    ],
+    "degrees": [
+      "science",
+      "engineering"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "forester-wildfire-ecologist",
+    "cat": "eco",
+    "catName": "Sustainability & Energy",
+    "icon": "leaf",
+    "era": "ongoing",
+    "title": "Forester & Wildfire Ecology Manager",
+    "tagline": "Manage living forests, timberlands, and prescribed-burn fire resilience",
+    "desc": "Survey forest health, plan sustainable timber harvests, restore native watersheds, and model wildfire fuel loads.",
+    "stream": "Science (PCB / PCM)",
+    "salary": "Entry: $55K / ₹6-10 LPA · Mid: $85K / ₹12-20 LPA · Senior (IFS): $130K+ / ₹25 LPA+",
+    "growth": "6% (Rising wildfire & carbon-sink demand)",
+    "demand": "Steady",
+    "aiImpact": "Protected: Field cruising, prescribed burns, and community forest governance stay outdoors and human.",
+    "overview": "Foresters spend days measuring tree stands, mapping invasive species, planning wildlife corridors, and coordinating prescribed burns so mega-fires don’t destroy entire watersheds.",
+    "education": {
+      "highSchoolPrereqs": "Biology, Geography, Environmental Science.",
+      "entranceExams": "UPSC Indian Forest Service (IFoS), ICAR Forestry, SAF Accredited Degrees.",
+      "undergradDegrees": [
+        "B.Sc. in Forestry",
+        "B.S. in Forest Resources & Conservation"
+      ],
+      "postgradDegrees": [
+        "M.Sc. in Forestry / Wildlife Management"
+      ],
+      "certifications": [
+        "Society of American Foresters (CF)",
+        "Wildland Fire Behavior (NWCG)"
+      ],
+      "topInstitutes": [
+        "FRI Dehradun",
+        "IIFM Bhopal",
+        "Yale School of the Environment",
+        "Oregon State University",
+        "UBC Forestry"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Conduct field timber cruises, GIS mapping, and nursery restoration.",
+      "phase2": "Years 2–5: Manage district forest ranges, carbon-offset plots, or wildfire mitigation.",
+      "phase3": "Years 5–10+: Serve as Chief Conservator, National Park Director, or Timberland VP."
+    },
+    "skills": {
+      "hardSkills": [
+        "Silviculture & Forest Mensuration",
+        "LiDAR & GIS Canopy Mapping",
+        "Prescribed Fire Planning",
+        "Watershed Ecology"
+      ],
+      "softSkills": [
+        "Outdoor Stamina",
+        "Community & Tribal Mediation"
+      ]
+    },
+    "roles": [
+      "Forester",
+      "Indian Forest Service (IFoS) Officer",
+      "Wildfire Ecologist",
+      "Urban Arborist",
+      "Silviculturist"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Needs to work outdoors, not behind a desk",
+        "Patient multi-decade thinker"
+      ],
+      "workStyle": "Remote forests, national parks, and GIS mapping offices.",
+      "pros": [
+        "Deeply grounding outdoor lifestyle",
+        "High prestige in public forest services"
+      ],
+      "cons": [
+        "Remote postings",
+        "Wildfire season intensity"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Forester & Wildfire Ecology Manager even on routine weeks?",
+      "Are you prepared for the training path (B.Sc. in Forestry) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Forester",
+      "Silviculturist",
+      "Wildfire Ecologist",
+      "Forest Range Officer",
+      "Arborist",
+      "Urban Forester",
+      "Conservation Scientist",
+      "Wildlife Habitat Manager"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "outdoors",
+      "eco",
+      "science"
+    ],
+    "degrees": [
+      "science"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "horologist-watchmaker",
+    "cat": "trades",
+    "catName": "Skilled Trades & Craft",
+    "icon": "leaf",
+    "era": "heritage",
+    "title": "Horologist & Mechanical Watchmaker",
+    "tagline": "Build, service, and restore microscopic mechanical timepieces by hand",
+    "desc": "Disassemble, clean, oil, regulate, and fabricate parts for luxury mechanical watches, tourbillons, and antique clocks.",
+    "stream": "Any (Fine motor dexterity + patience)",
+    "salary": "Entry: $52K / ₹4-8 LPA · Mid: $90K / ₹12-22 LPA · Master: $145K+ / ₹40 LPA+",
+    "growth": "5% (Global luxury watchmaker shortage)",
+    "demand": "High (Craft shortage)",
+    "aiImpact": "100% Protected: Collectors pay specifically for human hand-finishing, anglage, and mechanical restoration.",
+    "overview": "Working under a 10x loupe with tweezers finer than a hair, watchmakers diagnose hairsprings, escapements, and gear trains measured in microns. Luxury Swiss brands and vintage collectors face an acute global shortage of trained horologists.",
+    "education": {
+      "highSchoolPrereqs": "High school diploma, steady hands, acute spatial/mechanical patience.",
+      "entranceExams": "Bench Aptitude Test (WOSTEP / SAWTA / Lititz Watch Technicum).",
+      "undergradDegrees": [
+        "WOSTEP 3000-Hour Watchmaking Diploma",
+        "Associate Degree in Horology / Micro-Mechanics"
+      ],
+      "postgradDegrees": [
+        "Master Watchmaker / Complication Restoration Fellowships"
+      ],
+      "certifications": [
+        "WOSTEP Certification",
+        "CW21 (Certified Watchmaker of the 21st Century)",
+        "BHI Fellow"
+      ],
+      "topInstitutes": [
+        "WOSTEP Neuchâtel (Switzerland)",
+        "Lititz Watch Technicum (USA)",
+        "British Horological Institute (UK)",
+        "HMT / Titan Horology Academies"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Complete 2-year bench school; master lathe turning, hairspring truing, and quartz/basic automatics.",
+      "phase2": "Years 2–5: Service chronographs and luxury movements for boutiques or authorized service centers.",
+      "phase3": "Years 5–10+: Restore museum-grade perpetual calendars/repeaters or open an independent atelier."
+    },
+    "skills": {
+      "hardSkills": [
+        "Micro-Lathe & Milling",
+        "Escapement & Hairspring Regulation",
+        "Ultrasonic Cleaning & Lubrication",
+        "Antique Clock Restoration"
+      ],
+      "softSkills": [
+        "Zen-Level Patience",
+        "Microscopic Precision",
+        "Zero-Rush Temperament"
+      ]
+    },
+    "roles": [
+      "Mechanical Watchmaker",
+      "Horologist",
+      "Antique Clock Restorer",
+      "Movement Finisher (Anglage)",
+      "Micro-Machinist"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Loves tiny intricate mechanisms",
+        "Calm, unhurried, steady-handed"
+      ],
+      "workStyle": "Quiet, dust-controlled atelier bench with specialized optical tools.",
+      "pros": [
+        "Deeply meditative craft",
+        "Global shortage gives strong job security"
+      ],
+      "cons": [
+        "Eye and neck strain if posture is poor",
+        "Losing a tiny screw costs hours"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Horologist & Mechanical Watchmaker even on routine weeks?",
+      "Are you prepared for the training path (WOSTEP 3000-Hour Watchmaking Diploma) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Horologist",
+      "Watchmaker",
+      "Master Watchmaker",
+      "Clock Restorer",
+      "Timepiece Technician",
+      "Micro-Mechanic",
+      "Luxury Watch Service Specialist"
+    ],
+    "edu": "diploma",
+    "interests": [
+      "machines",
+      "build",
+      "design"
+    ],
+    "degrees": [
+      "vocational"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "luthier-instrument-maker",
+    "cat": "creative",
+    "catName": "Creative Arts & Design",
+    "icon": "palette",
+    "era": "heritage",
+    "title": "Luthier & Acoustic Instrument Maker",
+    "tagline": "Carve, voice, and restore violins, guitars, sitars, and concert pianos",
+    "desc": "Select aged tonewoods, carve soundboards to acoustic resonance, apply spirit/oil varnishes, and set up instruments for musicians.",
+    "stream": "Any (Woodworking + music ear)",
+    "salary": "Entry: $40K / ₹3-6 LPA · Mid: $75K / ₹10-18 LPA · Master: $130K+ / ₹35 LPA+",
+    "growth": "4% (Bespoke & restoration demand)",
+    "demand": "Niche & Steady",
+    "aiImpact": "100% Protected: Concert musicians seek hand-voiced wood resonance and human setup feel.",
+    "overview": "Luthiers work with spruce, maple, rosewood, chisels, planes, and acoustic tap-tuning. Whether building a classical guitar, restoring a 200-year-old cello, or tuning a sitar’s jawari bridge, every piece of wood responds differently.",
+    "education": {
+      "highSchoolPrereqs": "Woodworking aptitude, basic acoustics, patience.",
+      "entranceExams": "Portfolio & Apprenticeship Audition.",
+      "undergradDegrees": [
+        "Diploma in Lutherie / Musical Instrument Making",
+        "Apprenticeship under Master Luthier"
+      ],
+      "postgradDegrees": [
+        "Master Restorer / Bowmaker Specialization"
+      ],
+      "certifications": [
+        "Guild of American Luthiers / Newark School of Violin Making"
+      ],
+      "topInstitutes": [
+        "Cremona International Violin Making School (Italy)",
+        "Newark School of Violin Making (UK)",
+        "Roberto-Venn School of Luthiery (USA)",
+        "Miraj Sitar & Tanpura Craft Guilds (India)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Learn tool sharpening, fretwork, bridge setups, and repair.",
+      "phase2": "Years 2–5: Build complete acoustic instruments from raw tonewood.",
+      "phase3": "Years 5–10+: Run a bespoke workshop or serve symphony orchestras as head restorer."
+    },
+    "skills": {
+      "hardSkills": [
+        "Hand-Plane & Chisel Joinery",
+        "Acoustic Tap-Tuning",
+        "French Polish & Oil Varnish",
+        "Fretwork & Neck Resetting"
+      ],
+      "softSkills": [
+        "Listening to Musicians",
+        "Artistic Patience"
+      ]
+    },
+    "roles": [
+      "Violin Maker",
+      "Guitar Luthier",
+      "Piano Technician & Tuner",
+      "Traditional Instrument Craftsman",
+      "Bow Maker (Archetier)"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Loves woodcraft and music equally",
+        "Patient perfectionist"
+      ],
+      "workStyle": "Quiet woodshop smelling of spruce and shellac.",
+      "pros": [
+        "Deeply fulfilling tactile legacy",
+        "Instruments outlive their makers by centuries"
+      ],
+      "cons": [
+        "Slow income build while establishing reputation",
+        "Dust and sharp-tool hazards"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Luthier & Acoustic Instrument Maker even on routine weeks?",
+      "Are you prepared for the training path (Diploma in Lutherie / Musical Instrument Making) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Luthier",
+      "Violin Maker",
+      "Guitar Builder",
+      "Piano Tuner & Technician",
+      "Bow Maker",
+      "Sitar Maker",
+      "Acoustic Instrument Restorer"
+    ],
+    "edu": "diploma",
+    "interests": [
+      "art",
+      "build",
+      "sport"
+    ],
+    "degrees": [
+      "vocational",
+      "arts"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "heritage-stonemason-restorer",
+    "cat": "trades",
+    "catName": "Skilled Trades & Craft",
+    "icon": "landmark",
+    "era": "heritage",
+    "title": "Heritage Stonemason & Monument Restorer",
+    "tagline": "Carve stone and preserve cathedrals, temples, forts, and historic architecture",
+    "desc": "Cut limestone, sandstone, and marble using traditional masonry and lime mortar to repair centuries-old monuments.",
+    "stream": "Any (Physical craft + geometry)",
+    "salary": "Entry: $48K / ₹4-8 LPA · Mid: $82K / ₹10-20 LPA · Master: $125K+ / ₹32 LPA+",
+    "growth": "6% (Global heritage preservation)",
+    "demand": "Steady (Shortage of traditional masons)",
+    "aiImpact": "100% Protected: Historic conservation laws mandate authentic hand-carved stone and lime-mortar techniques.",
+    "overview": "Modern concrete destroys historic stone by trapping moisture. Heritage stonemasons understand lime-putty mortars, stone bedding planes, and hand-chisel carving to restore UNESCO sites, temples, and civic landmarks.",
+    "education": {
+      "highSchoolPrereqs": "Physical stamina, geometric drawing, apprenticeship.",
+      "entranceExams": "Guild / Conservation Apprenticeship Entry.",
+      "undergradDegrees": [
+        "Certificate / Diploma in Architectural Stonemasonry",
+        "B.Arch / Conservation Architecture (for project leads)"
+      ],
+      "postgradDegrees": [
+        "M.Sc. in Architectural Conservation"
+      ],
+      "certifications": [
+        "Cathedrals Workshop Fellowship (UK)",
+        "ASI / INTACH Heritage Conservation Training"
+      ],
+      "topInstitutes": [
+        "York Minster / City & Guilds of London Art School",
+        "SPA Delhi (Conservation)",
+        "American College of the Building Arts"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Apprenticed banker masonry—squaring blocks, sharpening chisels, mixing lime mortar.",
+      "phase2": "Years 2–5: Carve tracery, arches, and structural Dutchman stone repairs on historic facades.",
+      "phase3": "Years 5–10+: Serve as Master Mason or Heritage Site Conservation Lead."
+    },
+    "skills": {
+      "hardSkills": [
+        "Banker & Fixer Stonemasonry",
+        "Lime Mortar Chemistry",
+        "Geometric Stereotomy",
+        "Non-Destructive Stone Cleaning"
+      ],
+      "softSkills": [
+        "Respect for History",
+        "Physical Endurance",
+        "Scaffolding Safety"
+      ]
+    },
+    "roles": [
+      "Heritage Stonemason",
+      "Monument Conservator",
+      "Architectural Carver",
+      "Historic Preservation Specialist"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Proud of building things that last 500 years",
+        "Enjoys physical outdoor craft"
+      ],
+      "workStyle": "Outdoor scaffolding at historic monuments and stone banker yards.",
+      "pros": [
+        "Tangible cultural legacy",
+        "High respect and steady public/trust funding"
+      ],
+      "cons": [
+        "Heavy lifting and all-weather work",
+        "Silica dust PPE is mandatory"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Heritage Stonemason & Monument Restorer even on routine weeks?",
+      "Are you prepared for the training path (Certificate / Diploma in Architectural Stonemasonry) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Heritage Stonemason",
+      "Stone Carver",
+      "Monument Restorer",
+      "Architectural Conservator",
+      "Lime Mortar Specialist",
+      "Cathedral Mason",
+      "Temple Restoration Craftsman"
+    ],
+    "edu": "diploma",
+    "interests": [
+      "build",
+      "outdoors",
+      "art"
+    ],
+    "degrees": [
+      "vocational",
+      "design"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "blacksmith-metalworker",
+    "cat": "trades",
+    "catName": "Skilled Trades & Craft",
+    "icon": "wrench",
+    "era": "heritage",
+    "title": "Blacksmith, Bladesmith & Architectural Metalworker",
+    "tagline": "Forge red-hot steel into architectural ironwork, tools, and bespoke blades",
+    "desc": "Shape carbon and Damascus steel on anvils, run power hammers, heat-treat blades, and fabricate custom gates and railings.",
+    "stream": "Any",
+    "salary": "Entry: $42K / ₹3-6 LPA · Mid: $75K / ₹9-18 LPA · Master: $120K+ / ₹30 LPA+",
+    "growth": "5% (Custom architectural & culinary demand)",
+    "demand": "Niche & Steady",
+    "aiImpact": "100% Protected: Hand-forged Damascus steel and bespoke architectural ironwork derive value from human hammerwork.",
+    "overview": "One of humanity’s oldest professions, modern blacksmithing spans custom architectural gates for luxury homes, bespoke chef knives, farrier work for horses, and historic ironwork restoration.",
+    "education": {
+      "highSchoolPrereqs": "Shop safety, basic metallurgy intuition, physical grit.",
+      "entranceExams": "ABS (American Bladesmith Society) Journeyman/Master tests (optional).",
+      "undergradDegrees": [
+        "Apprenticeship / Trade Certificate in Blacksmithing & Welding",
+        "B.F.A. in Metalsmithing"
+      ],
+      "postgradDegrees": [
+        "Master Smith Guild Accreditation"
+      ],
+      "certifications": [
+        "ABS Journeyman Smith",
+        "AWS Certified Welder"
+      ],
+      "topInstitutes": [
+        "Hereford School of Blacksmithing (UK)",
+        "Center for Metal Arts (USA)",
+        "National Institute of Design (Metal Craft)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Master fire control, drawing out, upsetting, and basic forge welding.",
+      "phase2": "Years 2–5: Build architectural commissions, custom culinary knives, or specialty hand tools.",
+      "phase3": "Years 5–10+: Run an independent forge studio with collectors and architects."
+    },
+    "skills": {
+      "hardSkills": [
+        "Anvil Forging & Power Hammer",
+        "Heat Treatment & Tempering",
+        "Pattern-Welded Damascus",
+        "TIG/MIG Architectural Fabrication"
+      ],
+      "softSkills": [
+        "Heat & Timing Intuition",
+        "Workshop Safety Discipline"
+      ]
+    },
+    "roles": [
+      "Architectural Blacksmith",
+      "Bladesmith",
+      "Farrier",
+      "Ornamental Ironworker",
+      "Toolmaker"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Loves fire, steel, and physical creation",
+        "Self-reliant"
+      ],
+      "workStyle": "Hot, loud, sparks-flying forge workshop.",
+      "pros": [
+        "Zero desk monotony",
+        "Collectors and architects pay premiums for bespoke work"
+      ],
+      "cons": [
+        "Heat, burns, and physical wear",
+        "Workshop equipment setup costs"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Blacksmith, Bladesmith & Architectural Metalworker even on routine weeks?",
+      "Are you prepared for the training path (Apprenticeship / Trade Certificate in Blacksmithing & Welding) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Blacksmith",
+      "Bladesmith",
+      "Farrier",
+      "Ornamental Ironworker",
+      "Metalsmith",
+      "Artisan Forger",
+      "Custom Knife Maker"
+    ],
+    "edu": "nodegree",
+    "interests": [
+      "build",
+      "machines",
+      "art"
+    ],
+    "degrees": [
+      "vocational"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "archivist-conservator",
+    "cat": "creative",
+    "catName": "Creative Arts & Design",
+    "icon": "palette",
+    "era": "heritage",
+    "title": "Museum Conservator, Archivist & Bookbinder",
+    "tagline": "Preserve rare manuscripts, paintings, textiles, and cultural history",
+    "desc": "Stabilize decaying paper, paintings, and artifacts using micro-chemistry, climate control, and archival digitization.",
+    "stream": "Arts / Humanities / Chemistry",
+    "salary": "Entry: $48K / ₹4-8 LPA · Mid: $78K / ₹10-18 LPA · Chief: $115K+ / ₹28 LPA+",
+    "growth": "8% (Digital + physical preservation)",
+    "demand": "Steady",
+    "aiImpact": "Protected: AI assists OCR on old scripts, while physical chemical stabilization of priceless artifacts stays human.",
+    "overview": "Conservators are part detective, part chemist, part artist. You examine pigment layers under UV/X-ray, neutralize acid in 300-year-old books, repair torn bindings, and design archival vaults.",
+    "education": {
+      "highSchoolPrereqs": "History, Fine Arts, Chemistry.",
+      "entranceExams": "University Entrance / Portfolio Review.",
+      "undergradDegrees": [
+        "B.A. / B.F.A. in Art History, Archaeology, or Chemistry"
+      ],
+      "postgradDegrees": [
+        "M.A. / M.Sc. in Art Conservation or Archival Studies (MLIS)"
+      ],
+      "certifications": [
+        "AIC Professional Associate",
+        "NARA / National Archives India Training"
+      ],
+      "topInstitutes": [
+        "National Museum Institute (New Delhi)",
+        "Courtauld Institute (London)",
+        "NYU Conservation Center",
+        "Winterthur / Delaware"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Intern at museum labs, learn archival cataloging, bookbinding, and preventive humidity control.",
+      "phase2": "Years 2–5: Perform hands-on paper, painting, or object conservation treatments.",
+      "phase3": "Years 5–10+: Direct national archives or major museum conservation departments."
+    },
+    "skills": {
+      "hardSkills": [
+        "Pigment & Paper Chemistry",
+        "Fine Bookbinding",
+        "UV/IR/X-Ray Imaging",
+        "Archival Cataloging (EAD/IIIF)",
+        "Climate Vault Control"
+      ],
+      "softSkills": [
+        "Extreme Delicacy",
+        "Historical Empathy",
+        "Ethical Restraint"
+      ]
+    },
+    "roles": [
+      "Art Conservator",
+      "Paper & Book Restorer",
+      "Archivist",
+      "Paleographer",
+      "Genealogist",
+      "Rare Book Librarian"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Reveres history and quiet focus",
+        "Gentle, precise hands"
+      ],
+      "workStyle": "Quiet museum conservation studios and climate-controlled archives.",
+      "pros": [
+        "Handle priceless human history daily",
+        "Intellectually rich"
+      ],
+      "cons": [
+        "Competitive museum roles",
+        "Requires Master’s degree for top labs"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Museum Conservator, Archivist & Bookbinder even on routine weeks?",
+      "Are you prepared for the training path (B.A. / B.F.A. in Art History, Archaeology, or Chemistry) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Museum Conservator",
+      "Art Restorer",
+      "Archivist",
+      "Rare Bookbinder",
+      "Paper Conservator",
+      "Paleographer",
+      "Genealogist",
+      "Museum Registrar",
+      "Curatorial Conservator"
+    ],
+    "edu": "master",
+    "interests": [
+      "art",
+      "science",
+      "words"
+    ],
+    "degrees": [
+      "arts",
+      "science"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "cartographer-surveyor",
+    "cat": "eng",
+    "catName": "Engineering & Robotics",
+    "icon": "palette",
+    "era": "ongoing",
+    "title": "Cartographer, Photogrammetrist & Geodetic Surveyor",
+    "tagline": "Measure Earth’s surface and turn LiDAR/satellite data into exact maps",
+    "desc": "Conduct GNSS land surveys, drone LiDAR mapping, bathymetric charting, and precision cartography for cities and infrastructure.",
+    "stream": "Science (PCM) / Geography",
+    "salary": "Entry: $58K / ₹5-9 LPA · Mid: $88K / ₹12-20 LPA · Principal: $130K+ / ₹32 LPA+",
+    "growth": "7% (Infrastructure & autonomous HD maps)",
+    "demand": "High",
+    "aiImpact": "AI extracts building footprints; licensed surveyors legally certify land boundaries and geodetic control.",
+    "overview": "From ancient mapmakers to modern LiDAR drone surveyors, cartographers define where roads, tunnels, borders, and cables actually sit on a curved, shifting planet.",
+    "education": {
+      "highSchoolPrereqs": "Mathematics (Trigonometry), Geography, Physics.",
+      "entranceExams": "JEE / GATE (Geomatics) / State Surveyor Licensing.",
+      "undergradDegrees": [
+        "B.Tech / B.S. in Geomatics / Geoinformatics / Surveying",
+        "B.Tech Civil Engineering"
+      ],
+      "postgradDegrees": [
+        "M.Tech / M.S. in Remote Sensing & GIS"
+      ],
+      "certifications": [
+        "PLS (Professional Land Surveyor)",
+        "GISP",
+        "Drone LiDAR Pilot"
+      ],
+      "topInstitutes": [
+        "IIT Roorkee",
+        "IIRS Dehradun",
+        "Ohio State University",
+        "ETH Zurich",
+        "UCL"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Run total stations, RTK-GPS rovers, and QGIS/ArcGIS workflows.",
+      "phase2": "Years 2–5: Lead highway/tunnel survey control or drone photogrammetry pipelines.",
+      "phase3": "Years 5–10+: Become a licensed Chief Surveyor or Geospatial Architect."
+    },
+    "skills": {
+      "hardSkills": [
+        "RTK-GNSS & Total Station",
+        "Drone LiDAR & Photogrammetry",
+        "ArcGIS / QGIS",
+        "Geodesy & Datums",
+        "CAD Civil 3D"
+      ],
+      "softSkills": [
+        "Outdoor Precision",
+        "Legal Boundary Neutrality"
+      ]
+    },
+    "roles": [
+      "Geodetic Surveyor",
+      "Cartographer",
+      "Photogrammetrist",
+      "GIS Analyst",
+      "Hydrographic Surveyor"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Likes maps, geometry, and fieldwork",
+        "Methodical"
+      ],
+      "workStyle": "Split between outdoor survey sites and GIS workstations.",
+      "pros": [
+        "Essential for every bridge, rail, and property boundary",
+        "Strong global infrastructure demand"
+      ],
+      "cons": [
+        "Fieldwork in heat/rain/rough terrain",
+        "Legal liability for boundary errors"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Cartographer, Photogrammetrist & Geodetic Surveyor even on routine weeks?",
+      "Are you prepared for the training path (B.Tech / B.S. in Geomatics / Geoinformatics / Surveying) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Cartographer",
+      "Land Surveyor",
+      "Photogrammetrist",
+      "Geodetic Surveyor",
+      "GIS Specialist",
+      "Geomatics Engineer",
+      "LiDAR Mapping Technician",
+      "Hydrographic Surveyor"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "outdoors",
+      "build",
+      "tech",
+      "numbers"
+    ],
+    "degrees": [
+      "engineering",
+      "science"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "executive-chef-culinary",
+    "cat": "hosp",
+    "catName": "Hospitality & Culinary",
+    "icon": "palette",
+    "era": "ongoing",
+    "title": "Executive Chef & Culinary R&D Director",
+    "tagline": "Lead commercial kitchens, design menus, and master culinary craft",
+    "desc": "Create seasonal menus, manage kitchen brigades, control food costs, and uphold Michelin-grade flavor and hygiene.",
+    "stream": "Any (Culinary passion + stamina)",
+    "salary": "Entry: $40K / ₹4-7 LPA · Sous: $68K / ₹10-18 LPA · Executive: $120K+ / ₹30-60 LPA+",
+    "growth": "10% (Hospitality & food culture)",
+    "demand": "High",
+    "aiImpact": "100% Protected: Taste, plating, heat timing, and kitchen brigade leadership are purely human.",
+    "overview": "Behind every memorable restaurant is an executive chef balancing artistry with ruthless logistics—food waste percentages, vendor freshness, 12-hour dinner rushes, and training line cooks.",
+    "education": {
+      "highSchoolPrereqs": "High school diploma; culinary school optional but helpful.",
+      "entranceExams": "NCHMCT JEE (India IHM), Culinary Institute Admissions.",
+      "undergradDegrees": [
+        "B.Sc. in Hospitality & Hotel Administration",
+        "Associate / Bachelor in Culinary Arts"
+      ],
+      "postgradDegrees": [
+        "Culinary Management / Gastronomy Master’s"
+      ],
+      "certifications": [
+        "ServSafe / FSSAI Hygiene Supervisor",
+        "WSET / Culinary Guild Honors"
+      ],
+      "topInstitutes": [
+        "Culinary Institute of America (CIA)",
+        "Le Cordon Bleu",
+        "IHM Pusa / IHM Mumbai",
+        "WGSHA Manipal"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Grind on the prep, garde-manger, and grill stations as Commis / Line Cook.",
+      "phase2": "Years 2–6: Run stations as Chef de Partie and Sous Chef, mastering costing and staff scheduling.",
+      "phase3": "Years 6–10+: Lead kitchens as Executive Chef, Corporate Culinary Director, or Chef-Owner."
+    },
+    "skills": {
+      "hardSkills": [
+        "Classical & Modern Cooking Techniques",
+        "Menu Engineering & Food Costing",
+        "HACCP Food Safety",
+        "Butchery & Fermentation"
+      ],
+      "softSkills": [
+        "Grace Under Dinner-Rush Pressure",
+        "Brigade Leadership",
+        "Sensory Palate"
+      ]
+    },
+    "roles": [
+      "Executive Chef",
+      "Sous Chef",
+      "Pastry Chef & Chocolatier",
+      "Culinary R&D Chef",
+      "Private Yacht Chef"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Thrives on physical pace and flavor",
+        "Resilient on long feet-on-floor shifts"
+      ],
+      "workStyle": "High-heat commercial kitchens; evenings, weekends, and holidays.",
+      "pros": [
+        "Immediate sensory feedback",
+        "Global travel and entrepreneurship path"
+      ],
+      "cons": [
+        "Long standing hours and weekend/night shifts",
+        "High stress during peak service"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Executive Chef & Culinary R&D Director even on routine weeks?",
+      "Are you prepared for the training path (B.Sc. in Hospitality & Hotel Administration) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Executive Chef",
+      "Sous Chef",
+      "Head Chef",
+      "Pastry Chef",
+      "Chocolatier",
+      "Artisan Baker",
+      "Culinary Director",
+      "Private Chef",
+      "Sommelier",
+      "Gastronomy Researcher"
+    ],
+    "edu": "diploma",
+    "interests": [
+      "food",
+      "creative",
+      "people",
+      "business"
+    ],
+    "degrees": [
+      "vocational",
+      "management"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "hotel-hospitality-director",
+    "cat": "hosp",
+    "catName": "Hospitality & Culinary",
+    "icon": "briefcase",
+    "era": "ongoing",
+    "title": "Luxury Hotel & Resort General Manager",
+    "tagline": "Orchestrate guest experience, rooms, dining, and revenue for major properties",
+    "desc": "Lead 100–1,000+ staff across front office, housekeeping, F&B, events, and yield pricing at hotels and resorts.",
+    "stream": "Any (Commerce / Arts / Science)",
+    "salary": "Entry: $48K / ₹5-9 LPA · Dept Head: $85K / ₹16-28 LPA · GM: $160K+ / ₹45-90 LPA+",
+    "growth": "9% (Global travel rebound)",
+    "demand": "High",
+    "aiImpact": "Protected: Dynamic room pricing uses software, while luxury hospitality is built on human warmth and crisis recovery.",
+    "overview": "Hotel GMs run miniature cities operating 24/7. You manage occupancy yield, VIP guest diplomacy, convention banquets, property maintenance, and brand standards.",
+    "education": {
+      "highSchoolPrereqs": "Strong communication, poise, multilingualism is a plus.",
+      "entranceExams": "NCHMCT JEE, eCHAT, SAT.",
+      "undergradDegrees": [
+        "B.Sc. / B.H.M. in Hotel & Hospitality Management"
+      ],
+      "postgradDegrees": [
+        "MBA in Hospitality / Luxury Brand Management"
+      ],
+      "certifications": [
+        "CHA (Certified Hotel Administrator)",
+        "Revenue Management Certification"
+      ],
+      "topInstitutes": [
+        "EHL Hospitality Business School (Switzerland)",
+        "Cornell Nolan School",
+        "IHM Mumbai / Delhi",
+        "Oberoi STEP"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Join management trainee rotations across front desk, F&B, and housekeeping.",
+      "phase2": "Years 2–6: Lead Rooms Division, F&B, or Revenue Management.",
+      "phase3": "Years 6–10+: Manage flagship resorts as General Manager or Regional VP."
+    },
+    "skills": {
+      "hardSkills": [
+        "Revenue & Yield Management",
+        "P&L Operations",
+        "Event & Banquet Logistics",
+        "PMS Systems (Opera)",
+        "Guest Service Recovery"
+      ],
+      "softSkills": [
+        "Executive Poise",
+        "Cultural Fluency",
+        "24/7 Calm Problem Solving"
+      ]
+    },
+    "roles": [
+      "Hotel General Manager",
+      "Resort Operations Director",
+      "Concierge Director",
+      "Revenue Manager",
+      "Cruise Ship Hotel Director"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Energized by hosting people",
+        "Loves fast-moving operations"
+      ],
+      "workStyle": "Hotels, resorts, cruise liners; dynamic hours.",
+      "pros": [
+        "Global transfers across iconic destinations",
+        "Clear management-trainee ladder"
+      ],
+      "cons": [
+        "Peak holiday/weekend duty",
+        "High guest-expectation pressure"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Luxury Hotel & Resort General Manager even on routine weeks?",
+      "Are you prepared for the training path (B.Sc. / B.H.M. in Hotel & Hospitality Management) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Hotel General Manager",
+      "Hospitality Director",
+      "Resort Manager",
+      "Front Office Manager",
+      "Luxury Concierge",
+      "Cruise Director",
+      "Tourism Operations Manager"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "people",
+      "business",
+      "food",
+      "transport"
+    ],
+    "degrees": [
+      "management",
+      "commerce"
+    ],
+    "aiTag": "people"
+  },
+  {
+    "id": "aviation-cabin-crew-purser",
+    "cat": "hosp",
+    "catName": "Hospitality & Culinary",
+    "icon": "plane",
+    "era": "ongoing",
+    "title": "Flight Attendant, Purser & In-Flight Safety Specialist",
+    "tagline": "Manage aircraft cabin safety, medical emergencies, and passenger care at 38,000 ft",
+    "desc": "Execute emergency evacuations, cabin decompression protocols, medical first aid, and international passenger service.",
+    "stream": "Any (10+2 / Bachelor’s preferred)",
+    "salary": "Entry: $42K / ₹6-10 LPA · Purser: $75K / ₹14-24 LPA · VIP/Corporate: $110K+ / ₹30 LPA+",
+    "growth": "11% (Global fleet expansion)",
+    "demand": "High",
+    "aiImpact": "Protected: Aviation regulators mandate trained human cabin crew per 50 seats for emergency evacuation.",
+    "overview": "Far more than hospitality, cabin crew are FAA/DGCA/EASA-certified safety officers trained in firefighting, water ditching, CPR, and de-escalation inside a pressurized aluminum tube.",
+    "education": {
+      "highSchoolPrereqs": "10+2 / High School Diploma, medical fitness, swimming, clear communication.",
+      "entranceExams": "Airline Assessment Days + DGCA/FAA Safety Checkrides.",
+      "undergradDegrees": [
+        "Any Bachelor’s Degree (optional) or Aviation Hospitality Diploma"
+      ],
+      "postgradDegrees": [
+        "Aviation Safety / Crew Resource Management"
+      ],
+      "certifications": [
+        "FAA/DGCA/EASA Cabin Crew Attestation",
+        "CRM (Crew Resource Management)",
+        "First Aid & AED"
+      ],
+      "topInstitutes": [
+        "Airline In-House Training Academies (Emirates, IndiGo, Delta, Singapore Airlines)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Complete 6–8 week intensive safety/evacuation academy; fly domestic/regional routes.",
+      "phase2": "Years 2–5: Upgrade to widebody international routes and Senior Cabin Crew / Purser.",
+      "phase3": "Years 5–10+: Transition to Cabin Safety Instructor, Base Manager, or Private Jet Corporate Attendant."
+    },
+    "skills": {
+      "hardSkills": [
+        "Emergency Evacuation & Ditching",
+        "In-Flight Firefighting",
+        "Aviation Medical Triage",
+        "Dangerous Goods Handling"
+      ],
+      "softSkills": [
+        "De-Escalation Calm",
+        "Cross-Cultural Empathy",
+        "Team Synchronization"
+      ]
+    },
+    "roles": [
+      "Flight Attendant",
+      "Senior Cabin Purser",
+      "Corporate/VIP Jet Attendant",
+      "Cabin Safety Instructor"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Adaptable to changing time zones",
+        "Calm under unruly or medical incidents"
+      ],
+      "workStyle": "Rosters across global airports, layovers, irregular hours.",
+      "pros": [
+        "Free/discounted global travel",
+        "No multi-year degree barrier"
+      ],
+      "cons": [
+        "Jet lag and irregular sleep",
+        "Standing/turbulence physical fatigue"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Flight Attendant, Purser & In-Flight Safety Specialist even on routine weeks?",
+      "Are you prepared for the training path (Any Bachelor’s Degree (optional) or Aviation Hospitality Diploma) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Flight Attendant",
+      "Cabin Crew",
+      "In-Flight Purser",
+      "Air Hostess",
+      "Flight Steward",
+      "Corporate Jet Attendant",
+      "Cabin Safety Instructor"
+    ],
+    "edu": "nodegree",
+    "interests": [
+      "transport",
+      "people",
+      "outdoors"
+    ],
+    "degrees": [
+      "any",
+      "vocational"
+    ],
+    "aiTag": "people"
+  },
+  {
+    "id": "wildland-firefighter-sar",
+    "cat": "safety",
+    "catName": "Public Safety & Defense",
+    "icon": "rocket",
+    "era": "ongoing",
+    "title": "Firefighter, Smokejumper & Search-and-Rescue Lead",
+    "tagline": "Respond to structure fires, wildfires, collapses, and mountain rescues",
+    "desc": "Execute structural suppression, wildland firebreaks, technical rope rescue, hazmat containment, and EMS triage.",
+    "stream": "Any (Physical fitness + technical fire science)",
+    "salary": "Entry: $52K / ₹5-9 LPA · Mid: $82K / ₹10-18 LPA · Chief: $135K+ / ₹28 LPA+",
+    "growth": "6% (Extreme weather increasing demand)",
+    "demand": "High",
+    "aiImpact": "100% Protected: Pulling people from smoke, collapsed buildings, and cliff faces is irrevocably human.",
+    "overview": "Firefighters and SAR technicians train relentlessly on ladders, hydraulics, SCBA breathing apparatus, wildland fire weather, and swiftwater/rope rigging so they can operate seamlessly at 3 a.m. in zero visibility.",
+    "education": {
+      "highSchoolPrereqs": "High school diploma, CPAT / physical endurance standards, clean record.",
+      "entranceExams": "Municipal Fire Academy Exams, NFSC (India), CPAT.",
+      "undergradDegrees": [
+        "B.E. / B.Tech in Fire & Safety Engineering (optional)",
+        "Associate in Fire Science"
+      ],
+      "postgradDegrees": [
+        "Emergency & Disaster Management Master’s"
+      ],
+      "certifications": [
+        "NFPA 1001 Firefighter I & II",
+        "EMT-Basic / Paramedic",
+        "HAZWOPER",
+        "Swiftwater & Rope Rescue"
+      ],
+      "topInstitutes": [
+        "National Fire Service College (NFSC Nagpur)",
+        "Texas A&M TEEX",
+        "Fire Service College (UK)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Graduate fire academy + EMT; ride apparatus as Probationary Firefighter.",
+      "phase2": "Years 2–6: Specialize in Hazmat, Technical Rescue, Smokejumping, or Paramedicine.",
+      "phase3": "Years 6–10+: Advance to Captain, Battalion Chief, or Industrial Fire Chief."
+    },
+    "skills": {
+      "hardSkills": [
+        "Structural & Wildland Suppression",
+        "EMT / Trauma Triage",
+        "Rope & Confined-Space Rescue",
+        "Hazmat Containment",
+        "Pump Hydraulics"
+      ],
+      "softSkills": [
+        "Courageous Composure",
+        "Brotherhood/Team Trust",
+        "Split-Second Situational Awareness"
+      ]
+    },
+    "roles": [
+      "Municipal Firefighter",
+      "Smokejumper / Hotshot",
+      "Search & Rescue (SAR) Specialist",
+      "Industrial Fire Officer",
+      "Fire Investigator"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Runs toward emergencies when others run away",
+        "Thrives on physical teamwork"
+      ],
+      "workStyle": "24-hour/48-hour station shifts or seasonal wildland deployments.",
+      "pros": [
+        "Deeply respected public service",
+        "Strong pension/benefits and camaraderie"
+      ],
+      "cons": [
+        "Burn, smoke, and trauma exposure",
+        "Interrupted sleep on 24h shifts"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Firefighter, Smokejumper & Search-and-Rescue Lead even on routine weeks?",
+      "Are you prepared for the training path (B.E. / B.Tech in Fire & Safety Engineering (optional)) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Firefighter",
+      "Smokejumper",
+      "Hotshot Crew",
+      "Search and Rescue Specialist",
+      "Mountain Rescue Technician",
+      "Fire Safety Engineer",
+      "Hazmat Responder",
+      "Fire Chief"
+    ],
+    "edu": "diploma",
+    "interests": [
+      "outdoors",
+      "people",
+      "build",
+      "law"
+    ],
+    "degrees": [
+      "vocational",
+      "engineering"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "air-traffic-controller",
+    "cat": "safety",
+    "catName": "Public Safety & Defense",
+    "icon": "ai",
+    "era": "ongoing",
+    "title": "Air Traffic Controller & Flight Dispatcher",
+    "tagline": "Sequence thousands of aircraft safely through crowded skies and runways",
+    "desc": "Monitor radar sectors, issue altitude/heading clearances, coordinate storm diversions, and prevent runway incursions.",
+    "stream": "Science (PCM) or Any Bachelor’s (country-dependent)",
+    "salary": "Entry: $75K / ₹10-15 LPA · Mid: $135K / ₹20-32 LPA · Senior: $185K+ / ₹45 LPA+",
+    "growth": "4% (Strict mandatory retirement creates steady openings)",
+    "demand": "High",
+    "aiImpact": "Protected: Automated conflict probes assist, while human controllers hold legal separation authority.",
+    "overview": "In a dark radar room or sun-lit airport tower, controllers hold a 3D mental movie of dozens of jets moving at 500 knots. Mistakes are not permitted, which is why shifts are strictly capped with mandatory breaks.",
+    "education": {
+      "highSchoolPrereqs": "Spatial aptitude, crisp English radio diction, Class II/III medical.",
+      "entranceExams": "AAI ATC Exam (India), FAA ATSA (USA), NATS/EUROCONTROL Assessment.",
+      "undergradDegrees": [
+        "B.Sc. (Physics/Math) or B.Tech (India AAI)",
+        "B.S. in Air Traffic Management"
+      ],
+      "postgradDegrees": [
+        "Aviation Safety & Airspace Systems"
+      ],
+      "certifications": [
+        "ATC Tower / Approach / Area Radar Ratings",
+        "FAA / DGCA Flight Dispatcher License"
+      ],
+      "topInstitutes": [
+        "CATC Prayagraj (India)",
+        "FAA Academy Oklahoma City",
+        "EUROCONTROL IANS",
+        "Embry-Riddle Aeronautical University"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Pass aptitude screening and complete simulator academy; train as developmental controller.",
+      "phase2": "Years 2–5: Earn full facility ratings in Tower, TRACON (Approach), or En-Route Center.",
+      "phase3": "Years 5–10+: Become Watch Supervisor, Airspace Designer, or Operations Manager."
+    },
+    "skills": {
+      "hardSkills": [
+        "3D Spatial Radar Separation",
+        "ICAO Phraseology",
+        "Aviation Meteorology",
+        "Emergency Diversion Handling"
+      ],
+      "softSkills": [
+        "Zero-Panic Voice Calm",
+        "Short-Term Working Memory",
+        "Decisiveness"
+      ]
+    },
+    "roles": [
+      "Air Traffic Controller (Tower/Radar)",
+      "Flight Operations Dispatcher",
+      "Airspace Planner"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Calmest person in any crisis",
+        "Laser-sharp spatial focus"
+      ],
+      "workStyle": "24/7 rotating shifts in airport towers and radar centers.",
+      "pros": [
+        "Six-figure pay without a medical/law degree",
+        "You leave work completely at work (no homework)"
+      ],
+      "cons": [
+        "Rotating night shifts",
+        "High cognitive intensity and strict medical checks"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Air Traffic Controller & Flight Dispatcher even on routine weeks?",
+      "Are you prepared for the training path (B.Sc. (Physics/Math) or B.Tech (India AAI)) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Air Traffic Controller",
+      "ATC Officer",
+      "Flight Dispatcher",
+      "Tower Controller",
+      "En-Route Radar Controller",
+      "Airspace Safety Analyst"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "transport",
+      "space",
+      "tech",
+      "numbers"
+    ],
+    "degrees": [
+      "aviation",
+      "science",
+      "engineering"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "disaster-humanitarian-logistics",
+    "cat": "safety",
+    "catName": "Public Safety & Defense",
+    "icon": "ai",
+    "era": "ongoing",
+    "title": "Disaster Management & Humanitarian Logistics Lead",
+    "tagline": "Coordinate emergency shelter, water, and medical supply chains in crises",
+    "desc": "Design earthquake/flood preparedness plans, run Emergency Operations Centers (EOC), and deploy relief airlifts.",
+    "stream": "Any",
+    "salary": "Entry: $55K / ₹6-10 LPA · Mid: $92K / ₹15-26 LPA · Director: $145K+ / ₹40 LPA+",
+    "growth": "10% (Climate & humanitarian demand)",
+    "demand": "High",
+    "aiImpact": "Protected: Coordinating local officials, NGOs, and broken roads in disaster zones requires human leadership.",
+    "overview": "When cyclones, earthquakes, or conflicts strike, humanitarian logisticians move clean water, trauma kits, satellite comms, and field hospitals into damaged zones within 48 hours.",
+    "education": {
+      "highSchoolPrereqs": "Operations aptitude, calm under ambiguity, willingness to travel.",
+      "entranceExams": "NDMA / UN / Red Cross Entry Assessments.",
+      "undergradDegrees": [
+        "B.A. / B.S. / B.Tech in Any Field + Supply Chain / Emergency Management"
+      ],
+      "postgradDegrees": [
+        "Master of Disaster Management (TISS / NIDM / Geneva)"
+      ],
+      "certifications": [
+        "FEMA Incident Command System (ICS)",
+        "Sphere Humanitarian Standards",
+        "CILT Humanitarian Logistics"
+      ],
+      "topInstitutes": [
+        "TISS Mumbai",
+        "NIDM New Delhi",
+        "CERAH Geneva",
+        "Tulane Disaster Resilience Academy"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Work in municipal emergency planning or NGO supply warehousing.",
+      "phase2": "Years 2–5: Deploy on rapid-response teams managing field procurement and shelter.",
+      "phase3": "Years 5–10+: Direct national disaster agencies (NDRF/FEMA) or UN WFP logistics."
+    },
+    "skills": {
+      "hardSkills": [
+        "Incident Command System (ICS)",
+        "Cold-Chain & Airlift Logistics",
+        "GIS Hazard Mapping",
+        "WASH (Water/Sanitation) Setup"
+      ],
+      "softSkills": [
+        "Diplomatic Calm",
+        "Improvisation Under Chaos",
+        "Cross-Cultural Grit"
+      ]
+    },
+    "roles": [
+      "Emergency Management Director",
+      "Humanitarian Logistician",
+      "Disaster Risk Analyst",
+      "UN Field Coordinator"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Action-oriented helper",
+        "Thrives when plans break and need rebuilding"
+      ],
+      "workStyle": "Mix of policy offices and high-urgency field deployments.",
+      "pros": [
+        "Directly saves lives at scale",
+        "Global UN/NGO mobility"
+      ],
+      "cons": [
+        "Exposure to austere disaster zones",
+        "Burnout risk during prolonged crises"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Disaster Management & Humanitarian Logistics Lead even on routine weeks?",
+      "Are you prepared for the training path (B.A. / B.S. / B.Tech in Any Field + Supply Chain / Emergency Management) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Disaster Management Specialist",
+      "Emergency Manager",
+      "Humanitarian Logistician",
+      "Relief Operations Coordinator",
+      "Crisis Response Director",
+      "Civil Defense Planner"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "people",
+      "outdoors",
+      "business",
+      "law"
+    ],
+    "degrees": [
+      "management",
+      "arts",
+      "engineering"
+    ],
+    "aiTag": "people"
+  },
+  {
+    "id": "genetic-counselor",
+    "cat": "health",
+    "catName": "Healthcare & Medicine",
+    "icon": "dna",
+    "era": "new",
+    "title": "Genetic Counselor & Clinical Genomics Specialist",
+    "tagline": "Translate DNA test results into clear medical choices for families",
+    "desc": "Assess inherited cancer, cardiac, and rare-disease risks, order genomic panels, and guide patients through tough decisions.",
+    "stream": "Science (PCB)",
+    "salary": "Entry: $82K / ₹8-14 LPA · Mid: $108K / ₹16-26 LPA · Lead: $140K+ / ₹38 LPA+",
+    "growth": "16% (Much faster than average)",
+    "demand": "High",
+    "aiImpact": "Protected: Explaining hereditary risk or prenatal results requires deep human empathy and ethical counseling.",
+    "overview": "As whole-genome sequencing becomes routine, families get complex DNA reports they cannot decode alone. Genetic counselors bridge clinical genetics labs and emotional bedside counseling.",
+    "education": {
+      "highSchoolPrereqs": "Biology, Genetics, Psychology.",
+      "entranceExams": "BGCI / ABGC Accredited Master’s Admissions.",
+      "undergradDegrees": [
+        "B.Sc. / B.S. in Genetics, Biotechnology, Biology, or Psychology"
+      ],
+      "postgradDegrees": [
+        "M.Sc. / M.S. in Genetic Counseling (mandatory in most regions)"
+      ],
+      "certifications": [
+        "ABGC Board Certification (CGC)",
+        "BGCI (India) Registration"
+      ],
+      "topInstitutes": [
+        "Johns Hopkins / NIH",
+        "Stanford University",
+        "CMC Vellore",
+        "Manipal Academy (MAHE)",
+        "University of Manchester"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Shadow clinics, complete 2-year genetic counseling Master’s with clinical rotations.",
+      "phase2": "Years 2–5: Practice in oncology, prenatal, or pediatric genetics.",
+      "phase3": "Years 5–10+: Lead hospital genomic medicine programs or precision-pharma advisory."
+    },
+    "skills": {
+      "hardSkills": [
+        "Pedigree & Inheritance Analysis",
+        "NGS Variant Interpretation",
+        "Oncology & Prenatal Genetics",
+        "Bioethics"
+      ],
+      "softSkills": [
+        "Compassionate Listening",
+        "Explaining Probability Plainly"
+      ]
+    },
+    "roles": [
+      "Clinical Genetic Counselor",
+      "Oncology Genetics Specialist",
+      "Genomic Variant Analyst"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Equal parts scientist and empathetic listener",
+        "Comfortable with sensitive news"
+      ],
+      "workStyle": "Hospital clinics, telehealth, and diagnostic genomics labs.",
+      "pros": [
+        "Great work-life balance in healthcare",
+        "Rapidly growing precision-medicine field"
+      ],
+      "cons": [
+        "Emotionally heavy family conversations",
+        "Master’s degree required"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Genetic Counselor & Clinical Genomics Specialist even on routine weeks?",
+      "Are you prepared for the training path (B.Sc. / B.S. in Genetics, Biotechnology, Biology, or Psychology) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Genetic Counselor",
+      "Clinical Genomics Specialist",
+      "Hereditary Cancer Counselor",
+      "Prenatal Geneticist",
+      "Genomic Variant Curator"
+    ],
+    "edu": "master",
+    "interests": [
+      "health",
+      "science",
+      "people"
+    ],
+    "degrees": [
+      "health",
+      "science"
+    ],
+    "aiTag": "people"
+  },
+  {
+    "id": "perfusionist",
+    "cat": "health",
+    "catName": "Healthcare & Medicine",
+    "icon": "heart",
+    "era": "ongoing",
+    "title": "Clinical Perfusionist (Heart-Lung Machine Specialist)",
+    "tagline": "Keep patients alive on heart-lung bypass during open-heart surgery",
+    "desc": "Operate cardiopulmonary bypass, ECMO life-support circuits, and blood-gas oxygenation inside cardiac operating theaters.",
+    "stream": "Science (PCB)",
+    "salary": "Entry: $105K / ₹7-12 LPA · Mid: $150K / ₹18-30 LPA · Chief: $195K+ / ₹45 LPA+",
+    "growth": "9% (Acute specialist shortage)",
+    "demand": "Very High",
+    "aiImpact": "100% Protected: Operating live extracorporeal circulation during cardiac arrest/surgery demands real-time human judgment.",
+    "overview": "When a surgeon stops a patient’s heart to replace a valve or bypass an artery, the perfusionist becomes the patient’s heart and lungs—monitoring arterial pressure, anticoagulation, temperature, and oxygen every second.",
+    "education": {
+      "highSchoolPrereqs": "Biology, Chemistry, Physics, calm under OR pressure.",
+      "entranceExams": "Allied Health / Perfusion Program Entrance.",
+      "undergradDegrees": [
+        "B.Sc. in Perfusion Technology / Cardiac Care",
+        "B.S. Biology + Post-Grad Perfusion Certificate"
+      ],
+      "postgradDegrees": [
+        "M.S. in Cardiovascular Perfusion"
+      ],
+      "certifications": [
+        "ABCP Certified Clinical Perfusionist (CCP)",
+        "IPE / Indian Society of Extracorporeal Tech"
+      ],
+      "topInstitutes": [
+        "AIIMS New Delhi",
+        "Sri Jayadeva Institute",
+        "Texas Heart Institute",
+        "Cleveland Clinic",
+        "MUSC"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Complete clinical OR rotations pumping 75+ supervised bypass cases.",
+      "phase2": "Years 2–5: Manage adult/pediatric open-heart bypass and ICU ECMO circuits.",
+      "phase3": "Years 5–10+: Serve as Chief Perfusionist leading hospital cardiac OR teams."
+    },
+    "skills": {
+      "hardSkills": [
+        "Cardiopulmonary Bypass (CPB)",
+        "ECMO Life Support",
+        "Blood Gas & ACT Coagulation",
+        "Hemodynamics"
+      ],
+      "softSkills": [
+        "Surgical-Team Calm",
+        "Zero-Mistake Vigilance"
+      ]
+    },
+    "roles": [
+      "Clinical Perfusionist",
+      "ECMO Specialist",
+      "Chief Cardiac Perfusionist",
+      "Organ Perfusion Technologist"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Thrives in high-stakes OR environments",
+        "Calm under life-or-death responsibility"
+      ],
+      "workStyle": "Cardiac operating rooms and ICUs with on-call rotations.",
+      "pros": [
+        "Top allied-health salaries",
+        "Shorter training than MBBS/MD"
+      ],
+      "cons": [
+        "Emergency on-call nights for ECMO/transplants",
+        "Zero room for distraction"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Clinical Perfusionist (Heart-Lung Machine Specialist) even on routine weeks?",
+      "Are you prepared for the training path (B.Sc. in Perfusion Technology / Cardiac Care) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Clinical Perfusionist",
+      "Cardiovascular Perfusionist",
+      "ECMO Specialist",
+      "Heart-Lung Machine Technologist"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "health",
+      "machines",
+      "science"
+    ],
+    "degrees": [
+      "health"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "prosthetist-orthotist",
+    "cat": "health",
+    "catName": "Healthcare & Medicine",
+    "icon": "ai",
+    "era": "ongoing",
+    "title": "Prosthetist & Orthotist (Bionic Limb Specialist)",
+    "tagline": "Design and fit custom artificial limbs, myoelectric hands, and spinal braces",
+    "desc": "Scan residual limbs, fabricate carbon-fiber sockets, calibrate microprocessor knees, and restore patient mobility.",
+    "stream": "Science (PCB or PCM)",
+    "salary": "Entry: $65K / ₹5-9 LPA · Mid: $95K / ₹12-22 LPA · Lead: $135K+ / ₹35 LPA+",
+    "growth": "15% (Aging population + bionic tech)",
+    "demand": "High",
+    "aiImpact": "100% Protected: Socket comfort, gait alignment, and patient encouragement require hands-on clinical fitting.",
+    "overview": "Prosthetists blend biomechanics, 3D printing, carbon-fiber fabrication, and physical rehabilitation. Watching an amputee take their first steady steps on a limb you built is the core reward.",
+    "education": {
+      "highSchoolPrereqs": "Biology, Physics, Anatomy.",
+      "entranceExams": "CET / NEET / NILD / ABC Residency.",
+      "undergradDegrees": [
+        "B.P.O. (Bachelor of Prosthetics & Orthotics)",
+        "B.S. + M.S. in Prosthetics & Orthotics"
+      ],
+      "postgradDegrees": [
+        "M.P.O. / M.S. in Rehabilitation Biomechanics"
+      ],
+      "certifications": [
+        "ABC Certified Prosthetist Orthotist (CPO)",
+        "RCI Registration (India)"
+      ],
+      "topInstitutes": [
+        "AIIPMR Mumbai",
+        "NILD Kolkata",
+        "University of Washington",
+        "Northwestern University",
+        "Strathclyde (UK)"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Complete clinical residency casting, modifying 3D sockets, and aligning components.",
+      "phase2": "Years 2–5: Fit microprocessor knees, myoelectric arms, and scoliosis orthoses.",
+      "phase3": "Years 5–10+: Run multi-clinic rehab centers or bionic R&D teams."
+    },
+    "skills": {
+      "hardSkills": [
+        "3D Limb Scanning & CAD/CAM",
+        "Gait Biomechanics",
+        "Carbon-Fiber & Silicone Fabrication",
+        "Myoelectric Calibration"
+      ],
+      "softSkills": [
+        "Patient Patience",
+        "Empathetic Coaching"
+      ]
+    },
+    "roles": [
+      "Certified Prosthetist-Orthotist",
+      "Bionic Rehab Engineer",
+      "Pediatric Orthotist"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Combines making things with helping people walk again"
+      ],
+      "workStyle": "Rehab clinics paired with fabrication workshops.",
+      "pros": [
+        "Immediate, visible life-changing results",
+        "Steady demand"
+      ],
+      "cons": [
+        "Workshop resin/dust work",
+        "Patient emotional adjustment takes patience"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Prosthetist & Orthotist (Bionic Limb Specialist) even on routine weeks?",
+      "Are you prepared for the training path (B.P.O. (Bachelor of Prosthetics & Orthotics)) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Prosthetist",
+      "Orthotist",
+      "Bionic Limb Specialist",
+      "Rehabilitation Technologist",
+      "Orthopedic Brace Maker"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "health",
+      "build",
+      "people",
+      "machines"
+    ],
+    "degrees": [
+      "health",
+      "engineering"
+    ],
+    "aiTag": "protected"
+  },
+  {
+    "id": "quant-algorithmic-trader",
+    "cat": "biz",
+    "catName": "Business & Finance",
+    "icon": "trending",
+    "era": "ongoing",
+    "title": "Quantitative Trader & Financial Risk Engineer",
+    "tagline": "Build mathematical pricing models and low-latency trading strategies",
+    "desc": "Analyze market microstructure, price derivatives, backtest statistical arbitrage, and manage portfolio tail risk.",
+    "stream": "Science (PCM) / Economics + Math",
+    "salary": "Entry: $150K / ₹25-45 LPA · Mid: $280K / ₹60-120 LPA · Principal: $500K+ / ₹2 Cr+",
+    "growth": "12% (Algorithmic finance)",
+    "demand": "High (Ultra-selective)",
+    "aiImpact": "AI-augmented alpha: Quants build the ML/statistical pipelines themselves; alpha decays fast so constant invention is required.",
+    "overview": "Quantitative finance applies stochastic calculus, probability, and C++/Python systems engineering to global markets. Days involve cleaning tick data, testing hypotheses, and ensuring risk limits never breach.",
+    "education": {
+      "highSchoolPrereqs": "Calculus, Probability, Linear Algebra, Statistics, C++/Python.",
+      "entranceExams": "JEE / Olympiad / Putnam / GRE Quant.",
+      "undergradDegrees": [
+        "B.Tech / B.S. in Mathematics & Computing, CS, Statistics, or Physics"
+      ],
+      "postgradDegrees": [
+        "M.F.E. (Master of Financial Engineering) / Ph.D. in Math/Physics"
+      ],
+      "certifications": [
+        "CQF (Certificate in Quantitative Finance)",
+        "FRM / CFA"
+      ],
+      "topInstitutes": [
+        "MIT",
+        "CMU",
+        "Princeton",
+        "IIT Bombay / Delhi",
+        "ISI Kolkata",
+        "ETH Zurich"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Master probability puzzles, C++ latency, Python pandas/numpy, and derivatives pricing.",
+      "phase2": "Years 2–5: Research alpha signals, options volatility surfaces, or execution algorithms.",
+      "phase3": "Years 5–10+: Manage trading pods or Chief Risk Officer mandates."
+    },
+    "skills": {
+      "hardSkills": [
+        "Stochastic Calculus & Probability",
+        "C++ & Python",
+        "Market Microstructure",
+        "Options Greeks & Volatility",
+        "Time-Series Statistics"
+      ],
+      "softSkills": [
+        "Intellectual Honesty About Overfitting",
+        "Grace Under Market Drawdowns"
+      ]
+    },
+    "roles": [
+      "Quantitative Researcher",
+      "Quant Trader",
+      "Quant Developer",
+      "Derivatives Risk Analyst"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Obsessed with probability and puzzles",
+        "Emotionally detached during volatility"
+      ],
+      "workStyle": "High-intensity trading floors and quiet quant research pods.",
+      "pros": [
+        "Among the highest starting compensation in the world",
+        "Meritocratic math culture"
+      ],
+      "cons": [
+        "Extreme interview selectivity",
+        "High performance pressure and stress"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Quantitative Trader & Financial Risk Engineer even on routine weeks?",
+      "Are you prepared for the training path (B.Tech / B.S. in Mathematics & Computing, CS, Statistics, or Physics) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Quantitative Trader",
+      "Quant Researcher",
+      "Quant Developer",
+      "Financial Engineer",
+      "Algorithmic Trader",
+      "Derivatives Quant",
+      "Risk Modeler"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "numbers",
+      "tech",
+      "business"
+    ],
+    "degrees": [
+      "science",
+      "computing",
+      "engineering",
+      "economics"
+    ],
+    "aiTag": "augmented"
+  },
+  {
+    "id": "foley-spatial-audio-designer",
+    "cat": "creative",
+    "catName": "Creative Arts & Design",
+    "icon": "audio",
+    "era": "ongoing",
+    "title": "Foley Artist, Sound Designer & Spatial Audio Engineer",
+    "tagline": "Craft every footstep, sword clash, engine roar, and 3D Dolby Atmos mix",
+    "desc": "Perform physical foley props in sync to picture, synthesize sci-fi audio, and mix spatial sound for film and games.",
+    "stream": "Any (Acute ear + studio tech)",
+    "salary": "Entry: $50K / ₹4-8 LPA · Mid: $88K / ₹12-22 LPA · Supervising: $145K+ / ₹40 LPA+",
+    "growth": "8% (Games, streaming, spatial XR)",
+    "demand": "Steady",
+    "aiImpact": "AI generates rough textures, while bespoke foley performance and theatrical Atmos mixing remain creative craft.",
+    "overview": "Almost no sound you hear in a movie was recorded on set—even footsteps and clothing rustles are performed live by Foley artists walking on gravel pits, snapping celery, or clanging scrap metal in dark studios.",
+    "education": {
+      "highSchoolPrereqs": "Musical/acoustic ear, DAW familiarity.",
+      "entranceExams": "Portfolio & Film/Audio School Auditions.",
+      "undergradDegrees": [
+        "B.A. / B.S. in Sound Design, Audio Engineering, or Music Production"
+      ],
+      "postgradDegrees": [
+        "M.F.A. in Sound Design (FTII / NFTS / USC)"
+      ],
+      "certifications": [
+        "Dolby Atmos Certification",
+        "Pro Tools / Wwise Audio Certification"
+      ],
+      "topInstitutes": [
+        "FTII Pune",
+        "SRFTI Kolkata",
+        "Berklee College of Music",
+        "NFTS (UK)",
+        "Vancouver Film School"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Work as dialogue editor or foley assistant learning mic placement and Pro Tools.",
+      "phase2": "Years 2–5: Design game audio in Wwise/Unreal or cut effects for series and films.",
+      "phase3": "Years 5–10+: Supervise sound design or re-recording mixing for major features."
+    },
+    "skills": {
+      "hardSkills": [
+        "Pro Tools & DAWs",
+        "Wwise / FMOD Game Audio",
+        "Foley Pit Performance",
+        "Dolby Atmos Spatial Mixing",
+        "Field Recording"
+      ],
+      "softSkills": [
+        "Storytelling Through Sound",
+        "Director Collaboration"
+      ]
+    },
+    "roles": [
+      "Foley Artist",
+      "Sound Designer",
+      "Re-Recording Mixer",
+      "Game Audio Engineer",
+      "Acoustic Consultant"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Notices every hum and echo in a room",
+        "Inventive prop-builder"
+      ],
+      "workStyle": "Foley stages, mixing theaters, and outdoor field recording.",
+      "pros": [
+        "Deeply creative tactile studio craft",
+        "Crosses film, games, and VR"
+      ],
+      "cons": [
+        "Post-production crunch deadlines",
+        "Freelance networking required"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Foley Artist, Sound Designer & Spatial Audio Engineer even on routine weeks?",
+      "Are you prepared for the training path (B.A. / B.S. in Sound Design, Audio Engineering, or Music Production) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Foley Artist",
+      "Sound Designer",
+      "Game Audio Designer",
+      "Dolby Atmos Mixer",
+      "Production Sound Mixer",
+      "Acoustic Engineer",
+      "Audio Post-Production Specialist"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "art",
+      "creative",
+      "tech"
+    ],
+    "degrees": [
+      "arts",
+      "design"
+    ],
+    "aiTag": "augmented"
+  },
+  {
+    "id": "special-ed-accessibility-specialist",
+    "cat": "edu",
+    "catName": "Education & Academia",
+    "icon": "palette",
+    "era": "ongoing",
+    "title": "Special Education (SEN) & Accessibility Specialist",
+    "tagline": "Design individualized learning plans for neurodivergent and disabled learners",
+    "desc": "Adapt curricula for dyslexia, autism, ADHD, and sensory impairments, and audit digital/physical accessibility.",
+    "stream": "Any (Education / Psychology)",
+    "salary": "Entry: $50K / ₹4-8 LPA · Mid: $78K / ₹9-16 LPA · Lead: $115K+ / ₹25 LPA+",
+    "growth": "10% (Rising diagnosis & inclusive mandates)",
+    "demand": "High",
+    "aiImpact": "100% Protected: Patience, individualized scaffolding, and human encouragement cannot be automated.",
+    "overview": "Special educators and accessibility specialists unlock education for students who learn differently—building IEPs, assistive communication boards, Orton-Gillingham reading interventions, and WCAG digital classrooms.",
+    "education": {
+      "highSchoolPrereqs": "Psychology, Empathy, Communication.",
+      "entranceExams": "RCI / B.Ed Special Ed Entrance / State Teaching Licensure.",
+      "undergradDegrees": [
+        "B.Ed. in Special Education",
+        "B.A. Psychology / Education"
+      ],
+      "postgradDegrees": [
+        "M.Ed. Special Education / M.Sc. Speech & Learning"
+      ],
+      "certifications": [
+        "RCI Registration (India)",
+        "Orton-Gillingham / ABA / IAAP CPACC"
+      ],
+      "topInstitutes": [
+        "NIEPID Secunderabad",
+        "AYJNISHD Mumbai",
+        "Teachers College Columbia",
+        "Vanderbilt Peabody"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Teach resource rooms or shadow inclusive classrooms.",
+      "phase2": "Years 2–5: Lead IEP teams or assistive-tech programs across school districts.",
+      "phase3": "Years 5–10+: Direct inclusive education policy or EdTech accessibility."
+    },
+    "skills": {
+      "hardSkills": [
+        "IEP Design",
+        "Orton-Gillingham Literacy",
+        "Assistive Technology (AAC)",
+        "WCAG Accessibility",
+        "Behavioral Scaffolding"
+      ],
+      "softSkills": [
+        "Boundless Patience",
+        "Parent Advocacy",
+        "Calm Adaptation"
+      ]
+    },
+    "roles": [
+      "Special Educator",
+      "Dyslexia Interventionist",
+      "Sign Language Interpreter",
+      "Digital Accessibility (A11y) Specialist"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Genuinely celebrates small student breakthroughs",
+        "Deeply patient"
+      ],
+      "workStyle": "Schools, therapy centers, and EdTech/product accessibility teams.",
+      "pros": [
+        "Profound daily impact on children and families",
+        "Consistent demand"
+      ],
+      "cons": [
+        "Emotionally demanding",
+        "School paperwork load"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of Special Education (SEN) & Accessibility Specialist even on routine weeks?",
+      "Are you prepared for the training path (B.Ed. in Special Education) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "Special Education Teacher",
+      "SEN Coordinator",
+      "Dyslexia Specialist",
+      "Sign Language Interpreter",
+      "Braille & Mobility Instructor",
+      "Digital Accessibility Specialist",
+      "Inclusive Education Consultant"
+    ],
+    "edu": "bachelor",
+    "interests": [
+      "teaching",
+      "people",
+      "social"
+    ],
+    "degrees": [
+      "education",
+      "arts"
+    ],
+    "aiTag": "people"
+  },
+  {
+    "id": "high-voltage-lineman-grid",
+    "cat": "trades",
+    "catName": "Skilled Trades & Craft",
+    "icon": "bolt",
+    "era": "ongoing",
+    "title": "High-Voltage Lineman & Smart Grid Technician",
+    "tagline": "Build, climb, and restore high-voltage power lines and substations",
+    "desc": "String transmission towers, splice energized lines, maintain grid transformers, and restore power after storms.",
+    "stream": "Science / Vocational (ITI Electrician)",
+    "salary": "Entry: $60K / ₹4-7 LPA · Journeyman: $98K / ₹10-18 LPA · Foreman: $145K+ / ₹28 LPA+",
+    "growth": "10% (EV & renewable grid expansion)",
+    "demand": "Very High",
+    "aiImpact": "100% Protected: Climbing 150-foot towers in a storm to splice live lines is permanently physical.",
+    "overview": "With solar farms, wind parks, and EV chargers multiplying, power grids are undergoing their biggest buildout in a century. Linemen are the backbone keeping lights and data centers powered.",
+    "education": {
+      "highSchoolPrereqs": "Physical fitness, no fear of heights, electrical fundamentals.",
+      "entranceExams": "Apprenticeship Aptitude + Climbing Physical.",
+      "undergradDegrees": [
+        "ITI Electrician / Lineman Certificate",
+        "Lineworker Pre-Apprenticeship"
+      ],
+      "postgradDegrees": [
+        "Substation Relay & SCADA Specialist"
+      ],
+      "certifications": [
+        "Journeyman Lineman Card",
+        "OSHA / High-Voltage Live-Line Ticket",
+        "CDL Class A"
+      ],
+      "topInstitutes": [
+        "NLC / State Electricity Board Training",
+        "IBEW / NJATC Lineworker Academies",
+        "Northwest Lineman College"
+      ]
+    },
+    "roadmap": {
+      "phase1": "Years 0–2: Work as Groundman and Apprentice climbing poles and learning rigging.",
+      "phase2": "Years 2–5: Earn Journeyman ticket handling live distribution and transmission.",
+      "phase3": "Years 5–10+: Advance to Line Foreman, Substation Lead, or Utility Operations Manager."
+    },
+    "skills": {
+      "hardSkills": [
+        "Live-Line Hotstick Work",
+        "Transformer & Substation Rigging",
+        "Pole & Tower Climbing",
+        "Storm Restoration"
+      ],
+      "softSkills": [
+        "Ironclad Safety Discipline",
+        "Crew Trust at Heights"
+      ]
+    },
+    "roles": [
+      "High-Voltage Lineman",
+      "Substation Technician",
+      "Wind Turbine Electrical Tech",
+      "Utility Line Foreman"
+    ],
+    "decisionFit": {
+      "traits": [
+        "Prefers outdoor physical challenge over offices",
+        "Respects electrical safety"
+      ],
+      "workStyle": "Outdoors on utility trucks, towers, and substations; storm overtime.",
+      "pros": [
+        "Zero student debt, high journeyman pay",
+        "Massive clean-grid demand"
+      ],
+      "cons": [
+        "Heights, extreme weather, and high-voltage hazard",
+        "Storm call-outs at night"
+      ]
+    },
+    "reflectionQuestions": [
+      "Would you enjoy the day-to-day reality of High-Voltage Lineman & Smart Grid Technician even on routine weeks?",
+      "Are you prepared for the training path (ITI Electrician / Lineman Certificate) required to enter this field?"
+    ],
+    "resources": [
+      "U.S. Bureau of Labor Statistics Occupational Outlook Handbook",
+      "National Career Service (India) & O*NET OnLine",
+      "MIT OpenCourseWare / Coursera Domain Specializations"
+    ],
+    "aka": [
+      "High-Voltage Lineman",
+      "Power Line Technician",
+      "Substation Electrician",
+      "Grid Operations Technician",
+      "Elevator & Escalator Mechanic",
+      "Solar Microgrid Installer"
+    ],
+    "edu": "diploma",
+    "interests": [
+      "build",
+      "outdoors",
+      "machines"
+    ],
+    "degrees": [
+      "vocational"
+    ],
+    "aiTag": "protected"
   }
 ];

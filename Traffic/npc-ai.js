@@ -429,7 +429,7 @@ class NPCAI {
     this.state = NPC_STATE.IDLE;
     this.targetNode = null;
     this.currentEdge = null;
-    this.currentLane = 0;
+    this.currentLane = (typeof vehicle.currentLane === 'number' && vehicle.currentLane >= 0) ? vehicle.currentLane : 0;
     this.route = [];
     this.routeIndex = 0;
     this.waitTimer = 0;
@@ -1166,6 +1166,19 @@ class NPCAI {
         break;
     }
 
+    // Impatient / honk-happy drivers let the queue know they exist while held
+    // at a red. `honkHappy` was declared on impatient_taxi and never read, so
+    // Ansh's "HORN HORN" was only ever a subtitle.
+    if (this.profile && this.profile.honkHappy && this.state === NPC_STATE.WAIT_SIGNAL) {
+      this._honkHappyTimer = (this._honkHappyTimer || 0) + dt;
+      if (this._honkHappyTimer >= 2.5) {
+        this._honkHappyTimer = 0;
+        this.triggerHorn('HONK_HAPPY');
+      }
+    } else {
+      this._honkHappyTimer = 0;
+    }
+
     // Bus-type vehicles check for approaching bus stops
     if (this.state === NPC_STATE.FOLLOW_LANE && this.vehicle?.userData?.type === 'bus') {
       this._checkBusStop();
@@ -1300,7 +1313,7 @@ class NPCAI {
           this._activeSignal = null;
         }
       } else if (distToJunction < 45.0) {
-        if (this.profile.signalCompliance < Math.random() && this.isRuleBreaker) {
+        if (this.forceSignalViolation || (this.profile.signalCompliance < Math.random() && this.isRuleBreaker)) {
           this.signalViolation = true;
           this._committedToIntersection = true;
           this._clearingIntersection = true;
@@ -1345,7 +1358,12 @@ class NPCAI {
       const egoHalfD = (this.vehicle?.mesh?.userData?.halfD) || (this.idmParams.length / 2);
       const leadHalfD = (aheadVehicle.mesh?.userData?.halfD || aheadVehicle.userData?.halfD) || 2.2;
       distToLead = Math.max(0.1, centerDist - (egoHalfD + leadHalfD));
-      vLead = aheadVehicle.npcAI?.currentSpeed || aheadVehicle.speed || 0;
+      if (aheadVehicle.npcAI && typeof aheadVehicle.npcAI.currentSpeed === 'number') {
+        vLead = aheadVehicle.npcAI.currentSpeed;
+      } else {
+        const rawPlayerSpd = aheadVehicle.speed || 0;
+        vLead = window.TrafficUnits ? window.TrafficUnits.playerSpeedToMs(rawPlayerSpd) : rawPlayerSpd * 30;
+      }
 
       // ── Mumbai Micro-Behavior 1: Auto-Rickshaw Gap Probing ──
       // When auto following slow lead (s < 12m), add subtle lateral sinusoidal probing offset (+/- 0.8m)
@@ -1473,7 +1491,7 @@ class NPCAI {
       this.desiredSpeed = Math.max(6.0, this._getTargetSpeed ? this._getTargetSpeed() : 8.0);
       this.currentSpeed = Math.max(this.currentSpeed, 3.5);
       this.currentAcceleration = (this.idmParams?.aMax || 2.0) * 0.9;
-    } else if (this.waitTimer > 3.0 && this.profile.patience < 0.40 && this.isRuleBreaker) {
+    } else if (this.waitTimer > 3.0 && (this.forceSignalViolation || (this.profile.patience < 0.40 && this.isRuleBreaker))) {
       this.signalViolation = true;
       this.state = NPC_STATE.FOLLOW_LANE;
       this._committedToIntersection = true;
@@ -1839,8 +1857,11 @@ class NPCAI {
       }
     } catch (e) {}
     if (this.profile?.neverHonks) {return;}
-    if (this.trafficManager?.audio && this.vehicle?.hornSound) {
-      this.trafficManager.audio.playHorn(this.vehicle.hornSound, this.vehicle.position);
+    if (this.trafficManager?.audio) {
+      // TrafficAudio maps a horn-voice name to pitch and defaults when none is
+      // set. The old guard required `vehicle.hornSound`, which is never
+      // assigned, so every NPC horn fell through to the thin UI beep.
+      this.trafficManager.audio.playHorn(this.vehicle?.hornSound);
     } else if (typeof window !== 'undefined' && window.sfx && window.sfx.play) {
       window.sfx.play('horn');
     }
@@ -2282,6 +2303,11 @@ class NPCAI {
           if (dz < 130 * careful) {speed = Math.min(speed, limit * (this.profile?.schoolCareful ? 0.9 : 1.0));}
         }
       }
+    }
+    const vType = (this.vehicle?.type || this.vehicle?.userData?.npcType || 'car').toLowerCase();
+    const classProfile = (typeof VehicleClassProfiles !== 'undefined' && VehicleClassProfiles[vType]) ? VehicleClassProfiles[vType] : null;
+    if (classProfile && typeof classProfile.v0 === 'number') {
+      speed = Math.min(speed, classProfile.v0 * 1.15);
     }
     return speed;
   }
@@ -2794,7 +2820,7 @@ class PedestrianAI {
 
     if (this.waitTimer >= this._waitThreshold) {
       const ttcEval = this.evaluateTTC(allVehicles);
-      if (ttcEval.safeToCross) {
+      if (ttcEval.safeToCross && this._crossingSignalAllows()) {
         this.state = PED_STATE.CROSSING;
         this.crossingTimer = 0;
         this._pickCrossingTarget();
@@ -2803,6 +2829,35 @@ class PedestrianAI {
         this.waitTimer = 0.5; // Continue waiting safely
       }
     }
+  }
+
+  /**
+   * True when the traffic signal governing the road this pedestrian is about
+   * to cross is red (or there is no signal). Pedestrians used to cross on TTC
+   * gap acceptance alone, so at a signalised junction they would step out
+   * during the green phase — the exact behaviour Lesson 1 teaches against.
+   *
+   * `userData.isV` is the orientation of the road being crossed, so the
+   * governing heads are the ones whose `axis` matches it.
+   */
+  _crossingSignalAllows() {
+    const ud = this.ped.userData || {};
+    const isV = ud.isV !== undefined ? ud.isV : true;
+    const g = (this.tm && this.tm.game) || (typeof window !== 'undefined' ? window.game : null);
+    const sigs = g && g.sigs;
+    if (!sigs || !sigs.length) {return true;}
+    const axis = isV ? 'v' : 'h';
+    const px = this.ped.position.x, pz = this.ped.position.z;
+    for (let i = 0; i < sigs.length; i++) {
+      const sg = sigs[i];
+      if (!sg || !sg.userData || sg.userData.axis !== axis) {continue;}
+      const jx = sg.userData.junctionX !== undefined ? sg.userData.junctionX : (sg.position ? sg.position.x : 0);
+      const jz = sg.userData.junctionZ !== undefined ? sg.userData.junctionZ : (sg.position ? sg.position.z : 0);
+      if (Math.hypot(px - jx, pz - jz) > 30) {continue;}
+      const st = sg.state || sg.userData.st || 'green';
+      if (st === 'green') {return false;}
+    }
+    return true;
   }
 
   _updateCrossing(dt, allVehicles) {

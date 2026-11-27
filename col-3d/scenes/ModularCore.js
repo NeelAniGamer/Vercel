@@ -19,11 +19,11 @@
   ]
 
   const MODULE_ICONS = {
-    'Fundamentals': ['🚦', '🛑', '🚶', '🛣️', '🔄', '👁️', '🔊', '⏱️', '🌧️', '🌙'],
-    'Infrastructure & Vehicles': ['🚛', '🚲', '🚌', '🏫', '🚂', '⚙️', '🛣️', '🚧', '🏝️', '⚖️'],
-    'Advanced Physics': ['🧠', '🌊', '🌀', '💥', '💺', '💨', '📏', '📱', '☀️', '🎯'],
-    'Smart Cities & Ecology': ['📡', '🗺️', '🔋', '💨', '🚥', '🛑', '🏙️', '🛴', '💰', '📶'],
-    'Autonomous Future': ['🔦', '📻', '📸', '🤖', '⚖️', '🚚', '🛡️', '🚶‍♂️', '🔒', '✨']
+    'Fundamentals': ['SIG', 'STP', 'PED', 'RD', 'TRN', 'VIS', 'SND', 'TMR', 'RN', 'NGT'],
+    'Infrastructure & Vehicles': ['TRK', 'CYC', 'BUS', 'SCH', 'RL', 'ENG', 'HWY', 'WRK', 'ISL', 'LAW'],
+    'Advanced Physics': ['KIN', 'WTR', 'TRQ', 'IMP', 'SFT', 'BRK', 'DST', 'SEN', 'SUN', 'TGT'],
+    'Smart Cities & Ecology': ['V2X', 'MAP', 'EV', 'AIR', 'LGT', 'STP', 'CTY', 'MIC', 'TOL', 'NET'],
+    'Autonomous Future': ['LDR', 'RAD', 'CAM', 'AI', 'ETH', 'FLT', 'SHD', 'XNG', 'SEC', 'OPT']
   }
 
   function createTier(tier, tierIndex, pal) {

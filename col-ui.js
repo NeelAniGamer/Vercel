@@ -267,13 +267,13 @@
 
   // 2. Mobile Menu & In-App Updater — Engineered for 720p→2K
   const mmb = document.getElementById('mmb'),
-    nl = document.getElementById('navLinks')
+    nl = document.getElementById('navLinks') || document.querySelector('.top-nav .nav-links, .nav .nav-links') || document.querySelector('.top-nav .nav-links, .nav .nav-links')
   const isGamePage2 = /Driving|Academy|solar|gesture|rpg/i.test(location.pathname)
   if (mmb) {
     mmb.innerHTML = '<span class="m-line"></span><span class="m-line"></span><span class="m-line"></span>'
     mmb.setAttribute('aria-label', 'Toggle navigation menu')
     mmb.setAttribute('aria-expanded', 'false')
-    if (nl) {
+    if (mmb) {
       // — Helper: lock body scroll without layout shift —
       let _lockY = 0
       let _navLocked = false
@@ -287,7 +287,7 @@
         document.body.style.position = 'fixed'
         document.body.style.width = '100%'
         mmb.setAttribute('aria-expanded', 'true')
-        nl.setAttribute('aria-hidden', 'false')
+        if (nl) nl.setAttribute('aria-hidden', 'false')
       }
       function unlockNav() {
         document.body.classList.remove('nav-lock')
@@ -304,7 +304,7 @@
           _navLocked = false
         }
         mmb.setAttribute('aria-expanded', 'false')
-        nl.setAttribute('aria-hidden', 'true')
+        if (nl) nl.setAttribute('aria-hidden', 'true')
       }
       function isNavOpen() {
         return Boolean(_drawer && _drawer.classList.contains('active'))
@@ -376,7 +376,7 @@
                 '<button type="button" class="cmd-accordion-btn" id="cmdAccBtn">' +
                   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>' +
                   '<span>Projects</span>' +
-                  '<span class="cmd-acc-arrow">&#9660;</span>' +
+                  '<svg class="cmd-acc-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>' +
                 '</button>' +
                 '<div class="cmd-accordion-list" id="cmdAccList">' +
                   '<a href="/ati" class="cmd-acc-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg><span>Typing Instructor</span></a>' +
@@ -422,17 +422,17 @@
 
             '<div class="cmd-quick-deck">' +
               '<a href="/making" class="cmd-tile highlight">' +
-                '<span class="cmd-tile-icon">⚡</span>' +
+                '<span class="cmd-tile-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>' +
                 '<span class="cmd-tile-title">Making</span>' +
                 '<span class="cmd-tile-sub">AIs, Services &amp; Stack</span>' +
               '</a>' +
               '<a href="/ati" class="cmd-tile">' +
-                '<span class="cmd-tile-icon">⌨️</span>' +
+                '<span class="cmd-tile-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></svg></span>' +
                 '<span class="cmd-tile-title">Typing Instructor</span>' +
                 '<span class="cmd-tile-sub">Tutor &amp; Speed Test</span>' +
               '</a>' +
               '<a href="/solar" class="cmd-tile">' +
-                '<span class="cmd-tile-icon">🪐</span>' +
+                '<span class="cmd-tile-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg></span>' +
                 '<span class="cmd-tile-title">Solar 3D Engine</span>' +
                 '<span class="cmd-tile-sub">Cosmic Physics Sim</span>' +
               '</a>' +
@@ -592,7 +592,7 @@
       })
 
       // Mobile dropdown toggle (accordion, no propagation to drawer close)
-      const dropdowns = nl.querySelectorAll('.dropdown')
+      const dropdowns = nl ? nl.querySelectorAll('.dropdown') : []
       dropdowns.forEach(function (dd) {
         const btn = dd.querySelector('.dropdown-btn')
         if (btn) {
@@ -1561,10 +1561,10 @@ window.toggleTheme = function (el) {
     handleAutoDismiss()
   } else if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
-      setTimeout(handleAutoDismiss, 160)
+      requestAnimationFrame(handleAutoDismiss)
     })
   } else {
-    setTimeout(handleAutoDismiss, 160)
+    requestAnimationFrame(handleAutoDismiss)
   }
   window.addEventListener('load', handleAutoDismiss, { once: true })
 })()
@@ -1601,7 +1601,7 @@ window.toggleTheme = function (el) {
       '      <span class="col-cookie-dot"></span>',
       '      <span>Privacy &amp; Data Preferences</span>',
       '    </div>',
-      '    <button type="button" class="col-cookie-close" onclick="colDismissCookieBanner()" aria-label="Dismiss cookie notice">&times;</button>',
+      '    <button type="button" class="col-cookie-close" data-col-cookie="dismiss" aria-label="Dismiss cookie notice">&times;</button>',
       '  </div>',
       '  <div class="col-cookie-body">',
       '    <p class="col-cookie-text">',
@@ -1609,12 +1609,20 @@ window.toggleTheme = function (el) {
       '    </p>',
       '  </div>',
       '  <div class="col-cookie-actions">',
-      '    <button type="button" class="col-cookie-btn col-cookie-accept" onclick="colAcceptAllCookies()">Accept All</button>',
-      '    <button type="button" class="col-cookie-btn col-cookie-essential" onclick="colAcceptEssentialCookies()">Essential Only</button>',
+      '    <button type="button" class="col-cookie-btn col-cookie-accept" data-col-cookie="all">Accept All</button>',
+      '    <button type="button" class="col-cookie-btn col-cookie-essential" data-col-cookie="essential">Essential Only</button>',
       '    <a href="/privacy.html#cookies" class="col-cookie-link">Learn More</a>',
       '  </div>',
       '</div>'
     ].join('\n')
+    el.addEventListener('click', function (ev) {
+      const btn = ev.target && ev.target.closest ? ev.target.closest('[data-col-cookie]') : null
+      if (!btn) return
+      const act = btn.getAttribute('data-col-cookie')
+      if (act === 'dismiss') colDismissCookieBanner()
+      else if (act === 'all') colAcceptAllCookies()
+      else if (act === 'essential') colAcceptEssentialCookies()
+    })
     document.body.appendChild(el)
   }
 
@@ -1640,7 +1648,7 @@ window.toggleTheme = function (el) {
       }
     } catch (_e) {}
     closeBanner()
-    if (window.toast) {
+    if (typeof window.toast === 'function') {
       window.toast('All cookie preferences accepted and saved.', '#10b981')
     }
   }
@@ -1654,7 +1662,7 @@ window.toggleTheme = function (el) {
       }
     } catch (_e) {}
     closeBanner()
-    if (window.toast) {
+    if (typeof window.toast === 'function') {
       window.toast('Essential cookie preferences active.', '#f59e0b')
     }
   }

@@ -60,6 +60,7 @@ const BY_DESIGN_REMOTE = [
   /supabase/i,
   /accounts\.google\.com/i,
   /_vercel\/speed-insights/i,
+  /csp\.withgoogle\.com/i,
 ];
 
 function isByDesignRemote(url) {
@@ -244,7 +245,145 @@ function watch(page) {
       const s = watch(page);
       await page.goto(`${base}${APP}/Academy.html`, { waitUntil: 'domcontentloaded', timeout: 60000 });
       await page.waitForTimeout(2500);
-      check('THREE loaded', await page.evaluate(() => typeof window.THREE !== 'undefined'));
+      const acState = await page.evaluate(() => {
+        const p1 = window.TrafficScenarioPresets ? window.TrafficScenarioPresets.forLevel({ id: 1, name: 'Red Light Patience' }) : null;
+        const p2 = window.TrafficScenarioPresets ? window.TrafficScenarioPresets.forLevel({ id: 2, name: 'Street Parking' }) : null;
+        const p14 = window.TrafficScenarioPresets ? window.TrafficScenarioPresets.forLevel({ id: 14, name: 'Night Crossing' }) : null;
+        return {
+          hasThree: typeof window.THREE !== 'undefined',
+          hasSettingsFn: typeof window.openSettingsModal === 'function',
+          hasProgressTracker: typeof window.ProgressTracker === 'object',
+          hasPresets: typeof window.TrafficScenarioPresets === 'object',
+          hasIcons: typeof window.TrafficIcons === 'object',
+          distinctPresets: Boolean(p1 && p2 && p14 && p1.title !== p2.title && p2.title !== p14.title),
+          hasSetupHref: document.documentElement.innerHTML.includes('TrafficSetup.html')
+        };
+      });
+      check('THREE loaded', acState.hasThree);
+      check('openSettingsModal defined (no ReferenceError)', acState.hasSettingsFn);
+      check('ProgressTracker + TrafficIcons + ScenarioPresets loaded', acState.hasProgressTracker && acState.hasPresets && acState.hasIcons);
+      check('per-level 2D scenarios differ across lessons', acState.distinctPresets);
+      check('no TrafficSetup.html references remain in Academy.html', !acState.hasSetupHref);
+
+      // Trigger Settings button to verify strict CSP compatibility (no inline handler blocks)
+      await page.locator('[data-academy-action="settings"]').first().click();
+      await page.waitForTimeout(200);
+      const settingsOpen = await page.evaluate(() => {
+        const mo = document.getElementById('colSettingsModal');
+        const hasPrivateDb = mo ? /Private Database/i.test(mo.textContent || '') : false;
+        return { open: Boolean(mo && mo.classList.contains('open')), hasPrivateDb };
+      });
+      check('Settings modal opens cleanly without CSP error', settingsOpen.open);
+      check('Settings modal has no user Private Database tab', !settingsOpen.hasPrivateDb);
+      await page.locator('#colSettingsModal [data-csm-action="close"]').first().click();
+      await page.waitForTimeout(150);
+
+      // Navigate Start -> Levels -> Road Map -> Briefing -> Browser Back (popstate clears ?lv=)
+      await page.locator('#enter-academy-btn').click();
+      await page.waitForTimeout(350);
+      const onLevels = await page.evaluate(() => ({
+        screenActive: document.getElementById('screen-levels')?.classList.contains('active'),
+        urlHasLevels: window.location.search.includes('screen=levels')
+      }));
+      check('Start Academy navigates cleanly to ?screen=levels', Boolean(onLevels.screenActive && onLevels.urlHasLevels));
+
+      await page.locator('#view-btn-map').click();
+      await page.waitForTimeout(300);
+      const mapCheck = await page.evaluate(() => {
+        const svg = document.querySelector('#level-path-svg');
+        const textCount = svg ? svg.querySelectorAll('text').length : 0;
+        const mapEl = document.getElementById('level-map');
+        const mapActive = Boolean(mapEl && getComputedStyle(mapEl).display !== 'none');
+        const hasEmoji = svg ? /[\u{1F300}-\u{1FAFF}]/u.test(svg.textContent || '') : false;
+        return { mapActive, textCount, hasEmoji, hasViewMap: window.location.search.includes('view=map') };
+      });
+      check('Road Map toggles on cleanly with URL ?view=map and emoji-free SVG labels', Boolean(mapCheck.mapActive && mapCheck.textCount > 10 && !mapCheck.hasEmoji && mapCheck.hasViewMap));
+
+      await page.locator('#view-btn-grid').click();
+      await page.waitForTimeout(250);
+      await page.locator('[data-ui-action="open-briefing"][data-lid="1"]').first().click();
+      await page.waitForTimeout(350);
+      const onBriefing = await page.evaluate(() => ({
+        briefingActive: document.getElementById('screen-briefing')?.classList.contains('active'),
+        urlHasLv: window.location.search.includes('lv=1'),
+        adminBlocked: window.ui ? window.ui.adminUnlock() === false : false,
+      }));
+      check('Clicking lesson opens Briefing (?lv=1) and adminUnlock() stays blocked', Boolean(onBriefing.briefingActive && onBriefing.urlHasLv && onBriefing.adminBlocked));
+
+      await page.goBack();
+      await page.waitForTimeout(350);
+      const backCheck = await page.evaluate(() => ({
+        levelsActive: document.getElementById('screen-levels')?.classList.contains('active'),
+        urlClearedLv: !window.location.search.includes('lv='),
+      }));
+      check('Browser Back returns to Levels and strips ?lv= from URL', Boolean(backCheck.levelsActive && backCheck.urlClearedLv));
+
+      // Toggle Light Mode on Academy & ensure both html.lm and body.lm sync without errors
+      await page.evaluate(() => { if (typeof window.hzToggle === 'function') window.hzToggle(); });
+      await page.waitForTimeout(200);
+      const themeCheck = await page.evaluate(() => {
+        return document.documentElement.classList.contains('lm') === document.body.classList.contains('lm');
+      });
+      check('Light/Dark theme toggle keeps html.lm and body.lm in sync', themeCheck);
+
+      // Verify upgraded CoL Auth modal opens cleanly, supports tabs/eye/meter, and closes
+      await page.evaluate(() => { if (typeof window.openGlobalLogin === 'function') window.openGlobalLogin(); });
+      await page.waitForTimeout(250);
+      const authLoginUi = await page.evaluate(() => {
+        const mo = document.getElementById('colAuthModal');
+        const email = document.getElementById('colAuthEmail');
+        const pass = document.getElementById('colAuthPass');
+        const eye = document.querySelector('#colAuthModal [data-col-action="toggle-pass"]');
+        if (eye) eye.click();
+        const toggledType = pass ? pass.type : '';
+        return {
+          open: Boolean(mo && mo.classList.contains('open')),
+          hasEmailAc: email ? email.getAttribute('autocomplete') === 'username' : false,
+          hasPassAc: pass ? pass.getAttribute('autocomplete') === 'current-password' : false,
+          toggledText: toggledType === 'text',
+        };
+      });
+      check('CoL Auth modal opens with autofill attributes & SVG password toggle', Boolean(authLoginUi.open && authLoginUi.hasEmailAc && authLoginUi.hasPassAc && authLoginUi.toggledText));
+
+      await page.locator('#colAuthModal [data-col-action="tab"][data-tab="signup"]').click();
+      await page.waitForTimeout(150);
+      await page.locator('#colAuthPass').fill('StrongPass123!');
+      const pwMeterOk = await page.evaluate(() => {
+        const txt = document.querySelector('#colSignupPwMeter .col-pw-bar-txt')?.textContent || '';
+        return txt.length > 0;
+      });
+      check('Register tab password strength meter updates cleanly', pwMeterOk);
+      await page.locator('#colAuthModal [data-col-action="close-auth"]').click();
+      await page.waitForTimeout(150);
+
+      check('no console errors', realErrors(s).length === 0, realErrors(s).slice(0, 2).join(' | '));
+      check('ZERO functional CDN requests', s.forbidden.length === 0, s.forbidden.slice(0, 2).join(' | '));
+      await page.close();
+    }
+
+    // ------------------------------------------------------------- dashboard
+    console.log('\nTrafficDashboard.html (private player dashboard & leaderboard)');
+    {
+      const page = await browser.newPage();
+      const s = watch(page);
+      await page.goto(`${base}${APP}/TrafficDashboard.html?user=@someoneelse`, { waitUntil: 'domcontentloaded', timeout: 60000 });
+      await page.waitForTimeout(1500);
+      const dashState = await page.evaluate(() => {
+        const gate = document.getElementById('dash-auth-gate');
+        const main = document.getElementById('dashboard-container');
+        return {
+          gateVisible: Boolean(gate && getComputedStyle(gate).display !== 'none'),
+          mainHidden: Boolean(main && getComputedStyle(main).display === 'none'),
+          snoopingStripped: !window.location.search.includes('user='),
+          hasDbConfig: typeof window.ColDbConfig === 'object',
+          hasProgressTracker: typeof window.ProgressTracker === 'object',
+          hasSetupHref: document.documentElement.innerHTML.includes('TrafficSetup.html')
+        };
+      });
+      check('signed-out Dashboard enforces auth gate & hides private UI', dashState.gateVisible && dashState.mainHidden);
+      check('cross-user ?user= URL parameter stripped', dashState.snoopingStripped);
+      check('ColDbConfig + ProgressTracker loaded on Dashboard', dashState.hasDbConfig && dashState.hasProgressTracker);
+      check('no TrafficSetup.html references remain in Dashboard', !dashState.hasSetupHref);
       check('no console errors', realErrors(s).length === 0, realErrors(s).slice(0, 2).join(' | '));
       check('ZERO functional CDN requests', s.forbidden.length === 0, s.forbidden.slice(0, 2).join(' | '));
       await page.close();

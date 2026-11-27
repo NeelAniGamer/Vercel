@@ -1,63 +1,75 @@
 /**
- * Class Of Learners — QR Studio Design Tokens (qr-tokens.css)
- * Single source of truth for color, typography, elevation, and layout metrics.
+ * CraftQR — Editorial Print & Dynamic QR Studio Design Tokens (qr-tokens.css)
+ * Single source of truth for Warm Alabaster / Cardstock / Signal Vermilion / Mineral Spruce palette
+ * and Newsreader + IBM Plex Sans + IBM Plex Mono typography.
  */
 
 /* ==========================================================================
-   1. Warm Editorial Light Theme (Default & [data-theme="light"])
+   1. CraftQR Light Palette (Warm Alabaster, Cardstock, Signal Vermilion)
    ========================================================================== */
 :root,
 :root[data-theme="light"],
+html.lm,
 body.lm,
 body.light {
   /* Surfaces */
-  --surface-page: #fdfaf5;
-  --surface-card: #ffffff;
-  --surface-subtle: #f5f0e6;
-  --surface-hover: #efe8dc;
-  --border-subtle: #e2dacb;
-  --border-strong: #d1c8b8;
+  --surface-page: #F4F1EA;       /* Warm Alabaster: removes pure-white glare */
+  --surface-card: #FBF9F5;       /* Cardstock: elevated cards, inputs, modals */
+  --surface-subtle: #E7E2D8;     /* Matte Putty: sidebars, code wells, pressed states */
+  --surface-hover: #DDD6C9;      /* Putty hover */
+  --border-subtle: #D5CFC3;      /* Stone Hairline: crisp 1px dividers */
+  --border-strong: #B8B0A0;
 
   /* Typography / Inks */
-  --ink-primary: #2c2a29;
-  --ink-secondary: #4a3f35;
-  --ink-muted: #6e6459;
+  --ink-primary: #1C1B19;        /* Iron Charcoal: 15.1:1 contrast on canvas */
+  --ink-secondary: #3F3C36;
+  --ink-muted: #5A564E;          /* Graphite: 6.3:1 contrast on canvas */
 
   /* Accents & Highlights */
-  --accent: #b85d19;
-  --accent-hover: #9a4b12;
-  --accent-soft: rgba(184, 93, 25, 0.12);
-  --accent-contrast: #ffffff;
-  --sand: #d4a373;
+  --accent: #BF3B1E;             /* Signal Vermilion: primary CTAs, active tabs, focus */
+  --accent-hover: #9F2F16;
+  --accent-soft: rgba(191, 59, 30, 0.11);
+  --accent-contrast: #FBF9F5;
+
+  --secondary: #22544C;          /* Mineral Spruce: secondary actions, badges, success (7.9:1) */
+  --secondary-hover: #19403A;
+  --tint: #DCE7E3;               /* Sage Mist: tag backgrounds & soft highlights */
 
   /* Semantic State */
-  --success: #1f7a53;
-  --success-soft: rgba(31, 122, 83, 0.12);
-  --danger: #c53030;
-  --danger-soft: rgba(197, 48, 48, 0.1);
-  --warning: #d97706;
-  --warning-soft: rgba(217, 119, 6, 0.12);
+  --success: #22544C;
+  --success-soft: #DCE7E3;
+  --danger: #B42318;
+  --danger-soft: rgba(180, 35, 24, 0.10);
+  --warning: #9A5B13;
+  --warning-soft: rgba(154, 91, 19, 0.12);
 
-  /* Elevation & Shadows */
-  --shadow-sm: 0 2px 8px rgba(44, 42, 41, 0.05);
-  --shadow-md: 0 10px 28px rgba(44, 42, 41, 0.08);
-  --shadow-lg: 0 24px 56px rgba(44, 42, 41, 0.14);
+  /* Crisp Hairline Elevation (no heavy blurs) */
+  --shadow-sm: 0 1px 2px rgba(28, 27, 25, 0.04);
+  --shadow-md: 0 4px 14px rgba(28, 27, 25, 0.06);
+  --shadow-lg: 0 16px 36px rgba(28, 27, 25, 0.12);
 
   /* Geometry & Rhythm */
   --radius-sm: 8px;
   --radius-md: 12px;
-  --radius-lg: 18px;
+  --radius-lg: 16px;
   --nav-h: 60px;
 
-  /* Fonts */
-  --font-main: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-display: 'Fraunces', Georgia, serif;
-  --font-mono: 'Space Mono', ui-monospace, monospace;
+  /* Editorial Print Typography */
+  --font-display: 'Newsreader', Georgia, serif;
+  --font-main: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
-  /* Backward Compatibility Aliases */
+  /* Compatibility & Shared Shell Bridge */
+  --void: var(--surface-page);
+  --void2: var(--surface-subtle);
+  --ink: var(--ink-primary);
+  --dim: var(--ink-muted);
+  --line: var(--border-subtle);
+  --lineb: var(--border-strong);
+  --nav: var(--surface-card);
   --bg: var(--surface-page);
   --panel: var(--surface-card);
-  --panel-hover: var(--surface-hover);
+  --panel-hover: var(--surface-subtle);
   --border: var(--border-subtle);
   --border-light: var(--border-subtle);
   --border-focus: var(--accent);
@@ -73,101 +85,63 @@ body.light {
   --page-theme: var(--accent);
   --page-theme-light: var(--accent);
   --google-blue: var(--accent);
-  --glow: var(--accent-soft);
-  --glow-strong: rgba(184, 93, 25, 0.28);
+  --glow: transparent;
+  --glow-strong: transparent;
 }
 
 /* ==========================================================================
-   2. Balanced Warm Dark Theme ([data-theme="dark"] & Dark Mode default)
+   2. CraftQR Dark Palette (Iron Charcoal / Warm Alabaster Ink / Vermilion)
    ========================================================================== */
 :root[data-theme="dark"],
-body:not(.lm):not(.light) {
+html:not(.lm):not([data-theme="light"]),
+body:not(.lm):not(.light):not([data-theme="light"]) {
   /* Surfaces */
-  --surface-page: #141311;
-  --surface-card: #1d1b18;
-  --surface-subtle: #25221e;
-  --surface-hover: #2e2a25;
-  --border-subtle: rgba(245, 240, 230, 0.09);
-  --border-strong: rgba(245, 240, 230, 0.18);
+  --surface-page: #151412;       /* Deep Iron */
+  --surface-card: #1E1C19;       /* Charcoal Cardstock */
+  --surface-subtle: #26231F;     /* Dark Matte Putty */
+  --surface-hover: #302C27;
+  --border-subtle: #35312B;      /* Dark Stone Hairline */
+  --border-strong: #4B453C;
 
   /* Typography / Inks */
-  --ink-primary: #f5f0e6;
-  --ink-secondary: #d8cfc0;
-  --ink-muted: #a39a8c;
+  --ink-primary: #F4F1EA;        /* Warm Alabaster Ink */
+  --ink-secondary: #D4CEC2;
+  --ink-muted: #A39D91;          /* Warm Graphite */
 
   /* Accents & Highlights */
-  --accent: #d4a373;
-  --accent-hover: #e2b98e;
-  --accent-soft: rgba(212, 163, 115, 0.16);
-  --accent-contrast: #141311;
-  --sand: #d4a373;
+  --accent: #E65C3E;             /* Signal Vermilion (Dark-calibrated AA+) */
+  --accent-hover: #F07458;
+  --accent-soft: rgba(230, 92, 62, 0.16);
+  --accent-contrast: #151412;
+
+  --secondary: #4BA898;          /* Mineral Spruce Light */
+  --secondary-hover: #62BDAD;
+  --tint: rgba(75, 168, 152, 0.16);
 
   /* Semantic State */
-  --success: #34d399;
-  --success-soft: rgba(52, 211, 153, 0.14);
-  --danger: #f87171;
-  --danger-soft: rgba(248, 113, 113, 0.14);
-  --warning: #fbbf24;
-  --warning-soft: rgba(251, 191, 36, 0.14);
+  --success: #4BA898;
+  --success-soft: rgba(75, 168, 152, 0.16);
+  --danger: #F87171;
+  --danger-soft: rgba(248, 113, 113, 0.15);
+  --warning: #FBBF24;
+  --warning-soft: rgba(251, 191, 36, 0.15);
 
-  /* Elevation & Shadows */
-  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.25);
-  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 28px 64px rgba(0, 0, 0, 0.6);
+  /* Crisp Hairline Elevation */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 20px 44px rgba(0, 0, 0, 0.55);
 
-  /* Backward Compatibility Aliases */
+  /* Compatibility & Shared Shell Bridge */
+  --void: var(--surface-page);
+  --void2: var(--surface-subtle);
+  --ink: var(--ink-primary);
+  --dim: var(--ink-muted);
+  --line: var(--border-subtle);
+  --lineb: var(--border-strong);
+  --nav: var(--surface-card);
   --bg: var(--surface-page);
   --panel: var(--surface-card);
-  --panel-hover: var(--surface-hover);
-  --border: var(--border-subtle);
-  --border-light: var(--border-subtle);
-  --border-focus: var(--accent);
-  --txt: var(--ink-primary);
-  --txt-m: var(--ink-muted);
-  --text: var(--ink-primary);
-  --text-main: var(--ink-primary);
-  --text-muted: var(--ink-muted);
-  --card-bg: var(--surface-card);
-  --pri: var(--accent);
-  --pri-hover: var(--accent-hover);
-  --primary: var(--accent);
-  --page-theme: var(--accent);
-  --google-blue: var(--accent);
-  --glow: var(--accent-soft);
-  --glow-strong: rgba(212, 163, 115, 0.35);
-}
-
-/* Explicit data-theme="light" always wins over system preference */
-:root[data-theme="light"] {
-  --surface-page: #fdfaf5;
-  --surface-card: #ffffff;
-  --surface-subtle: #f5f0e6;
-  --surface-hover: #efe8dc;
-  --border-subtle: #e2dacb;
-  --border-strong: #d1c8b8;
-
-  --ink-primary: #2c2a29;
-  --ink-secondary: #4a3f35;
-  --ink-muted: #6e6459;
-
-  --accent: #b85d19;
-  --accent-hover: #9a4b12;
-  --accent-soft: rgba(184, 93, 25, 0.12);
-  --accent-contrast: #ffffff;
-  --sand: #d4a373;
-
-  --success: #1f7a53;
-  --success-soft: rgba(31, 122, 83, 0.12);
-  --danger: #c53030;
-  --danger-soft: rgba(197, 48, 48, 0.1);
-
-  --shadow-sm: 0 2px 8px rgba(44, 42, 41, 0.05);
-  --shadow-md: 0 10px 28px rgba(44, 42, 41, 0.08);
-  --shadow-lg: 0 24px 56px rgba(44, 42, 41, 0.14);
-
-  --bg: var(--surface-page);
-  --panel: var(--surface-card);
-  --panel-hover: var(--surface-hover);
+  --panel-hover: var(--surface-subtle);
   --border: var(--border-subtle);
   --border-light: var(--border-subtle);
   --border-focus: var(--accent);
@@ -183,6 +157,46 @@ body:not(.lm):not(.light) {
   --page-theme: var(--accent);
   --page-theme-light: var(--accent);
   --google-blue: var(--accent);
-  --glow: var(--accent-soft);
-  --glow-strong: rgba(184, 93, 25, 0.28);
+  --glow: transparent;
+  --glow-strong: transparent;
+}
+
+/* Explicit light always beats system dark */
+html.lm,
+body.lm,
+:root[data-theme="light"] {
+  --surface-page: #F4F1EA;
+  --surface-card: #FBF9F5;
+  --surface-subtle: #E7E2D8;
+  --surface-hover: #DDD6C9;
+  --border-subtle: #D5CFC3;
+  --border-strong: #B8B0A0;
+  --ink-primary: #1C1B19;
+  --ink-secondary: #3F3C36;
+  --ink-muted: #5A564E;
+  --accent: #BF3B1E;
+  --accent-hover: #9F2F16;
+  --accent-soft: rgba(191, 59, 30, 0.11);
+  --accent-contrast: #FBF9F5;
+  --secondary: #22544C;
+  --secondary-hover: #19403A;
+  --tint: #DCE7E3;
+  --success: #22544C;
+  --success-soft: #DCE7E3;
+  --danger: #B42318;
+  --danger-soft: rgba(180, 35, 24, 0.10);
+  --warning: #9A5B13;
+  --warning-soft: rgba(154, 91, 19, 0.12);
+  --shadow-sm: 0 1px 2px rgba(28, 27, 25, 0.04);
+  --shadow-md: 0 4px 14px rgba(28, 27, 25, 0.06);
+  --shadow-lg: 0 16px 36px rgba(28, 27, 25, 0.12);
+  --bg: var(--surface-page);
+  --panel: var(--surface-card);
+  --panel-hover: var(--surface-subtle);
+  --border: var(--border-subtle);
+  --txt: var(--ink-primary);
+  --txt-m: var(--ink-muted);
+  --pri: var(--accent);
+  --pri-hover: var(--accent-hover);
+  --nav: var(--surface-card);
 }

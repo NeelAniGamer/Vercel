@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 40,
-  icon: '🏆',
+  icon: 'trophy',
   name: 'Lesson 40 - Grand Test!',
   modes: ['car', 'bike'],
   col: '#f1c40f',
@@ -16,7 +16,7 @@ window.LVS.push({
     offHi: 'अनेक उल्लंघन'
   },
   theory:
-    '<h2>Grand Test!</h2><p>Grand Test ka waqt aa gaya! 39 levels ka sab kuch tumhare saamne hai — signals, pedestrians, speed limits, lane discipline, emergency vehicles — sab ek saath!</p><p>Yeh test tumhari poori driving skill test karega. Sab rules yaad karo — ek ek karke apply karo. Patience aur presence of mind sabse zaroori hai!</p><h3>🏆 Kya karna hai?</h3><ul><li>Sab rules follow karo — red light, speed limit, lane discipline.</li><li>Emergency vehicles ko priority do.</li><li>Pedestrians ko jagah do.</li><li>Signs obey karo — mandatory, cautionary, informational.</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Sab MV Act sections applicable hain — violations pe ₹500 se ₹5000 tak ka fine!</p>',
+    '<h2>Grand Test!</h2><p>Grand Test ka waqt aa gaya! 39 levels ka sab kuch tumhare saamne hai — signals, pedestrians, speed limits, lane discipline, emergency vehicles — sab ek saath!</p><p>Yeh test tumhari poori driving skill test karega. Sab rules yaad karo — ek ek karke apply karo. Patience aur presence of mind sabse zaroori hai!</p><h3> Kya karna hai?</h3><ul><li>Sab rules follow karo — red light, speed limit, lane discipline.</li><li>Emergency vehicles ko priority do.</li><li>Pedestrians ko jagah do.</li><li>Signs obey karo — mandatory, cautionary, informational.</li></ul><h3> Kanoon kya kehta hai?</h3><p>Sab MV Act sections applicable hain — violations pe ₹500 se ₹5000 tak ka fine!</p>',
   pract: 'Complete the complex route following all traffic rules. Apply everything from the previous 39 levels. Stay calm and focused.',
   mode: 'practical',
   themeType: 'grand_test',

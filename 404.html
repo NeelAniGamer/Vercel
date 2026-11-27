@@ -10,7 +10,7 @@
     <link rel="icon" type="image/png" href="Icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" onload="this.onload=null;this.rel='stylesheet'" /><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" /></noscript>
 
     <script>
       (function () {
@@ -126,168 +126,143 @@
       }
 
       .page-wrap {
-        max-width: 1080px;
+        max-width: 720px;
         margin: 0 auto;
-        padding: 50px 20px 90px;
+        padding: 112px 24px 80px;
         flex: 1;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        width: 100%;
-      }
-
-      /* 404 Main Glass Card */
-      .card-404 {
-        width: 100%;
-        max-width: 780px;
-        background: var(--panel);
-        border: 1px solid var(--line);
-        border-radius: var(--r);
-        padding: clamp(32px, 6vw, 56px);
-        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.45);
         text-align: center;
-        position: relative;
-        overflow: hidden;
-        margin-bottom: 30px;
-        backdrop-filter: blur(20px);
-      }
-      body.lm .card-404 {
-        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.08);
+        width: 100%;
       }
 
-      /* Glowing background ambient gradient */
-      .card-404::before {
+      /* Editorial 404 Hero — spacious, uncongested, unmistakably 404 */
+      .hero-404 {
+        width: 100%;
+        position: relative;
+        padding: 20px 0;
+      }
+
+      .hero-404::before {
         content: "";
         position: absolute;
-        top: -120px;
+        top: 10px;
         left: 50%;
         transform: translateX(-50%);
-        width: 380px;
-        height: 240px;
-        background: radial-gradient(circle, rgba(242, 184, 75, 0.15) 0%, rgba(56, 189, 248, 0.08) 50%, transparent 70%);
+        width: 420px;
+        height: 220px;
+        background: radial-gradient(circle, rgba(242, 184, 75, 0.14) 0%, rgba(56, 189, 248, 0.06) 55%, transparent 75%);
         pointer-events: none;
         z-index: 0;
+      }
+
+      .numeral-404 {
+        font-family: var(--serif);
+        font-size: clamp(6.5rem, 20vw, 11.5rem);
+        font-weight: 400;
+        line-height: 0.9;
+        letter-spacing: -0.04em;
+        color: var(--ink);
+        position: relative;
+        z-index: 1;
+        margin-bottom: 12px;
+        user-select: none;
+      }
+      .numeral-404 span {
+        color: var(--signal);
+        font-style: italic;
       }
 
       .badge-404 {
         font-family: var(--mono);
         font-size: 0.72rem;
-        letter-spacing: 0.28em;
-        color: var(--signal);
+        letter-spacing: 0.24em;
+        color: var(--dim);
         text-transform: uppercase;
-        margin-bottom: 16px;
+        margin-bottom: 22px;
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        background: rgba(242, 184, 75, 0.1);
-        padding: 6px 16px;
-        border-radius: 20px;
-        border: 1px solid rgba(242, 184, 75, 0.25);
         position: relative;
         z-index: 1;
-      }
-
-      .logo-box-404 {
-        width: 80px;
-        height: 80px;
-        margin: 0 auto 20px;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid var(--lineb);
-        border-radius: 22px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 10px;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-        position: relative;
-        z-index: 1;
-      }
-      body.lm .logo-box-404 {
-        background: #f8fafc;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
-      }
-      .logo-box-404 img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
       }
 
       .title-404 {
         font-family: var(--serif);
-        font-size: clamp(2.4rem, 6vw, 4rem);
+        font-size: clamp(2rem, 5vw, 3rem);
         font-weight: 400;
-        line-height: 1.1;
-        margin-bottom: 12px;
+        line-height: 1.15;
+        margin-bottom: 14px;
         position: relative;
         z-index: 1;
       }
-      .title-404 em {
-        font-style: italic;
-        color: var(--signal);
-      }
 
       .desc-404 {
-        font-size: 1.05rem;
+        font-size: 1.02rem;
         color: var(--dim);
-        max-width: 52ch;
+        max-width: 46ch;
         margin: 0 auto 24px;
         line-height: 1.6;
         position: relative;
         z-index: 1;
       }
 
-      /* Smart Route Recommendation */
-      .path-indicator {
+      .path-code {
         font-family: var(--mono);
-        font-size: 0.8rem;
-        background: var(--void);
-        border: 1px solid var(--line);
-        padding: 8px 16px;
-        border-radius: 10px;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
+        font-size: 0.88em;
         color: var(--rose);
-        margin-bottom: 24px;
-        max-width: 100%;
-        overflow-x: auto;
-        position: relative;
-        z-index: 1;
+        background: rgba(244, 63, 94, 0.08);
+        border: 1px solid rgba(244, 63, 94, 0.22);
+        padding: 2px 9px;
+        border-radius: 7px;
+        word-break: break-all;
       }
+      body.lm .path-code {
+        color: #be123c;
+        background: rgba(190, 18, 60, 0.07);
+        border-color: rgba(190, 18, 60, 0.2);
+      }
+
       .suggested-box {
-        background: rgba(163, 230, 53, 0.08);
-        border: 1px solid rgba(163, 230, 53, 0.25);
+        background: rgba(56, 189, 248, 0.08);
+        border: 1px solid rgba(56, 189, 248, 0.26);
         border-radius: 12px;
-        padding: 12px 18px;
+        padding: 11px 16px;
         margin: 0 auto 26px;
-        max-width: 500px;
-        font-family: var(--mono);
-        font-size: 0.82rem;
+        max-width: 460px;
+        font-family: var(--sans);
+        font-size: 0.9rem;
         display: none;
         align-items: center;
         justify-content: space-between;
         gap: 12px;
         position: relative;
         z-index: 1;
+        text-align: left;
       }
       .suggested-box.show {
         display: flex;
       }
       .suggested-btn {
-        background: var(--teal);
+        background: var(--ion);
         color: #070a14;
         font-family: var(--mono);
         font-size: 0.78rem;
         font-weight: 700;
         text-decoration: none;
-        padding: 6px 14px;
+        padding: 7px 14px;
         border-radius: 8px;
         white-space: nowrap;
-        transition: transform 0.2s;
+        transition: transform 0.2s var(--ease);
+      }
+      body.lm .suggested-btn {
+        background: #0369a1;
+        color: #ffffff;
       }
       .suggested-btn:hover {
-        transform: translateY(-2px);
+        transform: translateY(-1px);
       }
 
       /* Actions Row */
@@ -303,119 +278,67 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        padding: 12px 24px;
+        padding: 12px 22px;
         border-radius: 12px;
-        font-family: var(--mono);
-        font-size: 0.85rem;
-        font-weight: 700;
+        font-family: var(--sans);
+        font-size: 0.92rem;
+        font-weight: 600;
         text-decoration: none;
-        transition: all 0.2s var(--ease);
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.2s var(--ease);
       }
       .btn-404.primary {
         background: var(--signal);
         color: #070a14;
-        box-shadow: 0 4px 15px rgba(242, 184, 75, 0.35);
+        box-shadow: 0 4px 16px rgba(242, 184, 75, 0.28);
       }
       .btn-404.primary:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 22px rgba(242, 184, 75, 0.5);
+        box-shadow: 0 6px 22px rgba(242, 184, 75, 0.42);
+      }
+      body.lm .btn-404.primary {
+        background: #b45309;
+        color: #ffffff;
+        box-shadow: 0 4px 14px rgba(180, 83, 9, 0.25);
       }
       .btn-404.secondary {
-        background: rgba(255, 255, 255, 0.05);
+        background: var(--panel);
         color: var(--ink);
         border: 1px solid var(--line);
       }
       .btn-404.secondary:hover {
-        background: rgba(255, 255, 255, 0.1);
         border-color: var(--lineb);
         transform: translateY(-2px);
       }
       body.lm .btn-404.secondary {
-        background: #f1f5f9;
-        border-color: rgba(0, 0, 0, 0.1);
-      }
-
-      /* Destination Quick Launch Hub */
-      .hub-section {
-        width: 100%;
-        max-width: 880px;
-        margin-top: 10px;
-      }
-      .hub-heading {
-        font-family: var(--mono);
-        font-size: 0.78rem;
-        font-weight: 700;
-        letter-spacing: 0.22em;
-        text-transform: uppercase;
-        color: var(--dim);
-        text-align: center;
-        margin-bottom: 20px;
-      }
-      .hub-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 12px;
-      }
-      .hub-card {
-        background: var(--panel);
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        padding: 16px;
-        text-decoration: none;
-        color: var(--ink);
-        transition: all 0.25s var(--ease);
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-      }
-      .hub-card:hover {
-        transform: translateY(-3px);
-        border-color: var(--lineb);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
-      }
-      body.lm .hub-card:hover {
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-      }
-      .hub-card-title {
-        font-weight: 700;
-        font-size: 0.95rem;
-        margin-bottom: 6px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        color: var(--ink);
-      }
-      .hub-card-title svg {
-        color: var(--ion);
-        flex-shrink: 0;
-      }
-      .hub-card-desc {
-        font-size: 0.8rem;
-        color: var(--dim);
-        line-height: 1.5;
+        background: #ffffff;
+        border-color: rgba(15, 23, 42, 0.14);
       }
 
       /* Search Box */
       .search-container {
         width: 100%;
-        max-width: 480px;
-        margin: 24px auto 0;
+        max-width: 440px;
+        margin: 28px auto 0;
         position: relative;
+        z-index: 2;
       }
       .search-input {
         width: 100%;
-        padding: 12px 42px 12px 16px;
+        padding: 13px 42px 13px 16px;
         border-radius: 12px;
-        border: 1px solid var(--lineb);
-        background: var(--void);
+        border: 1px solid var(--line);
+        background: var(--panel);
         color: var(--ink);
         font-family: var(--sans);
-        font-size: 0.9rem;
+        font-size: 0.92rem;
         outline: none;
-        transition: border-color 0.2s;
+        transition: border-color 0.2s, box-shadow 0.2s;
       }
       .search-input:focus {
-        border-color: var(--signal);
+        border-color: var(--ion);
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.14);
       }
       .search-icon {
         position: absolute;
@@ -425,10 +348,52 @@
         color: var(--dim);
         pointer-events: none;
       }
+      .search-suggest-404 {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.32);
+        overflow: hidden;
+        display: none;
+        text-align: left;
+        z-index: 20;
+      }
+      body.lm .search-suggest-404 {
+        box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+      }
+      .search-suggest-404.open {
+        display: block;
+      }
+      .suggest-row-404 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        text-decoration: none;
+        color: var(--ink);
+        font-size: 0.88rem;
+        border-bottom: 1px solid var(--line);
+      }
+      .suggest-row-404:last-child {
+        border-bottom: none;
+      }
+      .suggest-row-404:hover,
+      .suggest-row-404.active {
+        background: rgba(56, 189, 248, 0.1);
+      }
+      .suggest-row-404 small {
+        font-family: var(--mono);
+        font-size: 0.75rem;
+        color: var(--dim);
+      }
 
       @media (max-width: 640px) {
         .page-wrap {
-          padding: 85px 16px 90px;
+          padding: 96px 18px 72px;
         }
         .actions-404 {
           flex-direction: column;
@@ -437,8 +402,9 @@
           width: 100%;
           justify-content: center;
         }
-        .hub-grid {
-          grid-template-columns: 1fr;
+        .suggested-box {
+          flex-direction: column;
+          align-items: flex-start;
         }
       }
     </style>
@@ -558,159 +524,173 @@
     </nav>
 
     <!-- Main Container -->
-    <div class="page-wrap">
-      <div class="card-404">
-        <div class="badge-404">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Error 404 &bull; Route Missing
-        </div>
+    <main class="page-wrap">
+      <div class="hero-404">
+        <div class="numeral-404" aria-hidden="true">4<span>0</span>4</div>
+        <div class="badge-404">Error 404 &bull; Page Not Found</div>
 
-        <div class="logo-box-404">
-          <img src="Class.png" alt="Class Of Learners Logo" width="60" height="60" />
-        </div>
-
-        <h1 class="title-404">Page Not <em>Found</em></h1>
-        <p class="desc-404">The destination you requested does not exist, was relocated, or mistyped. Explore our studio projects below or search for what you need.</p>
-
-        <div class="path-indicator" id="pathDisplay">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-          <span id="requestedPath">/unknown-route</span>
-        </div>
+        <h1 class="title-404">This page isn&rsquo;t here.</h1>
+        <p class="desc-404">We couldn&rsquo;t find <code class="path-code" id="requestedPath">/unknown-route</code>. It may have moved, or the link had a typo.</p>
 
         <!-- Smart "Did you mean" box -->
         <div class="suggested-box" id="suggestedBox">
-          <span id="suggestedText">Looking for ATI Velocity Studio?</span>
-          <a href="ati-demo" class="suggested-btn" id="suggestedLink">Go There &rarr;</a>
+          <span id="suggestedText">Did you mean Career Compass?</span>
+          <a href="Career" class="suggested-btn" id="suggestedLink">Open Page &rarr;</a>
         </div>
 
         <div class="actions-404">
           <a href="/" class="btn-404 primary">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             <span>Return Home</span>
           </a>
-          <a href="download" class="btn-404 secondary">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            <span>Downloads Hub</span>
-          </a>
           <a href="sitemap" class="btn-404 secondary">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-            <span>View Sitemap</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            <span>All Pages</span>
           </a>
         </div>
 
-        <!-- Quick Search -->
+        <!-- Predictive Quick Jump -->
         <div class="search-container">
-          <input type="text" class="search-input" id="searchBox" placeholder="Quick jump: typing, solar, games, downloads..." autocomplete="off" />
-          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" class="search-input" id="searchBox" placeholder="Jump to a page: Career, Solar, Typing, Downloads..." aria-label="Search pages" autocomplete="off" aria-autocomplete="list" aria-controls="searchSuggest404" />
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <div class="search-suggest-404" id="searchSuggest404" role="listbox"></div>
         </div>
       </div>
+    </main>
 
-      <!-- Quick Launch Hub -->
-      <div class="hub-section">
-        <div class="hub-heading">Explore Studio Destinations</div>
-        <div class="hub-grid">
-          <a href="ati-demo" class="hub-card">
-            <div class="hub-card-title">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
-              ATI Velocity Studio
-            </div>
-            <div class="hub-card-desc">Interactive touch-typing studio with live telemetry and mechanical switches.</div>
-          </a>
-
-          <a href="ati-lite" class="hub-card">
-            <div class="hub-card-title">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-              ATI 3.2 Lite Arcade
-            </div>
-            <div class="hub-card-desc">Cyber Racer speedway, Zen Flow, and missile defense typing game modes.</div>
-          </a>
-
-          <a href="solar" class="hub-card">
-            <div class="hub-card-title">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg>
-              Solar Engine
-            </div>
-            <div class="hub-card-desc">Real-time gravitational n-body physics simulator and orbital lab.</div>
-          </a>
-
-          <a href="gesture" class="hub-card">
-            <div class="hub-card-title">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg>
-              Perceptus Flow
-            </div>
-            <div class="hub-card-desc">Zero-hardware camera gesture controller with spatial cursor mapping.</div>
-          </a>
-
-          <a href="rpg" class="hub-card">
-            <div class="hub-card-title">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              RPG Cyberpunk
-            </div>
-            <div class="hub-card-desc">Immersive browser RPG world with procedural dungeons and combat.</div>
-          </a>
-
-          <a href="qr" class="hub-card">
-            <div class="hub-card-title">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/></svg>
-              QR Studio Matrix
-            </div>
-            <div class="hub-card-desc">Encrypted QR design studio with custom themes and logo embedding.</div>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Smart Path Matcher Script -->
+    <!-- Smart Path Matcher & Predictive Search Script -->
     <script>
       (function () {
-        var path = window.location.pathname || '';
+        var ROUTES = [
+          { path: '/', label: 'Home', keys: ['home', 'index', 'start', 'main'] },
+          { path: 'Career', label: 'Career Compass (FutureScape)', keys: ['career', 'careers', 'jobs', 'degrees', 'futurescape', 'guide'] },
+          { path: 'ati-demo', label: 'ATI Velocity Studio', keys: ['ati', 'typing', 'demo', 'velocity', 'speed', 'type'] },
+          { path: 'ati-lite', label: 'ATI 3.2 Lite Arcade', keys: ['ati-lite', 'lite', 'arcade', 'racer', 'zen'] },
+          { path: 'ati', label: 'Typing Instructor (ATI)', keys: ['instructor', 'desktop', 'ati'] },
+          { path: 'solar', label: 'Solar Physics Engine', keys: ['solar', 'orbit', 'planet', 'space', 'physics'] },
+          { path: 'gesture', label: 'Perceptus Flow', keys: ['gesture', 'perceptus', 'hand', 'camera', 'flow'] },
+          { path: 'rpg', label: 'RPG Cyberpunk', keys: ['rpg', 'game', 'cyberpunk', 'dungeon'] },
+          { path: 'qr', label: 'QR Studio Matrix', keys: ['qr', 'barcode', 'matrix', 'code'] },
+          { path: 'Terra3D/', label: 'Terra3D World Atlas', keys: ['terra', 'terra3d', 'globe', 'atlas', 'world', 'countries'] },
+          { path: 'Database_Logic', label: 'Database Logic (Civic)', keys: ['database', 'logic', 'civic', 'mva', 'law'] },
+          { path: 'CastFlow', label: 'CastFlow Studio', keys: ['cast', 'castflow', 'screen', 'mirror'] },
+          { path: 'cereal', label: 'Cereal AI Notes', keys: ['cereal', 'notes', 'granola', 'ai'] },
+          { path: 'download', label: 'Downloads Hub', keys: ['download', 'downloads', 'install', 'setup', 'apk', 'exe'] },
+          { path: 'about', label: 'About Class Of Learners', keys: ['about', 'team', 'story'] },
+          { path: 'school', label: 'School & Curriculum', keys: ['school', 'students', 'curriculum'] },
+          { path: 'sneh-asha', label: 'Sneh Asha', keys: ['sneh', 'asha', 'community'] },
+          { path: 'making', label: 'Making & Engineering', keys: ['making', 'builds', 'changelog'] },
+          { path: 'sitemap', label: 'Site Map', keys: ['sitemap', 'all', 'pages', 'directory'] },
+          { path: 'feedback', label: 'Feedback', keys: ['feedback', 'contact', 'bug', 'report'] }
+        ];
+
+        function levenshtein(a, b) {
+          var m = a.length, n = b.length, i, j, dp = [];
+          for (i = 0; i <= m; i++) { dp[i] = [i]; }
+          for (j = 0; j <= n; j++) { dp[0][j] = j; }
+          for (i = 1; i <= m; i++) {
+            for (j = 1; j <= n; j++) {
+              dp[i][j] = a[i - 1] === b[j - 1]
+                ? dp[i - 1][j - 1]
+                : 1 + Math.min(dp[i - 1][j - 1], dp[i - 1][j], dp[i][j - 1]);
+            }
+          }
+          return dp[m][n];
+        }
+
+        var path = window.location.pathname || '/';
         var displayEl = document.getElementById('requestedPath');
-        if (displayEl && path) {
-          displayEl.textContent = path;
+        if (displayEl && path) displayEl.textContent = path;
+
+        var slug = path.replace(/^\/+|\/+$/g, '').replace(/\.html$/i, '').toLowerCase();
+        var bestRoute = null, bestScore = Infinity;
+
+        if (slug) {
+          ROUTES.forEach(function (r) {
+            var target = r.path.replace(/^\/+|\/+$/g, '').toLowerCase();
+            if (!target) return;
+            if (target.includes(slug) || slug.includes(target)) {
+              bestRoute = r;
+              bestScore = 0;
+              return;
+            }
+            var d = levenshtein(slug, target);
+            if (d < bestScore) { bestScore = d; bestRoute = r; }
+            r.keys.forEach(function (k) {
+              var kd = levenshtein(slug, k);
+              if (kd < bestScore) { bestScore = kd; bestRoute = r; }
+            });
+          });
         }
 
-        // Fuzzy path recommender
-        var p = path.toLowerCase();
-        var suggestion = null;
-
-        if (p.includes('demo') || p.includes('ati') || p.includes('type') || p.includes('speed') || p.includes('velocity')) {
-          suggestion = { title: 'Looking for ATI Velocity Studio?', link: 'ati-demo' };
-        } else if (p.includes('solar') || p.includes('orbit') || p.includes('planet') || p.includes('space') || p.includes('engine')) {
-          suggestion = { title: 'Looking for Solar Physics Engine?', link: 'solar' };
-        } else if (p.includes('gesture') || p.includes('perceptus') || p.includes('hand') || p.includes('flow')) {
-          suggestion = { title: 'Looking for Perceptus Flow?', link: 'gesture' };
-        } else if (p.includes('game') || p.includes('rpg') || p.includes('cyber')) {
-          suggestion = { title: 'Looking for RPG Cyberpunk Adventure?', link: 'rpg' };
-        } else if (p.includes('qr') || p.includes('code') || p.includes('barcode')) {
-          suggestion = { title: 'Looking for QR Studio Matrix?', link: 'qr' };
-        } else if (p.includes('download') || p.includes('install') || p.includes('setup') || p.includes('apk') || p.includes('exe')) {
-          suggestion = { title: 'Looking for Desktop & Mobile Downloads?', link: 'download' };
-        }
-
-        if (suggestion) {
+        if (bestRoute && bestScore <= Math.max(3, Math.floor(slug.length * 0.45))) {
           var box = document.getElementById('suggestedBox');
           var txt = document.getElementById('suggestedText');
           var btn = document.getElementById('suggestedLink');
           if (box && txt && btn) {
-            txt.textContent = suggestion.title;
-            btn.href = suggestion.link;
+            txt.textContent = 'Did you mean ' + bestRoute.label + '?';
+            btn.href = bestRoute.path;
             box.classList.add('show');
           }
         }
 
-        // Quick Search Enter Listener
         var sInput = document.getElementById('searchBox');
+        var sList = document.getElementById('searchSuggest404');
+        var activeIdx = -1;
+        var currentMatches = [];
+
+        function renderSuggestions(q) {
+          if (!sList) return;
+          var term = (q || '').trim().toLowerCase();
+          if (!term) {
+            sList.classList.remove('open');
+            sList.innerHTML = '';
+            currentMatches = [];
+            activeIdx = -1;
+            return;
+          }
+          currentMatches = ROUTES.filter(function (r) {
+            return r.label.toLowerCase().includes(term) || r.path.toLowerCase().includes(term) || r.keys.some(function (k) { return k.includes(term); });
+          }).slice(0, 5);
+
+          if (!currentMatches.length) {
+            sList.classList.remove('open');
+            sList.innerHTML = '';
+            return;
+          }
+          activeIdx = 0;
+          sList.innerHTML = currentMatches.map(function (r, idx) {
+            return '<a href="' + r.path + '" class="suggest-row-404' + (idx === 0 ? ' active' : '') + '" role="option">' +
+              '<span>' + r.label + '</span><small>/' + r.path.replace(/^\//, '') + '</small></a>';
+          }).join('');
+          sList.classList.add('open');
+        }
+
         if (sInput) {
+          sInput.addEventListener('input', function () { renderSuggestions(sInput.value); });
           sInput.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') {
-              var q = sInput.value.trim().toLowerCase();
-              if (q.includes('type') || q.includes('ati') || q.includes('demo')) window.location.href = 'ati-demo';
-              else if (q.includes('solar') || q.includes('orbit')) window.location.href = 'solar';
-              else if (q.includes('gesture') || q.includes('hand')) window.location.href = 'gesture';
-              else if (q.includes('download') || q.includes('apk')) window.location.href = 'download';
-              else if (q.includes('qr')) window.location.href = 'qr';
-              else if (q.includes('rpg') || q.includes('game')) window.location.href = 'rpg';
-              else window.location.href = '/sitemap';
+            if (e.key === 'ArrowDown' && currentMatches.length) {
+              e.preventDefault();
+              activeIdx = (activeIdx + 1) % currentMatches.length;
+              Array.from(sList.children).forEach(function (el, i) { el.classList.toggle('active', i === activeIdx); });
+            } else if (e.key === 'ArrowUp' && currentMatches.length) {
+              e.preventDefault();
+              activeIdx = (activeIdx - 1 + currentMatches.length) % currentMatches.length;
+              Array.from(sList.children).forEach(function (el, i) { el.classList.toggle('active', i === activeIdx); });
+            } else if (e.key === 'Escape') {
+              sList.classList.remove('open');
+            } else if (e.key === 'Enter') {
+              e.preventDefault();
+              if (currentMatches.length && activeIdx >= 0) {
+                window.location.href = currentMatches[activeIdx].path;
+              } else {
+                window.location.href = 'sitemap';
+              }
+            }
+          });
+          document.addEventListener('click', function (e) {
+            if (!sInput.contains(e.target) && sList && !sList.contains(e.target)) {
+              sList.classList.remove('open');
             }
           });
         }

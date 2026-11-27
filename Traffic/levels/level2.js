@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 2,
-  icon: '🅿️',
+  icon: 'parking',
   name: 'Lesson 2 - Street Parking',
   modes: ['pedestrian', 'car', 'bike'],
   col: '#e74c3c',

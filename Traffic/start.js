@@ -421,9 +421,15 @@ window.loadLevelAssets = function (keys, callback) {
     const pct = Math.round((loaded / total) * 100)
     if (pctEl) {pctEl.textContent = pct + '%'}
     if (barEl) {barEl.style.width = pct + '%'}
+    if (window.LoadingScreen) {
+      window.LoadingScreen.setStage(1, 15 + Math.round((loaded / total) * 40), `Loading 3D models (${loaded}/${total})...`)
+    }
   }
 
   function done() {
+    if (window.LoadingScreen) {
+      window.LoadingScreen.setStage(2, 60, 'Hydrating pre-placed 3D map...')
+    }
     if (ld && ld.parentNode) {
       ld.innerHTML = '<h1 style="color:#34D399;">World Ready!</h1><div style="font-size:1rem;color:#8891AA;">Entering level...</div>'
       setTimeout(() => { ld.style.opacity = '0'; ld.style.transform = 'scale(1.05)'; setTimeout(() => { if (ld.parentNode) {ld.remove()} }, 400) }, 300)
@@ -784,8 +790,8 @@ preloadModels(() => {
         // the id of a timer that has already fired and the poll keeps running.
         let _drivingTimeout = setTimeout(function _checkCanvasTimeout() {
           const gc = document.getElementById('gc')
-          const ls = document.getElementById('loading-screen')
-          const isLoading = ls && ls.style.display !== 'none' && !ls.classList.contains('fade-out')
+          const ls = document.getElementById('col-loading-screen') || document.getElementById('loading-screen')
+          const isLoading = ls && ls.style.display !== 'none' && !ls.classList.contains('is-hidden') && !ls.classList.contains('fade-out')
           if (!gc || !gc.classList.contains('on')) {
             if (isLoading || Date.now() - _startTime < 30000) {
               _drivingTimeout = setTimeout(_checkCanvasTimeout, 500)
@@ -795,7 +801,17 @@ preloadModels(() => {
           }
         }, 3000)
 
-        function _doStartLevel() {
+        async function _doStartLevel() {
+          if (window.LoadingScreen) {
+            window.LoadingScreen.show({ title: levelObj.name || 'Mumbai Traffic Hero', badge: (mode || 'car').toUpperCase() })
+            window.LoadingScreen.setStage(2, 65, 'Loading pre-placed 3D map blueprint...')
+          }
+          if (window.PrecompiledMapLoader && typeof window.PrecompiledMapLoader.loadMapBlueprint === 'function') {
+            try { await window.PrecompiledMapLoader.loadMapBlueprint(levelObj.id) } catch (e) {}
+          }
+          if (window.LoadingScreen) {
+            window.LoadingScreen.setStage(3, 84, 'Compiling WebGL2 shaders & lighting...')
+          }
           const overlay = document.getElementById('play-overlay')
           if (overlay) {
             overlay.style.display = 'none'
@@ -814,6 +830,7 @@ preloadModels(() => {
               const gc = document.getElementById('gc')
               if (gc && gc.classList.contains('on')) {
                 clearTimeout(_drivingTimeout)
+                if (window.LoadingScreen) { window.LoadingScreen.complete() }
                 return
               }
 
@@ -824,7 +841,11 @@ preloadModels(() => {
           } catch (err) {
             console.error('game.startLevel() failed:', err)
             clearTimeout(_drivingTimeout)
-            _redirectToAcademy()
+            if (window.LoadingScreen) {
+              window.LoadingScreen.fail('Level initialization failed: ' + (err && err.message ? err.message : 'Unknown error'))
+            } else {
+              _redirectToAcademy()
+            }
           }
         }
 
@@ -889,7 +910,7 @@ async function downloadSourceCode(e) {
   }
 
   const origText = btn.innerHTML
-  btn.innerHTML = '&#9203; Zipping... (Make sure to run via local server for this to work!)'
+  btn.innerHTML = 'Zipping... (Make sure to run via local server for this to work!)'
   btn.style.pointerEvents = 'none'
 
   try {
@@ -937,14 +958,14 @@ async function downloadSourceCode(e) {
     document.body.removeChild(a)
     setTimeout(() => URL.revokeObjectURL(url), 1000)
 
-    btn.innerHTML = '&#9989; Downloaded!'
+    btn.innerHTML = 'Downloaded!'
     setTimeout(() => {
       btn.innerHTML = origText
       btn.style.pointerEvents = 'auto'
     }, 3000)
   } catch (e) {
     console.error(e)
-    btn.innerHTML = '&#10060; Error!'
+    btn.innerHTML = 'Error!'
     setTimeout(() => {
       btn.innerHTML = origText
       btn.style.pointerEvents = 'auto'

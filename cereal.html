@@ -43,7 +43,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" onload="this.onload=null;this.rel='stylesheet'" /><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" /></noscript>
     <script>
       ;(function () {
         try {
@@ -630,10 +630,12 @@
         border-color: var(--em);
       }
       .task-item.done .task-check::after {
-        content: '✓';
-        color: #fff;
-        font-size: 11px;
-        font-weight: bold;
+        content: '';
+        width: 4px;
+        height: 8px;
+        border-right: 2px solid #fff;
+        border-bottom: 2px solid #fff;
+        transform: rotate(45deg) translateY(-1px);
       }
       .task-item.done .task-title {
         text-decoration: line-through;
@@ -958,7 +960,7 @@
         align-items: center;
         font-family: var(--mono);
         font-size: 10px;
-        color: rgba(232, 227, 216, 0.5);
+        color: rgba(248, 250, 252, 0.8);
         letter-spacing: 0.05em;
       }
       .ph-status b { color: rgba(232, 227, 216, 0.8); }
@@ -1326,6 +1328,13 @@
         .phone-screen { min-height: 500px; }
         .float-badge { font-size: 0.7rem; padding: 8px 11px; }
       }
+    
+
+      .ph-appname, .ph-note-head { color: #f8fafc !important; }
+      .btn-primary { background: #be185d !important; color: #ffffff !important; }
+      .sim-badge { color: #f472b6; }
+      body.lm #micBtnText, body.lm .sim-badge[style*="0284c7"], body.lm .sim-badge { color: #0369a1 !important; }
+      body.lm .sim-badge[style*="b45309"], body.lm .sim-badge[style*="180, 83, 9"] { color: #92400e !important; }
     </style>
 
     <meta name="robots" content="index, nofollow" />

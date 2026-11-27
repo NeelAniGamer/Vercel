@@ -1,14 +1,10 @@
 /**
- * Class Of Learners — QR Studio Layout & Responsive Shell (qr-layout.css)
- * 3-Tier Responsive Architecture:
- * - Desktop: >= 1025px (3-column Editor, 2-column Dashboard)
- * - Tablet:  641px - 1024px (Top Tool Strip / Icon Rail, 2-column Editor)
- * - Mobile:  <= 640px (Single-column, Compact Preview Bar, Slide-up Bottom Sheet, Mobile Bottom Nav)
+ * CraftQR — Responsive 3-Tier Layout Shell (qr-layout.css)
+ * - Desktop (>= 1025px): Sidebar | Studio Workspace | Live Proof & Export Rail
+ * - Tablet (641px..1024px): Top Tool Strip + 2-column Studio
+ * - Mobile (<= 640px): Single-column + Sticky Mini Proof Bar + Bottom Sheet + Bottom Nav
  */
 
-/* ==========================================================================
-   1. Universal Base Layout
-   ========================================================================== */
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -36,11 +32,11 @@ html, body {
 }
 
 /* ==========================================================================
-   2. Desktop Shell (>= 1025px)
+   1. Desktop Shell (>= 1025px)
    ========================================================================== */
 .qr-app {
   display: grid;
-  grid-template-columns: 240px minmax(0, 1fr) 360px;
+  grid-template-columns: 244px minmax(0, 1fr) 384px;
   height: calc(100dvh - var(--nav-h));
   margin-top: var(--nav-h);
   overflow: hidden;
@@ -48,24 +44,24 @@ html, body {
 }
 
 .qr-app.dashboard {
-  grid-template-columns: 240px minmax(0, 1fr);
+  grid-template-columns: 244px minmax(0, 1fr);
 }
 
 .app-sb {
   display: flex;
   flex-direction: column;
-  background: var(--surface-card);
+  background: var(--surface-subtle);
   border-right: 1px solid var(--border-subtle);
   min-height: 0;
   overflow-y: auto;
-  padding: 20px 14px;
-  gap: 16px;
+  padding: 18px 14px;
+  gap: 4px;
 }
 
 .workspace {
   min-height: 0;
   overflow-y: auto;
-  padding: 28px 32px 48px;
+  padding: 26px 32px 48px;
   background: var(--surface-page);
 }
 
@@ -74,13 +70,12 @@ html, body {
   border-left: 1px solid var(--border-subtle);
   min-height: 0;
   overflow-y: auto;
-  padding: 24px 20px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
-/* Desktop & Tablet: Hide Mobile Elements */
 .mobile-preview-bar,
 .mobile-bottom-bar,
 .sheet-backdrop,
@@ -90,11 +85,11 @@ html, body {
 }
 
 /* ==========================================================================
-   3. Tablet Shell (641px to 1024px)
+   2. Tablet Shell (641px to 1024px)
    ========================================================================== */
 @media (max-width: 1024px) and (min-width: 641px) {
   .qr-app {
-    grid-template-columns: minmax(0, 1fr) 320px;
+    grid-template-columns: minmax(0, 1fr) 330px;
     grid-template-rows: auto 1fr;
     height: calc(100dvh - var(--nav-h));
     margin-top: var(--nav-h);
@@ -115,13 +110,10 @@ html, body {
     padding: 8px 16px;
     gap: 8px;
     width: 100%;
-    -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
   }
 
-  .app-sb::-webkit-scrollbar {
-    display: none;
-  }
+  .app-sb::-webkit-scrollbar { display: none; }
 
   .app-sb .sb-top,
   .app-sb .sb-lbl,
@@ -129,34 +121,24 @@ html, body {
     display: none !important;
   }
 
-  .app-sb .sb-nav {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .app-sb .sb-item {
-    padding: 8px 14px;
+  .app-sb .sb-btn {
+    width: auto;
     white-space: nowrap;
-    font-size: 0.85rem;
-    border-radius: var(--radius-sm);
+    margin: 0;
+    padding: 8px 14px;
   }
 
   .workspace {
-    padding: 20px 24px 40px;
+    padding: 20px 22px 40px;
   }
 
   .prev-p {
-    padding: 20px 16px;
+    padding: 18px 16px;
   }
 }
 
 /* ==========================================================================
-   4. Mobile Shell (<= 640px)
+   3. Mobile Shell (<= 640px)
    ========================================================================== */
 @media (max-width: 640px) {
   body {
@@ -170,7 +152,7 @@ html, body {
     height: auto !important;
     min-height: calc(100dvh - var(--nav-h));
     margin-top: var(--nav-h) !important;
-    padding-bottom: calc(76px + env(safe-area-inset-bottom)) !important;
+    padding-bottom: calc(74px + env(safe-area-inset-bottom)) !important;
     overflow: visible !important;
   }
 
@@ -181,35 +163,24 @@ html, body {
     margin-top: var(--nav-h) !important;
   }
 
-  /* Hide Desktop Sidebar on Mobile */
-  .app-sb {
-    display: none !important;
-  }
+  .app-sb { display: none !important; }
 
   .workspace {
-    padding: 16px 14px 28px !important;
+    padding: 14px 14px 28px !important;
     min-height: auto;
     overflow: visible;
   }
 
-  /* Compact Sticky Preview Bar */
   .mobile-preview-bar {
     display: flex !important;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 16px;
+    padding: 10px 14px;
     background: var(--surface-card);
     border-bottom: 1px solid var(--border-subtle);
     position: sticky;
-    top: 0;
+    top: var(--nav-h);
     z-index: 200;
-    gap: 12px;
-    box-shadow: var(--shadow-sm);
-  }
-
-  .mobile-preview-bar .mob-preview-left {
-    display: flex;
-    align-items: center;
     gap: 10px;
   }
 
@@ -219,72 +190,47 @@ html, body {
     border-radius: 6px;
     border: 1px solid var(--border-subtle);
     background: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
+    object-fit: contain;
     padding: 2px;
   }
 
-  .mobile-preview-bar .mob-qr-thumb canvas,
-  .mobile-preview-bar .mob-qr-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
-  .mobile-preview-bar .mob-preview-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .mobile-preview-bar .mob-contrast-tag {
+  .mob-telemetry {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--ink-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    color: var(--ink-muted);
+    flex: 1;
+    min-width: 0;
   }
 
-  .mobile-preview-bar .mob-contrast-dot {
+  .mob-contrast-dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: var(--success);
+    background: var(--secondary);
+    flex-shrink: 0;
   }
 
-  .mobile-preview-bar .mob-contrast-dot.warning {
-    background: var(--warning);
-  }
-
-  .mobile-preview-bar .mob-contrast-dot.danger {
-    background: var(--danger);
-  }
-
-  /* Slide-up Preview Bottom Sheet */
   .prev-p {
     position: fixed !important;
     inset: auto 0 0 0 !important;
-    max-height: 85dvh !important;
+    max-height: 86dvh !important;
     width: 100% !important;
     border-left: 0 !important;
     border-top: 1px solid var(--border-strong) !important;
-    border-radius: 20px 20px 0 0 !important;
+    border-radius: 18px 18px 0 0 !important;
     background: var(--surface-card) !important;
     transform: translateY(100%) !important;
-    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1) !important;
+    transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1) !important;
     z-index: 1200 !important;
     box-shadow: var(--shadow-lg) !important;
     overflow-y: auto !important;
     padding: 16px 16px calc(24px + env(safe-area-inset-bottom)) !important;
-    order: 999 !important;
   }
 
-  .prev-p.sheet-open {
-    transform: translateY(0) !important;
-  }
+  .prev-p.sheet-open { transform: translateY(0) !important; }
 
   .sheet-handle {
     display: block !important;
@@ -298,17 +244,17 @@ html, body {
   .sheet-close-btn {
     display: inline-flex !important;
     position: absolute;
-    top: 14px;
-    right: 14px;
+    top: 12px;
+    right: 12px;
     background: var(--surface-subtle);
     border: 1px solid var(--border-subtle);
-    color: var(--ink-secondary);
+    color: var(--ink-primary);
     border-radius: 50%;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     cursor: pointer;
   }
 
@@ -316,20 +262,19 @@ html, body {
     display: block !important;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.55);
+    background: rgba(28, 27, 25, 0.5);
     z-index: 1199;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.25s ease;
-    backdrop-filter: blur(3px);
+    transition: opacity 0.22s ease;
   }
 
+  .sheet-backdrop.sheet-open,
   .sheet-backdrop.active {
     opacity: 1;
     pointer-events: auto;
   }
 
-  /* Fixed Mobile Bottom Action Bar */
   .mobile-bottom-bar {
     display: flex !important;
     position: fixed;
@@ -341,8 +286,6 @@ html, body {
     justify-content: space-around;
     background: var(--surface-card);
     border-top: 1px solid var(--border-subtle);
-    backdrop-filter: blur(20px);
-    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
   }
 
   .mob-nav-item {
@@ -355,11 +298,10 @@ html, body {
     text-decoration: none;
     font-size: 0.72rem;
     font-weight: 600;
-    padding: 6px 12px;
+    padding: 6px 10px;
     min-width: 60px;
     min-height: 48px;
     border-radius: var(--radius-sm);
-    transition: color 0.15s ease, background 0.15s ease;
     border: none;
     background: transparent;
     cursor: pointer;

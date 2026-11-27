@@ -1671,9 +1671,9 @@
         color: #475569;
       }
       .dossier-tradeoff-col.pro li::before {
-        content: '✓'; position: absolute; left: 0; top: 0; color: #34d399; font-weight: 800;
+        content: ''; position: absolute; left: 3px; top: 5px; width: 5px; height: 9px; border-right: 2px solid #34d399; border-bottom: 2px solid #34d399; transform: rotate(45deg);
       }
-      body.lm .dossier-tradeoff-col.pro li::before { color: #1b9d66; }
+      body.lm .dossier-tradeoff-col.pro li::before { border-color: #1b9d66; }
       .dossier-tradeoff-col.con li::before {
         content: '•'; position: absolute; left: 2px; top: 0; color: #f87171; font-weight: 900; font-size: 16px;
       }

@@ -1,7 +1,7 @@
 window.LVS = window.LVS || []
 window.LVS.push({
   id: 23,
-  icon: '🌧️',
+  icon: 'rain',
   name: 'Lesson 23 - Heavy Rain Driving',
   modes: ['car', 'bike'],
   col: '#3498db',
@@ -16,7 +16,7 @@ window.LVS.push({
     offHi: 'बारिश में खतरनाक ड्राइविंग'
   },
   theory:
-    '<h2>Heavy Rain Driving</h2><p>Tez baarish ho rahi hai — visibility almost zero hai! Road pe paani bhara hai, pedestrians bhaag rahe hain. Tumhe slow down karna hai aur headlights on karni hain!</p><p>Rain mein driving sabse mushkil hoti hai — brakes kaam nahi karte, tyres slip karte hain, aur puddles potholes chhupa sakte hain!</p><h3>🌧️ Kya karna hai?</h3><ul><li>Low beam headlights on karo!</li><li>Speed aadhi kar do.</li><li>Puddles se door raho — andar deep potholes ho sakte hain!</li></ul><h3>⚖️ Kanoon kya kehta hai?</h3><p>Rain mein dangerous driving MV Act Section 184 ke under illegal hai — ₹1000 se ₹5000 tak ka fine!</p>',
+    '<h2>Heavy Rain Driving</h2><p>Tez baarish ho rahi hai — visibility almost zero hai! Road pe paani bhara hai, pedestrians bhaag rahe hain. Tumhe slow down karna hai aur headlights on karni hain!</p><p>Rain mein driving sabse mushkil hoti hai — brakes kaam nahi karte, tyres slip karte hain, aur puddles potholes chhupa sakte hain!</p><h3> Kya karna hai?</h3><ul><li>Low beam headlights on karo!</li><li>Speed aadhi kar do.</li><li>Puddles se door raho — andar deep potholes ho sakte hain!</li></ul><h3> Kanoon kya kehta hai?</h3><p>Rain mein dangerous driving MV Act Section 184 ke under illegal hai — ₹1000 se ₹5000 tak ka fine!</p>',
   pract: 'Turn on low beam headlights. Slow down to half speed. Avoid all puddles. Use hazard lights if visibility is very low.',
   mode: 'practical',
   themeType: 'rain_driving',

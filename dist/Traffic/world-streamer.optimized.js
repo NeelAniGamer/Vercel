@@ -42,6 +42,15 @@ class OptimizedCityChunk {
 
   generate() {
     if (this.disposed) return;
+    // 1. Prefer pre-placed deterministic blueprint chunk if available
+    const lvId = this.game && this.game.mapCfg ? String(this.game.mapCfg.id) : null;
+    const bp = lvId && window.PRECOMPILED_MAPS ? window.PRECOMPILED_MAPS[lvId] : null;
+    const chunkKey = `${this.cx},${this.cz}`;
+    if (bp && bp.chunks && bp.chunks[chunkKey]) {
+      this._generateFromBlueprint(bp.chunks[chunkKey]);
+      return;
+    }
+
     const rng = this.rng;
     const distFromCenter = Math.hypot(this.cx, this.cz);
     const maxDist = 40;
@@ -63,6 +72,35 @@ class OptimizedCityChunk {
     }
 
     this.generateSuburb(density);
+  }
+
+  _generateFromBlueprint(chunkData) {
+    // Hydrate pre-placed, collision-checked trees & streetlights via InstancedMesh
+    if (Array.isArray(chunkData.trees) && chunkData.trees.length) {
+      const foliageKeys = WorldStreamer.ASSETS.foliage;
+      if (foliageKeys.length) {
+        chunkData.trees.forEach((t, idx) => {
+          const folKey = foliageKeys[idx % foliageKeys.length];
+          const lx = t.x - this.worldX;
+          const lz = t.z - this.worldZ;
+          const fol = this._spawnAsset(folKey, lx, lz, 0, t.scale || 1.0);
+          if (fol) this._addToInstanced(fol, 'foliage');
+        });
+      }
+    }
+    if (Array.isArray(chunkData.streetlights) && chunkData.streetlights.length) {
+      const propKeys = WorldStreamer.ASSETS.props;
+      if (propKeys.length) {
+        const lightKey = propKeys.find(k => k.includes('spotlight')) || propKeys[0];
+        chunkData.streetlights.forEach(l => {
+          const lx = l.x - this.worldX;
+          const lz = l.z - this.worldZ;
+          const prop = this._spawnAsset(lightKey, lx, lz, l.rotY || 0, 1.0);
+          if (prop) this._addToInstanced(prop, 'prop');
+        });
+      }
+    }
+    this.game.scene.add(this.group);
   }
 
   generateEmpty() {
@@ -310,12 +348,21 @@ class OptimizedWorldStreamer {
     if (this.timeSinceUpdate < this.updateInterval) return;
     this.timeSinceUpdate = 0;
 
-    const cx = Math.floor(playerPos.x / this.chunkSize);
-    const cz = Math.floor(playerPos.z / this.chunkSize);
+    // Predictive Mapping: bias chunk center 2.5s ahead along player velocity/heading
+    let predX = playerPos.x;
+    let predZ = playerPos.z;
+    if (this.game && this.game.player && this.game.speed) {
+      const yaw = this.game.player.rotation ? this.game.player.rotation.y : 0;
+      const speedMs = window.TrafficUnits
+        ? window.TrafficUnits.playerSpeedToMs(this.game.speed)
+        : this.game.speed * 30;
+      const leadDist = Math.max(-40, Math.min(80, speedMs * 2.5));
+      predX += Math.sin(yaw) * leadDist * 0.5;
+      predZ += Math.cos(yaw) * leadDist * 0.5;
+    }
 
-    if (cx === this.lastCenterX && cz === this.lastCenterZ) return;
-    this.lastCenterX = cx;
-    this.lastCenterZ = cz;
+    const cx = Math.floor(predX / this.chunkSize);
+    const cz = Math.floor(predZ / this.chunkSize);
 
     const needed = new Set();
     const toLoad = [];
@@ -333,6 +380,10 @@ class OptimizedWorldStreamer {
         }
       }
     }
+
+    if (cx === this.lastCenterX && cz === this.lastCenterZ && toLoad.length === 0) return;
+    this.lastCenterX = cx;
+    this.lastCenterZ = cz;
 
     for (const [key, chunk] of this.loadedChunks) {
       if (!needed.has(key)) {

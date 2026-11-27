@@ -331,7 +331,7 @@
       '<div class="cs-fade"></div>' +
       '<div class="cs-title"></div>' +
       '<div class="cs-transceiver" id="csTransceiver">' +
-        '<div class="cs-avatar" id="csAvatar">🚔</div>' +
+        '<div class="cs-avatar" id="csAvatar"></div>' +
         '<div class="cs-content">' +
           '<div class="cs-meta">' +
             '<span class="cs-speaker-badge" id="csBadge">POLICE WIRELESS</span>' +
@@ -479,12 +479,12 @@
   }
 
   var CHARACTER_ROLES = [
-    { re: /vikram|sawant/i, name: 'SI Vikram Sawant', dept: 'Traffic Surveillance Unit 12', icon: '🏍️', col: '#38bdf8' },
-    { re: /kadam|arjun|insp/i, name: 'Insp. Arjun Kadam', dept: 'Traffic Crime Branch', icon: '🚔', col: '#f59e0b' },
-    { re: /iyer|elderly|mummy/i, name: 'Mrs. Meenakshi Iyer', dept: 'Resident Eyewitness', icon: '👵', col: '#10b981' },
-    { re: /driver|fortuner/i, name: 'Fortuner Escort Driver', dept: 'Tinted VIP Convoy', icon: '🕶️', col: '#ef4444' },
-    { re: /vip|passenger|shadow/i, name: 'Shadowed VIP Passenger', dept: 'Unidentified Official', icon: '⚠️', col: '#dc2626' },
-    { re: /wireless|dispatch|control|radio/i, name: 'Mumbai Police Wireless', dept: 'Bandra Central Control', icon: '📻', col: '#60a5fa' }
+    { re: /vikram|sawant/i, name: 'SI Vikram Sawant', dept: 'Traffic Surveillance Unit 12', icon: 'bike', col: '#38bdf8' },
+    { re: /kadam|arjun|insp/i, name: 'Insp. Arjun Kadam', dept: 'Traffic Crime Branch', icon: 'shield', col: '#f59e0b' },
+    { re: /iyer|elderly|mummy/i, name: 'Mrs. Meenakshi Iyer', dept: 'Resident Eyewitness', icon: 'user', col: '#10b981' },
+    { re: /driver|fortuner/i, name: 'Fortuner Escort Driver', dept: 'Tinted VIP Convoy', icon: 'user', col: '#ef4444' },
+    { re: /vip|passenger|shadow/i, name: 'Shadowed VIP Passenger', dept: 'Unidentified Official', icon: 'alert', col: '#dc2626' },
+    { re: /wireless|dispatch|control|radio/i, name: 'Mumbai Police Wireless', dept: 'Bandra Central Control', icon: 'radio', col: '#60a5fa' }
   ];
 
   function getCharacterMeta(speaker) {
@@ -492,7 +492,7 @@
     for (var i = 0; i < CHARACTER_ROLES.length; i++) {
       if (CHARACTER_ROLES[i].re.test(s)) { return CHARACTER_ROLES[i]; }
     }
-    return { name: titleCase(speaker || 'Mumbai Police Wireless'), dept: 'Bandra Central Control', icon: '📻', col: '#60a5fa' };
+    return { name: titleCase(speaker || 'Mumbai Police Wireless'), dept: 'Bandra Central Control', icon: 'radio', col: '#60a5fa' };
   }
 
   var LAST_SPEAKER = '';
@@ -527,7 +527,7 @@
 
     if (isRadio) {
       if (ov.avatar) {
-        ov.avatar.textContent = meta.icon;
+        ov.avatar.innerHTML = window.TrafficIcons ? window.TrafficIcons.resolve(meta.icon, 24) : '';
         ov.avatar.style.borderColor = meta.col;
       }
       if (ov.badge) {

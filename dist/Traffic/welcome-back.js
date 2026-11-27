@@ -16,13 +16,13 @@
 
 
   const DAILY_BONUS_TIERS = [
-    { days: 1, amount: 500, label: 'Day 1', emoji: '🎉' },
-    { days: 2, amount: 750, label: 'Day 2', emoji: '🔥' },
-    { days: 3, amount: 1000, label: 'Day 3', emoji: '⚡' },
-    { days: 4, amount: 1250, label: 'Day 4', emoji: '💎' },
-    { days: 5, amount: 1500, label: 'Day 5', emoji: '🏆' },
-    { days: 6, amount: 2000, label: 'Day 6', emoji: '👑' },
-    { days: 7, amount: 5000, label: 'Day 7 Bonus!', emoji: '🌟' },
+    { days: 1, amount: 500, label: 'Day 1', emoji: 'trophy' },
+    { days: 2, amount: 750, label: 'Day 2', emoji: 'flame' },
+    { days: 3, amount: 1000, label: 'Day 3', emoji: 'zap' },
+    { days: 4, amount: 1250, label: 'Day 4', emoji: 'sparkles' },
+    { days: 5, amount: 1500, label: 'Day 5', emoji: 'trophy' },
+    { days: 6, amount: 2000, label: 'Day 6', emoji: 'trophy' },
+    { days: 7, amount: 5000, label: 'Day 7 Bonus!', emoji: 'star' },
   ];
   const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
 
@@ -99,7 +99,7 @@
         if (window.WalletHistory) {WalletHistory.earn('daily_bonus', info.amount, { streak: info.streak || 1, day: info.day || 1 });}
         localStorage.setItem(STORAGE_KEYS.GAME_PROGRESS, JSON.stringify(S));
       }
-      if (typeof toast === 'function') {toast(`💰 ₹${info.amount.toLocaleString('en-IN')} daily bonus added!`, '#f2b84b');}
+      if (typeof toast === 'function') {toast(` ₹${info.amount.toLocaleString('en-IN')} daily bonus added!`, '#f2b84b');}
     } catch (e) {}
 
     return info;
@@ -121,19 +121,19 @@
     for (let i = 0; i < 7; i++) {
       const filled = i < bonusInfo.streak;
       const isCurrent = i === bonusInfo.streak - 1;
-      streakDots += `<div style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;border:2px solid ${filled ? '#f2b84b' : 'rgba(255,255,255,0.15)'};background:${filled ? 'rgba(242,184,75,0.2)' : 'transparent'};color:${filled ? '#f2b84b' : 'rgba(255,255,255,0.3)'};${isCurrent ? 'box-shadow:0 0 12px rgba(242,184,75,0.4);transform:scale(1.1);' : ''}">${filled ? '✓' : (i + 1)}</div>`;
+      streakDots += `<div style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;border:2px solid ${filled ? '#f2b84b' : 'rgba(255,255,255,0.15)'};background:${filled ? 'rgba(242,184,75,0.2)' : 'transparent'};color:${filled ? '#f2b84b' : 'rgba(255,255,255,0.3)'};${isCurrent ? 'box-shadow:0 0 12px rgba(242,184,75,0.4);transform:scale(1.1);' : ''}">${filled ? '' : (i + 1)}</div>`;
     }
 
     popup.innerHTML = `
       <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);border:1px solid rgba(242,184,75,0.3);border-radius:20px;padding:32px;max-width:360px;width:90%;text-align:center;position:relative;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.5);transform:scale(0.9);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);">
         <div style="position:absolute;top:-40px;right:-40px;width:120px;height:120px;background:radial-gradient(circle,rgba(242,184,75,0.15) 0%,transparent 70%);border-radius:50%;pointer-events:none;"></div>
-        <div style="font-size:3.5rem;margin-bottom:8px;animation:dbBounce 0.6s ease;">${bonusInfo.tier.emoji}</div>
+        <div style="font-size:3.5rem;margin-bottom:8px;animation:dbBounce 0.6s ease;">${window.TrafficIcons ? window.TrafficIcons.resolve(bonusInfo.tier.emoji, 42) : ""}</div>
         <div id="db-title" style="font-family:'Lora',serif;font-size:1.6rem;font-weight:700;color:#f2b84b;margin-bottom:4px;">Daily Bonus!</div>
-        <div style="font-size:0.85rem;color:rgba(255,255,255,0.6);margin-bottom:20px;">${bonusInfo.tier.label} — ${bonusInfo.streak}/7 day streak${bonusInfo.forgiven ? ' · ✨ Miss Forgiven!' : ''}</div>
+        <div style="font-size:0.85rem;color:rgba(255,255,255,0.6);margin-bottom:20px;">${bonusInfo.tier.label} — ${bonusInfo.streak}/7 day streak${bonusInfo.forgiven ? ' ·  Miss Forgiven!' : ''}</div>
         <div style="font-size:2.5rem;font-weight:800;color:#34d399;font-family:'Lora',serif;margin-bottom:4px;">+₹${bonusInfo.amount.toLocaleString('en-IN')}</div>
         <div style="font-size:0.75rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:20px;">Added to wallet</div>
         <div style="display:flex;gap:8px;justify-content:center;margin-bottom:24px;">${streakDots}</div>
-        <div style="font-size:0.7rem;color:rgba(255,255,255,0.35);margin-bottom:20px;">Come back tomorrow for more! 7-day streak = ₹5,000 bonus 🌟</div>
+        <div style="font-size:0.7rem;color:rgba(255,255,255,0.35);margin-bottom:20px;">Come back tomorrow for more! 7-day streak = ₹5,000 bonus </div>
         <button id="db-claim" style="font-family:'Inter',sans-serif;font-size:1rem;font-weight:700;padding:14px 40px;border:none;border-radius:30px;background:linear-gradient(135deg,#f2b84b,#d97706);color:#1e293b;cursor:pointer;transition:all 0.2s;min-height:48px;">Claim Bonus</button>
       </div>
       <style>@keyframes dbBounce{0%{transform:scale(0)}60%{transform:scale(1.2)}100%{transform:scale(1)}}</style>
@@ -159,7 +159,7 @@
   }
 
   const PAGE_ROUTES = {
-    setup: 'TrafficSetup.html',
+    setup: 'Academy.html?settings=1',
     academy: 'Academy.html',
     driving: 'Driving.html',
     dashboard: 'TrafficDashboard.html',
@@ -320,118 +320,81 @@
     };
   }
 
+  function getResumeContext(session) {
+    let saved = null
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.GAME_PROGRESS)
+      if (raw) saved = JSON.parse(raw)
+    } catch (_e) {}
+
+    const compCount = saved && saved.comp ? Object.keys(saved.comp).length : 0
+    const lastLv = (session && session.level) || (saved && saved.lastLevelId) || null
+    let lvTitle = ''
+    if (lastLv && Array.isArray(window.LVS)) {
+      const found = window.LVS.find(function (l) { return String(l.id) === String(lastLv) })
+      if (found && found.name) lvTitle = found.name
+    }
+
+    let route = PAGE_ROUTES[session.page] || 'Academy.html'
+    let headline = 'Pick up where you left off'
+    let detail = (SCREEN_LABELS[session.page] || 'Traffic Academy') + ' · Visited ' + formatTimeAgo(session.timestamp)
+    let actionLabel = 'Resume'
+
+    if (session.page === 'academy' && lastLv) {
+      route = 'Academy.html?screen=briefing&lv=' + encodeURIComponent(lastLv)
+      headline = lvTitle ? ('Continue ' + lvTitle) : ('Continue Lesson ' + lastLv)
+      detail = 'Visited ' + formatTimeAgo(session.timestamp) + ' · ' + compCount + ' lessons completed'
+      actionLabel = 'Open Lesson'
+    } else if (session.page === 'driving' || session.page === 'game') {
+      route = lastLv ? ('Driving.html?level=' + encodeURIComponent(lastLv)) : 'Driving.html'
+      headline = lvTitle ? ('Resume drive: ' + lvTitle) : 'Resume your 3D driving run'
+      detail = 'Last active ' + formatTimeAgo(session.timestamp)
+      actionLabel = 'Resume Drive'
+    } else if (session.page === 'dashboard') {
+      headline = compCount > 0 ? ('Continue your ' + compCount + '-lesson streak') : 'Return to your Driver Dashboard'
+      detail = 'Driver Dashboard · Last active ' + formatTimeAgo(session.timestamp)
+      actionLabel = 'Open Dashboard'
+    } else if (lastLv) {
+      headline = lvTitle ? ('Next up: ' + lvTitle) : ('Resume Lesson ' + lastLv)
+      detail = (SCREEN_LABELS[session.page] || 'Academy') + ' · ' + formatTimeAgo(session.timestamp)
+    }
+
+    return { route, headline, detail, actionLabel }
+  }
+
   function createWelcomeBackPopup(data) {
     const existing = document.getElementById('traffic-welcome-back');
     if (existing) {existing.remove();}
 
+    const ctx = getResumeContext(data.session || data);
+    data.route = ctx.route;
+
     const popup = document.createElement('div');
     popup.id = 'traffic-welcome-back';
     popup.className = 'welcome-back-popup';
-    popup.setAttribute('role', 'dialog');
-    popup.setAttribute('aria-modal', 'true');
+    popup.setAttribute('role', 'region');
     popup.setAttribute('aria-labelledby', 'wb-title');
 
-    const isGame = data.page === 'game' || data.page === 'driving';
-    const isSetup = data.page === 'setup';
-    const isAcademy = data.page === 'academy';
-
-    let actionText = 'Continue';
-    let actionAriaLabel = `Continue ${data.screenLabel} from ${data.timeLabel}`;
-
-    if (isGame) {
-      actionText = 'Resume Game';
-      actionAriaLabel = `Resume driving simulation from ${data.timeLabel}`;
-    } else if (isAcademy) {
-      actionText = 'Continue Learning';
-      actionAriaLabel = `Continue academy from ${data.timeLabel}`;
-    } else if (isSetup) {
-      actionText = 'Finish Setup';
-      actionAriaLabel = 'Complete your profile setup';
-    }
-
     popup.innerHTML = `
-      <div class="wb-backdrop" aria-hidden="true"></div>
       <div class="wb-panel" role="document">
         <div class="wb-header">
-          <div class="wb-avatar" aria-hidden="true">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
-              <path d="M12 6v6l4 2"/>
-            </svg>
-          </div>
           <div class="wb-title-wrap">
-            <h3 id="wb-title" class="wb-title">Welcome Back, ${getUserName()}!</h3>
-            <p class="wb-subtitle">Ready to pick up where you left off?</p>
+            <div class="wb-eyebrow">Welcome back, ${getUserName()}</div>
+            <h3 id="wb-title" class="wb-title">${ctx.headline}</h3>
+            <p class="wb-subtitle">${ctx.detail}</p>
           </div>
-          <button class="wb-close" aria-label="Dismiss welcome back" type="button">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"/>
-              <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
-        </div>
-        <div class="wb-context">
-          <span class="wb-context-chip">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="7" height="7" rx="1"/>
-              <rect x="14" y="3" width="7" height="7" rx="1"/>
-              <rect x="3" y="14" width="7" height="7" rx="1"/>
-              <rect x="14" y="14" width="7" height="7" rx="1"/>
-            </svg>
-            ${data.screenLabel}
-          </span>
-          <span class="wb-context-chip wb-time-chip">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/>
-              <polyline points="12 6 12 12 16 14"/>
-            </svg>
-            <span class="wb-time-text">${data.timeLabel}</span>
-          </span>
+          <button class="wb-close" aria-label="Dismiss" type="button">&times;</button>
         </div>
         <div class="wb-actions">
-          <button class="wb-btn wb-btn-secondary" type="button" data-action="dismiss">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"/>
-              <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-            <span>Not Now</span>
-          </button>
-          <button class="wb-btn wb-btn-primary" type="button" data-action="continue" aria-label="${actionAriaLabel}">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <polyline points="9 18 15 12 9 6"/>
-            </svg>
-            <span>${actionText}</span>
-          </button>
-        </div>
-        <div class="wb-progress-bar" aria-hidden="true">
-          <div class="wb-progress-fill"></div>
+          <button class="wb-btn wb-btn-secondary" type="button" data-action="dismiss">Dismiss</button>
+          <button class="wb-btn wb-btn-primary" type="button" data-action="continue">${ctx.actionLabel} &rarr;</button>
         </div>
       </div>
     `;
 
     document.body.appendChild(popup);
-
-    requestAnimationFrame(() => {
-      popup.classList.add('show');
-      animateProgressBar(popup.querySelector('.wb-progress-fill'), 5000);
-    });
-
+    requestAnimationFrame(() => popup.classList.add('show'));
     bindPopupEvents(popup, data);
-
-
-    const timeChip = popup.querySelector('.wb-time-chip');
-    if (timeChip && data.session && data.session.timestamp) {
-      const timerInterval = setInterval(() => {
-        if (!document.getElementById('traffic-welcome-back')) {
-          clearInterval(timerInterval);
-          return;
-        }
-        const timeText = popup.querySelector('.wb-time-text');
-        if (timeText) {timeText.textContent = formatTimeAgo(data.session.timestamp);}
-      }, 1000);
-      popup._timerInterval = timerInterval;
-    }
-
     return popup;
   }
 

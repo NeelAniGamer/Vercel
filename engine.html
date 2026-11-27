@@ -28,6 +28,7 @@
 
     <script defer src="col-router.js"></script>
     <link rel="stylesheet" href="col-ui.css?v=1782446126.5715783" />
+  <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <link rel="stylesheet" href="liquid-glass.css" />
     <!-- Conditional Mobile Assets: Loaded ONLY on mobile/tablet or when screen <= 1024px. Prevents downloading mobile styles and touch scripts on PC desktop. -->
     <script>
@@ -85,8 +86,83 @@
     <meta name="twitter:title" content="Solar System Visualization Engine v3.3" />
     <meta name="twitter:description" content="The interactive solar system engine — Keplerian orbital mechanics, live telemetry, and planetary-scale rendering." />
     <meta name="twitter:image" content="https://advancedlogiclabs.dpdns.org/og/solar.jpg" />
+  
+    <style>
+
+      .hk-dot { color: rgba(255, 255, 255, 0.6) !important; }
+      #gl-sub { color: rgba(200, 220, 255, 0.8) !important; }
+      #cp-divider { color: #fbbf24 !important; }
+      body.lm #home-badge, body.lm .lb-text, body.lm .lb-arrow,
+      body.lm .tab-btn, body.lm .brand-ver, body.lm #speed-display { color: #92400e !important; }
+      body.lm #scale-label, body.lm #gl-you { color: #0f766e !important; }
+      body.lm .hk-dot { color: rgba(15, 23, 42, 0.55) !important; }
+      body.lm #kb-modal, body.lm #kb-modal span, body.lm #kb-modal kbd,
+      body.lm #kb-modal .sm-group-title, body.lm #kb-modal button { color: #e2e8f0 !important; }
+      body.lm #status-bar span, body.lm #sb-date, body.lm #sb-fps, body.lm #sb-cam { color: #e2e8f0 !important; }
+      body.lm #gl-name { color: #0f172a !important; }
+      body.lm #gl-sub { color: #334155 !important; }
+      body.lm #cp-divider, body.lm .tp-time { color: #92400e !important; }
+      body.lm .tp-scale-title, body.lm span[style*="170, 136, 255"] { color: #6d28d9 !important; }
+    
+
+      body.lm .hk-dot { color: rgba(15, 23, 42, 0.72) !important; }
+      body.lm [id*="shortcuts"] *, body.lm [id*="modal"] * { color: #e2e8f0 !important; }
+      body.lm .tp-header span, body.lm .tl-header span { color: #6d28d9 !important; }
+    
+
+      body.lm [style*="rgba(170,136,255"], body.lm [style*="170, 136, 255"], body.lm .tp-title { color: #6d28d9 !important; }
+      body.lm #tp-title, body.lm .timeline-panel-title, body.lm #timeline-panel > div:first-child span { color: #6d28d9 !important; }
+      
+    
+
+      
+    </style>
+      <style>
+      body.lm #shortcuts-modal button, body.lm #kb-modal button, body.lm #fact-toast button { color: #e2e8f0 !important; }
+      body.lm #timeline-panel button, body.lm #sp-close, body.lm #close-btn, body.lm #measure-close, body.lm #compare-panel button { color: #0f172a !important; }
+    </style>
   </head>
   <body>
+    <!-- Solar 3D Physics Engine v3.4 Skeleton Loading Screen -->
+    <div class="loader col-skeleton-screen sk-theme-amber" id="loader" role="status" aria-busy="true" aria-label="Loading Solar System Visualization Engine">
+  <div class="sk-ambient-glow" aria-hidden="true"></div>
+  <div class="sk-ambient-glow-left" aria-hidden="true"></div>
+    <div class="sk-hud-corner sk-hud-tl" style="padding: 24px;" aria-hidden="true">
+    <div class="sk-pill sk-shimmer-accent" style="width: 148px; height: 18px;"></div>
+    <div class="sk-lede-line sk-shimmer" style="width: 116px; height: 12px;"></div>
+    <div class="sk-lede-line sk-shimmer" style="width: 88px; height: 12px;"></div>
+  </div>
+  <div class="sk-hud-corner sk-hud-tr" style="padding: 24px;" aria-hidden="true">
+    <div style="display: flex; gap: 8px;">
+      <div class="sk-circle sk-shimmer" style="width: 36px; height: 36px;"></div>
+      <div class="sk-circle sk-shimmer" style="width: 36px; height: 36px;"></div>
+      <div class="sk-circle sk-shimmer" style="width: 36px; height: 36px;"></div>
+    </div>
+  </div>
+  <div class="sk-hero-wrap" aria-hidden="true" style="justify-content: center; align-items: center; min-height: 92vh;">
+    <div class="sk-orrery-wireframe" style="width: min(560px, 88vw); height: min(560px, 88vw);">
+      <div class="sk-ring sk-ring-outer"></div>
+      <div class="sk-ring sk-ring-mid"></div>
+      <div class="sk-ring sk-ring-inner"></div>
+      <div class="sk-core-hub" style="flex-direction: column; gap: 14px;">
+        <div class="sk-core-halo" style="width: 170px; height: 170px;"></div>
+        <div class="sk-core-circle sk-shimmer-accent" style="width: 96px; height: 96px;">
+          <div class="sk-pill sk-shimmer" style="width: 44px; height: 12px;"></div>
+        </div>
+        <div class="sk-title-bar sk-shimmer" style="width: 240px; height: 26px;"></div>
+        <div class="sk-stats-pill"><div class="sk-sub-pill" style="width: 56px;"></div><span class="sk-dot">|</span><div class="sk-sub-pill" style="width: 68px;"></div><span class="sk-dot">|</span><div class="sk-sub-pill" style="width: 54px;"></div></div>
+      </div>
+    </div>
+  </div>
+  <footer class="sk-status-dock" aria-hidden="true">
+    <div class="sk-status-pill">
+      <span class="sk-pulse-live"></span>
+      <span class="sk-status-text"><span>Solar v3.4</span> &middot; Keplerian Deep-Space Engine</span>
+      <div class="sk-progress-bar"><div class="sk-progress-fill"></div></div>
+    </div>
+  </footer>
+</div>
+
     <div class="cd" id="cDot"></div>
     <div class="cr" id="cRing"></div>
     <script>
@@ -102,7 +178,7 @@
     <div id="measure-display" style="display: none">
       <span id="measure-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M7 7l5-5 5 5M7 17l5 5 5-5"/></svg></span>
       <span id="measure-text">Select first object⬦</span>
-      <button id="measure-close" onclick="window.toggleMeasure && window.toggleMeasure()">✕</button>
+      <button id="measure-close" onclick="window.toggleMeasure && window.toggleMeasure()" aria-label="Close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
     </div>
 
     <div id="homepage">
@@ -269,7 +345,7 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           CONTROLS &amp; SETTINGS
         </span>
-        <button id="sp-close" onclick="toggleSettings(false)">✕</button>
+        <button id="sp-close" onclick="toggleSettings(false)" aria-label="Close settings"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
       </div>
 
       <div class="sp-section">
@@ -339,14 +415,14 @@
         </div>
       </div>
 
-      <button class="sp-reset" onclick="resetSettings()">↻ RESET TO DEFAULTS</button>
+      <button class="sp-reset" onclick="resetSettings()">RESET TO DEFAULTS</button>
     </div>
 
     <div id="shortcuts-overlay" onclick="if (event.target === this) closeShortcuts()">
       <div id="shortcuts-modal">
         <div id="sm-header">
           <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px;"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></svg>KEYBOARD SHORTCUTS</span>
-          <button onclick="closeShortcuts()">✕</button>
+          <button onclick="closeShortcuts()" aria-label="Close shortcuts"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
         </div>
         <div id="sm-grid">
           <div class="sm-group">
@@ -389,11 +465,11 @@
           <div id="hud-type-badge">OBJECT</div>
           <div id="hud-title" style="font-size:1.5rem;font-weight:700">-</div>
         </div>
-        <button id="close-btn" onclick="closeHUD()" title="Close">✕</button>
+        <button id="close-btn" onclick="closeHUD()" title="Close" aria-label="Close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
       </div>
 
       <div id="hud-surface">
-        <img id="hud-img" alt="Surface" loading="lazy" />
+        <img id="hud-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Surface" loading="lazy" />
         <div id="hud-img-overlay"></div>
       </div>
 
@@ -482,7 +558,7 @@
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           RANDOM DISCOVERY
         </span>
-        <button onclick="document.getElementById('fact-toast').classList.remove('active')">✕</button>
+        <button onclick="document.getElementById('fact-toast').classList.remove('active')" aria-label="Close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
       </div>
       <div id="fact-toast-object"></div>
       <div id="fact-toast-text"></div>
@@ -494,7 +570,7 @@
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px;"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="18" rx="1"/></svg>
           OBJECT COMPARISON
         </span>
-        <button onclick="closeCompare()">✕</button>
+        <button onclick="closeCompare()" aria-label="Close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
       </div>
       <div id="cp-hint">Click any object in the scene to add it to the comparison (max 2).</div>
       <div id="cp-body">
@@ -516,7 +592,8 @@
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           COSMIC TIMELINE &amp; SCALE
         </span>
-        <button onclick="document.getElementById('timeline-panel').classList.remove('active')">✕</button>
+        <button class="tl-close-btn" onclick="document.getElementById('timeline-panel').classList.remove('active')" aria-label="Close"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+    <style>body.lm .tl-close-btn { color: #0f172a !important; }</style>
       </div>
       <div id="tp-body">
         <div class="tp-scale-title">THE COSMIC SCALE</div>
@@ -604,20 +681,20 @@
           ctx.fillRect((Math.random() * W) | 0, (Math.random() * H) | 0, 1, 1)
         }
 
-        // Type icon - centred
+        // Type badge code - centred
         const icons = {
-          star: '✦',
-          planet: '◎',
-          dwarf: '○',
-          comet: '✧',
-          probe: '⬡',
-          blackhole: '⬤',
-          pulsar: '◈',
-          galaxy: '❖',
-          interstellar: '▲'
+          star: 'STAR',
+          planet: 'PLT',
+          dwarf: 'DWF',
+          comet: 'CMT',
+          probe: 'PRB',
+          blackhole: 'BH',
+          pulsar: 'PLS',
+          galaxy: 'GLX',
+          interstellar: 'ISO'
         }
-        const icon = icons[data.type] || '◎'
-        ctx.font = `bold ${Math.round(H * 0.44)}px Arial, sans-serif`
+        const icon = icons[data.type] || 'OBJ'
+        ctx.font = `bold ${Math.round(H * 0.24)}px 'Space Mono', monospace`
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         ctx.globalAlpha = 0.52
@@ -793,7 +870,7 @@
         resetHUDTabs()
         document.getElementById('hud-title').textContent = data.name
         document.getElementById('hud-type-badge').textContent = data.typeBadge || data.type?.toUpperCase() || 'OBJECT'
-        document.getElementById('sb-selected').textContent = '❖ ' + data.name
+        document.getElementById('sb-selected').textContent = data.name
 
         const AU = (data.dist / 149.6).toFixed(2)
         document.getElementById('qs-dist').textContent = data.dist > 0 ? AU : '0 (origin)'
@@ -822,7 +899,7 @@
         document.getElementById('tab-overview-text').textContent = data.overview || data.desc || '-'
         const factBox = document.getElementById('tab-overview-fact')
         factBox.style.display = data.funFact ? 'block' : 'none'
-        factBox.textContent = data.funFact ? '✦ ' + data.funFact : ''
+        factBox.textContent = data.funFact ? data.funFact : ''
 
         document.getElementById('tab-physics-rows').innerHTML = buildRows(data.stats)
         document.getElementById('tab-atmos-rows').innerHTML = buildRows(data.atmosphere)

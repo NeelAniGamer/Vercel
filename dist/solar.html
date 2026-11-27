@@ -108,7 +108,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" onload="this.onload=null;this.rel='stylesheet'" /><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" /></noscript>
     <link rel="stylesheet" href="col-ui.css?v=20260923-nav3" />
   <link rel="stylesheet" href="col-skeleton.css?v=20261125" />
     <link rel="stylesheet" href="liquid-glass.css" />
@@ -1642,9 +1642,9 @@
       body.lm {
         --bg-1: #fbfaf5;
         --bg-2: #f1efe6;
-        --primary: #c25700;
-        --primary-dim: rgba(194, 87, 0, 0.08);
-        --primary-glow: rgba(194, 87, 0, 0.25);
+        --primary: #9a3412;
+        --primary-dim: rgba(154, 52, 18, 0.08);
+        --primary-glow: rgba(154, 52, 18, 0.25);
         --card-bg: #ffffff;
         --text-main: #0f172a;
         --nav-bg: rgba(251, 250, 245, 0.92);
@@ -1661,11 +1661,11 @@
       }
       body.lm .game-hero {
         border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-        background: linear-gradient(180deg, transparent 0%, rgba(194, 87, 0, 0.04) 100%);
+        background: linear-gradient(180deg, transparent 0%, rgba(154, 52, 18, 0.04) 100%);
       }
       body.lm .hero-badge {
-        background: rgba(194, 87, 0, 0.08);
-        border: 1px solid rgba(194, 87, 0, 0.25);
+        background: rgba(154, 52, 18, 0.08);
+        border: 1px solid rgba(154, 52, 18, 0.25);
         color: var(--primary);
       }
       body.lm .game-hero h1 {
@@ -1677,12 +1677,12 @@
       body.lm .btn-download {
         background: var(--primary);
         color: #ffffff;
-        box-shadow: 0 10px 25px rgba(194, 87, 0, 0.25);
+        box-shadow: 0 10px 25px rgba(154, 52, 18, 0.25);
       }
       body.lm .btn-download:hover {
         background: #a34600;
         color: #ffffff;
-        box-shadow: 0 15px 35px rgba(194, 87, 0, 0.35);
+        box-shadow: 0 15px 35px rgba(154, 52, 18, 0.35);
       }
       body.lm .btn-demo {
         background: #ffffff;
@@ -1693,7 +1693,7 @@
       body.lm .btn-demo:hover {
         background: var(--primary);
         color: #ffffff;
-        box-shadow: 0 10px 25px rgba(194, 87, 0, 0.25);
+        box-shadow: 0 10px 25px rgba(154, 52, 18, 0.25);
       }
       body.lm .feature-card {
         background: #ffffff !important;
@@ -1701,12 +1701,12 @@
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
       }
       body.lm .feature-card::before {
-        background: radial-gradient(rgba(194, 87, 0, 0.06) 1px, transparent 1px) !important;
+        background: radial-gradient(rgba(154, 52, 18, 0.06) 1px, transparent 1px) !important;
         opacity: 0.4;
       }
       body.lm .feature-card:hover {
-        border-color: rgba(194, 87, 0, 0.4) !important;
-        box-shadow: 0 16px 36px rgba(194, 87, 0, 0.12) !important;
+        border-color: rgba(154, 52, 18, 0.4) !important;
+        box-shadow: 0 16px 36px rgba(154, 52, 18, 0.12) !important;
       }
       body.lm .feature-card h3 {
         color: #0f172a !important;
@@ -1715,8 +1715,8 @@
         color: #475569 !important;
       }
       body.lm .icon-wrapper {
-        background: rgba(194, 87, 0, 0.08) !important;
-        border: 1px solid rgba(194, 87, 0, 0.25) !important;
+        background: rgba(154, 52, 18, 0.08) !important;
+        border: 1px solid rgba(154, 52, 18, 0.25) !important;
         color: var(--primary) !important;
         animation: none;
       }
@@ -1726,8 +1726,8 @@
         color: #334155 !important;
       }
       body.lm .feature-card:hover .tech-tag {
-        background: rgba(194, 87, 0, 0.08) !important;
-        border-color: rgba(194, 87, 0, 0.2) !important;
+        background: rgba(154, 52, 18, 0.08) !important;
+        border-color: rgba(154, 52, 18, 0.2) !important;
         color: var(--primary) !important;
       }
       body.lm .gallery-title {
@@ -1740,7 +1740,7 @@
       }
       body.lm .snapshot-card:hover {
         border-color: var(--primary) !important;
-        box-shadow: 0 16px 36px rgba(194, 87, 0, 0.15) !important;
+        box-shadow: 0 16px 36px rgba(154, 52, 18, 0.15) !important;
       }
       body.lm .snapshot-overlay {
         background: rgba(255, 255, 255, 0.92) !important;
@@ -1755,14 +1755,14 @@
       }
       body.lm .planet-card:hover {
         border-color: var(--primary) !important;
-        box-shadow: 0 12px 32px rgba(194, 87, 0, 0.12) !important;
+        box-shadow: 0 12px 32px rgba(154, 52, 18, 0.12) !important;
       }
       body.lm .planet-name {
         color: var(--primary) !important;
       }
       body.lm .planet-tag {
-        background: rgba(194, 87, 0, 0.08) !important;
-        border: 1px solid rgba(194, 87, 0, 0.25) !important;
+        background: rgba(154, 52, 18, 0.08) !important;
+        border: 1px solid rgba(154, 52, 18, 0.25) !important;
         color: var(--primary) !important;
       }
       body.lm .planet-facts {
@@ -1780,8 +1780,8 @@
         color: #475569 !important;
       }
       body.lm .doubt-chip {
-        background: rgba(194, 87, 0, 0.06) !important;
-        border: 1px solid rgba(194, 87, 0, 0.2) !important;
+        background: rgba(154, 52, 18, 0.06) !important;
+        border: 1px solid rgba(154, 52, 18, 0.2) !important;
         color: #334155 !important;
       }
       body.lm .doubt-chip:hover {
@@ -1795,7 +1795,7 @@
       }
       body.lm .doubt-input:focus {
         border-color: var(--primary) !important;
-        box-shadow: 0 0 0 3px rgba(194, 87, 0, 0.15) !important;
+        box-shadow: 0 0 0 3px rgba(154, 52, 18, 0.15) !important;
       }
       body.lm .doubt-ask {
         background: var(--primary) !important;
@@ -1834,7 +1834,7 @@
         color: #475569 !important;
       }
       body.lm .nav-login-btn {
-        background: rgba(194, 87, 0, 0.08) !important;
+        background: rgba(154, 52, 18, 0.08) !important;
         color: var(--primary) !important;
         border-color: var(--primary) !important;
       }
@@ -1858,6 +1858,9 @@
       body.lm .engine-overlay .g-desc {
         color: #cbd5e1 !important;
       }
+    
+
+      body.lm .hud-warning { color: #b91c1c !important; }
     </style>
 
     <script defer src="col-router.js"></script>
@@ -2065,7 +2068,7 @@
     <div class="gallery-grid">
       <div class="snapshot-card anim-target">
         <div class="snapshot-overlay">CAM_01: ORBITAL_VIEW</div>
-        <img src="solar.webp" alt="Solar Engine View 1" width="800" height="436" loading="lazy" />
+        <img src="solar.webp" alt="Solar Engine View 1" width="800" height="436" loading="lazy" decoding="async" />
       </div>
       <div class="snapshot-card anim-target" style="transition-delay: 0.15s">
         <div class="snapshot-overlay">CAM_02: TELEMETRY_DATA</div>

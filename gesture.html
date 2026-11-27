@@ -127,7 +127,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" onload="this.onload=null;this.rel='stylesheet'" /><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" /></noscript>
 
     <!-- MediaPipe Vision SDK (deferred; init runs on user click) -->
     <script defer src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
@@ -1918,7 +1918,7 @@
       body.lm {
         --bg-1: #f8fafc;
         --bg-2: #f1f5f9;
-        --primary: #0d9488;
+        --primary: #0f766e;
         --primary-glow: rgba(13, 148, 136, 0.25);
         --primary-dim: rgba(13, 148, 136, 0.08);
         --card-bg: #ffffff;
@@ -2042,17 +2042,17 @@
         border-color: rgba(15, 23, 42, 0.16) !important;
       }
       body.lm .control-chip-btn.active {
-        background: #0d9488 !important;
+        background: #0f766e !important;
         color: #ffffff !important;
-        border-color: #0d9488 !important;
+        border-color: #0f766e !important;
       }
       body.lm .control-btn {
         background: rgba(13, 148, 136, 0.1) !important;
         color: #0f766e !important;
-        border-color: #0d9488 !important;
+        border-color: #0f766e !important;
       }
       body.lm .control-btn:hover {
-        background: #0d9488 !important;
+        background: #0f766e !important;
         color: #ffffff !important;
       }
       body.lm .control-btn.btn-secondary {
@@ -2081,7 +2081,7 @@
       }
       body.lm .ai-mic-btn {
         background: rgba(13, 148, 136, 0.1) !important;
-        border-color: #0d9488 !important;
+        border-color: #0f766e !important;
         color: #0f766e !important;
       }
       body.lm .ai-input-wrap {
@@ -2095,7 +2095,7 @@
         color: #64748b !important;
       }
       body.lm .ai-run-btn {
-        background: #0d9488 !important;
+        background: #0f766e !important;
         color: #ffffff !important;
         border-left-color: rgba(15, 23, 42, 0.1) !important;
       }
@@ -2126,6 +2126,36 @@
         background: #b91c1c !important;
         color: #ffffff !important;
       }
+    
+
+      body.lm #engineOverlay .overlay-title { color: #f8fafc !important; }
+      body.lm #engineOverlay .overlay-sub { color: #cbd5e1 !important; }
+      body.lm .camera-telemetry .q-tag,
+      body.lm .camera-telemetry .tele-label,
+      body.lm .camera-telemetry .f-dot,
+      body.lm .engine-container .q-tag,
+      body.lm .engine-container .tele-label,
+      body.lm .engine-container .f-dot { color: #e2e8f0 !important; }
+      body.lm #hwBadge, body.lm #aiVoiceStatus { color: #92400e !important; }
+      body.lm #camStatusBadge { color: #b91c1c !important; }
+      body.lm .c-title, body.lm .c-icon { color: #0f172a !important; }
+      body.lm .target-arena-label, body.lm .playground-box [style*="13, 148, 136"] { color: #0f766e !important; }
+    
+
+      body.lm #fpsBadge { color: #92400e !important; }
+      body.lm #teleGesture.tele-val,
+      body.lm .stream-title,
+      body.lm .log-line { color: #5eead4 !important; }
+      body.lm .playground-box > div:first-child { color: #ffffff !important; background: rgba(15, 23, 42, 0.72) !important; padding: 2px 8px; border-radius: 6px; }
+    
+
+      body.lm #teleCoords.tele-val { color: #5eead4 !important; }
+      body.lm .playground-box span[style*="var(--text-muted)"] { color: #334155 !important; }
+      body.lm .playground-box div[style*="var(--primary)"] { color: #ffffff !important; background: #0f766e !important; padding: 2px 8px; border-radius: 6px; }
+    
+
+      body.lm .tele-val { color: #5eead4 !important; }
+      body.lm .playground-box span[style*="var(--text-muted)"] { color: #f8fafc !important; }
     </style>
   </head>
   <body>
@@ -2706,7 +2736,7 @@
       const cCanvas = document.getElementById('cyberCanvas')
       const cCtx = cCanvas.getContext('2d')
       let cParticles = []
-      const spatialGlyphs = ['[+]', '⟁', '⊡', '⟨•⟩', '✦', '01', '◈', '::', '//', 'λ']
+      const spatialGlyphs = ['[+]', '00', '01', '::', '//', 'XY', 'Z0', 'V2', 'ID', 'OK']
 
       function resizeCyberCanvas() {
         cCanvas.width = window.innerWidth
@@ -2741,13 +2771,16 @@
         for (let i = 0; i < 35; i++) cParticles.push(new SpatialParticle())
       }
 
+      const _reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
       function animateCyberParticles() {
-        cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height)
-        cParticles.forEach((p) => {
-          p.update()
-          p.draw()
-        })
-        requestAnimationFrame(animateCyberParticles)
+        if (!document.hidden && window.scrollY < (cCanvas.height || 800) + 120) {
+          cCtx.clearRect(0, 0, cCanvas.width, cCanvas.height)
+          cParticles.forEach((p) => {
+            p.update()
+            p.draw()
+          })
+        }
+        if (!_reduceMotion) requestAnimationFrame(animateCyberParticles)
       }
       window.addEventListener('resize', resizeCyberCanvas)
 
@@ -3083,7 +3116,7 @@
           requestVideoFrame()
         } catch (err) {
           console.error('Camera error:', err)
-          camStatusBadge.textContent = '✕ PERMISSION DENIED'
+          camStatusBadge.textContent = 'PERMISSION DENIED'
           camStatusBadge.className = 'hud-badge badge-offline'
           if (overlay) overlay.classList.remove('hidden')
           alert('Could not access camera. Please allow webcam permission in your browser address bar.')

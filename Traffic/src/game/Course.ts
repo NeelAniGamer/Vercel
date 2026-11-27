@@ -56,22 +56,22 @@ export interface MumbaiStat {
 }
 
 export const MODES = {
-  LEARN:   { id: 'learn', label: 'LEARN', icon: '📖', color: '--ion', desc: 'Theory & rules' },
-  PRACTICE: { id: 'practice', label: 'PRACTICE', icon: '🚗', color: '--signal', desc: 'Hands-on driving' },
-  EXAM:    { id: 'exam', label: 'EXAM', icon: '📝', color: '--plasma', desc: 'MCQ assessment' },
-  CHAOS:   { id: 'chaos', label: 'CHAOS', icon: '🌪️', color: '--em', desc: 'Adaptive stress test' }
+  LEARN:   { id: 'learn', label: 'LEARN', icon: 'book', color: '--ion', desc: 'Theory & rules' },
+  PRACTICE: { id: 'practice', label: 'PRACTICE', icon: 'car', color: '--signal', desc: 'Hands-on driving' },
+  EXAM:    { id: 'exam', label: 'EXAM', icon: 'book', color: '--plasma', desc: 'MCQ assessment' },
+  CHAOS:   { id: 'chaos', label: 'CHAOS', icon: 'alert', color: '--em', desc: 'Adaptive stress test' }
 };
 
 export const VEHICLES: VehicleConfig[] = [
-  { id: 'car', name: 'Sedan', icon: '🚗', recommended: [1,2,3,4,5,7,9,10,11,13,14,15] },
-  { id: 'bike', name: 'Motorcycle', icon: '🏍️', recommended: [3,4,6,8,12] },
-  { id: 'auto', name: 'Auto-rickshaw', icon: '🛺', recommended: [2,5,6,12] },
-  { id: 'bus', name: 'BEST Bus', icon: '🚌', recommended: [1,4,7,10] },
-  { id: 'truck', name: 'Truck', icon: '🚚', recommended: [1,9,11] },
-  { id: 'taxi', name: 'Kaali-Peeli', icon: '🚕', recommended: [1,3,7,13] },
-  { id: 'cycle', name: 'Bicycle', icon: '🚲', recommended: [3,6] },
-  { id: 'ambulance', name: 'Ambulance', icon: '🚑', recommended: [8] },
-  { id: 'police', name: 'Police Jeep', icon: '🚓', recommended: [8,14] }
+  { id: 'car', name: 'Sedan', icon: 'car', recommended: [1,2,3,4,5,7,9,10,11,13,14,15] },
+  { id: 'bike', name: 'Motorcycle', icon: 'bike', recommended: [3,4,6,8,12] },
+  { id: 'auto', name: 'Auto-rickshaw', icon: 'auto', recommended: [2,5,6,12] },
+  { id: 'bus', name: 'BEST Bus', icon: 'bus', recommended: [1,4,7,10] },
+  { id: 'truck', name: 'Truck', icon: 'truck', recommended: [1,9,11] },
+  { id: 'taxi', name: 'Kaali-Peeli', icon: 'car', recommended: [1,3,7,13] },
+  { id: 'cycle', name: 'Bicycle', icon: 'bike', recommended: [3,6] },
+  { id: 'ambulance', name: 'Ambulance', icon: 'ambulance', recommended: [8] },
+  { id: 'police', name: 'Police Jeep', icon: 'shield', recommended: [8,14] }
 ];
 
 export const MUMBAI_STATS: Record<string, MumbaiStat> = {
@@ -88,26 +88,26 @@ export const MUMBAI_STATS: Record<string, MumbaiStat> = {
 };
 
 export const BADGES: BadgeConfig[] = [
-  { id: 'safe_walker', name: 'Safe Walker', icon: '🚶', desc: 'Crossed all roads safely as a pedestrian' },
-  { id: 'law_abider', name: 'Law Abider', icon: '🏛️', desc: 'Passed all checkpoint inspections cleanly' },
-  { id: 'speed_king', name: 'Speed King', icon: '🏎️', desc: 'Completed Sea Link with zero speed violations' },
-  { id: 'traffic_hero', name: 'Traffic Hero', icon: '🌟', desc: 'Completed all 52 levels of the Academy' },
-  { id: 'smart_citizen', name: 'Mumbai Smart Citizen', icon: '🏙️', desc: 'Earned the Traffic Hero badge — A true road hero' },
-  { id: 'signal_master', name: 'Signal Master', icon: '🚦', desc: 'Completed 5+ levels without a single red-light violation' },
-  { id: 'level_10', name: 'Novice Driver', icon: '🎓', desc: 'Completed first 10 levels' },
-  { id: 'level_20', name: 'Learner Driver', icon: '📋', desc: 'Completed first 20 levels' },
-  { id: 'level_30', name: 'Competent Driver', icon: '🎖️', desc: 'Completed first 30 levels' },
-  { id: 'level_40', name: 'Skilled Driver', icon: '🏅', desc: 'Completed first 40 levels' },
-  { id: 'level_52', name: 'Master Driver', icon: '💎', desc: 'Completed all 52 levels' },
-  { id: 'pedestrian_expert', name: 'Pedestrian Expert', icon: '🚶‍♂️', desc: 'Completed all pedestrian mode levels' },
-  { id: 'night_driver', name: 'Night Driver', icon: '🌙', desc: 'Completed all night driving levels' },
-  { id: 'weather_pro', name: 'Weather Expert', icon: '⛈️', desc: 'Completed all weather-related levels' },
-  { id: 'emergency_hero', name: 'Emergency Hero', icon: '🚑', desc: 'Completed all emergency vehicle levels' },
-  { id: 'parking_master', name: 'Parking Master', icon: '🅿️', desc: 'Completed all parking scenarios' },
-  { id: 'streak_7', name: 'Week Warrior', icon: '🔥', desc: 'Maintained a 7-day learning streak' },
-  { id: 'streak_30', name: 'Monthly Master', icon: '📅', desc: 'Maintained a 30-day learning streak' },
-  { id: 'perfect_run', name: 'Perfect Run', icon: '💯', desc: 'Completed a level with zero violations' },
-  { id: 'chaos_survivor', name: 'Chaos Survivor', icon: '🌪️', desc: 'Survived Chaos mode at max difficulty' }
+  { id: 'safe_walker', name: 'Safe Walker', icon: 'pedestrian', desc: 'Crossed all roads safely as a pedestrian' },
+  { id: 'law_abider', name: 'Law Abider', icon: 'building', desc: 'Passed all checkpoint inspections cleanly' },
+  { id: 'speed_king', name: 'Speed King', icon: 'car', desc: 'Completed Sea Link with zero speed violations' },
+  { id: 'traffic_hero', name: 'Traffic Hero', icon: 'star', desc: 'Completed all 52 levels of the Academy' },
+  { id: 'smart_citizen', name: 'Mumbai Smart Citizen', icon: 'city', desc: 'Earned the Traffic Hero badge — A true road hero' },
+  { id: 'signal_master', name: 'Signal Master', icon: 'signal', desc: 'Completed 5+ levels without a single red-light violation' },
+  { id: 'level_10', name: 'Novice Driver', icon: 'grad', desc: 'Completed first 10 levels' },
+  { id: 'level_20', name: 'Learner Driver', icon: 'list', desc: 'Completed first 20 levels' },
+  { id: 'level_30', name: 'Competent Driver', icon: 'medal', desc: 'Completed first 30 levels' },
+  { id: 'level_40', name: 'Skilled Driver', icon: 'medal', desc: 'Completed first 40 levels' },
+  { id: 'level_52', name: 'Master Driver', icon: 'sparkles', desc: 'Completed all 52 levels' },
+  { id: 'pedestrian_expert', name: 'Pedestrian Expert', icon: 'pedestrian', desc: 'Completed all pedestrian mode levels' },
+  { id: 'night_driver', name: 'Night Driver', icon: 'moon', desc: 'Completed all night driving levels' },
+  { id: 'weather_pro', name: 'Weather Expert', icon: 'rain', desc: 'Completed all weather-related levels' },
+  { id: 'emergency_hero', name: 'Emergency Hero', icon: 'ambulance', desc: 'Completed all emergency vehicle levels' },
+  { id: 'parking_master', name: 'Parking Master', icon: 'parking', desc: 'Completed all parking scenarios' },
+  { id: 'streak_7', name: 'Week Warrior', icon: 'flame', desc: 'Maintained a 7-day learning streak' },
+  { id: 'streak_30', name: 'Monthly Master', icon: 'clock', desc: 'Maintained a 30-day learning streak' },
+  { id: 'perfect_run', name: 'Perfect Run', icon: 'check', desc: 'Completed a level with zero violations' },
+  { id: 'chaos_survivor', name: 'Chaos Survivor', icon: 'alert', desc: 'Survived Chaos mode at max difficulty' }
 ];
 
 export const MODULES: ModuleConfig[] = [

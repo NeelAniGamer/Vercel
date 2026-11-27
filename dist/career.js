@@ -151,7 +151,7 @@
           if (!c) return;
           const tag = document.createElement('div');
           tag.className = 'cmp-tag';
-          tag.innerHTML = '<span>' + c.title + '</span><span class="cmp-tag-remove" onclick="toggleCompare(\'' + c.id + '\')">✕</span>';
+          tag.innerHTML = '<span>' + c.title + '</span><span class="cmp-tag-remove" onclick="toggleCompare(\'' + c.id + '\')" aria-label="Remove"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>';
           list.appendChild(tag);
         });
 
@@ -488,9 +488,9 @@
       };
 
       const DOMAIN_FALLBACKS = {
-        tech: '💻', health: '🩺', eng: '⚙️', space: '🚀', biz: '📈',
-        law: '⚖️', creative: '🎨', eco: '🌱', trades: '🔧', edu: '🎓',
-        service: '🤝', safety: '🛡️', marine: '⚓', agri: '🌾', hosp: '🍽️'
+        tech: 'TECH', health: 'HLTH', eng: 'ENG', space: 'SPC', biz: 'BIZ',
+        law: 'LAW', creative: 'ART', eco: 'ECO', trades: 'TRD', edu: 'EDU',
+        service: 'SVC', safety: 'SEC', marine: 'MAR', agri: 'AGR', hosp: 'HSP'
       };
 
       const STREAM_LABELS = {
@@ -507,7 +507,7 @@
         chip.appendChild(document.createTextNode(label));
         const remove = document.createElement('span');
         remove.className = 'active-tag-remove';
-        remove.textContent = '✕';
+        remove.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
         chip.appendChild(remove);
         chip.addEventListener('click', onClear);
         return chip;
@@ -755,7 +755,9 @@
           inner += '<div class="card-icon cat-' + c.cat + '">' + getModernIcon(c, 26) + '</div>';
           inner += '<div class="card-badges">';
           inner += '<span class="cat-tag cat-' + c.cat + '">' + c.catName + '</span>';
-          inner += '<button class="btn-fav ' + (isFav ? 'active' : '') + '" title="' + (isFav ? 'Remove from shortlist' : 'Save to shortlist') + '">' + (isFav ? '★' : '☆') + '</button>';
+          const _starFilled = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+  const _starOutline = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+  inner += '<button class="btn-fav ' + (isFav ? 'active' : '') + '" title="' + (isFav ? 'Remove from shortlist' : 'Save to shortlist') + '">' + (isFav ? _starFilled : _starOutline) + '</button>';
           inner += '</div></div>';
 
           if (matchScore) {
@@ -1164,9 +1166,11 @@
         html += '</div>';
         html += '<div class="dossier-nav-actions">';
         html += '<button class="nav-btn btn-print" title="Print full career blueprint"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print Blueprint</button>';
-        html += '<button class="nav-btn btn-modal-fav ' + (isFav ? 'primary' : '') + '">' + (isFav ? '★ Saved' : '☆ Save') + '</button>';
+        const _starFillSm = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+        const _starOutSm = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+        html += '<button class="nav-btn btn-modal-fav ' + (isFav ? 'primary' : '') + '">' + (isFav ? _starFillSm + 'Saved' : _starOutSm + 'Save') + '</button>';
         html += '<button class="nav-btn btn-modal-cmp ' + (isCmp ? 'active' : '') + '">' + (isCmp ? 'Added to Compare' : 'Add to Compare') + '</button>';
-        html += '<button class="modal-close" title="Close [Esc]" aria-label="Close modal">✕</button>';
+        html += '<button class="modal-close" title="Close [Esc]" aria-label="Close modal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>';
         html += '</div></div>';
 
         // 2. Main Document Container
@@ -1592,7 +1596,7 @@
         html += '<div class="dossier-section-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>Daily Technology Stack &amp; Core Tools</div>';
         html += '<div style="display:flex; flex-wrap:wrap; gap:8px;">';
         data.tools.forEach(tool => {
-          html += '<span style="font-size:13px; font-weight:600; padding:6px 14px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:#e8e3d8; display:inline-flex; align-items:center; gap:6px;">⚡ ' + tool + '</span>';
+          html += '<span style="font-size:13px; font-weight:600; padding:6px 14px; border-radius:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:#e8e3d8; display:inline-flex; align-items:center; gap:6px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-gold,#F5A623)" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>' + tool + '</span>';
         });
         html += '</div>';
         html += '</div>';
