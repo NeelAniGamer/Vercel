@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "eb8ae87d-4f52-4000-9304-102dce1140a3",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "C:\\Users\\neelg\\OneDrive\\Desktop\\Vercel\\.archify\\architecture-claude-game-studios-20261120-093100\\candidate.json",
+  "output": "C:\\Users\\neelg\\OneDrive\\Desktop\\Vercel\\.archify\\architecture-claude-game-studios-20261120-093100\\claude-game-studios.html",
+  "specification": {
+    "sha256": "9841549102be3ec2b26551e64f3545b39240ae1576030f589536b4c23424feb7",
+    "bytes": 7104
+  },
+  "artifact": {
+    "sha256": "7799d351f4d9f15e9aa74fe5dc0a4f35f06962f5f1caad7161d011ca923e2a15",
+    "bytes": 855886
+  }
+}

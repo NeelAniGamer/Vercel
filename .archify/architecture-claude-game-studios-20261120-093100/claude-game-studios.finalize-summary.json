@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "architecture",
+  "quality": "showcase",
+  "specification": {
+    "path": "C:\\Users\\neelg\\OneDrive\\Desktop\\Vercel\\.archify\\architecture-claude-game-studios-20261120-093100\\candidate.json",
+    "sha256": "9841549102be3ec2b26551e64f3545b39240ae1576030f589536b4c23424feb7",
+    "bytes": 7104
+  },
+  "artifact": {
+    "path": "C:\\Users\\neelg\\OneDrive\\Desktop\\Vercel\\.archify\\architecture-claude-game-studios-20261120-093100\\claude-game-studios.html",
+    "sha256": "7799d351f4d9f15e9aa74fe5dc0a4f35f06962f5f1caad7161d011ca923e2a15",
+    "bytes": 855886
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "pass"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "C:\\Users\\neelg\\OneDrive\\Desktop\\Vercel\\.archify\\architecture-claude-game-studios-20261120-093100\\claude-game-studios.finalize.json",
+    "summaryReceipt": "C:\\Users\\neelg\\OneDrive\\Desktop\\Vercel\\.archify\\architecture-claude-game-studios-20261120-093100\\claude-game-studios.finalize-summary.json",
+    "browserCheckReceipt": "C:\\Users\\neelg\\OneDrive\\Desktop\\Vercel\\.archify\\architecture-claude-game-studios-20261120-093100\\claude-game-studios.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.2.0",
+    "availableVersion": "3.2.0",
+    "releaseNotes": null,
+    "checkedAt": "2026-11-20T03:58:59.777Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 7991,
+  "browserCheck": {
+    "requested": true,
+    "ran": true
+  }
+}

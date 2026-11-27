@@ -1,0 +1,284 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Claude Code Game Studios: 49-Agent Swarm & Engine Architecture",
+    "output": ".archify/architecture-claude-game-studios-20261120-093100/claude-game-studios.html",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "Creative Lead",
+      "sublabel": "Vibe & Level Prompts",
+      "pos": [40, 180],
+      "size": [130, 60]
+    },
+    {
+      "id": "director",
+      "type": "backend",
+      "label": "Creative Director",
+      "sublabel": "Makes the calls",
+      "tag": "Lead Agent",
+      "pos": [240, 180],
+      "size": [140, 60]
+    },
+    {
+      "id": "agent_swarm",
+      "type": "backend",
+      "label": "Encoders & Designers",
+      "sublabel": "Constructs mechanics",
+      "tag": "49 Swarm",
+      "pos": [440, 60],
+      "size": [140, 60]
+    },
+    {
+      "id": "qa_testers",
+      "type": "backend",
+      "label": "QA Bug Hunters",
+      "sublabel": "Crash detection & fix",
+      "tag": "Auto-repair",
+      "pos": [440, 180],
+      "size": [140, 60]
+    },
+    {
+      "id": "music_agent",
+      "type": "backend",
+      "label": "Audio Director Agent",
+      "sublabel": "Vibe scoring & lines",
+      "tag": "Prompt-to-Audio",
+      "pos": [440, 300],
+      "size": [140, 60]
+    },
+    {
+      "id": "unreal_claude",
+      "type": "frontend",
+      "label": "Unreal Claude Plugin",
+      "sublabel": "Lives in UE editor",
+      "tag": "In-Editor",
+      "pos": [680, 60],
+      "size": [140, 60]
+    },
+    {
+      "id": "unreal_engine",
+      "type": "cloud",
+      "label": "Unreal Engine 5",
+      "sublabel": "Levels & Blueprints",
+      "pos": [900, 60],
+      "size": [140, 60]
+    },
+    {
+      "id": "godot_connector",
+      "type": "frontend",
+      "label": "Godot Connector",
+      "sublabel": "Free bridge socket",
+      "tag": "Live Control",
+      "pos": [680, 180],
+      "size": [140, 60]
+    },
+    {
+      "id": "godot_engine",
+      "type": "cloud",
+      "label": "Godot 4 Runtime",
+      "sublabel": "Instant crash hotfix",
+      "pos": [900, 180],
+      "size": [140, 60]
+    },
+    {
+      "id": "music_gen",
+      "type": "backend",
+      "label": "Step 1.5 Music AI",
+      "sublabel": "Full track in 10s",
+      "tag": "Instant Music",
+      "pos": [680, 300],
+      "size": [140, 60]
+    },
+    {
+      "id": "audio2face",
+      "type": "backend",
+      "label": "Nvidia Audio2Face",
+      "sublabel": "Mouth & eyebrow sync",
+      "tag": "Neural Acting",
+      "pos": [900, 300],
+      "size": [140, 60]
+    },
+    {
+      "id": "character_rig",
+      "type": "cloud",
+      "label": "Character Rig & Audio",
+      "sublabel": "No animators needed",
+      "pos": [1120, 300],
+      "size": [140, 60]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Claude Unified Session (49 Autonomous Agents)",
+      "wraps": [
+        "director",
+        "agent_swarm",
+        "qa_testers",
+        "music_agent"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "Unreal Engine 5 In-Editor Environment",
+      "wraps": [
+        "unreal_claude",
+        "unreal_engine"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "Godot Engine Self-Healing Runtime",
+      "wraps": [
+        "godot_connector",
+        "godot_engine"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "Generative Audio & Facial Performance Pipeline",
+      "wraps": [
+        "music_gen",
+        "audio2face",
+        "character_rig"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "user-to-director",
+      "from": "user",
+      "to": "director",
+      "label": "describe vibe",
+      "fromSide": "right",
+      "toSide": "left",
+      "variant": "emphasis"
+    },
+    {
+      "id": "director-to-swarm",
+      "from": "director",
+      "to": "agent_swarm",
+      "label": "level tasks",
+      "fromSide": "top",
+      "toSide": "left",
+      "via": [[310, 90]],
+      "variant": "emphasis"
+    },
+    {
+      "id": "director-to-qa",
+      "from": "director",
+      "to": "qa_testers",
+      "label": "hunt bugs",
+      "fromSide": "right",
+      "toSide": "left",
+      "variant": "emphasis"
+    },
+    {
+      "id": "director-to-music",
+      "from": "director",
+      "to": "music_agent",
+      "label": "vibe score",
+      "fromSide": "bottom",
+      "toSide": "left",
+      "via": [[310, 330]],
+      "variant": "emphasis"
+    },
+    {
+      "id": "swarm-to-unreal-claude",
+      "from": "agent_swarm",
+      "to": "unreal_claude",
+      "label": "construct",
+      "fromSide": "right",
+      "toSide": "left",
+      "variant": "emphasis"
+    },
+    {
+      "id": "unreal-claude-to-ue5",
+      "from": "unreal_claude",
+      "to": "unreal_engine",
+      "label": "blueprints",
+      "fromSide": "right",
+      "toSide": "left",
+      "variant": "emphasis"
+    },
+    {
+      "id": "qa-to-godot-connector",
+      "from": "qa_testers",
+      "to": "godot_connector",
+      "label": "launches",
+      "fromSide": "right",
+      "toSide": "left",
+      "variant": "emphasis"
+    },
+    {
+      "id": "connector-to-godot",
+      "from": "godot_connector",
+      "to": "godot_engine",
+      "label": "controls",
+      "fromSide": "right",
+      "toSide": "left",
+      "variant": "emphasis"
+    },
+    {
+      "id": "music-agent-to-gen",
+      "from": "music_agent",
+      "to": "music_gen",
+      "label": "vibe prompt",
+      "fromSide": "right",
+      "toSide": "left",
+      "variant": "emphasis"
+    },
+    {
+      "id": "gen-to-audio2face",
+      "from": "music_gen",
+      "to": "audio2face",
+      "label": "track & line",
+      "fromSide": "right",
+      "toSide": "left",
+      "variant": "emphasis"
+    },
+    {
+      "id": "audio2face-to-rig",
+      "from": "audio2face",
+      "to": "character_rig",
+      "label": "facial sync",
+      "fromSide": "right",
+      "toSide": "left",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Unified Swarm Architecture",
+      "items": [
+        "49 AI agents with distinct roles orchestrated within a single Claude session",
+        "Creative Director delegates level construction, QA bug hunting, and audio scoring",
+        "Encoders and designers build full game systems without human context switching"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Dual Engine Integrations",
+      "items": [
+        "Unreal Claude lives directly inside UE editor to author geometry and Blueprints",
+        "Free Godot connector provides socket-level control and automated game launches",
+        "Self-healing triage applies crash hotfixes immediately before users notice"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Zero-Animator Audio & Acting",
+      "items": [
+        "Step 1.5 generates complete contextual music tracks within 10 seconds of prompt",
+        "Nvidia Audio2Face computes real-time phonemes and eyebrow/mouth deformation",
+        "Direct audio-to-character performance pipeline eliminates traditional keyframing"
+      ]
+    }
+  ]
+}
